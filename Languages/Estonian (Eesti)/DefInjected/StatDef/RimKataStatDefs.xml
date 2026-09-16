@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>jahtumisaja kordaja (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Tavaliste RimKata rünnakute lõplik jahtumisaja kordaja. See ühendab tegelase vanilla-kaugrünnaku jahtumisaja kordaja praegu kantava lubatud soomuse muutjaga.</RimKata_CooldownMultiplier.description>
+</LanguageData>

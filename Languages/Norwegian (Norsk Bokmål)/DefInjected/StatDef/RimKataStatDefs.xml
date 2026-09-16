@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>nedkjølingsmultiplikator (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Den endelige nedkjølingsmultiplikatoren for normale RimKata-angrep. Den kombinerer figurens vanilla-multiplikator for nedkjøling av avstandsangrep med modifikatoren fra den aktiverte rustningen som brukes nå.</RimKata_CooldownMultiplier.description>
+</LanguageData>

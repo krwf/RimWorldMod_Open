@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Editează armele permise</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Editează îmbrăcămintea permisă</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>{0} selectate</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>Aplică efectele RimKata personajelor neostile</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>Aplică efectele RimKata personajelor ostile</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Șansa genei RimKata-G pentru Creepjoiner</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Dependența Creepjoinerului de serul de amorțire a minții</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Șansa de a nu avea niciuna: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Totalul nu poate depăși 100.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Șansa ca un personaj IA să aibă o armă secundară</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>Distanța maximă de căutare automată a țintelor</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Scurtă ({0} celule)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Medie ({0} celule)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Lungă ({0} celule)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Nelimitată (raza armei)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Personalizată</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Setările profilului</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Funcții de luptă</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Funcțiile modului</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Funcții de activare</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Valoare aplicată</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>Minim</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Valoare fixă</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Luptă</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Bonus la șansa de parare</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Șansa de dezarmare la parare</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Bonus la șansa de eschivă în lupta corp la corp</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Șansa de eschivă la distanță</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Durata standard a animației de eschivă la distanță</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Bonus la precizia interceptării explozibililor</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Șansa de neutralizare imediată a explozibililor</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Modificatori</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Multiplicatorul preciziei în mișcare</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Reducerea timpului de reactivare oferită de armura permisă</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Reducerea timpului de reactivare după o parare reușită</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Efectele serului de amorțire a minții</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Multiplicatorul parării</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Multiplicatorul eschivei la distanță</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplicatorul interceptării explozibililor</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Resetează tot</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Șterge profilul</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Adaugă un profil</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Redenumește</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Profil-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Numele profilului</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Introduceți un nume pentru profil.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>Folosiți cel mult {0} caractere.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Există deja un profil cu acest nume.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>Operațiunea asupra profilului nu a putut fi finalizată.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Confirmă</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>Anulează</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Resetați setările armelor?</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Resetați setările îmbrăcămintei?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>Ștergeți „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>celule</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1}Lv</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1}Lv</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Caută</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>Permis</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Toate</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Da</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Nu</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>Arme RimKata</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Tipul armei</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Corp la corp</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>La distanță</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>Armuri și îmbrăcăminte RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Tipul îmbrăcămintei</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Acoperământ pentru cap</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Armură</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Îmbrăcăminte exterioară</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>Lenjerie</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Utilitar</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Altele</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Rezultate filtrate</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Selectează tot</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Deselectează tot</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Nu există definiții corespunzătoare.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>Cu două mâini</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Folosește</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Informații</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Resetează</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Elimină restricțiile</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Arme</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Îmbrăcăminte</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>Non-uman</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>Arme RimKata non-umane</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>Îmbrăcăminte RimKata non-umană</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Categorie</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Ținte pentru eliminarea restricțiilor</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Țintele activate ocolesc cerințele obișnuite de acces și folosesc profilul selectat. Țintele dezactivate păstrează verificările obișnuite de acces.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Categorie</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Utilizare</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Xenotipuri</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Mecanoizi</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Insecte</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Animale</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Altele</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Nume</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Activate</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Dezactivate</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Profil aplicat</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Nu există ținte corespunzătoare.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Tip de bază</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Xenotip personalizat</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Xenotip hibrid</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>Armă secundară</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Conversie la foc cu un singur glonț</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Atac aleatoriu</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Interceptarea explozibililor</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Foc în mișcare</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Foc de la mică distanță</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Șarjă</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>parare</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Eschivă la distanță</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>salt mortal</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Dependență de serul de amorțire a minții</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Limite pentru candidați</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Rază corp la corp</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Rază scurtă</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Rază medie</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Rază lungă</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Dincolo de raza lungă</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Indicații vizuale</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Timpul de reactivare al armei la distanță</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Timpul de țintire al armei corp la corp</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Linia țintei atacului concentrat</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Animații</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Șansa unui salt mortal imediat</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Șansa de a roti atacatorul la parare</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Șansa unui foc rătăcit după o parare</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Șansa pierderii durabilității armei după o parare reușită</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Durabilitatea pierdută de armă după o parare reușită</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Șansa de a fura arma după o parare reușită fără arme</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Principală</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>Secundară</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: interceptează {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: următoarea țintă {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: în reactivare</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Atacă</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Nu se poate echipa o armă secundară dacă lipsește o mână.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Schimbă</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Schimbă (în luptă)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>Depanare RimKata</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Raza de căutare</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Scurtă (raza armei)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Medie (raza armei)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Lungă (raza armei)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>Calcularea multiplicatorului timpului de reactivare RimKata:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Multiplicatorul de bază al timpului de reactivare pentru atacurile la distanță: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Modificatorul armurii permise: ×{0} (aplicat)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Modificatorul armurii permise: ×100% (nu este purtată nicio armură permisă)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

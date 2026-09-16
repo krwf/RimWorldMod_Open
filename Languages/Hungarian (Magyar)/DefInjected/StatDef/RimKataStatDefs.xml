@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>visszatöltési szorzó (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>A normál RimKata-támadásokhoz használt végső visszatöltési szorzó. Egyesíti a karakter alapjátékbeli távolsági visszatöltési szorzóját az éppen viselt engedélyezett páncél módosítójával.</RimKata_CooldownMultiplier.description>
+</LanguageData>

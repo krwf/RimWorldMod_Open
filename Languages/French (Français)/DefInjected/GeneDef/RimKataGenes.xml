@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>Prédit les échanges de tirs à courte portée et y réagit. Permet d'utiliser RimKata.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>Les porteurs dépendent psychologiquement du sérum d'insensibilisation. Sans son effet, leur humeur se dégrade de jour en jour, sauf si une relation amoureuse durable ou un lien psychique leur permet de surmonter cette dépendance.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="MakeableDrugBase">
+    <defName>RimKata_A</defName>
+    <label>RimKata-A</label>
+    <description>Predicts and responds to close-range gunfights. Enables the use of RimKata.</description>
+    <descriptionHyperlinks>
+      <HediffDef>RimKata_A_Effect</HediffDef>
+    </descriptionHyperlinks>
+    <graphicData>
+      <texPath>RimKata-A</texPath>
+      <graphicClass>KRWF.RimKata.Graphic_RimKataStackCount</graphicClass>
+    </graphicData>
+    <stackLimit>6</stackLimit>
+    <socialPropernessMatters>false</socialPropernessMatters>
+    <rotatable>false</rotatable>
+    <statBases>
+      <WorkToMake>600</WorkToMake>
+      <MarketValue>35</MarketValue>
+      <Mass>0.1</Mass>
+    </statBases>
+    <techLevel>Industrial</techLevel>
+    <ingestible>
+      <drugCategory>Medical</drugCategory>
+      <foodType>Processed, Fluid</foodType>
+      <baseIngestTicks>80</baseIngestTicks>
+      <ingestSound>Ingest_Inject</ingestSound>
+      <ingestHoldOffsetStanding>
+        <northDefault>
+          <offset>(0.18,0,0)</offset>
+        </northDefault>
+      </ingestHoldOffsetStanding>
+      <ingestCommandString>Inject {0}</ingestCommandString>
+      <ingestReportString>Injecting {0}.</ingestReportString>
+      <useEatingSpeedStat>false</useEatingSpeedStat>
+      <chairSearchRadius>0</chairSearchRadius>
+      <outcomeDoers>
+        <li Class="IngestionOutcomeDoer_GiveHediff">
+          <hediffDef>RimKata_A_Effect</hediffDef>
+          <severity>1</severity>
+        </li>
+      </outcomeDoers>
+    </ingestible>
+    <recipeMaker>
+      <researchPrerequisite>PenoxycylineProduction</researchPrerequisite>
+      <recipeUsers>
+        <li>DrugLab</li>
+      </recipeUsers>
+      <soundWorking>Recipe_Drug</soundWorking>
+      <displayPriority>1850</displayPriority>
+    </recipeMaker>
+    <costList>
+      <Neutroamine>2</Neutroamine>
+    </costList>
+    <comps>
+      <li Class="CompProperties_Drug">
+        <listOrder>205</listOrder>
+      </li>
+    </comps>
+  </ThingDef>
+
+  <HediffDef>
+    <defName>RimKata_A_Effect</defName>
+    <label>RimKata-A</label>
+    <description>Predicts and responds to close-range gunfights. Enables the use of RimKata.</description>
+    <hediffClass>HediffWithComps</hediffClass>
+    <defaultLabelColor>(1,0,0.5)</defaultLabelColor>
+    <scenarioCanAdd>true</scenarioCanAdd>
+    <isBad>false</isBad>
+    <comps>
+      <li Class="HediffCompProperties_Disappears">
+        <!-- One dose enables RimKata for one in-game day. -->
+        <disappearsAfterTicks>60000</disappearsAfterTicks>
+        <showRemainingTime>true</showRemainingTime>
+      </li>
+    </comps>
+  </HediffDef>
+
+  <AbilityDef ParentName="PsycastBase" MayRequire="Ludeon.RimWorld.Royalty">
+    <defName>RimKata_P</defName>
+    <label>RimKata-P</label>
+    <description>Predicts and responds to close-range gunfights. Enables the use of RimKata.</description>
+    <iconPath>RimKata_main</iconPath>
+    <level>1</level>
+    <targetRequired>false</targetRequired>
+    <showWhenDrafted>false</showWhenDrafted>
+    <displayGizmoWhileUndrafted>false</displayGizmoWhileUndrafted>
+    <showOnCharacterCard>true</showOnCharacterCard>
+    <aiCanUse>false</aiCanUse>
+    <comps>
+      <li Class="KRWF.RimKata.CompProperties_RimKataAccessAbility" />
+    </comps>
+  </AbilityDef>
+</Defs>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>cooldown multiplier (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>The final cooldown multiplier used for normal RimKata attacks. This combines the pawn's vanilla ranged cooldown multiplier with the modifier from currently worn enabled armor.</RimKata_CooldownMultiplier.description>
+</LanguageData>

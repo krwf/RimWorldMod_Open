@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>クールダウン倍率 (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>通常の RimKata 攻撃に使われる最終クールダウン倍率です。ポーンのバニラ射撃クールダウン倍率と、現在着用中の有効な防具の補正を組み合わせます。</RimKata_CooldownMultiplier.description>
+</LanguageData>

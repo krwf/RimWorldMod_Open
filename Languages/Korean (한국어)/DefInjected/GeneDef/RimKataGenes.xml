@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>근거리 총격전을 예측하고 대응합니다. RimKata를 사용할 수 있습니다.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>감정마비 혈청에 심리적으로 의존하게 만드는 유전자입니다. 혈청 효과가 없으면 기분이 매일 악화되지만, 지속되는 연애 관계나 정신 결속이 있으면 의존증을 극복합니다.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

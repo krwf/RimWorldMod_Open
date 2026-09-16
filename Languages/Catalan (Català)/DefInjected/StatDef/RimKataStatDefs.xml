@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>multiplicador de refredament (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>El multiplicador final de refredament que s’aplica als atacs normals de RimKata. Combina el multiplicador de refredament d’atacs a distància del joc base del personatge amb el modificador de l’armadura habilitada que té equipada.</RimKata_CooldownMultiplier.description>
+</LanguageData>

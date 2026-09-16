@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>gevoelsverwijdering</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Evenwicht</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>afhankelijkheid van gevoelsverdovend serum</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Mijn gevoelens brengen me aan het wankelen. Ik wil geen rampen meer zoals insecten, mechanoïden of anomalieën.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>afwijzing van gevoelsverdovend serum</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Als ik bij mijn geliefde ben</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+

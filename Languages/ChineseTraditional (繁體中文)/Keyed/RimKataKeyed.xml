@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>編輯已啟用武器</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>編輯已啟用服裝</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>已選擇 {0} 項</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>對非敵對角色套用 RimKata 效果</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>對敵對角色套用 RimKata 效果</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>詭異加入者獲得 RimKata-G 基因的機率</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>詭異加入者獲得情感麻痺血清依賴的機率</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>兩者皆無的機率：{0}。</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>總計不能超過 100。</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>AI 角色攜帶副武器的機率</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>自動目標最大搜尋範圍</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>近（{0} 格）</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>中（{0} 格）</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>遠（{0} 格）</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>無限（武器射程）</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>自訂</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>設定檔設定</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>戰鬥功能</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>模組功能</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>啟用功能</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>套用值</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>最小值</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>固定值</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>戰鬥</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>格擋機率加成</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>格擋時繳械機率</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>近戰閃避機率加成</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>遠程閃避機率</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>標準遠程閃避動畫時間</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>爆裂物攔截精度加成</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>立即化解爆裂物的機率</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>修正</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>移動射擊精度倍率</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>已啟用護甲的冷卻縮減</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>成功格擋後的冷卻縮減</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>情感麻痺血清效果</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>格擋倍率</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>遠程閃避倍率</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>爆裂物攔截倍率</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>全部重設</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>設定檔</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>刪除設定檔</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>新增設定檔</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>重新命名</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>設定檔-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>設定檔名稱</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>請輸入設定檔名稱。</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>最多使用 {0} 個字元。</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>已有同名設定檔。</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>無法完成設定檔操作。\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>確認</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>取消</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>重設武器設定？</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>重設服裝設定？</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>重設「{0}」？</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>重設「{0}」？</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>刪除「{0}」？</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>格</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1}級</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1}級</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>搜尋</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>已允許</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>全部</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>是</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>否</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>RimKata 武器</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>武器類型</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>近戰</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>遠程</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>RimKata 護甲與服裝</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>服裝類型</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>頭部裝備</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>護甲</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>外衣</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>內衣</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>實用裝備</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>其他</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>篩選結果</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>全選</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>全部取消</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>沒有符合的定義。</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>雙手武器</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>使用</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>資訊</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>重設</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>移除限制</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>武器</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>服裝</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>非人類</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>RimKata 非人類武器</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>RimKata 非人類服裝</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>類別</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>移除限制的目標</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>已啟用的目標會略過一般使用條件並採用所選設定檔。已停用的目標仍會接受一般條件檢查。</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>類別</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>使用狀態</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>異種型</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>機械族</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>昆蟲</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>動物</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>其他</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>名稱</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>已啟用</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>已停用</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>套用的設定檔</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>沒有符合的目標。</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>基準人</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>自訂異種型</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>混合異種型</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>副武器</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>單發轉換</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>隨機攻擊</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>攔截爆裂物</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>移動射擊</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>近距離射擊</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>衝鋒</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>格擋</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>遠程閃避</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>翻滾</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>情感麻痺血清依賴</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>候選目標限制</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>近戰範圍</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>近距離</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>中距離</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>遠距離</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>超遠距離</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>視覺指引</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>遠程武器冷卻</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>近戰武器瞄準時間</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>集中攻擊目標線</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>動畫</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>立即翻滾機率</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>格擋時使攻擊者旋轉的機率</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>格擋後的流彈機率</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>成功格擋後武器耐久損失機率</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>成功格擋後損失的武器耐久</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>徒手成功格擋後奪取武器的機率</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>主武器</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>副武器</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}：正在攔截 {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}：下一個目標 {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}：正在冷卻</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>攻擊</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>缺少手部時無法裝備副武器。</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>切換</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>切換（戰鬥中）</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>RimKata 除錯</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>搜尋範圍</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>近（武器射程）</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>中（武器射程）</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>遠（武器射程）</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>RimKata 冷卻倍率計算：</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>基礎遠程冷卻倍率：{0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>已啟用護甲修正：×{0}（已套用）</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>已啟用護甲修正：×100%（未穿戴已啟用護甲）</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

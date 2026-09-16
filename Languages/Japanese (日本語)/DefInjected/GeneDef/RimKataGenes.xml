@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>近距離の銃撃戦を予測して対応します。RimKata を使用できるようになります。</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>保有者は感情麻痺血清に心理的に依存します。効果がないと心情が日ごとに悪化しますが、長く続く恋愛関係や精神的な絆があれば依存を克服できます。</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Chỉnh sửa vũ khí được bật</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Chỉnh sửa trang phục được bật</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>Đã chọn {0}</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>Áp dụng hiệu ứng RimKata cho nhân vật không thù địch</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>Áp dụng hiệu ứng RimKata cho nhân vật thù địch</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Tỷ lệ kẻ gia nhập bí ẩn có gen RimKata-G</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Kẻ gia nhập bí ẩn phụ thuộc huyết thanh tê liệt cảm xúc</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Tỷ lệ không có cả hai: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Tổng không được vượt quá 100.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Tỷ lệ nhân vật AI có vũ khí phụ</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>Phạm vi tìm mục tiêu tự động tối đa</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Gần ({0} ô)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Trung bình ({0} ô)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Xa ({0} ô)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Không giới hạn (tầm vũ khí)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Tùy chỉnh</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Cài đặt hồ sơ</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Tính năng chiến đấu</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Tính năng mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Tính năng kích hoạt</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Giá trị áp dụng</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>Tối thiểu</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Giá trị cố định</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Chiến đấu</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Thưởng tỷ lệ đỡ đòn</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Tỷ lệ tước vũ khí khi đỡ đòn</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Thưởng tỷ lệ né cận chiến</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Tỷ lệ né đòn tầm xa</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Thời gian hoạt ảnh né tầm xa tiêu chuẩn</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Thưởng độ chính xác đánh chặn chất nổ</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Tỷ lệ vô hiệu hóa chất nổ tức thì</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Hệ số</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Hệ số chính xác khi di chuyển</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Giảm hồi chiêu từ giáp được bật</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Giảm hồi chiêu sau khi đỡ đòn thành công</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Hiệu ứng huyết thanh tê liệt cảm xúc</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Hệ số đỡ đòn</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Hệ số né tầm xa</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Hệ số đánh chặn chất nổ</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Đặt lại tất cả</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Hồ sơ</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Xóa hồ sơ</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Thêm hồ sơ</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Đổi tên</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Hồ sơ-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Tên hồ sơ</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Nhập tên hồ sơ.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>Chỉ dùng tối đa {0} ký tự.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Đã có hồ sơ mang tên này.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>Không thể hoàn tất thao tác hồ sơ.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Xác nhận</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>Hủy</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Đặt lại cài đặt vũ khí?</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Đặt lại cài đặt trang phục?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>Xóa “{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>ô</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1} cấp</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1} cấp</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Tìm kiếm</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>Được phép</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Tất cả</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Có</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Không</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>Vũ khí RimKata</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Loại vũ khí</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Cận chiến</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>Tầm xa</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>Giáp và trang phục RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Loại trang phục</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Đồ đội đầu</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Giáp</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Áo ngoài</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>Đồ lót</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Tiện ích</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Khác</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Kết quả đã lọc</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Chọn tất cả</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Bỏ chọn tất cả</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Không có định nghĩa phù hợp.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>Hai tay</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Sử dụng</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Thông tin</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Đặt lại</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Gỡ bỏ hạn chế</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Vũ khí</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Trang phục</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>Phi nhân loại</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>Vũ khí RimKata cho loài phi nhân</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>Trang phục RimKata cho loài phi nhân</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Danh mục</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Mục tiêu gỡ bỏ hạn chế</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Mục tiêu được bật sẽ bỏ qua các yêu cầu truy cập thông thường và dùng hồ sơ đã chọn. Mục tiêu bị tắt vẫn giữ các kiểm tra truy cập thông thường.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Danh mục</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Sử dụng</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Kiểu gen dị chủng</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Mechanoid</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Côn trùng</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Động vật</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Khác</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Tên</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Đã bật</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Đã tắt</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Hồ sơ áp dụng</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Không có mục tiêu phù hợp.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Người cơ bản</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Kiểu gen dị chủng tùy chỉnh</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Kiểu gen dị chủng lai</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>Vũ khí phụ</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Chuyển sang bắn phát đơn</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Tấn công ngẫu nhiên</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Đánh chặn chất nổ</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Bắn khi di chuyển</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Bắn tầm gần</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Xung phong</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>Đỡ đòn</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Né tầm xa</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>Nhào lộn</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Phụ thuộc huyết thanh tê liệt cảm xúc</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Giới hạn ứng viên</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Tầm cận chiến</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Tầm gần</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Tầm trung</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Tầm xa</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Ngoài tầm xa</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Hướng dẫn trực quan</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Hồi chiêu vũ khí tầm xa</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Thời gian ngắm vũ khí cận chiến</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Đường chỉ mục tiêu tấn công tập trung</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Hoạt ảnh</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Tỷ lệ nhào lộn tức thì</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Tỷ lệ xoay kẻ tấn công khi đỡ đòn</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Tỷ lệ đạn lạc sau khi đỡ đòn</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Tỷ lệ mất độ bền vũ khí sau khi đỡ đòn thành công</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Độ bền vũ khí mất đi sau khi đỡ đòn thành công</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Tỷ lệ cướp vũ khí sau khi đỡ đòn tay không thành công</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Chính</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>Phụ</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: đang đánh chặn {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: mục tiêu tiếp theo {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: đang hồi chiêu</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Tấn công</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Không thể trang bị vũ khí phụ khi bị mất một bàn tay.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Đổi</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Đổi (trong chiến đấu)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>Gỡ lỗi RimKata</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Phạm vi tìm kiếm</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Gần (tầm vũ khí)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Trung bình (tầm vũ khí)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Xa (tầm vũ khí)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>Tính hệ số hồi chiêu RimKata:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Hệ số hồi chiêu tầm xa cơ bản: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Hệ số giáp được bật: ×{0} (đã áp dụng)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Hệ số giáp được bật: ×100% (không mặc giáp được bật)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

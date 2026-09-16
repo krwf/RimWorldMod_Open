@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>감정 제거</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>균형</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>감정마비 혈청 의존</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>감정이 날 흔들고 있어. 곤충과 메카노이드와 이상현상 같은 재앙은 더 이상 원하지 않아.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>감정마비 혈청 배척</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>내 사랑과 함께라면</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>

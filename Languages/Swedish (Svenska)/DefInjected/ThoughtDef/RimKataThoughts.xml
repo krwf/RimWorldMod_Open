@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>borttagning av känslor</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Jämvikt</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>beroende av känslobedövande serum</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Mina känslor får mig ur balans. Jag vill inte ha fler katastrofer som insekter, mekanoider eller anomalier.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>avvisande av känslobedövande serum</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>När jag är med min älskade</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+

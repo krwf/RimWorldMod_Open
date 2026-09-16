@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>Предугадывает перестрелки на близкой дистанции и реагирует на них. Позволяет использовать RimKata.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>Носители психологически зависят от сыворотки эмоционального онемения. Без её действия их настроение ухудшается с каждым днём, однако длительные романтические отношения или психическая связь позволяют преодолеть зависимость.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>感情除去</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>均衡</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>感情麻痺血清依存</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>感情が私を揺さぶっている。昆虫やメカノイド、アノマリーのような災厄はもう御免だ。</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>感情麻痺血清の拒絶</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>愛する人と一緒なら</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>

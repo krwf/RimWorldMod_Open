@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>násobiteľ času obnovenia (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Konečný násobiteľ času obnovenia používaný pri bežných útokoch RimKata. Kombinuje vanilla násobiteľ času obnovenia útokov postavy na diaľku s modifikátorom aktuálne oblečeného povoleného brnenia.</RimKata_CooldownMultiplier.description>
+</LanguageData>

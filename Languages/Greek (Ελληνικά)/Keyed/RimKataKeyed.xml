@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Επεξεργασία ενεργών όπλων</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Επεξεργασία ενεργών ενδυμάτων</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>Επιλέχθηκαν {0}</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>Εφαρμογή των επιδράσεων RimKata σε μη εχθρικούς χαρακτήρες</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>Εφαρμογή των επιδράσεων RimKata σε εχθρικούς χαρακτήρες</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Πιθανότητα γονιδίου RimKata-G σε απόκοσμο νεοφερμένο</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Εξάρτηση από ορό συναισθηματικού μουδιάσματος σε απόκοσμο νεοφερμένο</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Πιθανότητα κανενός από τα δύο: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Το σύνολο δεν μπορεί να υπερβαίνει το 100.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Πιθανότητα δευτερεύοντος όπλου σε χαρακτήρα AI</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>Μέγιστη εμβέλεια αυτόματης αναζήτησης στόχου</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Μικρή ({0} κελιά)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Μεσαία ({0} κελιά)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Μεγάλη ({0} κελιά)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Απεριόριστη (εμβέλεια όπλου)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Προσαρμοσμένη</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Ρυθμίσεις προφίλ</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Λειτουργίες μάχης</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Λειτουργίες mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Λειτουργίες ενεργοποίησης</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Εφαρμοσμένη τιμή</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>Ελάχιστο</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Σταθερή τιμή</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Μάχη</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Μπόνους πιθανότητας απόκρουσης</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Πιθανότητα αφοπλισμού κατά την απόκρουση</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Μπόνους πιθανότητας αποφυγής σε μάχη σώμα με σώμα</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Πιθανότητα αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Τυπικός χρόνος κίνησης αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Μπόνους ακρίβειας αναχαίτισης εκρηκτικών</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Πιθανότητα άμεσης εξουδετέρωσης εκρηκτικού</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Τροποποιητές</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Πολλαπλασιαστής ακρίβειας εν κινήσει</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Μείωση χρόνου επαναφοράς από ενεργή πανοπλία</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Μείωση χρόνου επαναφοράς μετά από επιτυχημένη απόκρουση</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Επιδράσεις ορού συναισθηματικού μουδιάσματος</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Πολλαπλασιαστής απόκρουσης</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Πολλαπλασιαστής αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Πολλαπλασιαστής αναχαίτισης εκρηκτικών</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Επαναφορά όλων</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Προφίλ</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Διαγραφή προφίλ</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Προσθήκη προφίλ</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Μετονομασία</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Προφίλ-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Όνομα προφίλ</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Εισαγάγετε όνομα προφίλ.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>Χρησιμοποιήστε έως {0} χαρακτήρες.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Υπάρχει ήδη προφίλ με αυτό το όνομα.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>Δεν ήταν δυνατή η ολοκλήρωση της ενέργειας προφίλ.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Επιβεβαίωση</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>Ακύρωση</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Επαναφορά ρυθμίσεων όπλων;</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Επαναφορά ρυθμίσεων ενδυμάτων;</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>Διαγραφή «{0}»;</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>κελιά</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1} Επ.</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1} Επ.</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Αναζήτηση</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>Επιτρέπεται</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Όλα</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Ναι</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Όχι</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>Όπλα RimKata</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Τύπος όπλου</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Σώμα με σώμα</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>Εξ αποστάσεως</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>Πανοπλία και ενδύματα RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Τύπος ενδύματος</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Καλύμματα κεφαλής</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Πανοπλία</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Εξωτερικά ενδύματα</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>Εσώρουχα</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Βοηθητικός εξοπλισμός</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Άλλο</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Φιλτραρισμένα αποτελέσματα</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Επιλογή όλων</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Αποεπιλογή όλων</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Δεν υπάρχουν ορισμοί που να ταιριάζουν.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>Δίχειρο</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Χρήση</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Πληροφορίες</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Επαναφορά</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Κατάργηση περιορισμών</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Όπλα</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Ενδύματα</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>Μη ανθρώπινα</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>Μη ανθρώπινα όπλα RimKata</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>Μη ανθρώπινα ενδύματα RimKata</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Κατηγορία</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Στόχοι κατάργησης περιορισμών</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Οι ενεργοί στόχοι παρακάμπτουν τις συνήθεις απαιτήσεις πρόσβασης και χρησιμοποιούν το επιλεγμένο προφίλ. Οι ανενεργοί στόχοι διατηρούν τους συνήθεις ελέγχους πρόσβασης.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Κατηγορία</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Χρήση</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Ξενότυποι</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Μηχανοειδή</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Έντομα</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Ζώα</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Άλλο</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Όνομα</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Ενεργό</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Ανενεργό</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Εφαρμοσμένο προφίλ</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Δεν υπάρχουν στόχοι που να ταιριάζουν.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Βασικός άνθρωπος</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Προσαρμοσμένος ξενότυπος</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Υβριδικός ξενότυπος</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>Δευτερεύον όπλο</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Μετατροπή σε μονή βολή</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Τυχαία επίθεση</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Αναχαίτιση εκρηκτικών</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Πυρά εν κινήσει</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Πυρά κοντινής απόστασης</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Έφοδος</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>Απόκρουση</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Αποφυγή επιθέσεων εξ αποστάσεως</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>Κυβίστηση</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Εξάρτηση από ορό συναισθηματικού μουδιάσματος</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Όρια υποψήφιων στόχων</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Εμβέλεια σώμα με σώμα</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Μικρή εμβέλεια</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Μεσαία εμβέλεια</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Μεγάλη εμβέλεια</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Πέρα από τη μεγάλη εμβέλεια</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Οπτική καθοδήγηση</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Χρόνος επαναφοράς όπλου εξ αποστάσεως</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Χρόνος σκόπευσης όπλου σώμα με σώμα</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Γραμμή στόχου εστιασμένης επίθεσης</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Κινήσεις</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Πιθανότητα άμεσης κυβίστησης</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Πιθανότητα περιστροφής του επιτιθέμενου κατά την απόκρουση</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Πιθανότητα αδέσποτης βολής μετά από απόκρουση</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Πιθανότητα απώλειας αντοχής όπλου μετά από επιτυχημένη απόκρουση</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Αντοχή όπλου που χάνεται μετά από επιτυχημένη απόκρουση</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Πιθανότητα αρπαγής όπλου μετά από επιτυχημένη άοπλη απόκρουση</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Κύριο</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>Δευτερεύον</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: αναχαιτίζει {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: επόμενος στόχος {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: σε επαναφορά</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Επίθεση</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Δεν είναι δυνατός ο εξοπλισμός δευτερεύοντος όπλου όταν λείπει ένα χέρι.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Εναλλαγή</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Εναλλαγή (σε μάχη)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>Αποσφαλμάτωση RimKata</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Εμβέλεια αναζήτησης</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Μικρή (εμβέλεια όπλου)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Μεσαία (εμβέλεια όπλου)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Μεγάλη (εμβέλεια όπλου)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>Υπολογισμός πολλαπλασιαστή χρόνου επαναφοράς RimKata:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Βασικός πολλαπλασιαστής χρόνου επαναφοράς όπλου εξ αποστάσεως: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Τροποποιητής ενεργής πανοπλίας: ×{0} (εφαρμόστηκε)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Τροποποιητής ενεργής πανοπλίας: ×100% (δεν φοριέται ενεργή πανοπλία)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

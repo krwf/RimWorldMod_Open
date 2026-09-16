@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>有効な武器を編集</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>有効な衣服を編集</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>{0} 件選択</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>非敵対ポーンに RimKata の効果を適用</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>敵対ポーンに RimKata の効果を適用</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>不気味な加入者の RimKata-G 遺伝子付与率</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>不気味な加入者の感情麻痺血清依存</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>どちらも付与されない確率：{0}。</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>合計は 100 を超えることができません。</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>AI ポーンの副武器所持率</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>自動ターゲットの最大検索範囲</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>短距離（{0} マス）</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>中距離（{0} マス）</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>長距離（{0} マス）</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>無制限（武器の射程）</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>カスタム</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>プロファイル設定</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>戦闘機能</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>MOD 機能</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>有効化機能</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>適用値</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>最小値</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>固定値</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>戦闘</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>パリィ確率ボーナス</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>パリィ時の武装解除率</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>近接回避率ボーナス</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>射撃回避率</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>標準射撃回避アニメーション時間</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>爆発物迎撃の命中率ボーナス</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>爆発物を即座に無力化する確率</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>補正</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>移動時の命中率倍率</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>有効な防具によるクールダウン短縮</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>パリィ成功後のクールダウン短縮</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>感情麻痺血清の効果</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>パリィ倍率</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>射撃回避倍率</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>爆発物迎撃倍率</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>すべてリセット</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>プロファイル</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>プロファイルを削除</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>プロファイルを追加</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>名前を変更</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>プロファイル-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>プロファイル名</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>プロファイル名を入力してください。</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>{0} 文字以内で入力してください。</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>同じ名前のプロファイルがすでに存在します。</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>プロファイル操作を完了できませんでした。\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>確認</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>キャンセル</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>武器設定をリセットしますか？</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>衣服設定をリセットしますか？</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>「{0}」を削除しますか？</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>マス</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1}Lv</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1}Lv</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>検索</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>許可</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>すべて</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>はい</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>いいえ</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>RimKata 武器</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>武器の種類</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>近接</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>射撃</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>RimKata 防具・衣服</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>衣服の種類</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>頭装備</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>防具</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>上着</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>下着</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>ユーティリティ</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>その他</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>絞り込み結果</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>すべて選択</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>すべて解除</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>一致する定義がありません。</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>両手持ち</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>使用</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>情報</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>リセット</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>制限を解除</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>武器</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>衣服</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>人間以外</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>人間以外用 RimKata 武器</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>人間以外用 RimKata 衣服</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>カテゴリ</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>制限解除対象</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>有効な対象は通常の使用条件を無視し、選択したプロファイルを使用します。無効な対象には通常の使用条件が適用されます。</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>カテゴリ</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>使用状況</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>ゼノタイプ</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>メカノイド</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>昆虫</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>動物</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>その他</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>名前</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>有効</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>無効</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>適用プロファイル</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>一致する対象がありません。</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>ベースライナー</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>カスタムゼノタイプ</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>混合ゼノタイプ</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>副武器</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>単発射撃化</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>ランダム攻撃</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>爆発物迎撃</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>移動射撃</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>近距離射撃</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>突撃</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>パリィ</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>射撃回避</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>宙返り</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>感情麻痺血清依存</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>候補制限</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>近接範囲</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>短距離</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>中距離</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>長距離</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>長距離より先</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>視覚ガイド</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>射撃武器のクールダウン</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>近接武器の照準時間</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>集中攻撃のターゲット線</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>アニメーション</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>即時宙返り率</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>パリィ時に攻撃者を回転させる確率</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>パリィ後の流れ弾発生率</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>パリィ成功後に武器の耐久度が低下する確率</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>パリィ成功後に失われる武器耐久度</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>素手でのパリィ成功後に武器を奪う確率</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>主武器</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>副武器</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}：{1} を迎撃中</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}：次のターゲット {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}：クールダウン中</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>攻撃</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>手が欠損しているため副武器を装備できません。</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>切り替え</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>切り替え（戦闘中）</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>RimKata デバッグ</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>検索範囲</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>短距離（武器の射程）</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>中距離（武器の射程）</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>長距離（武器の射程）</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>RimKata クールダウン倍率の計算：</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>基本射撃クールダウン倍率：{0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>有効な防具の補正：×{0}（適用済み）</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>有効な防具の補正：×100%（有効な防具を未着用）</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

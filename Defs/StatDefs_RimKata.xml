@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <StatDef>
+    <defName>RimKata_CooldownMultiplier</defName>
+    <label>cooldown multiplier (RimKata)</label>
+    <description>The final cooldown multiplier used for normal RimKata attacks. This combines the pawn's vanilla ranged cooldown multiplier with the modifier from currently worn enabled armor.</description>
+    <category>PawnCombat</category>
+    <workerClass>KRWF.RimKata.StatWorker_RimKataCooldownMultiplier</workerClass>
+    <toStringStyle>PercentZero</toStringStyle>
+    <defaultBaseValue>1</defaultBaseValue>
+    <minValue>0</minValue>
+    <forInformationOnly>true</forInformationOnly>
+    <showOnPawns>true</showOnPawns>
+    <showIfUndefined>true</showIfUndefined>
+    <showOnDefaultValue>true</showOnDefaultValue>
+    <displayPriorityInCategory>1206</displayPriorityInCategory>
+  </StatDef>
+</Defs>

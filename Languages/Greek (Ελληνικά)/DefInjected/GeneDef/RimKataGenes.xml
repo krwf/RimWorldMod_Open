@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>Προβλέπει και αντιμετωπίζει μάχες με πυροβόλα όπλα σε κοντινή απόσταση. Επιτρέπει τη χρήση του RimKata.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>Οι φορείς εξαρτώνται ψυχολογικά από τον ορό συναισθηματικού μουδιάσματος. Χωρίς την επίδρασή του, η διάθεσή τους χειροτερεύει μέρα με τη μέρα, εκτός αν μια σταθερή ρομαντική σχέση ή ένας ψυχικός δεσμός τούς βοηθήσει να ξεπεράσουν την εξάρτηση.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

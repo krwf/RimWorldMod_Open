@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <RulePackDef>
+    <defName>RimKata_ParryBattleLog</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_logentry->[SUBJECT_nameDef] parried [INITIATOR_nameDef]'s attack.</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+</Defs>

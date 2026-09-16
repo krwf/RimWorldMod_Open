@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>bekleme süresi çarpanı (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Normal RimKata saldırılarında kullanılan son bekleme süresi çarpanı. Piyonun vanilla menzilli saldırı bekleme süresi çarpanını kuşanılmış etkin zırhın değiştiricisiyle birleştirir.</RimKata_CooldownMultiplier.description>
+</LanguageData>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>érzelmek eltávolítása</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Egyensúly</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>érzelemcsillapító szérumfüggőség</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Az érzelmeim megráznak. Nem akarok több olyan katasztrófát, mint a rovarok, a mechanoidok vagy az anomáliák.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>az érzelemcsillapító szérum elutasítása</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Ha a szerelmemmel vagyok</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>multiplicateur de délai de récupération (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Le multiplicateur final de délai de récupération utilisé pour les attaques RimKata normales. Il combine le multiplicateur vanilla de délai de récupération à distance du pion avec le modificateur de l'armure autorisée actuellement portée.</RimKata_CooldownMultiplier.description>
+</LanguageData>

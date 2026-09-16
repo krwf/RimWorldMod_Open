@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>RimKata_Attack</defName>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataAttack</driverClass>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <casualInterruptible>false</casualInterruptible>
+    <collideWithPawns>true</collideWithPawns>
+    <tryStartFlying>true</tryStartFlying>
+    <overrideFlyChance>1</overrideFlyChance>
+  </JobDef>
+  <JobDef>
+    <defName>RimKata_EquipSecondary</defName>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataEquipSecondary</driverClass>
+    <reportString>equipping TargetA as a RimKata secondary weapon.</reportString>
+    <casualInterruptible>false</casualInterruptible>
+  </JobDef>
+</Defs>

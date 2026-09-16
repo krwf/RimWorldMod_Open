@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>fjerning av følelser</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Likevekt</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>avhengighet av følelsesdempende serum</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Følelsene mine bringer meg ut av balanse. Jeg vil ikke ha flere katastrofer som insekter, mekanoider eller anomalier.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>avvisning av følelsesdempende serum</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Når jeg er sammen med min elskede</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+

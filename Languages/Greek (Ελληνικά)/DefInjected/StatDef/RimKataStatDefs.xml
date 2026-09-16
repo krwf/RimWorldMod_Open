@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>πολλαπλασιαστής χρόνου επαναφοράς (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Ο τελικός πολλαπλασιαστής χρόνου επαναφοράς για τις κανονικές επιθέσεις RimKata. Συνδυάζει τον βασικό πολλαπλασιαστή χρόνου επαναφοράς όπλου εξ αποστάσεως του χαρακτήρα με τον τροποποιητή από την ενεργή πανοπλία που φορά.</RimKata_CooldownMultiplier.description>
+</LanguageData>

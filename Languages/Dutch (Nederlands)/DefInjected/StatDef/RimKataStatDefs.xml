@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>afkoeltijdmultiplier (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>De uiteindelijke afkoeltijdmultiplier voor normale RimKata-aanvallen. Deze combineert de vanilla-afkoeltijdmultiplier voor afstandsaanvallen van de pion met de aanpassing door het momenteel gedragen ingeschakelde pantser.</RimKata_CooldownMultiplier.description>
+</LanguageData>

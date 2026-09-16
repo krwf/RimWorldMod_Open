@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>множник перезарядження (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Підсумковий множник перезарядження звичайних атак RimKata. Він поєднує базовий множник перезарядження дальнобійної зброї пішака з модифікатором від одягненої дозволеної броні.</RimKata_CooldownMultiplier.description>
+</LanguageData>

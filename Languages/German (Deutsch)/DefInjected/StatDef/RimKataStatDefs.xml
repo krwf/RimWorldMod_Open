@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>Abklingzeitmultiplikator (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Der endgültige Abklingzeitmultiplikator für normale RimKata-Angriffe. Er kombiniert den Vanilla-Fernkampfabklingzeitmultiplikator der Figur mit dem Modifikator der aktuell getragenen aktivierten Rüstung.</RimKata_CooldownMultiplier.description>
+</LanguageData>

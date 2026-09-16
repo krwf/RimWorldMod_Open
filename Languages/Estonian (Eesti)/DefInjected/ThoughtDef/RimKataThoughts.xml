@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>emotsioonide eemaldamine</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Tasakaal</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>sõltuvus emotsioone tuimestavast seerumist</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Mu emotsioonid kõigutavad mind. Ma ei taha enam katastroofe, nagu putukad, mehanoidid või anomaaliad.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>emotsioone tuimestava seerumi tõrjumine</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Kui olen koos oma armastatuga</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+

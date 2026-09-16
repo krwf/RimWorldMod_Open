@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Etkin silahları düzenle</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Etkin giysileri düzenle</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>{0} seçili</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>RimKata etkilerini düşman olmayan piyonlara uygula</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>RimKata etkilerini düşman piyonlara uygula</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Creepjoiner RimKata-G geni olasılığı</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Creepjoiner zihin uyuşturan serum bağımlılığı</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Hiçbiri için olasılık: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Toplam 100'ü aşamaz.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Yapay zekâ piyonu ikincil silah olasılığı</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>En yüksek otomatik hedef arama menzili</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Kısa ({0} kare)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Orta ({0} kare)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Uzun ({0} kare)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Sınırsız (silah menzili)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Özel</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Profil ayarları</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Çatışma özellikleri</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Mod özellikleri</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Etkinleştirme özellikleri</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Uygulanan değer</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>En az</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Sabit değer</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Çatışma</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Savuşturma şansı bonusu</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Savuşturmada silahsızlandırma şansı</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Yakın dövüşten kaçınma şansı bonusu</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Menzilli saldırıdan kaçınma şansı</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Standart menzilli saldırıdan kaçınma animasyonu süresi</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Patlayıcı önleme isabet bonusu</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Patlayıcıyı anında etkisizleştirme şansı</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Değiştiriciler</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Hareket hâlinde isabet çarpanı</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Etkin zırh bekleme süresi azaltımı</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Başarılı savuşturma sonrası bekleme süresi azaltımı</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Zihin uyuşturan serum etkileri</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Savuşturma çarpanı</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Menzilli saldırıdan kaçınma çarpanı</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Patlayıcı önleme çarpanı</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Tümünü sıfırla</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Profili sil</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Profil ekle</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Yeniden adlandır</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Profil-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Profil adı</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Bir profil adı girin.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>En fazla {0} karakter kullanın.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Bu adda bir profil zaten var.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>Profil işlemi tamamlanamadı.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Onayla</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>İptal</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Silah ayarları sıfırlansın mı?</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Giysi ayarları sıfırlansın mı?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>'{0}' silinsin mi?</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>kare</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1}Sv</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1}Sv</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Ara</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>İzinli</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Tümü</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Evet</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Hayır</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>RimKata silahları</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Silah türü</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Yakın dövüş</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>Menzilli</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>RimKata zırh ve giysileri</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Giysi türü</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Başlık</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Zırh</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Dış giyim</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>İç giyim</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Yardımcı</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Diğer</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Filtrelenmiş sonuçlar</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Tümünü seç</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Tüm seçimleri kaldır</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Eşleşen tanım yok.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>İki elli</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Kullan</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Bilgi</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Sıfırla</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Kısıtlamaları kaldır</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Silahlar</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Giysiler</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>İnsan dışı</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>İnsan dışı RimKata silahları</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>İnsan dışı RimKata giysileri</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Kategori</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Kısıtlamaları kaldırılacak hedefler</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Etkin hedefler normal erişim gereksinimlerini atlayarak seçili profili kullanır. Devre dışı hedefler normal erişim denetimlerini korur.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Kategori</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Kullanım</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Ksenotipler</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Mekanoidler</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Böcekler</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Hayvanlar</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Diğer</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Ad</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Etkin</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Devre dışı</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Uygulanan profil</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Eşleşen hedef yok.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Temel insan</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Özel ksenotip</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Melez ksenotip</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>İkincil silah</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Tek atışa dönüştürme</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Rastgele saldırı</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Patlayıcı önleme</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Hareket hâlinde ateş</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Yakın mesafeden ateş</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Hücum</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>Savuşturma</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Menzilli saldırıdan kaçınma</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>Takla</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Zihin uyuşturan serum bağımlılığı</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Aday sınırları</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Yakın dövüş menzili</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Kısa menzil</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Orta menzil</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Uzun menzil</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Uzun menzilin ötesi</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Görsel kılavuz</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Menzilli silah bekleme süresi</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Yakın dövüş silahı nişan alma süresi</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Odaklanmış saldırı hedef çizgisi</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Animasyonlar</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Anında takla şansı</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Savuşturmada saldırganı döndürme şansı</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Savuşturma sonrası başıboş atış şansı</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Başarılı savuşturma sonrası silah dayanıklılığı kaybı şansı</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Başarılı savuşturma sonrası silah dayanıklılığı kaybı</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Başarılı silahsız savuşturma sonrası silahı çalma şansı</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Birincil</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>İkincil</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: {1} hedefini önlüyor</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: sonraki hedef {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: bekleme süresinde</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Saldır</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Eksik bir elle ikincil silah kuşanılamaz.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Değiştir</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Değiştir (çatışmada)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>RimKata hata ayıklama</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Arama menzili</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Kısa (silah menzili)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Orta (silah menzili)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Uzun (silah menzili)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>RimKata bekleme süresi çarpanı hesabı:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Temel menzilli saldırı bekleme süresi çarpanı: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Etkin zırh değiştiricisi: ×{0} (uygulandı)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Etkin zırh değiştiricisi: ×100% (etkin zırh kuşanılmamış)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

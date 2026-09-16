@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>tunteiden poisto</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Tasapaino</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>riippuvuus tunteita turruttavasta seerumista</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Tunteeni horjuttavat minua. En halua enää hyönteisten, mekanoidien tai anomalioiden kaltaisia katastrofeja.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>tunteita turruttavan seerumin torjunta</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Kun olen rakkaani kanssa</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+

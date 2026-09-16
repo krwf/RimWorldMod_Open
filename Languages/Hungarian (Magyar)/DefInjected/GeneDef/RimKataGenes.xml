@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>Előre jelzi a közelről vívott tűzharcokat, és reagál rájuk. Lehetővé teszi a RimKata használatát.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>A hordozók pszichológiailag függővé válnak az érzelemcsillapító szérumtól. Hatása nélkül hangulatuk napról napra romlik, hacsak egy tartós romantikus kapcsolat vagy pszichikai kötelék nem segít nekik leküzdeni a függőséget.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

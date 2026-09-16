@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Ingeschakelde wapens bewerken</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Ingeschakelde kleding bewerken</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>{0} geselecteerd</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>RimKata-effecten toepassen op niet-vijandige pionnen</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>RimKata-effecten toepassen op vijandige pionnen</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Kans op RimKata-G-gen bij Creepjoiners</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Kans op afhankelijkheid van gevoelsverdovend serum bij Creepjoiners</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Kans op geen van beide: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Het totaal mag niet hoger zijn dan 100.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Kans op een secundair wapen voor AI-pionnen</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>Maximaal zoekbereik voor automatische doelen</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Kort ({0} vakken)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Gemiddeld ({0} vakken)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Lang ({0} vakken)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Onbeperkt (wapenbereik)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Aangepast</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Profielinstellingen</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Gevechtsfuncties</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Modfuncties</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Activeringsfuncties</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Toegepaste waarde</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>Minimum</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Vaste waarde</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Gevecht</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Bonus op pareerkans</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Kans om te ontwapenen bij pareren</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Bonus op ontwijkkans in man-tegen-mangevechten</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Ontwijkkans tegen afstandsaanvallen</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Standaardduur van de ontwijkanimatie tegen afstandsaanvallen</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Nauwkeurigheidsbonus bij het onderscheppen van explosieven</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Kans om explosieven onmiddellijk te neutraliseren</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Aanpassingen</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Nauwkeurigheidsfactor tijdens bewegen</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Kortere afkoeltijd door ingeschakeld pantser</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Kortere afkoeltijd na succesvol pareren</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Effecten van gevoelsverdovend serum</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Pareermultiplier</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Multiplier voor ontwijken van afstandsaanvallen</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplier voor het onderscheppen van explosieven</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Alles herstellen</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Profiel</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Profiel verwijderen</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Profiel toevoegen</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Naam wijzigen</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Profiel-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Profielnaam</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Voer een profielnaam in.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>Gebruik niet meer dan {0} tekens.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Er bestaat al een profiel met deze naam.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>De profielbewerking kon niet worden voltooid.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Bevestigen</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>Annuleren</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Wapeninstellingen herstellen?</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Kledinginstellingen herstellen?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>'{0}' verwijderen?</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>vakken</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1} niv.</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1} niv.</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Zoeken</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>Toegestaan</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Alles</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Ja</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Nee</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>RimKata-wapens</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Wapentype</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Man-tegen-man</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>Afstand</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>RimKata-pantser en -kleding</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Kledingtype</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Hoofdbedekking</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Pantser</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Bovenkleding</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>Onderkleding</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Hulpmiddel</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Overig</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Gefilterde resultaten</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Alles selecteren</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Alles deselecteren</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Geen overeenkomende definities.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>Tweehandig</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Gebruiken</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Info</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Herstellen</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Beperkingen opheffen</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Wapens</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Kleding</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>Niet-menselijk</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>RimKata-wapens voor niet-mensen</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>RimKata-kleding voor niet-mensen</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Categorie</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Doelen voor het opheffen van beperkingen</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Ingeschakelde doelen omzeilen de gebruikelijke toegangsvereisten en gebruiken het geselecteerde profiel. Uitgeschakelde doelen behouden hun gebruikelijke toegangscontroles.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Categorie</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Gebruik</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Xenotypen</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Mechanoïden</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Insecten</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Dieren</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Overig</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Naam</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Ingeschakeld</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Uitgeschakeld</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Toegepast profiel</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Geen overeenkomende doelen.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Baseliner</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Aangepast xenotype</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Hybride xenotype</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>Secundair wapen</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Omzetten naar enkel schot</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Willekeurige aanval</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Explosieven onderscheppen</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Vuren tijdens bewegen</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Vuren van dichtbij</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Bestorming</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>Pareren</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Afstandsaanval ontwijken</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>Salto</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Afhankelijkheid van gevoelsverdovend serum</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Kandidaatlimieten</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Man-tegen-manbereik</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Kort bereik</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Gemiddeld bereik</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Lang bereik</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Voorbij lang bereik</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Visuele begeleiding</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Afkoeltijd van afstandswapen</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Richttijd van man-tegen-manwapen</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Doellijn voor gerichte aanval</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Animaties</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Kans op onmiddellijke salto</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Kans om de aanvaller te laten draaien bij pareren</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Kans op een verdwaald schot na pareren</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Kans op verlies van wapenduurzaamheid na succesvol pareren</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Verlies van wapenduurzaamheid na succesvol pareren</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Kans om het wapen te stelen na succesvol ongewapend pareren</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Primair</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>Secundair</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: onderschept {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: volgend doel {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: koelt af</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Aanvallen</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Kan geen secundair wapen uitrusten zonder hand.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Wisselen</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Wisselen (in gevecht)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>RimKata-debug</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Zoekbereik</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Kort (wapenbereik)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Gemiddeld (wapenbereik)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Lang (wapenbereik)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>Berekening van de RimKata-afkoeltijdmultiplier:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Basismultiplier voor de afkoeltijd van afstandsaanvallen: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Aanpassing door ingeschakeld pantser: ×{0} (toegepast)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Aanpassing door ingeschakeld pantser: ×100% (geen ingeschakeld pantser gedragen)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

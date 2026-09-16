@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_G.label>RimKata-G</RimKata_G.label>
+  <RimKata_G.labelShortAdj>RimKata-G</RimKata_G.labelShortAdj>
+  <RimKata_G.description>Dự đoán và ứng phó với các cuộc đấu súng tầm gần. Cho phép sử dụng RimKata.</RimKata_G.description>
+  <ChemicalDependency_MindNumbSerum.description>Người mang gen phụ thuộc về mặt tâm lý vào huyết thanh tê liệt cảm xúc. Khi không có tác dụng của huyết thanh, tâm trạng của họ xấu đi từng ngày, trừ khi một mối tình bền lâu hoặc liên kết tâm linh giúp họ vượt qua sự phụ thuộc.</ChemicalDependency_MindNumbSerum.description>
+</LanguageData>

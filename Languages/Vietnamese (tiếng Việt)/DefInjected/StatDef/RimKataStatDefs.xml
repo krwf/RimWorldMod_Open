@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>hệ số hồi chiêu (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Hệ số hồi chiêu cuối cùng dùng cho các đòn tấn công RimKata thông thường. Hệ số này kết hợp hệ số hồi chiêu tầm xa gốc của nhân vật với hệ số từ giáp được bật đang mặc.</RimKata_CooldownMultiplier.description>
+</LanguageData>

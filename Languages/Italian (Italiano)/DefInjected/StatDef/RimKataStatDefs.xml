@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>moltiplicatore del recupero (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>Il moltiplicatore finale del recupero usato per i normali attacchi RimKata. Combina il moltiplicatore vanilla del recupero a distanza del pedone con il modificatore dell'armatura abilitata attualmente indossata.</RimKata_CooldownMultiplier.description>
+</LanguageData>

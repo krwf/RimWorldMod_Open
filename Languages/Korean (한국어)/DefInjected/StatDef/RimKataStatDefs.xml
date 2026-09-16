@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>재사용 대기시간 배율 (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>일반 RimKata 공격에 적용되는 최종 재사용 대기시간 배율입니다. 림의 바닐라 원거리 재사용 대기시간 배율에 현재 착용한 허용 방어구의 보정을 적용합니다.</RimKata_CooldownMultiplier.description>
+</LanguageData>

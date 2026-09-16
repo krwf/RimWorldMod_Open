@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>冷却倍率 (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>普通 RimKata 攻击所使用的最终冷却倍率。它将角色的原版远程冷却倍率与当前穿戴的已启用护甲修正相结合。</RimKata_CooldownMultiplier.description>
+</LanguageData>

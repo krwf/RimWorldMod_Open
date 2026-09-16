@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- This role is intentionally independent from memes and carries no work,
+       apparel, weapon, aura, or granted-ability restrictions. -->
+  <PreceptDef ParentName="PreceptRoleMultiBase" MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>RimKata_I</defName>
+    <label>RimKata-I</label>
+    <description>A combat status that grants access to RimKata and specializes its holder in fast, precise gunplay.</description>
+    <iconPath>RimKata_main</iconPath>
+    <nameMaker>RimKata_I_NameMaker</nameMaker>
+    <comps Inherit="False" />
+    <roleApparelRequirements Inherit="False" />
+    <roleApparelRequirementCountCurve Inherit="False">
+      <points>
+        <li>(0, 0)</li>
+        <li>(1, 0)</li>
+      </points>
+    </roleApparelRequirementCountCurve>
+    <roleRequiredWorkTags />
+    <roleDisabledWorkTags />
+    <roleTags />
+    <grantedAbilities />
+    <roleEffects>
+      <li Class="RoleEffect_PawnStatOffset">
+        <statDef>ShootingAccuracyPawn</statDef>
+        <modifier>7</modifier>
+      </li>
+      <li Class="RoleEffect_PawnStatOffset">
+        <statDef>AimingDelayFactor</statDef>
+        <modifier>-0.5</modifier>
+      </li>
+    </roleEffects>
+    <displayOrderInImpact>2</displayOrderInImpact>
+  </PreceptDef>
+
+  <RulePackDef MayRequire="Ludeon.RimWorld.Ideology">
+    <defName>RimKata_I_NameMaker</defName>
+    <rulePack>
+      <rulesStrings>
+        <li>r_roleName->RimKata-I</li>
+      </rulesStrings>
+    </rulePack>
+  </RulePackDef>
+</Defs>

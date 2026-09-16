@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>loại bỏ cảm xúc</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Cân bằng</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>phụ thuộc huyết thanh tê liệt cảm xúc</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Cảm xúc đang làm tôi dao động. Tôi không muốn thêm những thảm họa như côn trùng, mechanoid hay dị thường nữa.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>khước từ huyết thanh tê liệt cảm xúc</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Khi tôi ở bên người mình yêu</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>

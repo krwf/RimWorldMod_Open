@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <KRWF_RimKata_SettingsCategory>RimKata</KRWF_RimKata_SettingsCategory>
+  <KRWF_RimKata_EditWeapons>Rediger aktiverede våben</KRWF_RimKata_EditWeapons>
+  <KRWF_RimKata_EditArmor>Rediger aktiveret beklædning</KRWF_RimKata_EditArmor>
+  <KRWF_RimKata_SelectedCount>{0} valgt</KRWF_RimKata_SelectedCount>
+  <KRWF_RimKata_EnableFriendlyPawnEffects>Anvend RimKata-effekter på ikke-fjendtlige figurer</KRWF_RimKata_EnableFriendlyPawnEffects>
+  <KRWF_RimKata_EnableHostilePawnEffects>Anvend RimKata-effekter på fjendtlige figurer</KRWF_RimKata_EnableHostilePawnEffects>
+
+  <KRWF_RimKata_CreepJoinerRimKataGeneChance>Chance for RimKata-G-gen hos Creepjoinere</KRWF_RimKata_CreepJoinerRimKataGeneChance>
+  <KRWF_RimKata_CreepJoinerDependencyGeneChance>Chance for afhængighed af følelsesdæmpende serum hos Creepjoinere</KRWF_RimKata_CreepJoinerDependencyGeneChance>
+  <KRWF_RimKata_CreepJoinerNoGeneChance>Chance for ingen af delene: {0}.</KRWF_RimKata_CreepJoinerNoGeneChance>
+  <KRWF_RimKata_CreepJoinerGeneChanceLimit>Det samlede tal må ikke overstige 100.</KRWF_RimKata_CreepJoinerGeneChanceLimit>
+  <KRWF_RimKata_AiSecondaryWeaponChance>Chance for sekundært våben til AI-figurer</KRWF_RimKata_AiSecondaryWeaponChance>
+
+  <KRWF_RimKata_MaximumCandidateRange>Maksimal søgerækkevidde for automatiske mål</KRWF_RimKata_MaximumCandidateRange>
+  <KRWF_RimKata_RangePresetShort>Kort ({0} felter)</KRWF_RimKata_RangePresetShort>
+  <KRWF_RimKata_RangePresetMedium>Mellem ({0} felter)</KRWF_RimKata_RangePresetMedium>
+  <KRWF_RimKata_RangePresetLong>Lang ({0} felter)</KRWF_RimKata_RangePresetLong>
+  <KRWF_RimKata_RangePresetUnlimited>Ubegrænset (våbnets rækkevidde)</KRWF_RimKata_RangePresetUnlimited>
+  <KRWF_RimKata_RangePresetCustom>Brugerdefineret</KRWF_RimKata_RangePresetCustom>
+
+  <KRWF_RimKata_ProfileSettingsHeader>Profilindstillinger</KRWF_RimKata_ProfileSettingsHeader>
+  <KRWF_RimKata_CombatFeatures>Kampfunktioner</KRWF_RimKata_CombatFeatures>
+  <KRWF_RimKata_ModFeatures>Modfunktioner</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_ActivationFeatures>Aktiveringsfunktioner</KRWF_RimKata_ActivationFeatures>
+
+  <KRWF_RimKata_AppliedValue>Anvendt værdi</KRWF_RimKata_AppliedValue>
+  <KRWF_RimKata_Minimum>Minimum</KRWF_RimKata_Minimum>
+  <KRWF_RimKata_Fixed>Fast værdi</KRWF_RimKata_Fixed>
+
+  <KRWF_RimKata_ChanceHeader>Kamp</KRWF_RimKata_ChanceHeader>
+  <KRWF_RimKata_MeleeResponseChance>Bonus til pareringschance</KRWF_RimKata_MeleeResponseChance>
+  <KRWF_RimKata_ResponseDisarmChance>Chance for afvæbning ved parering</KRWF_RimKata_ResponseDisarmChance>
+  <KRWF_RimKata_MeleeDodgeChance>Bonus til undvigelseschance i nærkamp</KRWF_RimKata_MeleeDodgeChance>
+  <KRWF_RimKata_RangedDodgeChance>Chance for at undvige afstandsangreb</KRWF_RimKata_RangedDodgeChance>
+  <KRWF_RimKata_RangedDodgeDuration>Standardtid for animation ved undvigelse af afstandsangreb</KRWF_RimKata_RangedDodgeDuration>
+  <KRWF_RimKata_InterceptionChance>Præcisionsbonus ved opfangning af eksplosiver</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Chance for øjeblikkelig neutralisering af eksplosiver</KRWF_RimKata_InterceptionCriticalChance>
+
+  <KRWF_RimKata_TimingHeader>Modifikatorer</KRWF_RimKata_TimingHeader>
+  <KRWF_RimKata_MovingAccuracyMultiplier>Præcisionsmultiplikator under bevægelse</KRWF_RimKata_MovingAccuracyMultiplier>
+  <KRWF_RimKata_ArmorCooldownReduction>Kortere nedkølingstid med aktiveret rustning</KRWF_RimKata_ArmorCooldownReduction>
+  <KRWF_RimKata_ResponseCooldownReduction>Kortere nedkølingstid efter vellykket parering</KRWF_RimKata_ResponseCooldownReduction>
+
+  <KRWF_RimKata_SerumHeader>Effekter af følelsesdæmpende serum</KRWF_RimKata_SerumHeader>
+  <KRWF_RimKata_SerumResponseMultiplier>Pareringsmultiplikator</KRWF_RimKata_SerumResponseMultiplier>
+  <KRWF_RimKata_SerumDodgeMultiplier>Multiplikator for undvigelse af afstandsangreb</KRWF_RimKata_SerumDodgeMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplikator for opfangning af eksplosiver</KRWF_RimKata_SerumInterceptionMultiplier>
+
+  <KRWF_RimKata_ResetSettings>Nulstil alt</KRWF_RimKata_ResetSettings>
+  <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>
+  <KRWF_RimKata_ProfileDelete>Slet profil</KRWF_RimKata_ProfileDelete>
+  <KRWF_RimKata_ProfileAdd>Tilføj profil</KRWF_RimKata_ProfileAdd>
+  <KRWF_RimKata_ProfileRename>Omdøb</KRWF_RimKata_ProfileRename>
+  <KRWF_RimKata_ProfileDefaultName>Profil-{0}</KRWF_RimKata_ProfileDefaultName>
+  <KRWF_RimKata_ProfileName>Profilnavn</KRWF_RimKata_ProfileName>
+  <KRWF_RimKata_ProfileNameBlank>Indtast et profilnavn.</KRWF_RimKata_ProfileNameBlank>
+  <KRWF_RimKata_ProfileNameTooLong>Brug højst {0} tegn.</KRWF_RimKata_ProfileNameTooLong>
+  <KRWF_RimKata_ProfileNameDuplicate>Der findes allerede en profil med dette navn.</KRWF_RimKata_ProfileNameDuplicate>
+  <KRWF_RimKata_ProfileOperationFailed>Profilhandlingen kunne ikke gennemføres.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_ProfileConfirm>Bekræft</KRWF_RimKata_ProfileConfirm>
+  <KRWF_RimKata_ProfileCancel>Annuller</KRWF_RimKata_ProfileCancel>
+  <KRWF_RimKata_ResetWeaponConfirmation>Nulstil våbenindstillinger?</KRWF_RimKata_ResetWeaponConfirmation>
+  <KRWF_RimKata_ResetApparelConfirmation>Nulstil beklædningsindstillinger?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_ResetSectionConfirmation>Nulstil '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
+  <KRWF_RimKata_ResetProfileConfirmation>Nulstil '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
+  <KRWF_RimKata_DeleteProfileConfirmation>Slet '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
+
+  <KRWF_RimKata_CellUnit>felter</KRWF_RimKata_CellUnit>
+  <KRWF_RimKata_GrowthLabel>{0} ×{1} niv.</KRWF_RimKata_GrowthLabel>
+  <KRWF_RimKata_DurationGrowthLabel>{0} ×-{1} niv.</KRWF_RimKata_DurationGrowthLabel>
+
+  <KRWF_RimKata_Search>Søg</KRWF_RimKata_Search>
+  <KRWF_RimKata_AllowedStateFilter>Tilladt</KRWF_RimKata_AllowedStateFilter>
+  <KRWF_RimKata_FilterAll>Alle</KRWF_RimKata_FilterAll>
+  <KRWF_RimKata_AllowedYes>Ja</KRWF_RimKata_AllowedYes>
+  <KRWF_RimKata_AllowedNo>Nej</KRWF_RimKata_AllowedNo>
+
+  <KRWF_RimKata_WeaponDialogTitle>RimKata-våben</KRWF_RimKata_WeaponDialogTitle>
+  <KRWF_RimKata_WeaponKindFilter>Våbentype</KRWF_RimKata_WeaponKindFilter>
+  <KRWF_RimKata_WeaponKindMelee>Nærkamp</KRWF_RimKata_WeaponKindMelee>
+  <KRWF_RimKata_WeaponKindRanged>Afstand</KRWF_RimKata_WeaponKindRanged>
+
+  <KRWF_RimKata_ArmorDialogTitle>RimKata-rustning og -beklædning</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelKindFilter>Beklædningstype</KRWF_RimKata_ApparelKindFilter>
+  <KRWF_RimKata_ApparelKindHeadgear>Hovedbeklædning</KRWF_RimKata_ApparelKindHeadgear>
+  <KRWF_RimKata_ApparelKindArmor>Rustning</KRWF_RimKata_ApparelKindArmor>
+  <KRWF_RimKata_ApparelKindOuterwear>Overtøj</KRWF_RimKata_ApparelKindOuterwear>
+  <KRWF_RimKata_ApparelKindUnderwear>Undertøj</KRWF_RimKata_ApparelKindUnderwear>
+  <KRWF_RimKata_ApparelKindUtility>Udstyr</KRWF_RimKata_ApparelKindUtility>
+  <KRWF_RimKata_ApparelKindOther>Andet</KRWF_RimKata_ApparelKindOther>
+
+  <KRWF_RimKata_FilteredResults>Filtrerede resultater</KRWF_RimKata_FilteredResults>
+  <KRWF_RimKata_SelectFiltered>Vælg alle</KRWF_RimKata_SelectFiltered>
+  <KRWF_RimKata_ClearFiltered>Fravælg alle</KRWF_RimKata_ClearFiltered>
+  <KRWF_RimKata_NoMatchingDefs>Ingen matchende definitioner.</KRWF_RimKata_NoMatchingDefs>
+  <KRWF_RimKata_TwoHandedWeapon>Tohåndet</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_EquipmentAllowed>Brug</KRWF_RimKata_EquipmentAllowed>
+  <KRWF_RimKata_EquipmentInfo>Info</KRWF_RimKata_EquipmentInfo>
+
+  <KRWF_RimKata_ResetSection>Nulstil</KRWF_RimKata_ResetSection>
+
+  <KRWF_RimKata_RemoveRestrictions>Fjern begrænsninger</KRWF_RimKata_RemoveRestrictions>
+  <KRWF_RimKata_WeaponButton>Våben</KRWF_RimKata_WeaponButton>
+  <KRWF_RimKata_ApparelButton>Beklædning</KRWF_RimKata_ApparelButton>
+  <KRWF_RimKata_NonHumanEquipmentLabel>Ikke-menneskelig</KRWF_RimKata_NonHumanEquipmentLabel>
+  <KRWF_RimKata_NonHumanWeaponDialogTitle>RimKata-våben til ikke-mennesker</KRWF_RimKata_NonHumanWeaponDialogTitle>
+  <KRWF_RimKata_NonHumanArmorDialogTitle>RimKata-beklædning til ikke-mennesker</KRWF_RimKata_NonHumanArmorDialogTitle>
+  <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Kategori</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
+  <KRWF_RimKata_TargetDialogTitle>Mål for fjernelse af begrænsninger</KRWF_RimKata_TargetDialogTitle>
+  <KRWF_RimKata_TargetDialogDescription>Aktiverede mål omgår de normale adgangskrav og bruger den valgte profil. Deaktiverede mål beholder deres normale adgangskontroller.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetCategoryFilter>Kategori</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetUsageFilter>Brug</KRWF_RimKata_TargetUsageFilter>
+  <KRWF_RimKata_TargetHumanlike>Xenotyper</KRWF_RimKata_TargetHumanlike>
+  <KRWF_RimKata_TargetMechanoid>Mekanoider</KRWF_RimKata_TargetMechanoid>
+  <KRWF_RimKata_TargetInsect>Insekter</KRWF_RimKata_TargetInsect>
+  <KRWF_RimKata_TargetAnimal>Dyr</KRWF_RimKata_TargetAnimal>
+  <KRWF_RimKata_TargetOther>Andet</KRWF_RimKata_TargetOther>
+  <KRWF_RimKata_TargetName>Navn</KRWF_RimKata_TargetName>
+  <KRWF_RimKata_TargetEnabled>Aktiveret</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetDisabled>Deaktiveret</KRWF_RimKata_TargetDisabled>
+  <KRWF_RimKata_TargetProfile>Anvendt profil</KRWF_RimKata_TargetProfile>
+  <KRWF_RimKata_NoMatchingTargets>Ingen matchende mål.</KRWF_RimKata_NoMatchingTargets>
+  <KRWF_RimKata_TargetBaseliner>Baseliner</KRWF_RimKata_TargetBaseliner>
+  <KRWF_RimKata_TargetCustomXenotype>Brugerdefineret xenotype</KRWF_RimKata_TargetCustomXenotype>
+  <KRWF_RimKata_TargetHybridXenotype>Hybrid xenotype</KRWF_RimKata_TargetHybridXenotype>
+
+  <KRWF_RimKata_FeatureSecondaryWeapon>Sekundært våben</KRWF_RimKata_FeatureSecondaryWeapon>
+  <KRWF_RimKata_FeatureSingleShotConversion>Konvertering til enkeltskud</KRWF_RimKata_FeatureSingleShotConversion>
+  <KRWF_RimKata_FeatureRandomAttack>Tilfældigt angreb</KRWF_RimKata_FeatureRandomAttack>
+  <KRWF_RimKata_FeatureExplosiveInterception>Opfangning af eksplosiver</KRWF_RimKata_FeatureExplosiveInterception>
+  <KRWF_RimKata_FeatureMovingFire>Skydning under bevægelse</KRWF_RimKata_FeatureMovingFire>
+  <KRWF_RimKata_FeatureCloseFire>Skydning på kort afstand</KRWF_RimKata_FeatureCloseFire>
+  <KRWF_RimKata_FeatureTargetRush>Stormløb</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureResponse>Parering</KRWF_RimKata_FeatureResponse>
+  <KRWF_RimKata_FeatureRangedDodge>Undvigelse af afstandsangreb</KRWF_RimKata_FeatureRangedDodge>
+  <KRWF_RimKata_FeatureTumble>Kolbøtte</KRWF_RimKata_FeatureTumble>
+
+  <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
+  <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
+  <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
+  <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
+  <KRWF_RimKata_EnableSerumDependency>Afhængighed af følelsesdæmpende serum</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_CandidateLimitHeader>Kandidatgrænser</KRWF_RimKata_CandidateLimitHeader>
+  <KRWF_RimKata_TouchCandidateLimit>Nærkampsrækkevidde</KRWF_RimKata_TouchCandidateLimit>
+  <KRWF_RimKata_ShortCandidateLimit>Kort rækkevidde</KRWF_RimKata_ShortCandidateLimit>
+  <KRWF_RimKata_MediumCandidateLimit>Mellemlang rækkevidde</KRWF_RimKata_MediumCandidateLimit>
+  <KRWF_RimKata_LongCandidateLimit>Lang rækkevidde</KRWF_RimKata_LongCandidateLimit>
+  <KRWF_RimKata_BeyondCandidateLimit>Ud over lang rækkevidde</KRWF_RimKata_BeyondCandidateLimit>
+  <KRWF_RimKata_VisualGuidanceHeader>Visuel vejledning</KRWF_RimKata_VisualGuidanceHeader>
+  <KRWF_RimKata_ShowRangedWeaponCooldown>Nedkølingstid for afstandsvåben</KRWF_RimKata_ShowRangedWeaponCooldown>
+  <KRWF_RimKata_ShowMeleeWeaponAimTime>Sigtetid for nærkampsvåben</KRWF_RimKata_ShowMeleeWeaponAimTime>
+  <KRWF_RimKata_ShowFocusedAttackLine>Mållinje for fokuseret angreb</KRWF_RimKata_ShowFocusedAttackLine>
+  <KRWF_RimKata_ModVisualsHeader>Animationer</KRWF_RimKata_ModVisualsHeader>
+  <KRWF_RimKata_ImmediateTumbleChance>Chance for øjeblikkelig kolbøtte</KRWF_RimKata_ImmediateTumbleChance>
+  <KRWF_RimKata_ResponseAttackerSpinChance>Chance for at dreje angriberen ved parering</KRWF_RimKata_ResponseAttackerSpinChance>
+  <KRWF_RimKata_ResponseAccidentalFireChance>Chance for vildskud efter en parering</KRWF_RimKata_ResponseAccidentalFireChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Chance for tab af våbenholdbarhed efter vellykket parering</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
+  <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Tab af våbenholdbarhed efter vellykket parering</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
+  <KRWF_RimKata_UnarmedWeaponStealChance>Chance for at stjæle våbnet efter vellykket ubevæbnet parering</KRWF_RimKata_UnarmedWeaponStealChance>
+
+  <KRWF_RimKata_InspectSlotPrimary>Primær</KRWF_RimKata_InspectSlotPrimary>
+  <KRWF_RimKata_InspectSlotSecondary>Sekundær</KRWF_RimKata_InspectSlotSecondary>
+  <KRWF_RimKata_InspectIntercepting>{0}: opfanger {1}</KRWF_RimKata_InspectIntercepting>
+  <KRWF_RimKata_InspectCachedTarget>{0}: næste mål {1}</KRWF_RimKata_InspectCachedTarget>
+  <KRWF_RimKata_InspectCooldown>{0}: køler ned</KRWF_RimKata_InspectCooldown>
+  <KRWF_RimKata_SecondaryMenuAttack>Angrib</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryMissingHand>Kan ikke udstyre et sekundært våben uden en hånd.</KRWF_RimKata_SecondaryMissingHand>
+  <KRWF_RimKata_SecondaryMenuSwap>Skift</KRWF_RimKata_SecondaryMenuSwap>
+  <KRWF_RimKata_SecondaryMenuSwapCombat>Skift (i kamp)</KRWF_RimKata_SecondaryMenuSwapCombat>
+  <KRWF_RimKata_DebugMenuLabel>RimKata-fejlfinding</KRWF_RimKata_DebugMenuLabel>
+  <KRWF_RimKata_DebugHUDOption>HUD</KRWF_RimKata_DebugHUDOption>
+  <KRWF_RimKata_DebugSearchRangeOption>Søgerækkevidde</KRWF_RimKata_DebugSearchRangeOption>
+
+  <KRWF_RimKata_RangePresetShortFallback>Kort (våbnets rækkevidde)</KRWF_RimKata_RangePresetShortFallback>
+  <KRWF_RimKata_RangePresetMediumFallback>Mellem (våbnets rækkevidde)</KRWF_RimKata_RangePresetMediumFallback>
+  <KRWF_RimKata_RangePresetLongFallback>Lang (våbnets rækkevidde)</KRWF_RimKata_RangePresetLongFallback>
+  <KRWF_RimKata_CooldownVanillaBreakdown>Beregning af RimKatas nedkølingsmultiplikator:</KRWF_RimKata_CooldownVanillaBreakdown>
+  <KRWF_RimKata_CooldownVanillaFactor>Grundmultiplikator for nedkøling af afstandsangreb: {0}</KRWF_RimKata_CooldownVanillaFactor>
+  <KRWF_RimKata_CooldownArmorFactorApplied>Modifikator fra aktiveret rustning: ×{0} (anvendt)</KRWF_RimKata_CooldownArmorFactorApplied>
+  <KRWF_RimKata_CooldownArmorFactorInactive>Modifikator fra aktiveret rustning: ×100 % (ingen aktiveret rustning båret)</KRWF_RimKata_CooldownArmorFactorInactive>
+</LanguageData>

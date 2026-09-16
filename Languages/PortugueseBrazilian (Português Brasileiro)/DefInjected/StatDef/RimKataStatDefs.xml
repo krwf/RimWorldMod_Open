@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <RimKata_CooldownMultiplier.label>multiplicador de recarga (RimKata)</RimKata_CooldownMultiplier.label>
+  <RimKata_CooldownMultiplier.description>O multiplicador final de recarga usado nos ataques normais do RimKata. Combina o multiplicador vanilla de recarga à distância do peão com o modificador da armadura habilitada atualmente equipada.</RimKata_CooldownMultiplier.description>
+</LanguageData>

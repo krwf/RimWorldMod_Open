@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <MindNumbSerumEmotionRemoval.stages.0.label>Gefühlsentfernung</MindNumbSerumEmotionRemoval.stages.0.label>
+  <MindNumbSerumEmotionRemoval.stages.0.description>Gleichgewicht</MindNumbSerumEmotionRemoval.stages.0.description>
+  <MindNumbSerumWithdrawal.stages.0.label>Abhängigkeit vom Gefühlsbetäubungsserum</MindNumbSerumWithdrawal.stages.0.label>
+  <MindNumbSerumWithdrawal.stages.0.description>Meine Gefühle bringen mich aus dem Gleichgewicht. Ich will keine weiteren Katastrophen wie Insekten, Mechanoiden oder Anomalien.</MindNumbSerumWithdrawal.stages.0.description>
+  <MindNumbSerumDependencyOvercome.stages.0.label>Ablehnung des Gefühlsbetäubungsserums</MindNumbSerumDependencyOvercome.stages.0.label>
+  <MindNumbSerumDependencyOvercome.stages.0.description>Wenn ich bei meiner Liebe bin</MindNumbSerumDependencyOvercome.stages.0.description>
+</LanguageData>
+
