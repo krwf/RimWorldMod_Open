@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
-  <!-- This role is intentionally independent from memes and carries no work,
-       apparel, weapon, aura, or granted-ability restrictions. -->
   <PreceptDef ParentName="PreceptRoleMultiBase" MayRequire="Ludeon.RimWorld.Ideology">
     <defName>RimKata_I</defName>
     <label>RimKata-I</label>

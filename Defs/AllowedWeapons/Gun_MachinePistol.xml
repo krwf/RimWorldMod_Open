@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <KRWF.RimKata.RimKataAllowedWeaponDef>
-    <defName>RimKata_AllowedWeapon_Gun_MachinePistol</defName>
+    <defName>RimKata_AllowedWeapon_Gun_MachinePistol</defName>    
     <label>기관권총</label>
     <schemaVersion>1</schemaVersion>
     <sourceDefName>Gun_MachinePistol</sourceDefName>

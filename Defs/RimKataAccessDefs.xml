@@ -69,7 +69,6 @@
     <isBad>false</isBad>
     <comps>
       <li Class="HediffCompProperties_Disappears">
-        <!-- One dose enables RimKata for one in-game day. -->
         <disappearsAfterTicks>60000</disappearsAfterTicks>
         <showRemainingTime>true</showRemainingTime>
       </li>

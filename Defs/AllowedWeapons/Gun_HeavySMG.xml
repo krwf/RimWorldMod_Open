@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <KRWF.RimKata.RimKataAllowedWeaponDef>
-    <defName>RimKata_AllowedWeapon_Gun_HeavySMG</defName>
+    <defName>RimKata_AllowedWeapon_Gun_HeavySMG</defName>    
     <label>기관단총</label>
     <schemaVersion>1</schemaVersion>
     <sourceDefName>Gun_HeavySMG</sourceDefName>

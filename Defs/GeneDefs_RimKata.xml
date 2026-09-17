@@ -15,10 +15,8 @@
 
   <GeneDef MayRequire="Ludeon.RimWorld.Biotech,Ludeon.RimWorld.Anomaly">
     <defName>ChemicalDependency_MindNumbSerum</defName>
-    <!-- The displayed name is built from Biotech's vanilla ChemicalDependency translation key. -->
     <label>mind-numb serum dependency</label>
     <labelShortAdj>mind-numb serum dependency</labelShortAdj>
-    <!-- Edit the dependency gene description here. -->
     <description>Carriers depend psychologically on mind-numb serum. Without its effect, their mood deteriorates day by day unless an enduring romantic relationship or psychic bond lets them overcome the dependency.</description>
     <geneClass>KRWF.RimKata.Gene_MindNumbSerumDependency</geneClass>
     <iconPath>mind_gene</iconPath>
@@ -49,13 +47,11 @@
     <validWhileDespawned>true</validWhileDespawned>
     <modExtensions>
       <li Class="KRWF.RimKata.RimKataMindNumbSerumWithdrawalExtension">
-        <!-- Edit the additional mood penalty applied for each day without serum here. -->
         <dailyMoodOffset>-5</dailyMoodOffset>
       </li>
     </modExtensions>
     <stages>
       <li>
-        <!-- Edit the mood-penalty name, description, and initial mood value here. -->
         <label>mind-numb serum dependence</label>
         <description>My emotions are shaking me. I don't want any more catastrophes like insects, mechanoids, or anomalies.</description>
         <baseMoodEffect>-20</baseMoodEffect>
@@ -69,7 +65,6 @@
     <validWhileDespawned>true</validWhileDespawned>
     <stages>
       <li>
-        <!-- Edit the dependency-overcome name and description here. -->
         <label>mind-numb serum rejection</label>
         <description>If I am with my love</description>
         <baseMoodEffect>0</baseMoodEffect>
