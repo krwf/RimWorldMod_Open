@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Bónus de probabilidade de esquiva corpo a corpo</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Probabilidade de esquiva à distância</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Duração padrão da animação de esquiva à distância</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Bónus de precisão ao intercetar explosivos</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Probabilidade de neutralização imediata de explosivos</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Bónus de precisão ao intercetar projéteis explosivos</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Probabilidade de neutralização imediata de projéteis explosivos</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Modificadores</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Multiplicador de precisão em movimento</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Efeitos do soro entorpecente</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Multiplicador de aparo</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Multiplicador de esquiva à distância</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplicador de interceção de explosivos</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplicador de interceção de projéteis explosivos</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Repor tudo</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Perfil</KRWF_RimKata_Profile>

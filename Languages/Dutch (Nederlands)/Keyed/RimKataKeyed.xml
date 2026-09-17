@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Bonus op ontwijkkans in man-tegen-mangevechten</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Ontwijkkans tegen afstandsaanvallen</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Standaardduur van de ontwijkanimatie tegen afstandsaanvallen</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Nauwkeurigheidsbonus bij het onderscheppen van explosieven</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Kans om explosieven onmiddellijk te neutraliseren</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Nauwkeurigheidsbonus bij het onderscheppen van explosieve projectielen</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Kans om explosieve projectielen onmiddellijk te neutraliseren</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Aanpassingen</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Nauwkeurigheidsfactor tijdens bewegen</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Effecten van gevoelsverdovend serum</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Pareermultiplier</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Multiplier voor ontwijken van afstandsaanvallen</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplier voor het onderscheppen van explosieven</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplier voor het onderscheppen van explosieve projectielen</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Alles herstellen</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profiel</KRWF_RimKata_Profile>

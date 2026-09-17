@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Yakın dövüşten kaçınma şansı bonusu</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Menzilli saldırıdan kaçınma şansı</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Standart menzilli saldırıdan kaçınma animasyonu süresi</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Patlayıcı önleme isabet bonusu</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Patlayıcıyı anında etkisizleştirme şansı</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Patlayıcı mermi önleme isabet bonusu</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Patlayıcı mermiyi anında etkisizleştirme şansı</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Değiştiriciler</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Hareket hâlinde isabet çarpanı</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Zihin uyuşturan serum etkileri</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Savuşturma çarpanı</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Menzilli saldırıdan kaçınma çarpanı</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Patlayıcı önleme çarpanı</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Patlayıcı mermi önleme çarpanı</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Tümünü sıfırla</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>

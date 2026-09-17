@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Bonus la șansa de eschivă în lupta corp la corp</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Șansa de eschivă la distanță</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Durata standard a animației de eschivă la distanță</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Bonus la precizia interceptării explozibililor</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Șansa de neutralizare imediată a explozibililor</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Bonus la precizia interceptării proiectilelor explozive</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Șansa de neutralizare imediată a proiectilelor explozive</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Modificatori</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Multiplicatorul preciziei în mișcare</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Efectele serului de amorțire a minții</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Multiplicatorul parării</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Multiplicatorul eschivei la distanță</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplicatorul interceptării explozibililor</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplicatorul interceptării proiectilelor explozive</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Resetează tot</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>

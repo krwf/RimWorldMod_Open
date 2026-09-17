@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Melee dodge chance bonus</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Ranged dodge chance</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Standard ranged dodge animation time</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Explosive interception accuracy bonus</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Immediate explosive neutralization chance</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Explosive projectile interception accuracy bonus</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Immediate explosive projectile neutralization chance</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Modifiers</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Moving accuracy multiplier</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Mind-numb serum effects</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Parry multiplier</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Ranged dodge multiplier</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Explosive interception multiplier</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Explosive projectile interception multiplier</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Reset all</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profile</KRWF_RimKata_Profile>

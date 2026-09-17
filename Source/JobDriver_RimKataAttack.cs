@@ -494,6 +494,14 @@ namespace KRWF.RimKata
                 bool canRush = RimKataDualWeaponController.CanRushTarget(
                     pawn,
                     assignedTarget);
+                if (!canRush
+                    && pawn.pather?.Moving == true
+                    && pawn.pather.Destination.Thing == assignedTarget)
+                {
+                    // A policy change revokes an existing chase even while
+                    // the target remains within the weapon's firing range.
+                    pawn.pather.StopDead();
+                }
                 if (!canRush && !CanAttackWithoutRushing(assignedTarget))
                 {
                     pawn.pather?.StopDead();
@@ -1088,6 +1096,15 @@ namespace KRWF.RimKata
                 return true;
             }
 
+            // Enemy attacks must enter the controller even before it has any
+            // ongoing work. A forced attack is still an attack order for an NPC.
+            if (ShouldConvertEnemyAttack(___pawn, newJob, out Verb enemyVerb))
+            {
+                newJob.def = RimKataDefOf.RimKata_Attack;
+                newJob.verbToUse = enemyVerb;
+                return true;
+            }
+
             if (!RimKataDualWeaponController.IsDedicatedFollowupActive(___pawn))
             {
                 return true;
@@ -1105,13 +1122,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            if (!ShouldConvertEnemyAttack(___pawn, newJob, out Verb verb))
-            {
-                return true;
-            }
-
-            newJob.def = RimKataDefOf.RimKata_Attack;
-            newJob.verbToUse = verb;
             return true;
         }
 
@@ -1280,15 +1290,16 @@ namespace KRWF.RimKata
             verb = null;
             bool vanillaCombatJob = job?.def == JobDefOf.AttackStatic || job?.def == JobDefOf.AttackMelee;
             if (!vanillaCombatJob
-                || job.playerForced
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || !IsEligibleHostileRimKataPawn(pawn)
-                || !job.targetA.HasThing)
+                || !job.targetA.HasThing
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn))
             {
                 return false;
             }
 
             Thing target = job.targetA.Thing;
-            if (!IsValidEnemyTarget(pawn, target)
+            if (!IsValidEnemyTarget(pawn, target, job.playerForced, job.killIncappedTarget)
                 || (!RimKataDualWeaponController.CanRushTarget(pawn, target)
                     && !RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(
                         pawn,
@@ -1310,16 +1321,53 @@ namespace KRWF.RimKata
             return verb != null;
         }
 
+        internal static bool TryRecoverCurrentEnemyAttack(
+            Pawn pawn, Job currentJob, RimKataPawnCombatState state)
+        {
+            if (state == null
+                || currentJob?.def != JobDefOf.AttackStatic
+                || state.lastEnemyAttackRecoveryJobId == currentJob.loadID
+                || (pawn.stances?.curStance is Stance_Busy busy
+                    && busy.StanceBusy && busy.ticksLeft > 0))
+            {
+                return false;
+            }
+
+            // Recovery is checked once per existing Job, after the normal state
+            // admission gate. New attacks use StartJob's conversion above.
+            state.lastEnemyAttackRecoveryJobId = currentJob.loadID;
+            if (!ShouldConvertEnemyAttack(pawn, currentJob, out Verb verb))
+            {
+                return false;
+            }
+
+            ThinkNode jobGiver = currentJob.jobGiver;
+            ThinkTreeDef thinkTree = currentJob.jobGiverThinkTree;
+            Job replacement = currentJob.Clone();
+            replacement.def = RimKataDefOf.RimKata_Attack;
+            replacement.verbToUse = verb;
+            pawn.jobs.StartJob(replacement, JobCondition.InterruptForced, jobGiver);
+            if (pawn.CurJob == replacement)
+            {
+                replacement.jobGiver = jobGiver;
+                replacement.jobGiverThinkTree = thinkTree;
+            }
+            // The old driver/state must not be driven again after StartJob.
+            return true;
+        }
+
         private static bool IsEligibleHostileRimKataPawn(Pawn pawn)
         {
             return pawn?.Faction != null
+                && !pawn.IsPlayerControlled
                 && Faction.OfPlayer != null
                 && pawn.Faction.HostileTo(Faction.OfPlayer)
                 && !pawn.InMentalState
                 && !pawn.IsBurning();
         }
 
-        private static bool IsValidEnemyTarget(Pawn pawn, Thing target)
+        private static bool IsValidEnemyTarget(
+            Pawn pawn, Thing target, bool playerForced, bool killIncappedTarget)
         {
             return pawn?.Map != null
                 && target != null
@@ -1327,9 +1375,10 @@ namespace KRWF.RimKata
                 && target.Spawned
                 && !target.Destroyed
                 && target.Map == pawn.Map
-                && RimKataTargeting.IsAutomaticEnemy(pawn, target)
+                && (playerForced || RimKataTargeting.IsAutomaticEnemy(pawn, target))
                 && (!(target is Pawn targetPawn)
-                    || RimKataTargeting.IsPawnTargetStateValid(targetPawn));
+                    || RimKataTargeting.IsPawnTargetStateValid(
+                        targetPawn, playerForced && killIncappedTarget));
         }
     }
 

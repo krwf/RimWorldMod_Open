@@ -115,7 +115,20 @@ namespace KRWF.RimKata
             }
 
             RimKataInterceptionTrajectory.PlaceAtContact(shot, contact);
-            return RimKataInterceptionUtility.Resolve(shooter, target, contact);
+            if (!RimKataInterceptionUtility.Resolve(shooter, target, contact))
+            {
+                return false;
+            }
+
+            if (!(shot.def?.projectile?.explosionRadius > 0f))
+            {
+                // A successful ordinary interceptor skips Bullet.Impact below.
+                // Preserve its hit log, with the intercepted projectile as target.
+                Find.BattleLog?.Add(new BattleLogEntry_RangedImpact(
+                    shooter, target, target, shot.EquipmentDef, shot.def, null));
+            }
+
+            return true;
         }
     }
 

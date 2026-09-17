@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>近战闪避概率加成</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>远程闪避概率</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>标准远程闪避动画时长</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>爆炸物拦截精度加成</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>立即化解爆炸物的概率</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>爆炸投射物拦截精度加成</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>立即化解爆炸投射物的概率</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>修正</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>移动射击精度倍率</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>情感麻痹血清效果</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>格挡倍率</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>远程闪避倍率</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>爆炸物拦截倍率</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>爆炸投射物拦截倍率</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>全部重置</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>配置</KRWF_RimKata_Profile>

@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Lähitaisteluväistön bonus</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Etähyökkäyksen väistömahdollisuus</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Etähyökkäyksen väistöanimaation vakioaika</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Räjähteiden torjunnan tarkkuusbonus</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Räjähteen välittömän neutraloinnin mahdollisuus</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Räjähtävien ammusten torjunnan tarkkuusbonus</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Räjähtävän ammuksen välittömän neutraloinnin mahdollisuus</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Muuntimet</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Liikkumisen tarkkuuskerroin</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Tunteita turruttavan seerumin vaikutukset</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Torjuntakerroin</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Etähyökkäyksen väistökerroin</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Räjähteiden torjuntakerroin</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Räjähtävien ammusten torjuntakerroin</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Palauta kaikki</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profiili</KRWF_RimKata_Profile>

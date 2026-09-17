@@ -1098,29 +1098,31 @@ namespace KRWF.RimKata
             }
 
             ThingWithComps primary = PrimaryWeapon(pawn);
-            bool valid = RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
-                && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
+            bool validWeapons = RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
                 && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
                 && RimKataGripUtility.GripTypeFor(primary.def) == RimKataGripType.OneHand
                 && RimKataGripUtility.GripTypeFor(secondary.def) == RimKataGripType.OneHand;
+            bool valid = RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
+                && validWeapons;
             if (valid || !dropInvalidSecondary)
             {
                 return;
             }
 
-            RemoveInvalidSecondary(pawn, secondary);
+            RemoveInvalidSecondary(pawn, secondary, forbidDropped: !validWeapons);
         }
 
         internal static void RemoveInvalidSecondary(
             Pawn pawn,
-            ThingWithComps secondary)
+            ThingWithComps secondary,
+            bool forbidDropped = false)
         {
             if (pawn?.Spawned != true || secondary == null)
             {
                 return;
             }
 
-            MoveOutOfEquipment(pawn, secondary);
+            MoveOutOfEquipment(pawn, secondary, forbidDropped);
             RimKataSecondaryWeaponRegistry registry =
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;
             if (registry?.GetRegistered(pawn) == secondary)
@@ -1293,7 +1295,8 @@ namespace KRWF.RimKata
             NotifyLoadoutChanged(pawn, state);
         }
 
-        private static void MoveOutOfEquipment(Pawn pawn, ThingWithComps weapon)
+        private static void MoveOutOfEquipment(
+            Pawn pawn, ThingWithComps weapon, bool forbidDropped)
         {
             if (pawn?.Spawned != true
                 || pawn.equipment == null
@@ -1306,7 +1309,7 @@ namespace KRWF.RimKata
                 weapon,
                 out ThingWithComps _,
                 pawn.Position,
-                false);
+                forbidDropped);
         }
     }
 
@@ -1662,7 +1665,7 @@ namespace KRWF.RimKata
 
             if (!primaryEnabled && secondary != null)
             {
-                __instance.TryDropEquipment(secondary, out ThingWithComps _, ___pawn.Position, false);
+                __instance.TryDropEquipment(secondary, out ThingWithComps _, ___pawn.Position, true);
                 return true;
             }
 
@@ -1674,8 +1677,8 @@ namespace KRWF.RimKata
 
             if (incomingEnabled && incomingTwoHanded && secondary != null)
             {
-                __instance.TryDropEquipment(primary, out __1, ___pawn.Position, false);
-                __instance.TryDropEquipment(secondary, out ThingWithComps _, ___pawn.Position, false);
+                __instance.TryDropEquipment(primary, out __1, ___pawn.Position, true);
+                __instance.TryDropEquipment(secondary, out ThingWithComps _, ___pawn.Position, true);
                 return false;
             }
 
@@ -1724,10 +1727,11 @@ namespace KRWF.RimKata
             IntVec3 right = pawn.Position + pawn.Rotation.RighthandCell;
             IntVec3 left = pawn.Position - pawn.Rotation.RighthandCell;
             bool primaryRight = Rand.Bool;
-            TryDropAtSide(pawn, tracker, primary, out droppedPrimary, primaryRight ? right : left, primaryRight ? left : right);
+            bool forbidDropped = secondary != null;
+            TryDropAtSide(pawn, tracker, primary, out droppedPrimary, primaryRight ? right : left, primaryRight ? left : right, forbidDropped);
             if (secondary != null)
             {
-                TryDropAtSide(pawn, tracker, secondary, out ThingWithComps _, primaryRight ? left : right, primaryRight ? right : left);
+                TryDropAtSide(pawn, tracker, secondary, out ThingWithComps _, primaryRight ? left : right, primaryRight ? right : left, forbidDropped);
             }
         }
 
@@ -1737,14 +1741,15 @@ namespace KRWF.RimKata
             ThingWithComps equipment,
             out ThingWithComps dropped,
             IntVec3 preferred,
-            IntVec3 opposite)
+            IntVec3 opposite,
+            bool forbidDropped)
         {
-            if (TryDropExactly(pawn, tracker, equipment, preferred, out dropped) || TryDropExactly(pawn, tracker, equipment, opposite, out dropped))
+            if (TryDropExactly(pawn, tracker, equipment, preferred, out dropped, forbidDropped) || TryDropExactly(pawn, tracker, equipment, opposite, out dropped, forbidDropped))
             {
                 return true;
             }
 
-            return tracker.TryDropEquipment(equipment, out dropped, pawn.Position, false);
+            return tracker.TryDropEquipment(equipment, out dropped, pawn.Position, forbidDropped);
         }
 
         private static bool TryDropExactly(
@@ -1752,7 +1757,8 @@ namespace KRWF.RimKata
             Pawn_EquipmentTracker tracker,
             ThingWithComps equipment,
             IntVec3 cell,
-            out ThingWithComps dropped)
+            out ThingWithComps dropped,
+            bool forbidDropped)
         {
             dropped = null;
             if (!cell.InBounds(pawn.Map))
@@ -1764,7 +1770,7 @@ namespace KRWF.RimKata
             dropped = raw as ThingWithComps;
             if (result && raw != null)
             {
-                raw.SetForbidden(false, false);
+                raw.SetForbidden(forbidDropped, false);
             }
 
             return result;
@@ -2610,7 +2616,9 @@ namespace KRWF.RimKata
                 return !TryInsertPrimaryBeforeSecondary(__instance, ___pawn, newEq, secondary);
             }
 
-            MovePromotedSecondaryOut(__instance, ___pawn, secondary);
+            MovePromotedSecondaryOut(__instance, ___pawn, secondary,
+                !RimKataEquipmentUtility.IsWeaponEnabled(newEq.def)
+                    || RimKataGripUtility.GripTypeFor(newEq.def) == RimKataGripType.TwoHand);
             if (registry?.GetRegistered(___pawn) == secondary)
             {
                 registry.Clear(___pawn, secondary, false);
@@ -2673,13 +2681,14 @@ namespace KRWF.RimKata
         private static void MovePromotedSecondaryOut(
             Pawn_EquipmentTracker tracker,
             Pawn pawn,
-            ThingWithComps secondary)
+            ThingWithComps secondary,
+            bool forbidDropped)
         {
             tracker.TryDropEquipment(
                 secondary,
                 out ThingWithComps _,
                 pawn.Position,
-                false);
+                forbidDropped);
         }
     }
 

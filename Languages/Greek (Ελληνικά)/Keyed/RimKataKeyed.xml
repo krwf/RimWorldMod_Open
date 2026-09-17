@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Μπόνους πιθανότητας αποφυγής σε μάχη σώμα με σώμα</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Πιθανότητα αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Τυπικός χρόνος κίνησης αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Μπόνους ακρίβειας αναχαίτισης εκρηκτικών</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Πιθανότητα άμεσης εξουδετέρωσης εκρηκτικού</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Μπόνους ακρίβειας αναχαίτισης εκρηκτικών βλημάτων</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Πιθανότητα άμεσης εξουδετέρωσης εκρηκτικού βλήματος</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Τροποποιητές</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Πολλαπλασιαστής ακρίβειας εν κινήσει</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Επιδράσεις ορού συναισθηματικού μουδιάσματος</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Πολλαπλασιαστής απόκρουσης</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Πολλαπλασιαστής αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Πολλαπλασιαστής αναχαίτισης εκρηκτικών</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Πολλαπλασιαστής αναχαίτισης εκρηκτικών βλημάτων</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Επαναφορά όλων</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Προφίλ</KRWF_RimKata_Profile>

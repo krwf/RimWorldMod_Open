@@ -73,7 +73,7 @@ namespace KRWF.RimKata
             registry?.RemoveRecovery(pawn);
             ThingWithComps secondary = registry?.GetRegistered(pawn);
             if (pawn?.Spawned == true && secondary != null)
-                RimKataWeaponSlotUtility.RemoveInvalidSecondary(pawn, secondary);
+                RimKataWeaponSlotUtility.RemoveInvalidSecondary(pawn, secondary, forbidDropped: true);
         }
     }
 }

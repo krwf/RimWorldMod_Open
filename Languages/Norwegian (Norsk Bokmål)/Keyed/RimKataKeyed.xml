@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Bonus til unnvikelsessjanse i nærkamp</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Sjanse for å unnvike avstandsangrep</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Standard varighet for unnvikelsesanimasjon mot avstandsangrep</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Treffsikkerhetsbonus ved avskjæring av eksplosiver</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Sjanse for umiddelbar nøytralisering av eksplosiver</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Treffsikkerhetsbonus ved avskjæring av eksplosive prosjektiler</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Sjanse for umiddelbar nøytralisering av eksplosive prosjektiler</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Modifikatorer</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Treffsikkerhetsmultiplikator under bevegelse</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Effekter av følelsesdempende serum</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Pareringsmultiplikator</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Multiplikator for unnvikelse av avstandsangrep</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplikator for avskjæring av eksplosiver</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Multiplikator for avskjæring av eksplosive prosjektiler</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Tilbakestill alt</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profil</KRWF_RimKata_Profile>

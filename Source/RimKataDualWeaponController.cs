@@ -516,10 +516,15 @@ namespace KRWF.RimKata
             public CombatTickPermissions(Pawn pawn, Job job)
             {
                 bool drafted = pawn.Drafted;
-                allowCurrentJob = job?.def == RimKataDefOf.RimKata_Attack
-                    || RimKataDraftedFireController.IsAutomaticFireJob(job?.def);
+                allowCurrentJob = AllowsCurrentJob(job);
                 allowAutomaticRangedFire = AutomaticRangedFireAllowed(pawn);
                 allowMovementSearchWithoutWork = drafted && allowAutomaticRangedFire;
+            }
+
+            public static bool AllowsCurrentJob(Job job)
+            {
+                return job?.def == RimKataDefOf.RimKata_Attack
+                    || RimKataDraftedFireController.IsAutomaticFireJob(job?.def);
             }
 
             public bool AllowsMovementSearch(bool hasCombatWork, bool dedicatedJob)
@@ -642,6 +647,12 @@ namespace KRWF.RimKata
 
             if (!permissions.allowCurrentJob)
             {
+                if (fromJobTracker
+                    && Patch_PawnJobTracker_StartJob_EnemyRimKata
+                        .TryRecoverCurrentEnemyAttack(pawn, currentJob, state))
+                {
+                    return;
+                }
                 state?.ClearDraftedMovementSearchTracking();
                 if (state?.dedicatedFollowupJobPending != true
                     || !state.dedicatedFollowupJobPlayerForced)
@@ -1232,10 +1243,8 @@ namespace KRWF.RimKata
             cycle.focusedTarget = target;
             cycle.focusedTargetFromAttackGizmo = fromAttackGizmo;
 
-            cycle.visualTarget = target;
-            cycle.visualAimTicksRemaining = Mathf.Max(
-                cycle.visualAimTicksRemaining,
-                2);
+            // This is an order, not an aim step. The weapon cycle accepts the
+            // focus and updates its aim when combat advances on the next tick.
             state.engagementOwnerWeapon = weapon;
             RefreshDualEngagementState(pawn, state);
             state.dualLastDrivenTick = -1;
@@ -1978,7 +1987,6 @@ namespace KRWF.RimKata
             RearmOpeningOwnerIfBothWaiting(state);
             RefreshDualEngagementState(pawn, state);
             state.dualLastDrivenTick = -1;
-            UpdateBodyAimStance(pawn, state);
         }
 
         private static void ClearRangedTargetingForHoldFire(
@@ -2102,6 +2110,14 @@ namespace KRWF.RimKata
             }
 
             RimKataPawnCombatState state = StateFor(pawn, false);
+            if (!CombatTickPermissions.AllowsCurrentJob(pawn.CurJob)
+                && !CanConsumePendingDedicatedFollowupRequest(
+                    pawn, state, Find.TickManager?.TicksGame ?? -1))
+            {
+                // Stored candidates cannot suppress vanilla fire unless a
+                // controller tick or a valid handoff will actually run them.
+                return false;
+            }
             RimKataWeaponCycleState cycle = CycleForWeapon(state, weapon);
             if (cycle?.cooldownTicksRemaining > 0)
             {
@@ -3441,6 +3457,7 @@ namespace KRWF.RimKata
                 || state == null
                 || state.dedicatedFollowupJobStartInProgress
                 || IsProtectedPlayerForcedJob(pawn.CurJob)
+                || !AllowsDedicatedFollowupSource(pawn.CurJob, state)
                 || !IsDedicatedFollowupActive(pawn))
             {
                 return;
@@ -3591,6 +3608,7 @@ namespace KRWF.RimKata
                     && !CanStartQueuedProjectileWake(pawn))
                 || !CanConsumeDedicatedFollowupRequest(
                     pawn,
+                    state,
                     state.dedicatedFollowupJobSourceJob,
                     state.dedicatedFollowupJobTarget))
             {
@@ -3604,11 +3622,13 @@ namespace KRWF.RimKata
 
         private static bool CanConsumeDedicatedFollowupRequest(
             Pawn pawn,
+            RimKataPawnCombatState state,
             Job sourceJob,
             Thing target)
         {
             Job currentJob = pawn?.CurJob;
-            if (IsProtectedPlayerForcedJob(currentJob))
+            if (IsProtectedPlayerForcedJob(currentJob)
+                || !AllowsDedicatedFollowupSource(currentJob, state))
             {
                 return false;
             }
@@ -3830,6 +3850,16 @@ namespace KRWF.RimKata
         private static bool IsProtectedPlayerForcedJob(Job job)
         {
             return job?.playerForced == true;
+        }
+
+        private static bool AllowsDedicatedFollowupSource(
+            Job job, RimKataPawnCombatState state)
+        {
+            // Continue supported combat work, or the explicit interception
+            // handoff that restores its source Job afterward.
+            return CombatTickPermissions.AllowsCurrentJob(job)
+                || job?.def == JobDefOf.AttackStatic
+                || (job != null && state?.projectileWakeResumeJob == job);
         }
 
         public static RimKataCounterattackOpeningResult
@@ -4089,7 +4119,11 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            return RimKataTargetAccess.SettingsFor(pawn)?.targetRushEnabled != false
+            // Undrafted status and the explicit player request were handled
+            // above. Automatic pursuit requires the current Attack policy.
+            return pawn.playerSettings?.UsesConfigurableHostilityResponse == true
+                && pawn.playerSettings.hostilityResponse == HostilityResponseMode.Attack
+                && RimKataTargetAccess.SettingsFor(pawn)?.targetRushEnabled != false
                 && pawn?.CurJob?.playerForced != true
                 && IsCounterattackJobGiver(pawn.CurJob.jobGiver)
                 && (TargetWithinAutomaticCandidateCellRadius(pawn, target)
@@ -4891,7 +4925,7 @@ namespace KRWF.RimKata
             return true;
         }
 
-        private static bool TryGetNextAim(
+        internal static bool TryGetNextAim(
             Pawn pawn,
             RimKataPawnCombatState state,
             out RimKataWeaponCycleState cycle,

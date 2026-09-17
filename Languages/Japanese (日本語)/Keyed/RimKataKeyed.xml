@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>近接回避率ボーナス</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>射撃回避率</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>標準射撃回避アニメーション時間</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>爆発物迎撃の命中率ボーナス</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>爆発物を即座に無力化する確率</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>爆発性投射物迎撃の命中率ボーナス</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>爆発性投射物を即座に無力化する確率</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>補正</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>移動時の命中率倍率</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>感情麻痺血清の効果</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>パリィ倍率</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>射撃回避倍率</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>爆発物迎撃倍率</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>爆発性投射物迎撃倍率</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>すべてリセット</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>プロファイル</KRWF_RimKata_Profile>

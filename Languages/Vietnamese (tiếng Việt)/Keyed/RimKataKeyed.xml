@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Thưởng tỷ lệ né cận chiến</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Tỷ lệ né đòn tầm xa</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Thời gian hoạt ảnh né tầm xa tiêu chuẩn</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Thưởng độ chính xác đánh chặn chất nổ</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Tỷ lệ vô hiệu hóa chất nổ tức thì</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Thưởng độ chính xác đánh chặn đạn nổ</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Tỷ lệ vô hiệu hóa đạn nổ tức thì</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Hệ số</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Hệ số chính xác khi di chuyển</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Hiệu ứng huyết thanh tê liệt cảm xúc</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Hệ số đỡ đòn</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Hệ số né tầm xa</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Hệ số đánh chặn chất nổ</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Hệ số đánh chặn đạn nổ</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Đặt lại tất cả</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Hồ sơ</KRWF_RimKata_Profile>

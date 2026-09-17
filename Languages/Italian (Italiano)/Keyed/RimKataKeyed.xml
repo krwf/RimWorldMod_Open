@@ -35,8 +35,8 @@
   <KRWF_RimKata_MeleeDodgeChance>Bonus probabilità di schivata in mischia</KRWF_RimKata_MeleeDodgeChance>
   <KRWF_RimKata_RangedDodgeChance>Probabilità di schivata a distanza</KRWF_RimKata_RangedDodgeChance>
   <KRWF_RimKata_RangedDodgeDuration>Durata standard dell'animazione di schivata a distanza</KRWF_RimKata_RangedDodgeDuration>
-  <KRWF_RimKata_InterceptionChance>Bonus precisione d'intercettazione degli esplosivi</KRWF_RimKata_InterceptionChance>
-  <KRWF_RimKata_InterceptionCriticalChance>Probabilità di neutralizzazione immediata degli esplosivi</KRWF_RimKata_InterceptionCriticalChance>
+  <KRWF_RimKata_InterceptionChance>Bonus precisione d'intercettazione dei proiettili esplosivi</KRWF_RimKata_InterceptionChance>
+  <KRWF_RimKata_InterceptionCriticalChance>Probabilità di neutralizzazione immediata dei proiettili esplosivi</KRWF_RimKata_InterceptionCriticalChance>
 
   <KRWF_RimKata_TimingHeader>Modificatori</KRWF_RimKata_TimingHeader>
   <KRWF_RimKata_MovingAccuracyMultiplier>Moltiplicatore precisione in movimento</KRWF_RimKata_MovingAccuracyMultiplier>
@@ -46,7 +46,7 @@
   <KRWF_RimKata_SerumHeader>Effetti del siero anestetizzante</KRWF_RimKata_SerumHeader>
   <KRWF_RimKata_SerumResponseMultiplier>Moltiplicatore parata</KRWF_RimKata_SerumResponseMultiplier>
   <KRWF_RimKata_SerumDodgeMultiplier>Moltiplicatore schivata a distanza</KRWF_RimKata_SerumDodgeMultiplier>
-  <KRWF_RimKata_SerumInterceptionMultiplier>Moltiplicatore intercettazione esplosivi</KRWF_RimKata_SerumInterceptionMultiplier>
+  <KRWF_RimKata_SerumInterceptionMultiplier>Moltiplicatore intercettazione proiettili esplosivi</KRWF_RimKata_SerumInterceptionMultiplier>
 
   <KRWF_RimKata_ResetSettings>Reimposta tutto</KRWF_RimKata_ResetSettings>
   <KRWF_RimKata_Profile>Profilo</KRWF_RimKata_Profile>

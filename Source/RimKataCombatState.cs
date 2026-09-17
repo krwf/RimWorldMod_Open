@@ -458,6 +458,7 @@ namespace KRWF.RimKata
         public RimKataWeaponCycleState secondaryWeaponCycle = new RimKataWeaponCycleState();
         internal bool weaponBindingsDirty = true;
         internal int weaponConfigurationRevision = -1;
+        internal int lastEnemyAttackRecoveryJobId = -1;
         public RimKataSharedTargetSearchState sharedTargetSearch =
             new RimKataSharedTargetSearchState();
         public bool idleProjectileSearchTriggerPending;
@@ -3351,27 +3352,26 @@ namespace KRWF.RimKata
         {
             target = LocalTargetInfo.Invalid;
             Job currentJob = pawn?.CurJob;
-            bool ready = currentJob?.def == RimKataDefOf.RimKata_Attack;
-            if (ready
-                && currentJob.targetA.HasThing
-                && !IsLiveRimKataJobTarget(
-                    pawn,
-                    currentJob,
-                    currentJob.targetA.Thing))
-            {
-                ready = false;
-            }
-            else if (ready && currentJob.targetA.IsValid)
-            {
-                target = currentJob.targetA;
-            }
+            bool combatJob = currentJob?.def == RimKataDefOf.RimKata_Attack;
 
             lock (statesLock)
             {
                 RimKataPawnCombatState state = GetState(pawn, false);
                 if (state == null)
                 {
-                    return ready;
+                    return false;
+                }
+
+                // A newly assigned Job/follow-up can exist while paused. Only
+                // an aim already accepted by a weapon cycle makes it gun-ready.
+                bool ready = (combatJob || state.dedicatedFollowupJobPending)
+                    && RimKataDualWeaponController.TryGetNextAim(
+                        pawn, state, out RimKataWeaponCycleState _, out target);
+                if (ready && combatJob && target.HasThing
+                    && !IsLiveRimKataJobTarget(pawn, currentJob, target.Thing))
+                {
+                    ready = false;
+                    target = LocalTargetInfo.Invalid;
                 }
 
                 bool responseLookActive = state.responsePoseLookAtFocus
@@ -3404,19 +3404,8 @@ namespace KRWF.RimKata
                         state.CancelCloseCombat();
                     }
                 }
-                else if (state.dedicatedFollowupJobPending)
-                {
-                    ready = true;
-                    Thing pendingTarget = state.dedicatedFollowupJobTarget;
-                    if (pendingTarget != null
-                        && !pendingTarget.Destroyed
-                        && pendingTarget.Spawned
-                        && pendingTarget.Map == pawn?.Map)
-                    {
-                        target = new LocalTargetInfo(pendingTarget);
-                    }
-                }
-                else if (state.DraftedFireActive
+                else if (!state.dedicatedFollowupJobPending
+                    && state.DraftedFireActive
                     && pawn?.pather?.MovingNow == true
                     && ((state.draftedPlannedTarget != null
                     && !state.draftedPlannedTarget.Destroyed) || state.StoredCooldownActive))
@@ -3433,7 +3422,8 @@ namespace KRWF.RimKata
                     && pawn?.pather?.MovingNow == true
                     && RimKataDualWeaponController.TryGetNextAim(
                         pawn,
-                        out ThingWithComps _,
+                        state,
+                        out RimKataWeaponCycleState _,
                         out LocalTargetInfo movingAimTarget))
                 {
                     ready = true;

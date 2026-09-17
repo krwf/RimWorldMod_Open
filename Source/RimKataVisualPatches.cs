@@ -1255,6 +1255,7 @@ namespace KRWF.RimKata
             }
 
             if (cooling
+                && !verb.Bursting
                 && RimKataTargetAccess.SettingsFor(pawn)
                     ?.showRangedWeaponCooldown != false
                 && visual.target.IsValid
