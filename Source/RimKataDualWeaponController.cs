@@ -26,6 +26,8 @@ namespace KRWF.RimKata
     {
         public ThingWithComps weapon;
         public int cooldownTicksRemaining;
+        // Observational metadata: distinguish shooting from melee/response recovery.
+        internal bool rangedCooldown;
         public int warmupTicksRemaining = -1;
         public int warmupTotalTicks;
         public int openingWarmupBonusTicks;
@@ -92,6 +94,7 @@ namespace KRWF.RimKata
         {
             Scribe_References.Look(ref weapon, "weapon");
             Scribe_Values.Look(ref cooldownTicksRemaining, "cooldownTicksRemaining");
+            Scribe_Values.Look(ref rangedCooldown, "rangedCooldown");
             Scribe_Values.Look(ref responseCooldownAppliedTick, "responseCooldownAppliedTick", -1);
             Scribe_Values.Look(ref warmupTicksRemaining, "warmupTicksRemaining", -1);
             Scribe_Values.Look(ref warmupTotalTicks, "warmupTotalTicks");
@@ -165,6 +168,7 @@ namespace KRWF.RimKata
                 lastTimerTick = -1;
                 plannedActionVerb = null;
                 cooldownTicksRemaining = Mathf.Max(0, cooldownTicksRemaining);
+                rangedCooldown &= cooldownTicksRemaining > 0;
                 pendingCandidateLimitOverride = Mathf.Max(
                     0,
                     pendingCandidateLimitOverride);
@@ -224,6 +228,7 @@ namespace KRWF.RimKata
         internal void ApplyResponseCooldown(int ticks)
         {
             cooldownTicksRemaining = ticks;
+            rangedCooldown = false;
             responseCooldownAppliedTick = Find.TickManager?.TicksGame ?? -1;
         }
 
@@ -413,6 +418,7 @@ namespace KRWF.RimKata
             lastDrivenTick = -1;
 
             cooldownTicksRemaining = 0;
+            rangedCooldown = false;
 
             openingWarmupBonusTicks = 0;
             openingWarmupPending = false;
@@ -1434,6 +1440,32 @@ namespace KRWF.RimKata
             return true;
         }
 
+        internal static bool AllowsNonRandomMovingSearch(Pawn pawn)
+        {
+            if (pawn?.Drafted != true
+                || !pawn.Spawned || pawn.Dead || pawn.Downed
+                || pawn.pather?.Moving != true
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || pawn.drafter?.FireAtWill != true
+                || !MovingFireEnabledForPawn(pawn)
+                || pawn.InMentalState
+                || RimKataTemporaryInactivity.IsInactive(pawn)
+                || !pawn.Awake()
+                || pawn.WorkTagIsDisabled(WorkTags.Violent))
+            {
+                return false;
+            }
+
+            Job job = pawn.CurJob;
+            // A forced move still permits automatic fire; an explicit attack
+            // keeps its ordered target instead of collecting replacements.
+            return (RimKataDraftedFireController.IsAutomaticFireJob(job?.def)
+                    && (job?.def != JobDefOf.AttackMelee
+                        || job.playerForced != true))
+                || (job?.def == RimKataDefOf.RimKata_Attack
+                    && !job.playerForced);
+        }
+
         internal static bool CanReceiveDormantMovingHostiles(Pawn pawn)
         {
             return pawn?.Drafted == true
@@ -1442,9 +1474,10 @@ namespace KRWF.RimKata
                 && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 && pawn.drafter?.FireAtWill == true
                 && pawn.IsPlayerControlled
-                && RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false
+                && (RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false
+                    ? RimKataDraftedFireController.IsAutomaticFireJob(pawn.CurJobDef)
+                    : AllowsNonRandomMovingSearch(pawn))
                 && MovingFireEnabledForPawn(pawn)
-                && RimKataDraftedFireController.IsAutomaticFireJob(pawn.CurJobDef)
                 && !pawn.InMentalState
                 && !RimKataTemporaryInactivity.IsInactive(pawn)
                 && pawn.Awake()
@@ -1633,12 +1666,15 @@ namespace KRWF.RimKata
                 && (attackEligibilityVerified
                     || RimKataEligibility.HasActiveRimKataAccess(pawn))
                 && pawn.drafter?.FireAtWill == true
-                && RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false
+                && (RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false
+                    || AllowsNonRandomMovingSearch(pawn))
                 && MovingFireEnabledForPawn(pawn)
                 && (pawn.CurJobDef == RimKataDefOf.RimKata_Attack
                     || RimKataDraftedFireController.IsAutomaticFireJob(pawn.CurJobDef))
                 && Find.TickManager?.slower?.ForcedNormalSpeed == true
-                && !HasMovementSearchCandidates(state)
+                && (RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false
+                    ? !HasMovementSearchCandidates(state)
+                    : RimKataSharedTargetSearch.HasNonRandomMovingVacancy(pawn, state))
                 && pawn.pather?.Moving == true;
         }
 
@@ -2447,6 +2483,7 @@ namespace KRWF.RimKata
             {
                 int cooldownTicks = Mathf.Max(1, cooldown.ticksLeft);
                 openingCycle.cooldownTicksRemaining = cooldownTicks;
+                openingCycle.rangedCooldown = !verb.IsMeleeAttack;
                 openingCycle.cooldownFromVanillaOpening = true;
                 openingCycle.firedInCurrentOpening = true;
                 openingCycle.lastFiredTarget = target;
@@ -2749,6 +2786,10 @@ namespace KRWF.RimKata
                 }
 
                 cycle.lastFiredTarget = null;
+                if (AllowsNonRandomMovingSearch(pawn))
+                {
+                    state.QueueDraftedMovementSearchTrigger();
+                }
             }
 
             Thing candidate;
@@ -3085,8 +3126,9 @@ namespace KRWF.RimKata
             }
 
             if (ordinaryWeaponEnabled && cycle.HasAutomaticCandidates
-                && (randomAttackEnabled
-                    ?? RimKataEligibility.RandomAttackEnabledForPawn(pawn)))
+                && ((randomAttackEnabled
+                        ?? RimKataEligibility.RandomAttackEnabledForPawn(pawn))
+                    || AllowsNonRandomMovingSearch(pawn)))
             {
                 return true;
             }
@@ -4420,6 +4462,7 @@ namespace KRWF.RimKata
             int cooldown = RimKataCombatMath.CooldownTicksForSingleShot(verb, pawn, false);
 
             cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining, cooldown);
+            cycle.rangedCooldown = false;
             cycle.cooldownFromVanillaOpening = false;
             cycle.lastFiredTarget = focus.HasThing ? focus.Thing : null;
             cycle.visualTarget = cycle.lastFiredTarget;
@@ -4583,7 +4626,8 @@ namespace KRWF.RimKata
             }
 
             BindCurrentWeapons(pawn, state);
-            if (RimKataEligibility.RandomAttackEnabledForPawn(pawn)
+            if ((RimKataEligibility.RandomAttackEnabledForPawn(pawn)
+                    || AllowsNonRandomMovingSearch(pawn))
                 && (state.primaryWeaponCycle?.HasAutomaticCandidates == true
                     || state.secondaryWeaponCycle?.HasAutomaticCandidates == true))
             {
@@ -4625,6 +4669,8 @@ namespace KRWF.RimKata
 
             BindCurrentWeapons(pawn, state);
             RimKataWeaponCycleState cycle = state.primaryWeaponCycle;
+            if (cooldownTicks > cycle.cooldownTicksRemaining)
+                cycle.rangedCooldown = false;
             cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining, Mathf.Max(0, cooldownTicks));
             if (cycle.plannedTarget == null && plannedTarget != null)
             {
@@ -5187,11 +5233,13 @@ namespace KRWF.RimKata
 
             ThingWithComps weapon = cycle.weapon;
             int cooldown = Mathf.Max(0, cycle.cooldownTicksRemaining);
+            bool rangedCooldown = cooldown > 0 && cycle.rangedCooldown;
             bool cooldownFromVanillaOpening = cooldown > 0
                 && cycle.cooldownFromVanillaOpening;
             cycle.Reset();
             cycle.Bind(weapon);
             cycle.cooldownTicksRemaining = cooldown;
+            cycle.rangedCooldown = rangedCooldown;
             cycle.cooldownFromVanillaOpening = cooldownFromVanillaOpening;
         }
 
@@ -5252,7 +5300,8 @@ namespace KRWF.RimKata
             RimKataWeaponCycleState cycle)
         {
             return cycle != null
-                && ((RimKataEligibility.RandomAttackEnabledForPawn(pawn)
+                && (((RimKataEligibility.RandomAttackEnabledForPawn(pawn)
+                            || AllowsNonRandomMovingSearch(pawn))
                         && cycle.HasAutomaticCandidates)
                     || cycle.cachedCandidateTarget != null
                     || cycle.plannedInterception
@@ -5619,6 +5668,7 @@ namespace KRWF.RimKata
             }
 
             cycle.cooldownTicksRemaining = Mathf.Max(0, state.draftedCooldownTicksRemaining);
+            cycle.rangedCooldown = false;
             cycle.warmupTicksRemaining = state.draftedPlannedTarget != null
                 ? Mathf.Max(1, state.draftedWarmupTicksRemaining)
                 : -1;
@@ -5769,6 +5819,7 @@ namespace KRWF.RimKata
                     cycle.completeInterruptedAttackAfterLoad = false;
                     cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining,
                         RimKataCombatMath.CooldownTicksForSingleShot(cycle.boundVerb, pawn, false));
+                    cycle.rangedCooldown = !cycle.boundVerb.IsMeleeAttack;
                     cycle.cooldownFromVanillaOpening |= cycle.openingWarmupPending;
                     cycle.firedInCurrentOpening |= cycle.openingWarmupPending;
                     cycle.openingWarmupPending = false;
@@ -5845,7 +5896,8 @@ namespace KRWF.RimKata
 
             bool changed = false;
             if (!randomAttackEnabled
-                && cycle.HasAutomaticCandidates)
+                && cycle.HasAutomaticCandidates
+                && !AllowsNonRandomMovingSearch(pawn))
             {
                 cycle.ClearStoredAutomaticCandidates();
                 cycle.automaticCandidateCollectionClosed = false;
@@ -6002,7 +6054,7 @@ namespace KRWF.RimKata
                 && !playerForced;
             bool requestAutomaticRefill = allowAutomaticRangedFire
                 && !closeCombatContext
-                && randomAttackEnabled;
+                && (randomAttackEnabled || AllowsNonRandomMovingSearch(pawn));
 
             bool focusedTargetControlsCycle = ordinaryWeaponEnabled && PrepareFocusedTarget(
                 pawn,
@@ -6411,7 +6463,8 @@ namespace KRWF.RimKata
             bool allowAutomaticRangedFire = attack.allowAutomaticRangedFire;
             bool randomAttackEnabled = attack.randomAttackEnabled;
             bool firedFromVanillaOpening = attack.firedFromVanillaOpening;
-            bool requestAutomaticRefill = allowAutomaticRangedFire && !closeCombatContext && randomAttackEnabled;
+            bool requestAutomaticRefill = allowAutomaticRangedFire && !closeCombatContext
+                && (randomAttackEnabled || AllowsNonRandomMovingSearch(pawn));
             if (cycle.weapon != firedWeapon) return;
             // A shot or defense response can change targets, equipment and availability.
             availability = default;
@@ -6451,6 +6504,7 @@ namespace KRWF.RimKata
             Thing firedTarget = attack.firedTarget;
             int cooldown = RimKataCombatMath.CooldownTicksForSingleShot(actionVerb, pawn, false);
             cycle.cooldownTicksRemaining = cooldown;
+            cycle.rangedCooldown = !actionVerb.IsMeleeAttack;
             cycle.lastFiredTarget = firedTarget;
             cycle.visualTarget = firedTarget;
             cycle.visualAimTicksRemaining = cooldown;
@@ -7179,6 +7233,19 @@ namespace KRWF.RimKata
                     || (pawn?.Drafted == true && pawn.drafter?.FireAtWill == false));
         }
 
+        internal static bool IsRangedCycleAction(
+            Pawn pawn, RimKataWeaponCycleState cycle, bool closeCombatContext)
+        {
+            // Loading or a plan transition can clear the selected Verb while
+            // preserving warmup. Observe the existing binding without resolving
+            // a new Verb, using the same physical-melee rule as execution.
+            if (cycle.plannedActionVerb != null)
+                return !cycle.plannedActionVerb.IsMeleeAttack;
+            return cycle.boundVerb?.IsMeleeAttack == false
+                && !UsesPhysicalMeleeAction(pawn, cycle.boundVerb,
+                    closeCombatContext && cycle.plannedCloseAttack);
+        }
+
         private static Verb ResolveCycleActionVerb(
             Pawn pawn,
             RimKataWeaponCycleState cycle,
@@ -7246,6 +7313,7 @@ namespace KRWF.RimKata
                 && pawn != null && verb != null)
             {
                 cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining, RimKataCombatMath.CooldownTicksForSingleShot(verb, pawn, false));
+                cycle.rangedCooldown = cycle.nativeAttack.verb?.IsMeleeAttack == false;
             }
         }
 

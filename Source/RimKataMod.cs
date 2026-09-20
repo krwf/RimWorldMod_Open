@@ -62,6 +62,15 @@ namespace KRWF.RimKata
             {
                 Log.Error("[RimKata] CE secondary ammo integration failed.\n" + exception);
             }
+
+            try
+            {
+                RimKataRatkinCompat.Apply(harmony);
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Ratkin firing-state integration failed.\n" + exception);
+            }
         }
     }
 

@@ -317,7 +317,8 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (!RandomAttackEnabled(pawn))
+            if (!RandomAttackEnabled(pawn)
+                && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn))
             {
                 StopOrdinaryTargetSearch(combatState);
                 return false;
@@ -397,7 +398,8 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (!RandomAttackEnabled(pawn))
+            if (!RandomAttackEnabled(pawn)
+                && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn))
             {
                 StopOrdinaryTargetSearch(combatState);
                 return false;
@@ -736,17 +738,23 @@ namespace KRWF.RimKata
                 && ordinaryWeaponEnabled;
             if (!randomAttack && !idleProjectilePriority)
             {
+                bool movingSearch = RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn);
                 if (ordinaryWeaponEnabled
                     && preferredTarget is Pawn
                     && (verb.IsMeleeAttack
                         || IsCloseCombatContext(combatState)
-                        || RimKataDualWeaponController.AutomaticRangedFireAllowed(pawn)))
+                        || RimKataDualWeaponController.AutomaticRangedFireAllowed(pawn))
+                    && (!movingSearch || CanShootRegisteredCandidate(
+                        pawn, combatState, cycle, verb, preferredTarget)))
                 {
                     target = preferredTarget;
                     return true;
                 }
 
-                return false;
+                // With no usable retained/order target, an empty moving slot can
+                // consume a replacement from the existing bounded search.
+                if (!movingSearch)
+                    return false;
             }
 
             EligibleCandidates.Clear();
@@ -861,7 +869,8 @@ namespace KRWF.RimKata
                 || pawn.InMentalState
                 || combatState == null
                 || (!randomAttackVerified
-                    && !RandomAttackEnabled(pawn)))
+                    && !RandomAttackEnabled(pawn)
+                    && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn)))
             {
                 return false;
             }
@@ -1558,7 +1567,8 @@ namespace KRWF.RimKata
             combatState.ResetCandidateSaturationExpansion(true);
             if (requestRefill
                 && pawn?.Map != null
-                && RandomAttackEnabled(pawn)
+                && (RandomAttackEnabled(pawn)
+                    || RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn))
                 && !IsCloseCombatContext(combatState))
             {
                 Begin(pawn, combatState, pawn.Position);
@@ -1968,6 +1978,9 @@ namespace KRWF.RimKata
             RimKataWeaponCycleState cycle,
             int ring)
         {
+            // Non-random moving fire only needs one replacement per empty slot.
+            if (!RandomAttackEnabled(pawn))
+                return 1;
             return Mathf.Max(
                 CandidateLimitForRing(pawn, ring),
                 cycle?.activeCandidateLimitOverride ?? 0);
@@ -2118,7 +2131,51 @@ namespace KRWF.RimKata
                 && RimKataDualWeaponController.VerbUsable(
                     pawn,
                     verb,
-                    closeCombatContext);
+                    closeCombatContext)
+                && (RandomAttackEnabled(pawn)
+                    || (!closeCombatContext
+                        && RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn)
+                        && NeedsNonRandomMovingCandidate(pawn, cycle, verb)));
+        }
+
+        internal static bool HasNonRandomMovingVacancy(
+            Pawn pawn, RimKataPawnCombatState combatState)
+        {
+            if (combatState == null)
+            {
+                // Before the first combat state exists, only signal a possible
+                // vacancy. Binding and search admission validate the actual Verb.
+                ThingWithComps primary = pawn?.equipment?.Primary;
+                ThingWithComps secondary =
+                    RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
+                return (primary?.def?.IsRangedWeapon == true
+                        && RimKataEquipmentUtility.IsWeaponEnabled(primary.def))
+                    || (secondary?.def?.IsRangedWeapon == true
+                        && pawn?.equipment?.AllEquipmentListForReading.Contains(secondary) == true
+                        && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def));
+            }
+
+            return IsSlotAvailableForNewCandidates(pawn, combatState,
+                    combatState.primaryWeaponCycle,
+                    CombatVerbForCycle(pawn, combatState.primaryWeaponCycle))
+                || IsSlotAvailableForNewCandidates(pawn, combatState,
+                    combatState.secondaryWeaponCycle,
+                    CombatVerbForCycle(pawn, combatState.secondaryWeaponCycle));
+        }
+
+        private static bool NeedsNonRandomMovingCandidate(
+            Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)
+        {
+            // Target invalidation owns range/LOS checks and clears retained work.
+            // A healthy target must not cause a new search or a mid-attack switch.
+            return cycle?.weapon?.def?.IsRangedWeapon == true
+                && verb?.IsMeleeAttack == false
+                && !cycle.HasAutomaticCandidates
+                && !cycle.NativeAttackPending
+                && !IsLiveRegisteredCandidate(pawn, cycle.focusedTarget)
+                && !IsLiveRegisteredCandidate(pawn, cycle.plannedTarget)
+                && !IsLiveRegisteredCandidate(pawn, cycle.cachedCandidateTarget)
+                && !IsLiveRegisteredCandidate(pawn, cycle.lastFiredTarget);
         }
 
         private static float ResolveCandidateCellRadiusForCycle(
