@@ -52,6 +52,10 @@ namespace KRWF.RimKata
         [ThreadStatic] private static Pawn currentDamageStaggerDefender;
         [ThreadStatic] private static Thing currentDamageStaggerAttacker;
 
+        private static bool HasProjectileImpact => RimKataProjectileImpactContext.CurrentProjectile != null;
+        private static RimKataCloseProjectileState CurrentCloseProjectile =>
+            RimKataProjectileImpactContext.CurrentCloseShot;
+
         public static DamageStaggerContextState EnterDamageStaggerContext(
             Pawn defender,
             Thing attacker)
@@ -133,9 +137,9 @@ namespace KRWF.RimKata
 
         public static bool TryGetCloseAttackResolution(Pawn pawn, out bool avoided)
         {
-            if (RimKataProjectileImpactContext.CurrentProjectile != null)
+            if (HasProjectileImpact)
             {
-                RimKataCloseProjectileState shot = RimKataProjectileImpactContext.CurrentCloseShot;
+                RimKataCloseProjectileState shot = CurrentCloseProjectile;
                 avoided = shot?.defenseAvoided == true;
                 return shot?.target == pawn && pawn != null && shot.defenseResolved;
             }
@@ -146,9 +150,9 @@ namespace KRWF.RimKata
 
         internal static void RecordCloseAttackResolution(Pawn pawn, bool avoided)
         {
-            if (RimKataProjectileImpactContext.CurrentProjectile != null)
+            if (HasProjectileImpact)
             {
-                RimKataCloseProjectileState shot = RimKataProjectileImpactContext.CurrentCloseShot;
+                RimKataCloseProjectileState shot = CurrentCloseProjectile;
                 if (shot?.target == pawn && pawn != null)
                 {
                     shot.defenseResolved = true;
@@ -167,9 +171,9 @@ namespace KRWF.RimKata
             out bool meleeResolution,
             out bool meleeHit)
         {
-            if (RimKataProjectileImpactContext.CurrentProjectile != null)
+            if (HasProjectileImpact)
             {
-                RimKataCloseProjectileState shot = RimKataProjectileImpactContext.CurrentCloseShot;
+                RimKataCloseProjectileState shot = CurrentCloseProjectile;
                 meleeResolution = shot?.meleeResolution == true;
                 meleeHit = shot?.meleeHit == true;
                 return pawn != null && shot?.target == pawn;
@@ -314,6 +318,30 @@ namespace KRWF.RimKata
             }
 
             return false;
+        }
+
+        internal static bool TryResolveCombatExtendedMeleeDefense(
+            Verb_MeleeAttack attackingVerb,
+            out bool parried)
+        {
+            parried = false;
+            Pawn defender = attackingVerb?.CurrentTarget.Pawn;
+            if (defender == null || !RimKataEligibility.CanUseDefense(defender))
+            {
+                return false;
+            }
+
+            // CE reaches this only after its hit roll and immobile/surprise gates.
+            // RimKata gets its own first defense roll; failure leaves CE's separate
+            // dodge, parry, armor and riposte calculations unchanged.
+            if (RimKataEligibility.CanRollMeleeDodge(defender)
+                && Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
+            {
+                return true;
+            }
+
+            parried = TryResolveMeleeParry(attackingVerb);
+            return parried;
         }
 
         public static bool TryResolveMeleeParry(
@@ -527,12 +555,12 @@ namespace KRWF.RimKata
             ProjectileDefenseFrame frame = projectileDefenseFrames[projectileDefenseDepth - 1];
             return pawn != null
                 && pawn == frame.avoidedPawn
-                && RimKataProjectileImpactContext.CurrentProjectile != null;
+                && HasProjectileImpact;
         }
 
         public static void MarkProjectileAvoided(Pawn pawn)
         {
-            if (RimKataProjectileImpactContext.CurrentProjectile != null
+            if (HasProjectileImpact
                 && projectileDefenseDepth > 0
                 && projectileDefenseFrames != null)
             {
@@ -553,14 +581,14 @@ namespace KRWF.RimKata
 
             ProjectileDefenseFrame frame = projectileDefenseFrames[projectileDefenseDepth - 1];
             avoided = frame.resolvedWasAvoided;
-            return RimKataProjectileImpactContext.CurrentProjectile != null
+            return HasProjectileImpact
                 && pawn != null
                 && pawn == frame.resolvedPawn;
         }
 
         public static void RecordProjectileDefense(Pawn pawn, bool avoided)
         {
-            if (RimKataProjectileImpactContext.CurrentProjectile != null
+            if (HasProjectileImpact
                 && projectileDefenseDepth > 0
                 && projectileDefenseFrames != null)
             {
@@ -575,7 +603,22 @@ namespace KRWF.RimKata
         public static bool TryAbsorbAfterShield(Pawn defender, DamageInfo dinfo)
         {
             Projectile projectile = RimKataProjectileImpactContext.CurrentProjectile;
-            RimKataCloseProjectileState closeShot = RimKataProjectileImpactContext.CurrentCloseShot;
+            return TryAbsorbProjectileDamage(defender, dinfo, projectile, CurrentCloseProjectile,
+                projectile?.Launcher ?? dinfo.Instigator, IsDirectHitBullet(projectile),
+                projectile?.def?.projectile?.explosionRadius > 0f);
+        }
+
+        internal static bool TryConsumeAvoidedProjectile(Thing projectile, Pawn defender,
+            out bool suppressJobNotification)
+        {
+            suppressJobNotification = false;
+            return defender.Map?.GetComponent<RimKataMapComponent>()?.TryConsumeAvoidedRangedProjectile(
+                projectile as Projectile, defender, out suppressJobNotification) == true;
+        }
+
+        internal static bool TryAbsorbProjectileDamage(Pawn defender, DamageInfo dinfo, Thing projectile,
+            RimKataCloseProjectileState closeShot, Thing attacker, bool directBullet, bool explosiveProjectile)
+        {
             if (closeShot?.target != defender)
             {
                 closeShot = null;
@@ -589,22 +632,16 @@ namespace KRWF.RimKata
             }
 
             if (dinfo.Def == null
-                || (!IsDirectHitBullet(projectile)
+                || (!directBullet
                     && (!dinfo.Def.isRanged
                         || dinfo.Def.isExplosive
-                        || projectile?.def?.projectile?.explosionRadius > 0f)))
+                        || explosiveProjectile)))
             {
                 return false;
             }
 
-            Thing attacker = projectile?.Launcher ?? dinfo.Instigator;
-
             if (!closeAttack
-                && defender.Map?.GetComponent<RimKataMapComponent>()
-                    ?.TryConsumeAvoidedRangedProjectile(
-                    projectile,
-                    defender,
-                    out bool suppressJobNotification) == true)
+                && TryConsumeAvoidedProjectile(projectile, defender, out bool suppressJobNotification))
             {
                 RecordProjectileDefense(defender, true);
                 MarkProjectileAvoided(defender);
@@ -736,7 +773,7 @@ namespace KRWF.RimKata
                     RecordProjectileDefense(defender, true);
                     MarkProjectileAvoided(defender);
                     RimKataProjectileUtility.SpawnDeflectedMiss(
-                        RimKataProjectileImpactContext.CurrentProjectile,
+                        projectile,
                         closeAttacker,
                         defender,
                         attackingVerb);
@@ -765,7 +802,7 @@ namespace KRWF.RimKata
                 && TryRangedDodge(
                     defender,
                     attacker,
-                    projectile))
+                    projectile as Projectile))
             {
                 RecordProjectileDefense(defender, true);
                 MarkProjectileAvoided(defender);
@@ -1087,7 +1124,7 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.PreApplyDamage))]
     public static class Patch_Pawn_PreApplyDamage_RimKata
     {
-        public static bool Prefix(Pawn __instance, ref bool absorbed)
+        public static bool Prefix(Pawn __instance, ref DamageInfo dinfo, ref bool absorbed)
         {
             if (!RimKataDefenseUtility.TryGetCloseAttackData(
                     __instance, out bool meleeResolution, out bool meleeHit))

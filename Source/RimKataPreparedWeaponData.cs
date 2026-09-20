@@ -208,7 +208,8 @@ namespace KRWF.RimKata
             // attack, including while a new settings revision is not prepared.
             // Only an installed, obsolete conversion must be restored/rebound.
             return !enabled || preparedRevision != RimKataEquipmentUtility.WeaponConfigurationRevision
-                || !PreparedDefinitions.ContainsKey(verb.verbProps) || verb.BurstShotCount <= 1;
+                || !PreparedDefinitions.ContainsKey(verb.verbProps)
+                || verb.BurstShotCount <= 1;
         }
 
         internal static void Restore(Verb verb)

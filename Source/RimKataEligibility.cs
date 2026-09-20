@@ -203,7 +203,7 @@ namespace KRWF.RimKata
 
             bool hostileNpc = Faction.OfPlayer != null
                 && pawn.Faction?.HostileTo(Faction.OfPlayer) == true;
-            if (!hostileNpc || !(verb is Verb_LaunchProjectile) || verb.verbProps == null)
+            if (!hostileNpc || !RimKataTargeting.IsProjectileVerb(verb) || verb.verbProps == null)
             {
                 return verb.Available();
             }

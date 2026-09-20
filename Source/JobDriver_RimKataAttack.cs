@@ -705,7 +705,7 @@ namespace KRWF.RimKata
                 || job?.def != RimKataDefOf.RimKata_Attack
                 || !RimKataEligibility.RandomAttackEnabledForPawn(pawn)
                 || target == null
-                || target is Projectile
+                || RimKataTargeting.IsProjectile(target)
                 || target == currentTarget
                 || !IsValidAssignedTarget(target)
                 || !pawn.CanReach(

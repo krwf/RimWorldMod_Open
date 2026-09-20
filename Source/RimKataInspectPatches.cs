@@ -122,7 +122,7 @@ namespace KRWF.RimKata
             if (target != null)
             {
                 string targetLabel = target.LabelCap;
-                if (cycle?.plannedInterception == true || target is Projectile)
+                if (cycle?.plannedInterception == true || RimKataTargeting.IsProjectile(target))
                 {
                     return "KRWF_RimKata_InspectIntercepting".Translate(
                         slot,

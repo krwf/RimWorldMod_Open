@@ -182,7 +182,7 @@ namespace KRWF.RimKata
                 }
 
                 if (plannedInterception
-                    && !(plannedTarget is Projectile))
+                    && !(RimKataTargeting.IsProjectile(plannedTarget)))
                 {
                     ClearPlan(false);
                     warmupTicksRemaining = -1;
@@ -192,7 +192,7 @@ namespace KRWF.RimKata
                 }
 
                 if (cachedCandidateInterception
-                    && !(cachedCandidateTarget is Projectile))
+                    && !(RimKataTargeting.IsProjectile(cachedCandidateTarget)))
                 {
                     cachedCandidateTarget = null;
                     cachedCandidateInterception = false;
@@ -399,7 +399,7 @@ namespace KRWF.RimKata
             automaticCandidateCollectionClosed = false;
             pendingCandidateLimitOverride = 0;
             activeCandidateLimitOverride = 0;
-            if (!(cachedCandidateTarget is Projectile))
+            if (!(RimKataTargeting.IsProjectile(cachedCandidateTarget)))
             {
                 cachedCandidateTarget = null;
                 cachedCandidateInterception = false;
@@ -1771,7 +1771,7 @@ namespace KRWF.RimKata
             // explosive-projectile interception.  Keep that established
             // boundary here as well as in the exact candidate selection path.
             if (weapon == null
-                || !(verb is Verb_LaunchProjectile)
+                || !(RimKataTargeting.IsProjectileVerb(verb))
                 || !VerbUsable(pawn, verb, false))
             {
                 return 0f;
@@ -1820,13 +1820,13 @@ namespace KRWF.RimKata
             {
                 return;
             }
-            if (!(primaryVerb is Verb_LaunchProjectile)
-                && !(secondaryVerb is Verb_LaunchProjectile))
+            if (!(RimKataTargeting.IsProjectileVerb(primaryVerb))
+                && !(RimKataTargeting.IsProjectileVerb(secondaryVerb)))
             {
                 return;
             }
 
-            Projectile primaryProjectile = null;
+            Thing primaryProjectile = null;
             float primaryRange = ProjectileWakeRange(
                 pawn,
                 primary,
@@ -1840,7 +1840,7 @@ namespace KRWF.RimKata
                     out primaryProjectile);
             }
 
-            Projectile secondaryProjectile = null;
+            Thing secondaryProjectile = null;
             float secondaryRange = ProjectileWakeRange(
                 pawn,
                 secondary,
@@ -1893,7 +1893,7 @@ namespace KRWF.RimKata
         private static bool TrySeedIdleProjectileCandidate(
             RimKataWeaponCycleState cycle,
             ThingWithComps expectedWeapon,
-            Projectile projectile)
+            Thing projectile)
         {
             if (cycle == null
                 || cycle.weapon != expectedWeapon
@@ -2080,7 +2080,7 @@ namespace KRWF.RimKata
         {
             if (target == null
                 || target is Pawn
-                || target is Projectile
+                || RimKataTargeting.IsProjectile(target)
                 || pawn == null)
             {
                 return false;
@@ -3027,7 +3027,7 @@ namespace KRWF.RimKata
                 RimKataWeaponCycleState interceptionCycle = state.primaryWeaponCycle;
                 if (RimKataTargetAccess.SettingsFor(pawn)?.explosiveInterceptionEnabled == false
                     || interceptionCycle.weapon == null
-                    || !(BoundCombatVerb(pawn, interceptionCycle) is Verb_LaunchProjectile)
+                    || !RimKataTargeting.IsProjectileVerb(BoundCombatVerb(pawn, interceptionCycle))
                     || !HasActiveInterceptionWork(pawn, interceptionCycle))
                 {
                     return false;
@@ -3053,8 +3053,8 @@ namespace KRWF.RimKata
                 && cycle.weapon == RimKataWeaponSlotUtility.PrimaryWeapon(pawn)
                 && HasActiveInterceptionWork(pawn, cycle)
                 && RimKataEligibility.CanUseProjectileInterception(pawn)
-                && RimKataWeaponSlotUtility.CombatVerb(pawn, cycle.weapon)
-                    is Verb_LaunchProjectile;
+                && RimKataTargeting.IsProjectileVerb(
+                    RimKataWeaponSlotUtility.CombatVerb(pawn, cycle.weapon));
         }
 
         internal static bool ReconcileCloseCombatBeforeContinuityCheck(
@@ -3117,7 +3117,7 @@ namespace KRWF.RimKata
                 ? cycle.ordinaryWeaponEnabled
                 : RimKataEquipmentUtility.IsWeaponEnabled(cycle.weapon.def);
             if ((!ordinaryWeaponEnabled
-                    && (!(verb is Verb_LaunchProjectile)
+                    && (!(RimKataTargeting.IsProjectileVerb(verb))
                         || !HasActiveInterceptionWork(pawn, cycle)))
                 || verb == null
                 || !IsCycleVerbUsable(pawn, verb, closeContext, ref availability))
@@ -3208,7 +3208,7 @@ namespace KRWF.RimKata
             bool invalidPlannedInterception = cycle.plannedInterception
                 && !IsActiveInterceptionTarget(
                     pawn,
-                    cycle.plannedTarget as Projectile);
+                    cycle.plannedTarget);
             if (invalidPlannedInterception)
             {
                 Verb verb = RimKataWeaponSlotUtility.CombatVerb(
@@ -3223,15 +3223,15 @@ namespace KRWF.RimKata
             if (cycle.cachedCandidateInterception
                 && !IsActiveInterceptionTarget(
                     pawn,
-                    cycle.cachedCandidateTarget as Projectile))
+                    cycle.cachedCandidateTarget))
             {
                 cycle.cachedCandidateTarget = null;
                 cycle.cachedCandidateInterception = false;
                 changed = true;
             }
 
-            if (cycle.visualTarget is Projectile visualProjectile
-                && !IsActiveInterceptionTarget(pawn, visualProjectile))
+            if (RimKataTargeting.IsProjectile(cycle.visualTarget)
+                && !IsActiveInterceptionTarget(pawn, cycle.visualTarget))
             {
                 cycle.visualTarget = null;
                 cycle.visualAimTicksRemaining = 0;
@@ -3243,7 +3243,7 @@ namespace KRWF.RimKata
 
         private static bool IsActiveInterceptionTarget(
             Pawn pawn,
-            Projectile projectile)
+            Thing projectile)
         {
             return projectile?.Map == pawn?.Map
                 && RimKataTargeting.IsInterceptionTargetActive(projectile);
@@ -4747,9 +4747,9 @@ namespace KRWF.RimKata
                 && !target.Destroyed
                 && target.Spawned
                 && target.Map == pawn.Map
-                && (!(target is Projectile projectile)
+                && (!RimKataTargeting.IsProjectile(target)
                     || RimKataTargeting
-                        .IsInterceptionTargetActive(projectile))
+                        .IsInterceptionTargetActive(target))
                 && (!(target is Pawn targetPawn) || !targetPawn.Dead);
         }
 
@@ -5402,17 +5402,17 @@ namespace KRWF.RimKata
                 && ((cycle.plannedInterception
                         && IsActiveInterceptionTarget(
                             pawn,
-                            cycle.plannedTarget as Projectile))
+                            cycle.plannedTarget))
                     || (cycle.cachedCandidateInterception
                         && IsActiveInterceptionTarget(
                             pawn,
-                            cycle.cachedCandidateTarget as Projectile)));
+                            cycle.cachedCandidateTarget)));
         }
 
         private static bool IsLiveNonProjectileTarget(Pawn pawn, Thing target)
         {
             return target != null
-                && !(target is Projectile)
+                && !(RimKataTargeting.IsProjectile(target))
                 && !target.Destroyed
                 && target.Spawned
                 && target.Map == pawn?.Map
@@ -5632,7 +5632,7 @@ namespace KRWF.RimKata
 
             Thing visualTarget = cycle.visualTarget;
             if (visualTarget != null
-                && !(visualTarget is Projectile)
+                && !(RimKataTargeting.IsProjectile(visualTarget))
                 && !(visualTarget == cachedTarget ? cachedValid
                     : visualTarget == plannedTarget ? plannedValid
                     : IsValidCloseCycleTarget(pawn, state, cycle, verb, visualTarget)))
@@ -5652,7 +5652,7 @@ namespace KRWF.RimKata
         {
             return RimKataSharedTargetSearch.IsValidForVerb(
                 pawn, state, cycle, verb, target,
-                !(target is Projectile)
+                !(RimKataTargeting.IsProjectile(target))
                     && cycle.ContainsAutomaticCandidate(target));
         }
 
@@ -5955,7 +5955,7 @@ namespace KRWF.RimKata
             }
             if ((ordinaryWeaponEnabled
                     || (RimKataTargetAccess.SettingsFor(pawn)?.explosiveInterceptionEnabled != false
-                        && verb is Verb_LaunchProjectile
+                        && RimKataTargeting.IsProjectileVerb(verb)
                         && interceptionWork))
                 && verb != null
                 && IsCycleVerbUsable(pawn, verb, closeContext, ref availability))
@@ -6029,7 +6029,7 @@ namespace KRWF.RimKata
             bool ordinaryWeaponEnabled = cycle.ordinaryWeaponEnabled;
             if (cycle.weapon == null
                 || (!ordinaryWeaponEnabled
-                    && (!(verb is Verb_LaunchProjectile)
+                    && (!(RimKataTargeting.IsProjectileVerb(verb))
                         || RimKataTargetAccess.SettingsFor(pawn)?.explosiveInterceptionEnabled == false
                         || !HasActiveInterceptionWork(pawn, cycle)))
                 || verb == null
@@ -6322,7 +6322,7 @@ namespace KRWF.RimKata
                 if (cycle.plannedInterception
                     && !RimKataInterceptionTrajectory.CanIntercept(
                         pawn, cycle.plannedActionVerb,
-                        cycle.plannedTarget as Projectile, totalWarmup))
+                        cycle.plannedTarget, totalWarmup))
                 {
                     ClearTargetPreservingCycle(cycle);
                     return;
@@ -6409,7 +6409,7 @@ namespace KRWF.RimKata
                 && pawn.pather?.MovingNow == true;
             attack.closeShot = !actionVerb.IsMeleeAttack && cycle.plannedCloseAttack;
             attack.interceptionShot = cycle.plannedInterception;
-            attack.interceptionTarget = cycle.plannedTarget as Projectile;
+            attack.interceptionTarget = cycle.plannedInterception ? cycle.plannedTarget : null;
             attack.closeMeleeResolution = attack.closeShot;
             attack.closeMeleeHit = false;
             attack.closeDefensePrecheck = RimKataCloseDefensePrecheck.None;
@@ -6532,7 +6532,7 @@ namespace KRWF.RimKata
                 {
                     // Prune a target disabled by this shot; selection checks the
                     // next candidate's shootability without repeating admission.
-                    if (!(firedTarget is Projectile)
+                    if (!(RimKataTargeting.IsProjectile(firedTarget))
                         && !RimKataSharedTargetSearch.IsLiveRegisteredCandidate(
                             pawn,
                             firedTarget))
@@ -6723,7 +6723,7 @@ namespace KRWF.RimKata
             }
             else if (!promoted)
             {
-                if (!(cachedTarget is Projectile))
+                if (!(RimKataTargeting.IsProjectile(cachedTarget)))
                 {
                     EvictAutomaticCandidate(
                         pawn,
@@ -7073,7 +7073,7 @@ namespace KRWF.RimKata
                 return pawn.CanReachImmediate(target, PathEndMode.Touch);
             }
 
-            if (target is Projectile)
+            if (RimKataTargeting.IsProjectile(target))
             {
                 return RimKataSharedTargetSearch.IsValidForVerb(
                     pawn,
@@ -7122,7 +7122,7 @@ namespace KRWF.RimKata
 
             if (cycle.plannedInterception)
             {
-                return target is Projectile
+                return RimKataTargeting.IsProjectile(target)
                     && RimKataSharedTargetSearch.IsValidForVerb(
                         pawn,
                         verb,
@@ -7182,9 +7182,9 @@ namespace KRWF.RimKata
 
             if (interception)
             {
-                return !(target is Projectile projectile)
+                return !RimKataTargeting.IsProjectile(target)
                     || !RimKataTargeting.IsInterceptionTargetActive(
-                        projectile);
+                        target);
             }
 
             bool forcedAssignedTarget = playerForced && target == assignedTarget;
@@ -7293,7 +7293,7 @@ namespace KRWF.RimKata
                 || (playerForced && invalidTarget == assignedTarget);
             if (!explicitTarget
                 && invalidTarget != null
-                && !(invalidTarget is Projectile))
+                && !(RimKataTargeting.IsProjectile(invalidTarget)))
             {
                 EvictAutomaticCandidate(
                     pawn,
@@ -7389,7 +7389,7 @@ namespace KRWF.RimKata
 
             if (!(randomAttackEnabled
                     ?? RimKataEligibility.RandomAttackEnabledForPawn(pawn))
-                && !(target is Projectile)
+                && !(RimKataTargeting.IsProjectile(target))
                 && verb.CanHitTarget(target))
             {
                 return false;
@@ -7402,7 +7402,7 @@ namespace KRWF.RimKata
                 verb,
                 false);
             ClearTargetPreservingCycle(cycle);
-            if (!focusedTargetUsable && !(target is Projectile))
+            if (!focusedTargetUsable && !(RimKataTargeting.IsProjectile(target)))
             {
                 EvictAutomaticCandidate(
                     pawn,
@@ -7463,9 +7463,9 @@ namespace KRWF.RimKata
 
         private static LocalTargetInfo TargetInfo(RimKataWeaponCycleState cycle)
         {
-            if (cycle.plannedInterception && cycle.plannedTarget is Projectile projectile)
+            if (cycle.plannedInterception && RimKataTargeting.IsProjectile(cycle.plannedTarget))
             {
-                return new LocalTargetInfo(projectile);
+                return new LocalTargetInfo(cycle.plannedTarget);
             }
 
             return cycle.plannedTarget != null

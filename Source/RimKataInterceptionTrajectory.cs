@@ -45,7 +45,7 @@ namespace KRWF.RimKata
             }
         }
 
-        internal static bool CanIntercept(Pawn pawn, Verb verb, Projectile target, int delayTicks,
+        internal static bool CanIntercept(Pawn pawn, Verb verb, Thing target, int delayTicks,
             float? knownRangeSquared = null)
         {
             if (pawn?.Map == null || !(verb is Verb_LaunchProjectile launchVerb)
@@ -56,15 +56,15 @@ namespace KRWF.RimKata
 
             ThingDef projectileDef = launchVerb.Projectile;
             float speed = projectileDef?.projectile?.SpeedTilesPerTick ?? 0f;
-            return TryReadFlight(target, out Flight flight)
+            return TryReadFlight(target as Projectile, out Flight flight)
                 && TryPredict(pawn.DrawPos, speed, flight, delayTicks, out Vector3 point, out _)
                 && WithinWeaponRange(pawn, verb, point, knownRangeSquared);
         }
 
-        internal static bool TryRedirectHit(Projectile shot, Projectile target, Pawn pawn, Verb verb)
+        internal static bool TryRedirectHit(Projectile shot, Thing target, Pawn pawn, Verb verb)
         {
             if (shot?.Spawned != true || shot.Destroyed || shot.Map != target?.Map
-                || !TryReadFlight(target, out Flight flight))
+                || !TryReadFlight(target as Projectile, out Flight flight))
             {
                 return false;
             }
@@ -94,11 +94,11 @@ namespace KRWF.RimKata
             shot.usedTarget = new LocalTargetInfo(Destination(shot).ToIntVec3());
         }
 
-        internal static bool TryGetContact(Projectile shot, Projectile target, out Vector3 point)
+        internal static bool TryGetContact(Projectile shot, Thing target, out Vector3 point)
         {
             point = default(Vector3);
             int remaining = RemainingTicks(shot);
-            if (!TryReadFlight(target, out Flight flight, true))
+            if (!TryReadFlight(target as Projectile, out Flight flight, true))
             {
                 return false;
             }

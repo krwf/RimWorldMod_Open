@@ -113,7 +113,7 @@ namespace KRWF.RimKata
     public sealed class RimKataInterceptionShotLink : IExposable
     {
         public Projectile shot;
-        public Projectile target;
+        public Thing target;
 
         public RimKataInterceptionShotLink()
         {
@@ -121,7 +121,7 @@ namespace KRWF.RimKata
 
         public RimKataInterceptionShotLink(
             Projectile shot,
-            Projectile target)
+            Thing target)
         {
             this.shot = shot;
             this.target = target;
@@ -1622,9 +1622,9 @@ namespace KRWF.RimKata
         private readonly Dictionary<Projectile, RimKataInterceptionShotLink>
             interceptionShotLinksByShot =
                 new Dictionary<Projectile, RimKataInterceptionShotLink>();
-        private readonly Dictionary<Projectile, List<RimKataInterceptionShotLink>>
+        private readonly Dictionary<Thing, List<RimKataInterceptionShotLink>>
             interceptionShotLinksByTarget =
-                new Dictionary<Projectile, List<RimKataInterceptionShotLink>>();
+                new Dictionary<Thing, List<RimKataInterceptionShotLink>>();
         private Dictionary<Projectile, PendingProjectileValidation>
             pendingProjectileValidations =
                 new Dictionary<Projectile, PendingProjectileValidation>();
@@ -1652,6 +1652,11 @@ namespace KRWF.RimKata
 
         internal bool HasActiveExplosiveProjectiles =>
             activeExplosiveProjectiles.Count > 0;
+
+        internal void NotifyCEProjectileChanged()
+        {
+            if (RimKataTargetAccess.AnyExplosiveInterceptionEnabled) RequestProjectileWakeTraversal();
+        }
 
         internal int WeatherRangeRevision
         {
@@ -2173,7 +2178,7 @@ namespace KRWF.RimKata
 
         internal void RegisterInterceptionShot(
             Projectile shot,
-            Projectile target)
+            Thing target)
         {
             if (shot == null
                 || target == null
@@ -2206,7 +2211,7 @@ namespace KRWF.RimKata
 
         internal bool TryTakeInterceptionTarget(
             Projectile shot,
-            out Projectile target)
+            out Thing target)
         {
             target = null;
             if (shot == null)
@@ -2247,7 +2252,7 @@ namespace KRWF.RimKata
                 RimKataInterceptionShotLink link =
                     interceptionShotLinks[i];
                 Projectile shot = link?.shot;
-                Projectile target = link?.target;
+                Thing target = link?.target;
                 if (shot == null
                     || target == null
                     || (pruneInvalid
@@ -2291,7 +2296,7 @@ namespace KRWF.RimKata
 
             interceptionShotLinksByShot.Remove(link.shot);
             interceptionShotLinks.Remove(link);
-            Projectile target = link.target;
+            Thing target = link.target;
             if (target != null
                 && interceptionShotLinksByTarget.TryGetValue(
                     target,
@@ -2305,7 +2310,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private void RemoveInterceptionLinksForTarget(Projectile target)
+        private void RemoveInterceptionLinksForTarget(Thing target)
         {
             if (target == null
                 || !interceptionShotLinksByTarget.TryGetValue(
@@ -2325,7 +2330,7 @@ namespace KRWF.RimKata
         private void AddInterceptionTargetIndex(
             RimKataInterceptionShotLink link)
         {
-            Projectile target = link?.target;
+            Thing target = link?.target;
             if (target == null)
             {
                 return;
@@ -2729,6 +2734,11 @@ namespace KRWF.RimKata
             }
 
             float rangeSquared = maximumRange * maximumRange;
+            return HasHostileProjectileInRange(pawn, rangeSquared);
+        }
+
+        internal bool HasHostileProjectileInRange(Pawn pawn, float rangeSquared)
+        {
             foreach (Projectile projectile in activeExplosiveProjectiles)
             {
                 if (RimKataTargeting.IsPotentialExplosiveProjectile(
@@ -2762,7 +2772,7 @@ namespace KRWF.RimKata
             Pawn pawn,
             Verb verb,
             float rangeSquared,
-            out Projectile candidate)
+            out Thing candidate)
         {
             candidate = null;
             if (pawn?.Map != map

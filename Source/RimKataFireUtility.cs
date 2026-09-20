@@ -69,7 +69,7 @@ namespace KRWF.RimKata
     {
         public static void Register(
             Projectile shot,
-            Projectile targetProjectile)
+            Thing targetProjectile)
         {
             if (shot == null
                 || targetProjectile == null
@@ -92,7 +92,7 @@ namespace KRWF.RimKata
             if (component == null
                 || !component.TryTakeInterceptionTarget(
                     shot,
-                    out Projectile target))
+                    out Thing target))
             {
                 return false;
             }
@@ -143,7 +143,7 @@ namespace KRWF.RimKata
             private bool closeMeleeResolution;
             private bool closeMeleeHit;
             private bool interceptionShot;
-            private Projectile interceptionTarget;
+            private Thing interceptionTarget;
             private float movingAccuracyMultiplier;
             private float interceptionAccuracyBonusMultiplier;
             private float serumInterceptionMultiplier;
@@ -201,7 +201,7 @@ namespace KRWF.RimKata
         [ThreadStatic] public static bool CloseMeleeResolution;
         [ThreadStatic] public static bool CloseMeleeHit;
         [ThreadStatic] public static bool InterceptionShot;
-        [ThreadStatic] public static Projectile InterceptionTarget;
+        [ThreadStatic] public static Thing InterceptionTarget;
         [ThreadStatic] public static float MovingAccuracyMultiplier;
         [ThreadStatic] public static float InterceptionAccuracyBonusMultiplier;
         [ThreadStatic] public static float SerumInterceptionMultiplier;
@@ -216,7 +216,7 @@ namespace KRWF.RimKata
             bool movingShot,
             bool closeShot,
             bool interceptionShot,
-            Projectile interceptionTarget,
+            Thing interceptionTarget,
             bool closeMeleeResolution,
             bool closeMeleeHit,
             RimKataCloseDefensePrecheck closeDefensePrecheck)
@@ -477,8 +477,9 @@ namespace KRWF.RimKata
             return target.Position;
         }
 
-        public static void SpawnDeflectedMiss(Projectile source, Pawn attacker, Pawn defender, Verb sourceVerb)
+        public static void SpawnDeflectedMiss(Thing sourceThing, Pawn attacker, Pawn defender, Verb sourceVerb)
         {
+            Projectile source = sourceThing as Projectile;
             ThingDef sourceDef = source?.def;
             if (sourceDef == null || attacker?.Map == null || defender?.Map != attacker.Map)
             {
@@ -519,7 +520,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private static IntVec3 FindMissCell(IntVec3 attacker, IntVec3 defender, Map map)
+        internal static IntVec3 FindMissCell(IntVec3 attacker, IntVec3 defender, Map map)
         {
             Vector3 forward = (defender - attacker).ToVector3();
             forward.y = 0f;
@@ -890,7 +891,7 @@ namespace KRWF.RimKata
                 && equipment == RimKataFireContext.ActiveVerb.EquipmentSource;
             if (ownedShot && RimKataFireContext.InterceptionShot)
             {
-                Projectile interceptionTarget = RimKataFireContext.InterceptionTarget;
+                Thing interceptionTarget = RimKataFireContext.InterceptionTarget;
                 if (!__instance.Destroyed
                     && interceptionTarget != null
                     && usedTarget.HasThing

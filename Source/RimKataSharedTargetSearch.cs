@@ -811,7 +811,7 @@ namespace KRWF.RimKata
                     ? Rand.Range(0, EligibleCandidates.Count)
                     : 0;
                 Thing candidate = EligibleCandidates[candidateIndex];
-                if (candidate is Projectile)
+                if (RimKataTargeting.IsProjectile(candidate))
                 {
                     target = candidate;
                     break;
@@ -842,7 +842,7 @@ namespace KRWF.RimKata
                 NotifyAutomaticCandidateCountChanged(pawn, combatState, true);
             }
 
-            interception = target is Projectile;
+            interception = RimKataTargeting.IsProjectile(target);
             return target != null;
         }
 
@@ -932,13 +932,13 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (target is Projectile projectile)
+            if (RimKataTargeting.IsProjectile(target))
             {
                 return IsValidProjectileForCycle(
                     pawn,
                     cycle,
                     verb,
-                    projectile);
+                    target);
             }
 
             if (registeredCandidate)
@@ -1510,7 +1510,7 @@ namespace KRWF.RimKata
             Pawn pawn,
             RimKataWeaponCycleState cycle,
             Verb verb,
-            Projectile projectile)
+            Thing projectile)
         {
             float range = ProjectileRangeForCycle(pawn, cycle, verb);
             return range > 0f
@@ -1528,7 +1528,7 @@ namespace KRWF.RimKata
             Thing target,
             bool requestRefill)
         {
-            if (target == null || target is Projectile)
+            if (target == null || RimKataTargeting.IsProjectile(target))
             {
                 return false;
             }

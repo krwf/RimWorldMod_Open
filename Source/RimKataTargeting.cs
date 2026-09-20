@@ -14,6 +14,10 @@ namespace KRWF.RimKata
     {
         private static readonly FieldInfo LandedField = AccessTools.Field(typeof(Projectile), "landed");
 
+        public static bool IsProjectile(Thing thing) => thing is Projectile;
+
+        public static bool IsProjectileVerb(Verb verb) => verb is Verb_LaunchProjectile;
+
         public static bool IsAutomaticEnemy(Pawn pawn, Thing target)
         {
             if (pawn?.Map == null
@@ -159,19 +163,19 @@ namespace KRWF.RimKata
         internal static bool IsValidExplosiveProjectileForVerb(
             Pawn pawn,
             Verb verb,
-            Projectile projectile,
+            Thing projectile,
             float rangeSquared)
         {
             return IsValidExplosiveProjectile(
                 pawn,
                 verb,
-                projectile,
+                projectile as Projectile,
                 rangeSquared);
         }
 
         internal static bool IsEnemyProjectileLauncher(
             Pawn pawn,
-            Projectile projectile)
+            Thing projectile)
         {
             if (pawn == null || projectile == null)
             {
@@ -181,17 +185,17 @@ namespace KRWF.RimKata
             bool defenderHostileToPlayer =
                 pawn.Faction?.HostileTo(Faction.OfPlayer) == true;
             bool launchedByPlayer =
-                projectile.Launcher?.Faction == Faction.OfPlayer;
+                (projectile as Projectile)?.Launcher?.Faction == Faction.OfPlayer;
             return defenderHostileToPlayer
                 ? launchedByPlayer
                 : !launchedByPlayer;
         }
 
         internal static bool IsPotentialExplosiveProjectile(
-            Projectile projectile,
+            Thing projectile,
             Map map)
         {
-            return projectile != null
+            return projectile is Projectile
                 && map != null
                 && projectile.Spawned
                 && !projectile.Destroyed
@@ -200,9 +204,9 @@ namespace KRWF.RimKata
                 && !(bool)LandedField.GetValue(projectile);
         }
 
-        public static bool IsInterceptionTargetActive(Projectile projectile)
+        public static bool IsInterceptionTargetActive(Thing projectile)
         {
-            return projectile != null
+            return projectile is Projectile
                 && projectile.Spawned
                 && !projectile.Destroyed
                 && projectile.def.projectile?.explosionRadius > 0f
@@ -212,8 +216,9 @@ namespace KRWF.RimKata
 
     public static class RimKataInterceptionUtility
     {
-        public static bool Resolve(Pawn pawn, Projectile projectile, Vector3 impactPosition)
+        public static bool Resolve(Pawn pawn, Thing targetProjectile, Vector3 impactPosition)
         {
+            Projectile projectile = targetProjectile as Projectile;
             if (pawn?.Map == null
                 || projectile == null
                 || !projectile.Spawned
@@ -282,7 +287,7 @@ namespace KRWF.RimKata
             return true;
         }
 
-        private static void PlaySuccessEffect(
+        internal static void PlaySuccessEffect(
             Map map,
             Vector3 position,
             float velocityAngle)

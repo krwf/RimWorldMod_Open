@@ -57,18 +57,21 @@ namespace KRWF.RimKata
         internal bool interceptionShot;
         internal bool closeMeleeResolution;
         internal bool closeMeleeHit;
-        internal Projectile interceptionTarget;
+        internal Thing interceptionTarget;
         internal RimKataCloseDefensePrecheck closeDefensePrecheck;
         internal bool Pending { get; private set; }
         internal bool Executing { get; private set; }
-        internal bool Started { get; private set; }
+        internal bool Started { get; set; }
         internal bool HasFired { get; private set; }
         internal bool BurstActive => Pending && Started && verb?.state == VerbState.Bursting;
         private bool cancelled;
+        internal bool Cancelled => cancelled;
         private Verb bindingVerb;
         private VerbBinding nativeBinding;
         private RimKataFireContext.ScopeState previousContext;
         private Stance_RimKataAim previousAim;
+        // Used only by the optional CE patches; the common firing path never reads it.
+        internal int extraAimTicks;
 
         internal static void Bind(Verb verb)
         {
@@ -167,7 +170,7 @@ namespace KRWF.RimKata
                 && (!interceptionShot || RimKataTargeting.IsInterceptionTargetActive(interceptionTarget));
         }
 
-        private bool PrepareShot()
+        internal bool PrepareShot()
         {
             if (closeShot)
             {
@@ -283,7 +286,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private void RestoreAimAfterShot()
+        internal void RestoreAimAfterShot()
         {
             if (pawn.stances?.curStance is Stance_Busy busy && busy.verb == verb)
             {

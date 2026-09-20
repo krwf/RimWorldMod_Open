@@ -71,6 +71,19 @@ namespace KRWF.RimKata
             {
                 Log.Error("[RimKata] Ratkin firing-state integration failed.\n" + exception);
             }
+
+            ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
+            ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
+        }
+
+        private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)
+        {
+            try { apply(harmony); }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] CE " + component + " integration failed.\n" + exception);
+            }
         }
     }
 
