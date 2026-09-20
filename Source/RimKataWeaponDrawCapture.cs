@@ -59,8 +59,40 @@ namespace KRWF.RimKata
             internal bool CanReplay => Mesh != null && Material != null && Properties == null
                 && SubmeshIndex >= 0 && SubmeshIndex < Mesh.subMeshCount;
 
-            internal void Submit(Mesh mesh, Matrix4x4 matrix)
+            internal void Submit(Mesh mesh, Matrix4x4 matrix,
+                bool mirrorSecondaryDepth = false, bool adjustSecondaryHeight = false,
+                Vector3 pawnPivot = default(Vector3), bool keepSecondaryHeight = false,
+                float weaponAngleOffset = 0f, bool lowerSecondaryDepth = false)
             {
+                // Final Unity submission boundary for native and captured secondary
+                // draws. East and west use the same per-draw depth reflection;
+                // the special east-facing slot swap affects only screen height.
+                if (mirrorSecondaryDepth)
+                {
+                    matrix.m13 = 2f * RimKataDualWeaponRenderUtility.PawnRenderAltitude
+                        - Matrix.m13;
+                }
+                else if (lowerSecondaryDepth)
+                {
+                    // North/south keep the source depth order, with the secondary
+                    // just below its original primary-slot draw at submission.
+                    matrix.m13 = Matrix.m13 - 0.001f;
+                }
+                // Keep the captured horizontal position. Only the screen-height
+                // difference is halved, with the existing special east-facing swap.
+                if (adjustSecondaryHeight && !keepSecondaryHeight)
+                {
+                    matrix.m23 = pawnPivot.z + (matrix.m23 - pawnPivot.z) * 0.5f;
+                }
+                if (weaponAngleOffset != 0f)
+                {
+                    // Tilt the combat weapon around its own draw origin, after
+                    // recoil and response poses. Do not orbit it around the pawn.
+                    Vector4 position = matrix.GetColumn(3);
+                    matrix = Matrix4x4.Rotate(Quaternion.AngleAxis(weaponAngleOffset, Vector3.up))
+                        * matrix;
+                    matrix.SetColumn(3, position);
+                }
                 DrawInternal(mesh, SubmeshIndex, matrix, Material, Layer, Camera, Properties,
                     CastShadows, ReceiveShadows, ProbeAnchor, LightProbeUsage, LightProbeProxyVolume);
             }
@@ -100,8 +132,9 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            internal bool ReplayMirrored(Vector3 pivot, float facingAngle, float heightOffset = 0f,
-                float visualAngleOffset = 0f)
+            internal bool ReplayMirrored(Vector3 pivot, float facingAngle,
+                float visualAngleOffset = 0f, bool sideFacingSecondary = false,
+                bool keepSecondaryHeight = false)
             {
                 if (disposed || commands.Count == 0) return false;
                 replayMeshes.Clear();
@@ -111,15 +144,19 @@ namespace KRWF.RimKata
                 for (int i = 0; i < commands.Count; i++)
                 {
                     DrawCommand command = commands[i];
-                    if (!command.CanReplay || !TryGetMirroredMesh(command.Mesh, out Mesh mirrored))
+                    if (!command.CanReplay) return false;
+                    Mesh replayMesh = command.Mesh;
+                    if (!sideFacingSecondary && !TryGetMirroredMesh(command.Mesh, out replayMesh))
                         return false;
-                    replayMeshes.Add(mirrored);
+                    replayMeshes.Add(replayMesh);
                 }
 
-                Matrix4x4 reflection = WorldReflection(pivot, facingAngle, heightOffset);
+                Matrix4x4 reflection = sideFacingSecondary
+                    ? Matrix4x4.identity
+                    : WorldReflection(pivot, facingAngle);
                 if (visualAngleOffset != 0f)
                 {
-                    // Apply the response pose after mirroring, around the same
+                    // Apply the response pose after placement, around the same
                     // pawn pivot. A Y-axis rotation keeps each draw's height.
                     Matrix4x4 rotation = Matrix4x4.Rotate(
                         Quaternion.AngleAxis(visualAngleOffset, Vector3.up));
@@ -131,14 +168,21 @@ namespace KRWF.RimKata
                 {
                     DrawCommand command = commands[i];
                     Matrix4x4 matrix = reflection * command.Matrix;
-                    // The mirrored mesh already contains a local X reflection.
-                    // Cancel it in the matrix so the net geometry is world-mirrored,
-                    // while retaining the original matrix's winding parity.
-                    matrix.m00 = -matrix.m00;
-                    matrix.m10 = -matrix.m10;
-                    matrix.m20 = -matrix.m20;
-                    matrix.m30 = -matrix.m30;
-                    command.Submit(replayMeshes[i], matrix);
+                    if (!sideFacingSecondary)
+                    {
+                        // The mirrored mesh already contains a local X reflection.
+                        // Cancel it in the matrix so the net geometry is world-mirrored,
+                        // while retaining the original matrix's winding parity.
+                        matrix.m00 = -matrix.m00;
+                        matrix.m10 = -matrix.m10;
+                        matrix.m20 = -matrix.m20;
+                        matrix.m30 = -matrix.m30;
+                    }
+                    // Final submission applies the common per-draw depth rule.
+                    command.Submit(replayMeshes[i], matrix, sideFacingSecondary,
+                        adjustSecondaryHeight: sideFacingSecondary, pawnPivot: pivot,
+                        keepSecondaryHeight: keepSecondaryHeight,
+                        lowerSecondaryDepth: !sideFacingSecondary);
                 }
                 return true;
             }
@@ -185,7 +229,7 @@ namespace KRWF.RimKata
             mirroredMeshes.Clear();
         }
 
-        private static Matrix4x4 WorldReflection(Vector3 pivot, float facingAngle, float heightOffset)
+        private static Matrix4x4 WorldReflection(Vector3 pivot, float facingAngle)
         {
             float radians = facingAngle * Mathf.Deg2Rad;
             float x = Mathf.Sin(radians);
@@ -195,7 +239,6 @@ namespace KRWF.RimKata
             result.m02 = result.m20 = 2f * x * z;
             result.m22 = 2f * z * z - 1f;
             result.m03 = pivot.x - result.m00 * pivot.x - result.m02 * pivot.z;
-            result.m13 = heightOffset;
             result.m23 = pivot.z - result.m20 * pivot.x - result.m22 * pivot.z;
             return result;
         }
@@ -272,6 +315,7 @@ namespace KRWF.RimKata
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer));
             else
             {
+                matrix.m23 = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(matrix.m23);
                 Graphics.DrawMesh(mesh, matrix, material, layer);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
             }
@@ -282,6 +326,7 @@ namespace KRWF.RimKata
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer, camera));
             else
             {
+                matrix.m23 = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(matrix.m23);
                 Graphics.DrawMesh(mesh, matrix, material, layer, camera);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
             }
@@ -293,6 +338,7 @@ namespace KRWF.RimKata
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer));
             else
             {
+                position.z = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(position.z);
                 Graphics.DrawMesh(mesh, position, rotation, material, layer);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
             }
@@ -304,6 +350,7 @@ namespace KRWF.RimKata
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer, camera));
             else
             {
+                position.z = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(position.z);
                 Graphics.DrawMesh(mesh, position, rotation, material, layer, camera);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
             }
@@ -318,6 +365,7 @@ namespace KRWF.RimKata
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));
             else
             {
+                matrix.m23 = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(matrix.m23);
                 Graphics.DrawMesh(mesh, matrix, material, layer, camera, submeshIndex, properties,
                     castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
@@ -333,6 +381,7 @@ namespace KRWF.RimKata
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage));
             else
             {
+                matrix.m23 = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(matrix.m23);
                 Graphics.DrawMesh(mesh, matrix, material, layer, camera, submeshIndex, properties,
                     castShadows, receiveShadows, probeAnchor, lightProbeUsage);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
@@ -349,6 +398,7 @@ namespace KRWF.RimKata
                     useLightProbes ? LightProbeUsage.BlendProbes : LightProbeUsage.Off));
             else
             {
+                position.z = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(position.z);
                 Graphics.DrawMesh(mesh, position, rotation, material, layer, camera, submeshIndex, properties,
                     castShadows, receiveShadows, probeAnchor, useLightProbes);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();
@@ -365,6 +415,7 @@ namespace KRWF.RimKata
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));
             else
             {
+                matrix.m23 = RimKataWeaponRenderProbe.PlaceExternalPrimaryHeight(matrix.m23);
                 DrawInternal(mesh, submeshIndex, matrix, material, layer, camera, properties,
                     castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume);
                 RimKataWeaponRenderProbe.NotifyMeshDraw();

@@ -209,6 +209,18 @@ namespace KRWF.RimKata
             }
         }
 
+        internal static float PlaceExternalPrimaryHeight(float originalZ)
+        {
+            if (!Probing && extraDrawDepth == 0
+                && frame.pawn != null && frame.primary != null && frame.secondary != null
+                && frame.facing == Rot4.East
+                && !RimKataDualWeaponRenderUtility.DrawingSecondary)
+            {
+                return frame.root.z + (originalZ - frame.root.z) * 0.5f;
+            }
+            return originalZ;
+        }
+
         internal static void NotifySecondaryDraw(Thing weapon)
         {
             if (!Probing && frame.pawn != null && weapon == frame.secondary)
@@ -230,10 +242,15 @@ namespace KRWF.RimKata
 
         internal static bool TryGetIdlePivot(Pawn pawn, out Vector3 pivot, out float facingAngle)
         {
+            return TryGetDrawPivot(pawn, out pivot, out facingAngle)
+                && !IsAiming(pawn) && !RimKataGunReadyDrawUtility.Current.gunReady;
+        }
+
+        internal static bool TryGetDrawPivot(Pawn pawn, out Vector3 pivot, out float facingAngle)
+        {
             pivot = frame.root;
             facingAngle = frame.facing.AsAngle;
-            return !Probing && frame.pawn == pawn && pawn != null
-                && !IsAiming(pawn) && !RimKataGunReadyDrawUtility.Current.gunReady;
+            return !Probing && frame.pawn == pawn && pawn != null;
         }
 
         internal static SecondaryDrawResult DrawSpecialSecondary(
@@ -283,8 +300,10 @@ namespace KRWF.RimKata
                         // it was seen the captured meshes contain only additions
                         // such as a sheath. Keep those anchored to the pawn.
                         if (capture.Count > 0 && !capture.ReplayMirrored(
-                            frame.root, frame.facing.AsAngle, -0.001f,
-                            nativeWeapon ? 0f : visualAngleOffset))
+                            frame.root, frame.facing.AsAngle,
+                            nativeWeapon ? 0f : visualAngleOffset,
+                            pawn.Rotation == Rot4.East || pawn.Rotation == Rot4.West,
+                            keepSecondaryHeight: pawn.Rotation == Rot4.East))
                         {
                             continue;
                         }

@@ -602,10 +602,16 @@ namespace KRWF.RimKata
     {
         [ThreadStatic] private static bool drawingPair;
         [ThreadStatic] private static bool drawingSecondary;
-        [ThreadStatic] private static float nativeSecondaryAngleCorrection;
+        [ThreadStatic] private static bool mirroringSecondaryDepth;
+        [ThreadStatic] private static bool mirroringRangedCombatWeapon;
+        [ThreadStatic] private static Vector3 nativePlacementPivot;
+        [ThreadStatic] private static float nativeSecondaryCombatTilt;
+        [ThreadStatic] private static float nativeSecondaryReflectionAxis;
         [ThreadStatic] private static Vector3 currentEquipmentPivot;
         private static Mesh plane10VFlip;
         private static Mesh plane10UvFlip;
+        internal static readonly float PawnRenderAltitude =
+            Altitudes.AltitudeFor(AltitudeLayer.Pawn);
 
         private const float CombatIndicatorBaseAltitude = 0.2f;
         private const float CombatIndicatorTopAltitude = 0.201f;
@@ -620,24 +626,41 @@ namespace KRWF.RimKata
                 Color.black);
 
         public static bool DrawingPair => drawingPair;
+        internal static bool DrawingSecondary => drawingSecondary;
 
         internal static float NativeSecondaryAngleForContext(float angle)
         {
-            return angle + nativeSecondaryAngleCorrection;
+            // The native angle already includes its mesh branch and equipment
+            // offset. The V-flipped mesh reflects local Z, hence the half turn.
+            return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
+                ? 2f * nativeSecondaryReflectionAxis - angle - 180f
+                : angle;
         }
 
         public static Mesh Plane10ForContext()
         {
-            return drawingSecondary
+            return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
                 ? plane10VFlip ??= CreateVFlippedMesh(MeshPool.plane10)
                 : MeshPool.plane10;
         }
 
         public static Mesh Plane10FlipForContext()
         {
-            return drawingSecondary
+            return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
                 ? plane10UvFlip ??= CreateVFlippedMesh(MeshPool.plane10Flip)
                 : MeshPool.plane10Flip;
+        }
+
+        public static void DrawSecondaryEquipmentMesh(
+            Mesh mesh, Matrix4x4 matrix, Material material, int layer)
+        {
+            // Native and captured secondary draws share the same final placement.
+            new RimKataWeaponDrawCapture.DrawCommand(mesh, matrix, material, layer)
+                .Submit(mesh, matrix, mirrorSecondaryDepth: mirroringSecondaryDepth,
+                    adjustSecondaryHeight: mirroringSecondaryDepth && !mirroringRangedCombatWeapon,
+                    pawnPivot: nativePlacementPivot,
+                    weaponAngleOffset: nativeSecondaryCombatTilt,
+                    lowerSecondaryDepth: drawingSecondary && !mirroringSecondaryDepth);
         }
 
         public static bool TryDrawPair(
@@ -812,14 +835,12 @@ namespace KRWF.RimKata
                 return;
             }
 
-            Vector3 drawLoc = root + MirrorOffsetAcrossFacing(originalDrawLoc - root, facing.AsAngle);
-            drawLoc.y -= 0.001f;
-            float aimAngle = Mathf.Repeat(2f * facing.AsAngle - originalAimAngle, 360f);
+            Vector3 drawLoc = root + SecondaryOffsetForFacing(originalDrawLoc - root, facing);
             drawingPair = true;
             currentEquipmentPivot = root;
             try
             {
-                DrawNativeWeapon(secondary, drawLoc, aimAngle, true, true, facing);
+                DrawNativeWeapon(secondary, drawLoc, originalAimAngle, true, true, facing, root);
             }
             finally
             {
@@ -1067,56 +1088,47 @@ namespace KRWF.RimKata
                     aimAngle);
             }
 
-            bool sharedFallbackAim = false;
+            Vector3 placementPivot = equipmentPivot;
             if (secondary)
             {
+                if (RimKataWeaponRenderProbe.TryGetDrawPivot(pawn, out Vector3 root, out _))
+                {
+                    placementPivot = root;
+                }
                 if (!hasOwnTarget)
                 {
-                    ref readonly RimKataCarryDrawContext carryContext =
-                        ref RimKataCarryDrawUtility.Current;
-                    if (!carryContext.active
-                        && !RimKataWeaponRenderProbe.TryGetIdlePivot(pawn, out _, out _))
-                    {
-                        sharedFallbackAim = true;
-                        aimAngle = fallbackAngle;
-                        drawLoc = EquipmentCenter(
-                            pawn,
-                            weapon,
-                            equipmentPivot,
-                            aimAngle);
-                    }
-                    else
-                    {
-                        drawLoc = SymmetricIdleSecondaryLoc(
-                            pawn,
-                            primary,
-                            weapon,
-                            primaryDrawLoc,
-                            fallbackAngle,
-                            out aimAngle);
-                    }
+                    drawLoc = placementPivot + SecondaryOffsetForFacing(
+                        primaryDrawLoc - placementPivot, pawn.Rotation);
                 }
-
-                drawLoc.y -= 0.001f;
             }
 
-            bool secondaryIdle = secondary && !hasOwnTarget && !sharedFallbackAim;
-            DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation);
+            bool secondaryIdle = secondary && !hasOwnTarget;
+            DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
+                placementPivot);
         }
 
         private static void DrawNativeWeapon(
             ThingWithComps weapon, Vector3 drawLoc, float aimAngle,
-            bool secondary, bool secondaryIdle, Rot4 facing)
+            bool secondary, bool secondaryIdle, Rot4 facing,
+            Vector3 placementPivot)
         {
-            bool horizontalIdleFacing = facing == Rot4.East || facing == Rot4.West;
             bool previousSecondary = drawingSecondary;
-            float previousCorrection = nativeSecondaryAngleCorrection;
-            drawingSecondary = secondary && (!secondaryIdle || horizontalIdleFacing);
-            // UV reflection alone retains the primary's equipment-angle sign.
-            // Reflect that angle as well, around this weapon's own aim direction.
-            nativeSecondaryAngleCorrection = secondary && !secondaryIdle
-                ? weapon.def.equippedAngleOffset * (aimAngle > 200f && aimAngle < 340f ? 2f : -2f)
+            bool previousDepthMirroring = mirroringSecondaryDepth;
+            bool previousRangedMirroring = mirroringRangedCombatWeapon;
+            Vector3 previousPlacementPivot = nativePlacementPivot;
+            float previousCombatTilt = nativeSecondaryCombatTilt;
+            float previousAxis = nativeSecondaryReflectionAxis;
+            drawingSecondary = secondary;
+            mirroringSecondaryDepth = secondary && (facing == Rot4.East || facing == Rot4.West);
+            mirroringRangedCombatWeapon = mirroringSecondaryDepth && !secondaryIdle
+                && weapon.def.IsRangedWeapon;
+            nativePlacementPivot = placementPivot;
+            nativeSecondaryCombatTilt = secondary && !secondaryIdle && weapon.def.IsMeleeWeapon
+                ? (facing == Rot4.East ? 30f : facing == Rot4.West ? -30f : 0f)
                 : 0f;
+            // Combat mirroring flips the weapon around its actual aim, so a
+            // diagonal shot keeps its direction instead of reflecting across E/W.
+            nativeSecondaryReflectionAxis = secondaryIdle ? facing.AsAngle : aimAngle;
             try
             {
                 PawnRenderUtility.DrawEquipmentAiming(weapon, drawLoc, aimAngle);
@@ -1128,60 +1140,25 @@ namespace KRWF.RimKata
             finally
             {
                 drawingSecondary = previousSecondary;
-                nativeSecondaryAngleCorrection = previousCorrection;
+                mirroringSecondaryDepth = previousDepthMirroring;
+                mirroringRangedCombatWeapon = previousRangedMirroring;
+                nativePlacementPivot = previousPlacementPivot;
+                nativeSecondaryCombatTilt = previousCombatTilt;
+                nativeSecondaryReflectionAxis = previousAxis;
             }
         }
 
-        private static Vector3 SymmetricIdleSecondaryLoc(
-            Pawn pawn,
-            ThingWithComps primary,
-            ThingWithComps secondary,
-            Vector3 originalPrimaryLoc,
-            float originalPrimaryAngle,
-            out float secondaryAngle)
-        {
-            secondaryAngle = Mathf.Repeat(
-                2f * pawn.Rotation.AsAngle - originalPrimaryAngle,
-                360f);
-            if (primary == null || secondary == null)
-            {
-                return originalPrimaryLoc;
-            }
-
-            ref readonly RimKataCarryDrawContext carryContext =
-                ref RimKataCarryDrawUtility.Current;
-            if (carryContext.active
-                && carryContext.pawn == pawn
-                && carryContext.primary == primary)
-            {
-                Vector3 primaryOffset = originalPrimaryLoc
-                    - carryContext.drawPos;
-                return carryContext.drawPos
-                    + MirrorOffsetAcrossFacing(
-                        primaryOffset,
-                        pawn.Rotation.AsAngle);
-            }
-
-            if (RimKataWeaponRenderProbe.TryGetIdlePivot(pawn, out Vector3 root, out float facingAngle))
-            {
-                secondaryAngle = Mathf.Repeat(2f * facingAngle - originalPrimaryAngle, 360f);
-                return root + MirrorOffsetAcrossFacing(originalPrimaryLoc - root, facingAngle);
-            }
-
-            float factor = pawn.ageTracker?.CurLifeStage
-                ?.equipmentDrawDistanceFactor ?? 1f;
-            Vector3 carryPivot = originalPrimaryLoc
-                - EquipmentRadial(primary, originalPrimaryAngle, factor);
-            Vector3 secondaryLoc = carryPivot
-                + EquipmentRadial(secondary, secondaryAngle, factor);
-            secondaryLoc.y = originalPrimaryLoc.y;
-            return secondaryLoc;
-        }
-
-        private static Vector3 MirrorOffsetAcrossFacing(
+        private static Vector3 SecondaryOffsetForFacing(
             Vector3 offset,
-            float facingAxis)
+            Rot4 facing)
         {
+            // Side-facing draws keep their source pose until final submission,
+            // where only the screen-height distance to the pawn is halved.
+            if (facing == Rot4.East || facing == Rot4.West)
+            {
+                return offset;
+            }
+            float facingAxis = facing.AsAngle;
             Vector3 local = offset.RotatedBy(-facingAxis);
             local.x = -local.x;
             return local.RotatedBy(facingAxis);
@@ -1902,12 +1879,19 @@ namespace KRWF.RimKata
             return !RimKataDualWeaponRenderUtility.TryDrawPair(eq, drawLoc, aimAngle);
         }
 
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             FieldInfo plane10 = AccessTools.Field(typeof(MeshPool), nameof(MeshPool.plane10));
             FieldInfo plane10Flip = AccessTools.Field(typeof(MeshPool), nameof(MeshPool.plane10Flip));
             MethodInfo choosePlane10 = AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), nameof(RimKataDualWeaponRenderUtility.Plane10ForContext));
             MethodInfo choosePlane10Flip = AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), nameof(RimKataDualWeaponRenderUtility.Plane10FlipForContext));
+            MethodInfo drawMesh = AccessTools.Method(typeof(Graphics), nameof(Graphics.DrawMesh),
+                new[] { typeof(Mesh), typeof(Matrix4x4), typeof(Material), typeof(int) });
+            MethodInfo drawSecondaryMesh = AccessTools.Method(typeof(RimKataDualWeaponRenderUtility),
+                nameof(RimKataDualWeaponRenderUtility.DrawSecondaryEquipmentMesh));
+            FieldInfo drawingSecondary = AccessTools.Field(typeof(RimKataDualWeaponRenderUtility),
+                "drawingSecondary");
 
             foreach (CodeInstruction instruction in instructions)
             {
@@ -1920,6 +1904,25 @@ namespace KRWF.RimKata
                 {
                     instruction.opcode = OpCodes.Call;
                     instruction.operand = choosePlane10Flip;
+                }
+                else if (instruction.Calls(drawMesh))
+                {
+                    // Leave the original draw call intact for the primary slot.
+                    // Its arguments remain on the stack while checking this gate.
+                    Label secondaryDraw = generator.DefineLabel();
+                    Label drawComplete = generator.DefineLabel();
+                    yield return new CodeInstruction(OpCodes.Ldsfld, drawingSecondary)
+                        .MoveLabelsFrom(instruction).MoveBlocksFrom(instruction);
+                    yield return new CodeInstruction(OpCodes.Brtrue, secondaryDraw);
+                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Br, drawComplete);
+                    CodeInstruction secondaryCall = new CodeInstruction(OpCodes.Call, drawSecondaryMesh);
+                    secondaryCall.labels.Add(secondaryDraw);
+                    yield return secondaryCall;
+                    CodeInstruction complete = new CodeInstruction(OpCodes.Nop);
+                    complete.labels.Add(drawComplete);
+                    yield return complete;
+                    continue;
                 }
 
                 yield return instruction;

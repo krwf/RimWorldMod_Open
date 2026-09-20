@@ -54,6 +54,14 @@ namespace KRWF.RimKata
             }
 
             LongEventHandler.ExecuteWhenFinished(() => RimKataWeaponRenderProbe.Initialize(harmony));
+            try
+            {
+                RimKataCombatExtendedCompat.Apply(harmony);
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] CE secondary ammo integration failed.\n" + exception);
+            }
         }
     }
 

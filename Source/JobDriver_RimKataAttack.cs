@@ -1096,6 +1096,14 @@ namespace KRWF.RimKata
                 return true;
             }
 
+            if (!fromQueue
+                && TryCreateEnemyIdleCombatJob(___pawn, newJob, out Job idleCombatJob))
+            {
+                JobMaker.ReturnToPool(newJob);
+                newJob = idleCombatJob;
+                return true;
+            }
+
             // Enemy attacks must enter the controller even before it has any
             // ongoing work. A forced attack is still an attack order for an NPC.
             if (ShouldConvertEnemyAttack(___pawn, newJob, out Verb enemyVerb))
@@ -1283,6 +1291,68 @@ namespace KRWF.RimKata
                 && RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(
                     pawn,
                     target);
+        }
+
+        internal static bool CanStartEnemyIdleCombat(Pawn pawn, Job job)
+        {
+            // Idle Job transitions are the trigger; ordinary pawn ticks do not
+            // acquire targets. Player policies and explicit orders do not use this entry.
+            return (job?.def == JobDefOf.Wait_Wander
+                    || job?.def == JobDefOf.GotoWander)
+                && !job.playerForced
+                && !job.forceSleep
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                && IsEligibleHostileRimKataPawn(pawn)
+                && RimKataEligibility.CanBeginGunKataAttack(pawn);
+        }
+
+        private static bool TryCreateEnemyIdleCombatJob(
+            Pawn pawn, Job sourceJob, out Job combatJob)
+        {
+            combatJob = null;
+            if (!CanStartEnemyIdleCombat(pawn, sourceJob))
+            {
+                return false;
+            }
+
+            List<IAttackTarget> candidates = pawn.Map.attackTargetsCache
+                .GetPotentialTargetsFor(pawn);
+            float radius = RimKataTargeting.MaximumAutomaticCandidateCellRadius(pawn);
+            float rangeSquared = radius * radius;
+            float nearestDistance = float.MaxValue;
+            Pawn target = null;
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                if (!(candidates[i].Thing is Pawn candidate)
+                    || !RimKataTargeting.IsValidAutomaticAttackTarget(pawn, candidate))
+                {
+                    continue;
+                }
+
+                float distance = pawn.Position.DistanceToSquared(candidate.Position);
+                if (distance >= nearestDistance
+                    || (distance > rangeSquared
+                        && !pawn.CanReachImmediate(candidate, PathEndMode.Touch))
+                    || !RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(pawn, candidate))
+                {
+                    continue;
+                }
+
+                target = candidate;
+                nearestDistance = distance;
+            }
+
+            if (target == null)
+            {
+                return false;
+            }
+
+            // A fresh combat Job must not inherit the wandering Job's expiry.
+            combatJob = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, target);
+            combatJob.verbToUse = RimKataWeaponSlotUtility.BestRangedCombatVerb(pawn, target)
+                ?? RimKataWeaponSlotUtility.CombatVerb(
+                    pawn, RimKataWeaponSlotUtility.PrimaryWeapon(pawn));
+            return true;
         }
 
         private static bool ShouldConvertEnemyAttack(Pawn pawn, Job job, out Verb verb)

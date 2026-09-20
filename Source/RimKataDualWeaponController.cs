@@ -3457,7 +3457,7 @@ namespace KRWF.RimKata
                 || state == null
                 || state.dedicatedFollowupJobStartInProgress
                 || IsProtectedPlayerForcedJob(pawn.CurJob)
-                || !AllowsDedicatedFollowupSource(pawn.CurJob, state)
+                || !AllowsDedicatedFollowupSource(pawn, pawn.CurJob, state)
                 || !IsDedicatedFollowupActive(pawn))
             {
                 return;
@@ -3628,7 +3628,7 @@ namespace KRWF.RimKata
         {
             Job currentJob = pawn?.CurJob;
             if (IsProtectedPlayerForcedJob(currentJob)
-                || !AllowsDedicatedFollowupSource(currentJob, state))
+                || !AllowsDedicatedFollowupSource(pawn, currentJob, state))
             {
                 return false;
             }
@@ -3654,7 +3654,9 @@ namespace KRWF.RimKata
             return currentDef == JobDefOf.Goto
                 || currentDef == JobDefOf.Wait
                 || currentDef == JobDefOf.Wait_Combat
-                || currentDef == JobDefOf.Wait_MaintainPosture;
+                || currentDef == JobDefOf.Wait_MaintainPosture
+                || Patch_PawnJobTracker_StartJob_EnemyRimKata
+                    .CanStartEnemyIdleCombat(pawn, currentJob);
         }
 
         public static void RefreshPendingDedicatedFollowupAim(
@@ -3853,12 +3855,14 @@ namespace KRWF.RimKata
         }
 
         private static bool AllowsDedicatedFollowupSource(
-            Job job, RimKataPawnCombatState state)
+            Pawn pawn, Job job, RimKataPawnCombatState state)
         {
-            // Continue supported combat work, or the explicit interception
-            // handoff that restores its source Job afterward.
+            // Continue supported combat work and hostile idle openings, or the
+            // explicit interception handoff that restores its source Job afterward.
             return CombatTickPermissions.AllowsCurrentJob(job)
                 || job?.def == JobDefOf.AttackStatic
+                || Patch_PawnJobTracker_StartJob_EnemyRimKata
+                    .CanStartEnemyIdleCombat(pawn, job)
                 || (job != null && state?.projectileWakeResumeJob == job);
         }
 

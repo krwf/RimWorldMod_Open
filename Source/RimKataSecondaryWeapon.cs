@@ -6,6 +6,7 @@ using UnityEngine;
 using HarmonyLib;
 using LudeonTK;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 using Verse.AI;
 
@@ -50,6 +51,8 @@ namespace KRWF.RimKata
             sameTickRegisteredWeapons =
                 new Dictionary<Pawn, ThingWithComps>();
         private int registeredWeaponLookupTick = int.MinValue;
+        private readonly Dictionary<Pawn, ThingWithComps> pendingPrimaryReplacements =
+            new Dictionary<Pawn, ThingWithComps>();
 
         public RimKataSecondaryWeaponRegistry(Game game)
         {
@@ -59,6 +62,8 @@ namespace KRWF.RimKata
 
         public override void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving || Scribe.mode == LoadSaveMode.PostLoadInit)
+                pendingPrimaryReplacements.Clear();
             Scribe_Collections.Look(ref pawns, "rimKataSecondaryWeaponPawns", LookMode.Reference);
             Scribe_Collections.Look(ref weapons, "rimKataSecondaryWeapons", LookMode.Reference);
             Scribe_Collections.Look(
@@ -105,6 +110,51 @@ namespace KRWF.RimKata
             CleanupSpawnedRegistrations();
             CleanupRecoveries();
             NormalizeSpawnedLoadouts();
+        }
+
+        // External swaps remove the old primary before adding its replacement.
+        // Keep only that short-lived handoff, never a second live slot binding.
+        // Update also expires it while paused; neither callback scans pawns.
+        public override void GameComponentTick() => ExpirePrimaryReplacements();
+
+        public override void GameComponentUpdate() => ExpirePrimaryReplacements();
+
+        private void ExpirePrimaryReplacements()
+        {
+            if (pendingPrimaryReplacements.Count > 0)
+                pendingPrimaryReplacements.Clear();
+        }
+
+        internal void RememberPrimaryReplacement(Pawn pawn, ThingWithComps secondary)
+        {
+            pendingPrimaryReplacements[pawn] = secondary;
+        }
+
+        internal void CancelPrimaryReplacement(Pawn pawn, ThingWithComps removed = null)
+        {
+            if (pawn != null && pendingPrimaryReplacements.Count > 0
+                && pendingPrimaryReplacements.TryGetValue(pawn, out ThingWithComps pending)
+                && (removed == null || removed == pending))
+            {
+                pendingPrimaryReplacements.Remove(pawn);
+            }
+        }
+
+        internal bool TryTakePrimaryReplacement(Pawn pawn, out ThingWithComps secondary)
+        {
+            secondary = null;
+            if (pendingPrimaryReplacements.Count == 0
+                || !pendingPrimaryReplacements.TryGetValue(pawn, out ThingWithComps pending))
+                return false;
+
+            // Consume before owner.TryAdd invokes equipment notifications again.
+            pendingPrimaryReplacements.Remove(pawn);
+            if (pawn?.Spawned != true || pawn.Dead || pawn.Downed
+                || !StillHeld(pawn, pending) || pawn.equipment.Primary != pending)
+                return false;
+
+            secondary = pending;
+            return true;
         }
 
         internal void NormalizeSpawnedLoadouts()
@@ -181,6 +231,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            CancelPrimaryReplacement(pawn);
             int index = pawns.IndexOf(pawn);
             if (index < 0)
             {
@@ -213,6 +264,7 @@ namespace KRWF.RimKata
             ThingWithComps expectedWeapon,
             bool invalidateBindings)
         {
+            CancelPrimaryReplacement(pawn, expectedWeapon);
             int index = pawns.IndexOf(pawn);
             if (index >= 0 && (expectedWeapon == null || weapons[index] == expectedWeapon))
             {
@@ -398,7 +450,7 @@ namespace KRWF.RimKata
             for (int i = pawns.Count - 1; i >= 0; i--)
             {
                 Pawn pawn = pawns[i];
-                if (pawn?.Spawned == true
+                if (pawn != null && (pawn.Spawned || pawn.IsCaravanMember())
                     && !StillSecondary(pawn, weapons[i]))
                 {
                     RemoveAt(i);
@@ -1015,6 +1067,8 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            // This is an explicit secondary-slot action, not a primary swap.
+            RimKataSecondaryWeaponRegistry.CurrentRegistry?.CancelPrimaryReplacement(pawn);
             ThingWithComps existing = SecondaryWeapon(pawn);
             bool existingDestroyed = false;
             if (existing != null && destroyExisting)
@@ -1245,6 +1299,8 @@ namespace KRWF.RimKata
             if (pawn?.Spawned != true
                 || changedEquipment == null)
             {
+                if (changedEquipment != null)
+                    RimKataCaravanEquipment.NotifyEquipmentChanged(pawn);
                 RimKataColonistBarWeaponCache.Refresh(pawn);
                 return;
             }
@@ -1261,6 +1317,19 @@ namespace KRWF.RimKata
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;
             if (registry == null)
             {
+                return;
+            }
+
+            if (removed)
+                registry.CancelPrimaryReplacement(pawn, changedEquipment);
+            else if (changedEquipment.def?.equipmentType == EquipmentType.Primary
+                && pawn.equipment.AllEquipmentListForReading.Contains(changedEquipment)
+                && registry.TryTakePrimaryReplacement(pawn, out ThingWithComps pendingSecondary))
+            {
+                // Transfers directly into the equipment owner can bypass
+                // AddEquipment. They still publish this same added event.
+                Patch_PawnEquipmentTracker_RimKataRestoreSecondary.CompleteExternalPrimaryReplacement(
+                    pawn.equipment, pawn, changedEquipment, pendingSecondary, alreadyAdded: true);
                 return;
             }
 
@@ -1282,7 +1351,17 @@ namespace KRWF.RimKata
             if (registeredSecondary != null
                 && (!secondaryHeld || primary == registeredSecondary))
             {
+                bool externalPrimaryRemoval = removed && secondaryHeld
+                    && primary == registeredSecondary && changedEquipment != registeredSecondary
+                    && changedEquipment.def?.equipmentType == EquipmentType.Primary
+                    && !pawn.Dead && !pawn.Downed
+                    && !Patch_PawnEquipmentTracker_RimKataMakeRoom.HasPendingReplacement(
+                        pawn.equipment, registeredSecondary)
+                    && !Patch_DebugToolsPawns_RimKataSecondaryWeapon.HasActivePrimaryReplacement(
+                        pawn.equipment);
                 registry.Clear(pawn, registeredSecondary, false);
+                if (externalPrimaryRemoval)
+                    registry.RememberPrimaryReplacement(pawn, registeredSecondary);
             }
             else
             {
@@ -1632,6 +1711,13 @@ namespace KRWF.RimKata
         }
 
         private static readonly Dictionary<Pawn_EquipmentTracker, PendingReplacement> Pending = new Dictionary<Pawn_EquipmentTracker, PendingReplacement>();
+
+        internal static bool HasPendingReplacement(Pawn_EquipmentTracker tracker, ThingWithComps secondary)
+        {
+            return Pending.TryGetValue(tracker, out PendingReplacement pending)
+                && pending.secondary == secondary
+                && (pending.tick < 0 || pending.tick == (Find.TickManager?.TicksGame ?? -1));
+        }
 
         public static MethodBase TargetMethod()
         {
@@ -2603,6 +2689,15 @@ namespace KRWF.RimKata
                 return !TryInsertPrimaryBeforeSecondary(__instance, ___pawn, newEq, secondary);
             }
 
+            if (newEq?.def?.equipmentType == EquipmentType.Primary
+                && registry?.TryTakePrimaryReplacement(___pawn, out secondary) == true)
+            {
+                CompleteExternalPrimaryReplacement(__instance, ___pawn, newEq, secondary);
+                // Even a failed replacement is handled here. Falling through
+                // would reject the same incoming weapon as a duplicate primary.
+                return false;
+            }
+
             secondary = registry?.GetRegistered(___pawn);
             bool registeredSecondaryWasPromoted = newEq?.def?.equipmentType == EquipmentType.Primary && secondary != null && __instance.Primary == secondary;
             if (!registeredSecondaryWasPromoted)
@@ -2678,6 +2773,70 @@ namespace KRWF.RimKata
             return true;
         }
 
+        internal static void CompleteExternalPrimaryReplacement(
+            Pawn_EquipmentTracker tracker, Pawn pawn,
+            ThingWithComps incoming, ThingWithComps secondary, bool alreadyAdded = false)
+        {
+            if (incoming == secondary) return;
+            ThingOwner owner = tracker.GetDirectlyHeldThings();
+            if (!alreadyAdded && !owner.TryAdd(incoming, false))
+            {
+                RestoreUnheldIncoming(pawn, incoming);
+                return;
+            }
+
+            List<ThingWithComps> equipment = tracker.AllEquipmentListForReading;
+            int incomingIndex = equipment.IndexOf(incoming);
+            int secondaryIndex = equipment.IndexOf(secondary);
+            if (incomingIndex >= 0 && secondaryIndex >= 0 && incomingIndex > secondaryIndex)
+            {
+                equipment.RemoveAt(incomingIndex);
+                equipment.Insert(secondaryIndex, incoming);
+            }
+
+            if (tracker.Primary != incoming)
+            {
+                owner.Remove(incoming);
+                RestoreUnheldIncoming(pawn, incoming);
+                RimKataWeaponSlotUtility.NotifyLoadoutChanged(pawn);
+                return;
+            }
+
+            if (equipment.Contains(secondary))
+            {
+                bool validWeapons = RimKataEquipmentUtility.IsWeaponEnabled(incoming.def)
+                    && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
+                    && RimKataGripUtility.GripTypeFor(incoming.def) == RimKataGripType.OneHand
+                    && RimKataGripUtility.GripTypeFor(secondary.def) == RimKataGripType.OneHand;
+                if (validWeapons && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn))
+                {
+                    RimKataSecondaryWeaponRegistry.CurrentRegistry?.Set(pawn, secondary, false);
+                }
+                else if (!tracker.TryDropEquipment(secondary, out _, pawn.Position, !validWeapons))
+                {
+                    // Do not leave two unregistered primaries if placement fails.
+                    owner.Remove(incoming);
+                    RestoreUnheldIncoming(pawn, incoming);
+                    RimKataWeaponSlotUtility.NotifyLoadoutChanged(pawn);
+                    return;
+                }
+            }
+
+            if (pawn.mindState != null)
+                pawn.mindState.droppedWeapon = null;
+            RimKataWeaponSlotUtility.NotifyLoadoutChanged(pawn);
+        }
+
+        private static void RestoreUnheldIncoming(Pawn pawn, ThingWithComps incoming)
+        {
+            if (incoming == null || incoming.Destroyed || incoming.Spawned
+                || incoming.holdingOwner != null)
+                return;
+            if (pawn.inventory?.innerContainer.TryAdd(incoming, false) == true)
+                return;
+            GenPlace.TryPlaceThing(incoming, pawn.Position, pawn.Map, ThingPlaceMode.Near);
+        }
+
         private static void MovePromotedSecondaryOut(
             Pawn_EquipmentTracker tracker,
             Pawn pawn,
@@ -2704,6 +2863,11 @@ namespace KRWF.RimKata
 
         [ThreadStatic]
         private static PrimaryReplacementScope activePrimaryReplacement;
+
+        internal static bool HasActivePrimaryReplacement(Pawn_EquipmentTracker tracker)
+        {
+            return Prefs.DevMode && activePrimaryReplacement?.tracker == tracker;
+        }
 
         public static MethodBase TargetMethod()
         {
