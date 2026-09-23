@@ -75,6 +75,14 @@ namespace KRWF.RimKata
             ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
             ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
             ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
+            try
+            {
+                RimKataMeleeAnimationCompat.Apply(harmony);
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Melee Animation rendering integration failed.\n" + exception);
+            }
         }
 
         private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)
@@ -393,7 +401,7 @@ namespace KRWF.RimKata
             if (mod is RimKataMod rimKataMod)
             {
                 __instance.resizeable = true;
-                __instance.draggable = true;
+                __instance.draggable = false;
                 __instance.doCloseX = false;
                 __instance.doCloseButton = false;
                 __instance.closeOnAccept = false;
@@ -408,7 +416,11 @@ namespace KRWF.RimKata
         public static void Postfix(Dialog_ModSettings __instance, Mod ___mod, Rect inRect)
         {
             if (___mod is RimKataMod rimKataMod)
+            {
                 rimKataMod.DrawSettingsWindowButtons(inRect, __instance);
+                // Checkbox painting owns the content area; move the window by its title.
+                GUI.DragWindow(new Rect(0f, 0f, __instance.windowRect.width, 35f));
+            }
         }
     }
 

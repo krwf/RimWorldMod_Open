@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Kısıtlamaları kaldırılacak hedefler</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Etkin hedefler normal erişim gereksinimlerini atlayarak seçili profili kullanır. Devre dışı hedefler normal erişim denetimlerini korur.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Kategori</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Ceset filtresi</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>Ceset olmayanlar</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Cesetler</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Kullanım</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Ksenotipler</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mekanoidler</KRWF_RimKata_TargetMechanoid>

@@ -11,8 +11,28 @@ namespace KRWF.RimKata
     // contains no compatibility calls, including no per-shot availability check.
     internal static class RimKataCombatExtendedNativeAttack
     {
-        internal static void Apply(Harmony harmony)
+        private struct OpeningState
         {
+            internal Verb verb;
+            internal RimKataVanillaOpeningAttempt attempt;
+        }
+
+        [ThreadStatic] private static OpeningState activeOpening;
+
+        internal static void Apply(Harmony harmony, Type launcher)
+        {
+            MethodInfo startCast = AccessTools.DeclaredMethod(launcher, nameof(Verb.TryStartCastOn),
+                new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool),
+                    typeof(bool), typeof(bool), typeof(bool) });
+            if (startCast?.ReturnType != typeof(bool))
+                throw new InvalidOperationException("CE opening cast API does not match.");
+
+            harmony.Patch(startCast,
+                prefix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningPrefix)),
+                postfix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningPostfix)),
+                finalizer: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningFinalizer)));
+            harmony.Patch(AccessTools.Method(typeof(Patch_Verb_TryStartCastOn_RimKataOpening), "Postfix"),
+                transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningTranspiler)));
             Patch(harmony, nameof(RimKataNativeAttack.Queue), nameof(QueueTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.CanBeginNativeTick), nameof(BeginTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.FinishNativeCast), nameof(FinishTranspiler));
@@ -20,6 +40,42 @@ namespace KRWF.RimKata
             harmony.Patch(AccessTools.Method(typeof(RimKataNativeAttack), "CompleteRequest"),
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(CompletePrefix)));
         }
+
+        private static void OpeningPrefix(Verb __instance, out OpeningState __state)
+        {
+            __state = activeOpening;
+            activeOpening = new OpeningState { verb = __instance };
+        }
+
+        private static void CommitOrDeferOpening(Pawn pawn, Verb verb, RimKataVanillaOpeningAttempt attempt)
+        {
+            // CE still needs its WarmupStance after base.TryStartCastOn returns.
+            if (activeOpening.verb == verb)
+                activeOpening.attempt = attempt;
+            else
+                RimKataDualWeaponController.CommitVanillaOpening(pawn, verb, attempt);
+        }
+
+        private static void OpeningPostfix(Verb __instance, bool __result)
+        {
+            OpeningState opening = activeOpening;
+            // Consume before the handoff: changing stance/jobs may start another cast.
+            activeOpening = default;
+            if (__result && opening.verb == __instance && opening.attempt.prepared)
+                RimKataDualWeaponController.CommitVanillaOpening(
+                    __instance.CasterPawn, __instance, opening.attempt);
+        }
+
+        private static Exception OpeningFinalizer(Exception __exception, OpeningState __state)
+        {
+            activeOpening = __state;
+            return __exception;
+        }
+
+        private static IEnumerable<CodeInstruction> OpeningTranspiler(IEnumerable<CodeInstruction> instructions)
+            => ReplaceCall(instructions,
+                AccessTools.Method(typeof(RimKataDualWeaponController), nameof(RimKataDualWeaponController.CommitVanillaOpening)),
+                nameof(CommitOrDeferOpening));
 
         private static void Patch(Harmony harmony, string target, string transpiler)
             => harmony.Patch(AccessTools.Method(typeof(RimKataNativeAttack), target),

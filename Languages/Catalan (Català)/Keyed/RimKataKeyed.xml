@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Objectius de l’eliminació de restriccions</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Els objectius activats ometen els requisits d’accés habituals i utilitzen el perfil seleccionat. Els objectius desactivats mantenen les comprovacions d’accés habituals.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Categoria</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Filtre de cadàvers</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>No cadàvers</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Cadàvers</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Ús</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Xenotips</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mecanoides</KRWF_RimKata_TargetMechanoid>

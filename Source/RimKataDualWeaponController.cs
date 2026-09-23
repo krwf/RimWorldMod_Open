@@ -4165,6 +4165,11 @@ namespace KRWF.RimKata
                 return true;
             }
 
+            if (CanRushEnemyAttackTarget(pawn, target))
+            {
+                return true;
+            }
+
             // Undrafted status and the explicit player request were handled
             // above. Automatic pursuit requires the current Attack policy.
             return pawn.playerSettings?.UsesConfigurableHostilityResponse == true
@@ -4178,6 +4183,24 @@ namespace KRWF.RimKata
                 && (!(target is Pawn automaticTargetPawn)
                     || RimKataTargeting.IsPawnTargetStateValid(
                         automaticTargetPawn));
+        }
+
+        internal static bool CanRushEnemyAttackTarget(Pawn pawn, Thing target)
+        {
+            // Called only for an existing RimKata attack or an incoming vanilla
+            // attack Job. NPC attacks have no player counterattack JobGiver.
+            return pawn?.Map != null
+                && !pawn.IsPlayerControlled
+                && pawn.Faction != null
+                && !pawn.Faction.IsPlayer
+                && !pawn.Drafted
+                && !pawn.InMentalState
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                && RimKataTargetAccess.SettingsFor(pawn)?.targetRushEnabled != false
+                && TargetWithinAutomaticCandidateCellRadius(pawn, target)
+                && RimKataTargeting.IsAutomaticEnemy(pawn, target)
+                && (!(target is Pawn targetPawn)
+                    || RimKataTargeting.IsPawnTargetStateValid(targetPawn));
         }
 
         public static bool TryConvertSecondaryMeleeAttackOrder(
@@ -4650,6 +4673,35 @@ namespace KRWF.RimKata
                     pawn,
                     state,
                     pawn.Position);
+        }
+
+        internal static void InitializeEnemyAttackSearch(Pawn pawn)
+        {
+            Job job = pawn?.CurJob;
+            if (pawn?.Spawned != true
+                || pawn.IsPlayerControlled
+                || pawn.Drafted
+                || pawn.Faction == null
+                || Faction.OfPlayer == null
+                || !pawn.Faction.HostileTo(Faction.OfPlayer)
+                || pawn.InMentalState
+                || pawn.IsBurning()
+                || job?.def != RimKataDefOf.RimKata_Attack
+                || job.playerForced
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || !RimKataEligibility.RandomAttackEnabledForPawn(pawn)) return;
+
+            Thing target = job.targetA.Thing;
+            if (target?.Spawned != true || target.Map != pawn.Map
+                || !RimKataTargeting.IsValidAutomaticAttackTarget(pawn, target)) return;
+
+            RimKataPawnCombatState state = StateFor(pawn, false);
+            if (state == null) return;
+            BindCurrentWeapons(pawn, state);
+            // Seed the actual new Job after the previous Job's cleanup. A job
+            // target alone is not an automatic ranged candidate in random mode.
+            RimKataSharedTargetSearch.TryAddKnownAutomaticTarget(pawn, state, target);
+            RimKataSharedTargetSearch.Begin(pawn, state, pawn.Position);
         }
 
         public static void ImportLegacyPrimaryState(

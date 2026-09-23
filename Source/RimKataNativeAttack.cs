@@ -161,7 +161,8 @@ namespace KRWF.RimKata
             Thing targetThing = target.Thing;
             if (targetThing != null && (!targetThing.Spawned || targetThing.Map != pawn.Map
                 || (targetThing is Pawn victim && (victim.Dead
-                    || (victim.Downed && !(playerForced && killIncappedTarget))))))
+                    || (RimKataTargeting.IsIncapacitatedTarget(victim)
+                        && !(playerForced && killIncappedTarget))))))
             {
                 return false;
             }

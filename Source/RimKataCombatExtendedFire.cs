@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using UnityEngine;
@@ -49,9 +51,13 @@ namespace KRWF.RimKata
                 new[] { typeof(LocalTargetInfo), typeof(IntVec3) });
             MethodInfo swayVector = AccessTools.Method(launcher, "GetSwayVec",
                 new[] { typeof(float).MakeByRefType(), typeof(float).MakeByRefType() });
+            MethodInfo shootLine = AccessTools.DeclaredMethod(launcher, "TryFindCEShootLineFromTo",
+                new[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(ShootLine).MakeByRefType(),
+                    typeof(Vector3).MakeByRefType() });
             Type reportType = AccessTools.TypeByName("CombatExtended.ShiftVecReport");
             if (shots == null || shootShots == null || aim == null || aiming?.FieldType != typeof(bool)
-                || report?.ReturnType != reportType || reportType == null || swayVector == null)
+                || report?.ReturnType != reportType || reportType == null || swayVector == null
+                || shootLine?.ReturnType != typeof(bool))
                 throw new InvalidOperationException("CE firing API does not match the supported shape.");
 
             shotsPerBurst = Getter<int>(shots);
@@ -96,8 +102,67 @@ namespace KRWF.RimKata
             var modePatch = new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(ModeChangedPostfix));
             harmony.Patch(setMode, postfix: modePatch);
             harmony.Patch(toggleMode, postfix: modePatch);
+            harmony.Patch(shootLine, transpiler: new HarmonyMethod(
+                typeof(RimKataCombatExtendedFire), nameof(CloseRangeTranspiler)));
+            ApplyPublicShotPatches(harmony, launcher);
             RimKataCombatExtendedPrepared.Apply(harmony);
-            RimKataCombatExtendedNativeAttack.Apply(harmony);
+            RimKataCombatExtendedNativeAttack.Apply(harmony, launcher);
+        }
+
+        private static void ApplyPublicShotPatches(Harmony harmony, Type launcher)
+        {
+            Type patch = typeof(Patch_Verb_TryCastShot_RimKata);
+            var prefix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Prefix));
+            var postfix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Postfix));
+            var finalizer = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Finalizer));
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.IsDynamic) continue;
+                IEnumerable<Type> types;
+                try { types = AccessTools.GetTypesFromAssembly(assembly); }
+                catch { continue; }
+                foreach (Type type in types)
+                {
+                    if (type == null || !launcher.IsAssignableFrom(type)) continue;
+                    // The common patch discovers only non-public overrides.
+                    MethodInfo method = type.GetMethod("TryCastShot",
+                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
+                        null, Type.EmptyTypes, null);
+                    if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
+                        && method.ReturnType == typeof(bool))
+                        harmony.Patch(method, prefix: prefix, postfix: postfix, finalizer: finalizer);
+                }
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> CloseRangeTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            MethodInfo original = AccessTools.Method(typeof(Verb), nameof(Verb.OutOfRange));
+            MethodInfo replacement = AccessTools.Method(typeof(RimKataCombatExtendedFire), nameof(CloseOutOfRange));
+            int count = 0;
+            foreach (CodeInstruction code in codes)
+            {
+                if (!code.Calls(original)) continue;
+                code.opcode = OpCodes.Call;
+                code.operand = replacement;
+                count++;
+            }
+            if (count != 1)
+                throw new InvalidOperationException("CE shoot-line range check does not match the supported shape.");
+            return codes;
+        }
+
+        private static bool CloseOutOfRange(Verb verb, IntVec3 root, LocalTargetInfo target, CellRect occupiedRect)
+        {
+            if (RimKataFireContext.ActiveVerb != verb || !RimKataFireContext.CloseShot)
+                return verb.OutOfRange(root, target, occupiedRect);
+            // NativeAttack already approved Touch before entering this shot scope.
+            // Remove only the standing-enemy adjacent floor; retain weapon range and CE line of sight.
+            float minRange = verb.verbProps.EffectiveMinRange(true);
+            float distanceSquared = occupiedRect.ClosestDistSquaredTo(root);
+            return distanceSquared > verb.EffectiveRange * verb.EffectiveRange
+                || distanceSquared < minRange * minRange;
         }
 
         private static Func<Verb, T> Getter<T>(MethodInfo method)

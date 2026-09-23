@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>制限解除対象</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>有効な対象は通常の使用条件を無視し、選択したプロファイルを使用します。無効な対象には通常の使用条件が適用されます。</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>カテゴリ</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>死体フィルター</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>死体以外</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>死体</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>使用状況</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>ゼノタイプ</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>メカノイド</KRWF_RimKata_TargetMechanoid>

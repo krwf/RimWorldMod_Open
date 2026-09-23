@@ -31,6 +31,7 @@ namespace KRWF.RimKata
                 return;
 
             RimKataCombatExtendedAmmo.Apply(harmony, ammoCompType);
+            RimKataCombatExtendedAssistedReload.Apply(harmony, ammoCompType);
             RimKataCombatExtendedLoadout.Apply(harmony);
 
             Type pawnGizmoType = AccessTools.TypeByName("CombatExtended.CompPawnGizmo");

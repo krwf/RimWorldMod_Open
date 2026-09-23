@@ -801,11 +801,17 @@ namespace KRWF.RimKata
         }
 
         internal static void DrawSecondaryAfterExternalPrimary(
-            Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root)
+            Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root, bool combat = false)
         {
-            if (drawingPair || secondary == null
-                || !RimKataWeaponRenderProbe.TryGetVanillaIdlePose(
-                    pawn, secondary, root, out Vector3 drawLoc, out float aimAngle))
+            if (drawingPair || secondary == null) return;
+            float aimAngle = pawn.Rotation.AsAngle;
+            Vector3 drawLoc;
+            if (combat)
+            {
+                drawLoc = EquipmentCenter(pawn, secondary, root, aimAngle);
+            }
+            else if (!RimKataWeaponRenderProbe.TryGetVanillaIdlePose(
+                pawn, secondary, root, out drawLoc, out aimAngle))
             {
                 return;
             }
@@ -816,7 +822,7 @@ namespace KRWF.RimKata
             try
             {
                 DrawWeapon(pawn, primary, secondary, drawLoc, root, aimAngle, true,
-                    context.snapshotActive, context.snapshot);
+                    context.snapshotActive, context.snapshot, nativeCombat: combat);
             }
             finally
             {
@@ -1034,7 +1040,7 @@ namespace KRWF.RimKata
             float fallbackAngle,
             bool secondary,
             bool snapshotActive,
-            RimKataVisualSnapshot snapshot)
+            RimKataVisualSnapshot snapshot, bool nativeCombat = false)
         {
             LocalTargetInfo responseFocus = LocalTargetInfo.Invalid;
             bool responseTarget = snapshotActive
@@ -1048,7 +1054,7 @@ namespace KRWF.RimKata
             if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
                 pawn, weapon, snapshotActive
                     ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
-                    : 0f, allowWeaponPose: !responseTarget, out _, out _)
+                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat, out _, out _)
                     == RimKataWeaponRenderProbe.SecondaryDrawResult.Custom)
             {
                 return;
@@ -1102,7 +1108,7 @@ namespace KRWF.RimKata
                 }
             }
 
-            bool secondaryIdle = secondary && !hasOwnTarget;
+            bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat;
             DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
                 placementPivot);
         }

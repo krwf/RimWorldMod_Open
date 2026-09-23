@@ -794,6 +794,26 @@ namespace KRWF.RimKata
         }
     }
 
+    [HarmonyPatch]
+    internal static class Patch_PawnMutantTracker_RimKataShamblerAccess
+    {
+        private static bool Prepare() => ModsConfig.AnomalyActive;
+
+        private static IEnumerable<System.Reflection.MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(Pawn_MutantTracker), nameof(Pawn_MutantTracker.Turn));
+            yield return AccessTools.Method(typeof(Pawn_MutantTracker), nameof(Pawn_MutantTracker.Revert));
+        }
+
+        private static void Postfix(Pawn_MutantTracker __instance, Pawn ___pawn)
+        {
+            // Revert clears pawn.mutant before it finishes; the original tracker
+            // still identifies the changed state. Refresh once at these events.
+            if (__instance.Def == MutantDefOf.Shambler)
+                RimKataEligibilityCache.NotifyTargetChanged(___pawn);
+        }
+    }
+
     [HarmonyPatch(typeof(Pawn_GeneTracker), nameof(Pawn_GeneTracker.SetXenotype))]
     internal static class Patch_PawnGeneTracker_SetXenotype_RimKataTargetAccess
     {

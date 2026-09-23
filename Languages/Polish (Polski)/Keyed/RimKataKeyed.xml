@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Cele usunięcia ograniczeń</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Włączone cele pomijają zwykłe wymagania dostępu i korzystają z wybranego profilu. Wyłączone cele zachowują zwykłe kontrole dostępu.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Kategoria</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Filtr zwłok</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>Inne niż zwłoki</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Zwłoki</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Użycie</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Ksenotypy</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mechanoidy</KRWF_RimKata_TargetMechanoid>

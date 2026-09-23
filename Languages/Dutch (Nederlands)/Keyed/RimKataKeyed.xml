@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Doelen voor het opheffen van beperkingen</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Ingeschakelde doelen omzeilen de gebruikelijke toegangsvereisten en gebruiken het geselecteerde profiel. Uitgeschakelde doelen behouden hun gebruikelijke toegangscontroles.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Categorie</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Lijkenfilter</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>Geen lijken</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Lijken</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Gebruik</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Xenotypen</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mechanoïden</KRWF_RimKata_TargetMechanoid>

@@ -1454,7 +1454,6 @@ namespace KRWF.RimKata
                 || pawn.IsPlayerControlled
                 || pawn.Faction == Faction.OfPlayer
                 || pawn.HostFaction == Faction.OfPlayer
-                || pawn.RaceProps?.Humanlike != true
                 || pawn.equipment == null)
             {
                 return;
@@ -1475,15 +1474,10 @@ namespace KRWF.RimKata
                 return;
             }
 
-            List<ThingDef> candidates = RimKataEquipmentUtility.EnabledOneHandGeneratableWeapons;
-
-            if (candidates.Count == 0)
-            {
-                return;
-            }
-
-            ThingDef selectedDef = candidates.RandomElement();
-            ThingWithComps weapon = ThingMaker.MakeThing(selectedDef, GenStuff.RandomStuffFor(selectedDef)) as ThingWithComps;
+            // The existing primary is already appropriate for this pawn's race
+            // and faction. Do not draw unique racial gear from a global pool.
+            ThingWithComps primary = pawn.equipment.Primary;
+            ThingWithComps weapon = ThingMaker.MakeThing(primary.def, primary.Stuff) as ThingWithComps;
             if (weapon == null)
             {
                 return;

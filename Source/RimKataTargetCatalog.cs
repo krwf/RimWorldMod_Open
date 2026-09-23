@@ -18,21 +18,28 @@ namespace KRWF.RimKata
     {
         public string Key { get; }
         public string Label { get; }
+        public string DisplayLabel { get; }
         public string SearchText { get; }
+        public bool IsCorpse { get; }
         public RimKataTargetCategory Category { get; }
         public ThingDef RaceDef { get; }
         public XenotypeDef XenotypeDef { get; }
 
         internal RimKataTargetEntry(string key, string label, RimKataTargetCategory category,
-            ThingDef raceDef, XenotypeDef xenotypeDef = null)
+            ThingDef raceDef, XenotypeDef xenotypeDef = null, MutantDef mutantDef = null)
         {
             Key = key;
             Label = label;
             Category = category;
             RaceDef = raceDef;
             XenotypeDef = xenotypeDef;
-            Def definition = (Def)xenotypeDef ?? raceDef;
-            SearchText = label + " " + key + " " + (definition?.modContentPack?.Name ?? string.Empty);
+            Def definition = (Def)mutantDef ?? (Def)xenotypeDef ?? raceDef;
+            // Synthetic entries have a rule key, not a concrete xenotype definition.
+            string definitionName = mutantDef?.defName ?? xenotypeDef?.defName
+                ?? (key.StartsWith("race:", StringComparison.Ordinal) ? raceDef?.defName : key);
+            DisplayLabel = label + " [" + definitionName + "]";
+            IsCorpse = raceDef?.IsCorpse == true;
+            SearchText = DisplayLabel + " " + key + " " + (definition?.modContentPack?.Name ?? string.Empty);
         }
     }
 
@@ -46,6 +53,7 @@ namespace KRWF.RimKata
         private static RimKataTargetEntry baselinerEntry;
         private static RimKataTargetEntry customEntry;
         private static RimKataTargetEntry hybridEntry;
+        private static RimKataTargetEntry shamblerEntry;
 
         public static IReadOnlyList<RimKataTargetEntry> Entries
         {
@@ -62,6 +70,10 @@ namespace KRWF.RimKata
                 return null;
 
             EnsureInitialized();
+            // A shambler keeps its original race/xenotype, but its restriction
+            // rule and profile are selected independently, even when disabled.
+            if (shamblerEntry != null && pawn.IsShambler)
+                return shamblerEntry;
             if (pawn.def != humanDef)
             {
                 raceEntries.TryGetValue(pawn.def, out RimKataTargetEntry raceEntry);
@@ -102,6 +114,14 @@ namespace KRWF.RimKata
             xenotypeEntries = new Dictionary<XenotypeDef, RimKataTargetEntry>();
             entriesByKey = new Dictionary<string, RimKataTargetEntry>(StringComparer.Ordinal);
             humanDef = ThingDefOf.Human;
+
+            if (ModsConfig.AnomalyActive && MutantDefOf.Shambler != null)
+            {
+                MutantDef shambler = MutantDefOf.Shambler;
+                shamblerEntry = new RimKataTargetEntry("mutant:" + shambler.defName,
+                    shambler.LabelCap.ToString(), RimKataTargetCategory.Other, null, mutantDef: shambler);
+                Add(result, shamblerEntry);
+            }
 
             List<XenotypeDef> xenotypes = DefDatabase<XenotypeDef>.AllDefsListForReading;
             for (int i = 0; i < xenotypes.Count; i++)

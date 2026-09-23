@@ -344,6 +344,25 @@ namespace KRWF.RimKata
             return parried;
         }
 
+        internal static bool TryResolveCombatExtendedRiposteDefense(
+            Pawn defender, Pawn attacker, Verb attackingVerb, out bool parried)
+        {
+            parried = false;
+            if (defender == null || attacker == null || !RimKataEligibility.CanUseDefense(defender))
+                return false;
+
+            // CE applies a riposte directly, without setting the selected Verb's
+            // CurrentTarget. Use its explicit participants and roll only once.
+            if (Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
+                return true;
+            if (RimKataTargeting.IsAutomaticEnemy(defender, attacker)
+                && defender.CanReachImmediate(attacker, PathEndMode.Touch))
+                defender.Map?.GetComponent<RimKataMapComponent>()?.EnterCloseCombat(defender, attacker);
+
+            parried = TryResolveMeleeParry(defender, attacker, attackingVerb, true);
+            return parried;
+        }
+
         public static bool TryResolveMeleeParry(
             Verb_MeleeAttack attackingVerb)
         {

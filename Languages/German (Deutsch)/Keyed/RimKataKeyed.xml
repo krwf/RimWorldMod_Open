@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Ziele für die Aufhebung von Beschränkungen</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Aktivierte Ziele umgehen die üblichen Zugangsvoraussetzungen und verwenden das ausgewählte Profil. Deaktivierte Ziele behalten ihre üblichen Zugangsprüfungen bei.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Kategorie</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Leichenfilter</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>Keine Leichen</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Leichen</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Nutzung</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Xenotypen</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mechanoiden</KRWF_RimKata_TargetMechanoid>

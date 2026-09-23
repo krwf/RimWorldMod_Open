@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Objetivos de eliminación de restricciones</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Los objetivos habilitados omiten los requisitos de acceso habituales y usan el perfil seleccionado. Los objetivos deshabilitados conservan sus comprobaciones de acceso habituales.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Categoría</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Filtro de cadáveres</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>No cadáveres</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Cadáveres</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Uso</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Xenotipos</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mecanoides</KRWF_RimKata_TargetMechanoid>

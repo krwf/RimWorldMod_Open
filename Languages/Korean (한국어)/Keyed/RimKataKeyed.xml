@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>제약 해제 대상</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>사용하는 대상은 원래 자격 제한을 무시하고 지정한 프로필을 적용합니다. 사용하지 않는 대상은 기존 자격 판정을 유지합니다.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>종류</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>시체 여부</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>시체 아님</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>시체</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>사용 여부</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>인종형</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>메카노이드</KRWF_RimKata_TargetMechanoid>
@@ -158,7 +161,7 @@
   <KRWF_RimKata_ResponseAccidentalFireChance>쳐내기 성공 시 상대 오사 확률</KRWF_RimKata_ResponseAccidentalFireChance>
   <KRWF_RimKata_ResponseWeaponDurabilityLossChance>쳐내기 성공 시 무기 내구도 소모 확률</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
   <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>쳐내기 성공 시 무기 내구도 소모 값</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
-  <KRWF_RimKata_UnarmedWeaponStealChance>맨 손 쳐내기 성공 시 무기 탈취 확률</KRWF_RimKata_UnarmedWeaponStealChance>
+  <KRWF_RimKata_UnarmedWeaponStealChance>맨손 쳐내기 성공 시 무기 탈취 확률</KRWF_RimKata_UnarmedWeaponStealChance>
 
   <KRWF_RimKata_InspectSlotPrimary>주</KRWF_RimKata_InspectSlotPrimary>
   <KRWF_RimKata_InspectSlotSecondary>부</KRWF_RimKata_InspectSlotSecondary>

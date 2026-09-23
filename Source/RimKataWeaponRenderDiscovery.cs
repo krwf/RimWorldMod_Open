@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -35,6 +36,11 @@ namespace KRWF.RimKata
             typeof(RimKataWeaponRenderProbe), nameof(RimKataWeaponRenderProbe.DrawWornExtras));
         private static readonly MethodInfo TranspilerMethod = AccessTools.Method(
             typeof(RimKataWeaponRenderDiscovery), nameof(InstrumentRenderer));
+        private static readonly MethodInfo NativeSheathMesh = AccessTools.Method(typeof(Graphics),
+            nameof(Graphics.DrawMesh), new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion),
+                typeof(Material), typeof(int) });
+        private static readonly MethodInfo ProbeSheathMesh = AccessTools.Method(
+            typeof(RimKataWeaponDrawCapture), nameof(RimKataWeaponDrawCapture.DrawAccessoryMesh));
 
         private static IReadOnlyList<Renderer> renderers = Array.Empty<Renderer>();
         private static bool initialized;
@@ -86,6 +92,22 @@ namespace KRWF.RimKata
                 }
             }
 
+            // This optional mod replaces the SYS prefix with an accessory-only
+            // postfix. Its delegate boundary is known, so bind its actual SYS
+            // helpers explicitly rather than traversing arbitrary delegates.
+            foreach (Patch patch in patches.Postfixes)
+            {
+                MethodInfo postfix = patch.PatchMethod;
+                if (postfix?.DeclaringType?.FullName != "KRWF.SYSYayoCompat.SysSheathRenderPatch"
+                    || postfix.Name != "Postfix") continue;
+                try
+                {
+                    Candidate candidate = CreateSysSheathPostfix(postfix);
+                    if (candidate != null) candidates.Add(candidate);
+                }
+                catch (Exception exception) { ReportUnsupported(postfix, exception); }
+            }
+
             // Read every candidate before adding our transpiler, so shared helpers
             // are not classified from IL that already contains our capture calls.
             HashSet<MethodInfo> instrumented = new HashSet<MethodInfo>();
@@ -109,8 +131,8 @@ namespace KRWF.RimKata
                     }
 
                     discovered.Add(new Renderer(
-                        CompileInvoker(candidate.prefix, candidate.arguments),
-                        candidate.compTypes));
+                        candidate.invoke ?? CompileInvoker(candidate.prefix, candidate.arguments),
+                        candidate.compTypes, candidate.accessoriesOnly));
                 }
                 catch (Exception exception)
                 {
@@ -121,6 +143,56 @@ namespace KRWF.RimKata
             }
 
             renderers = discovered.AsReadOnly();
+        }
+
+        private static Candidate CreateSysSheathPostfix(MethodInfo postfix)
+        {
+            Type patchType = postfix.DeclaringType;
+            var adapters = AccessTools.Field(patchType, "adaptersByCompType")?.GetValue(null) as IDictionary;
+            if (adapters == null || adapters.Count == 0) return null;
+            Type state = patchType.GetNestedType("RenderState", BindingFlags.Public | BindingFlags.NonPublic);
+            if (state == null) throw new InvalidOperationException("SYS sheath render state was not found.");
+            MethodInfo prefix = AccessTools.Method(patchType, "Prefix",
+                new[] { typeof(Vector3), state.MakeByRefType() });
+            if (prefix == null || postfix.ReturnType != typeof(void)
+                || AccessTools.Method(patchType, "Postfix",
+                    new[] { typeof(Pawn), typeof(PawnRenderFlags), state }) != postfix)
+                throw new InvalidOperationException("Unsupported SYS sheath postfix signature.");
+
+            Candidate candidate = new Candidate(postfix, null) { accessoriesOnly = true };
+            candidate.methodsToInstrument.Add(postfix); // Substitute only its Primary reads.
+            foreach (Type compType in adapters.Keys)
+            {
+                Type renderer = compType.Assembly.GetType("SYS.DrawEquipment_WeaponBackPatch");
+                MethodInfo draw = AccessTools.Method(renderer, "DrawSheath",
+                    new[] { compType, typeof(Pawn), typeof(Vector3), typeof(Graphic) });
+                if (draw == null) throw new InvalidOperationException("SYS sheath renderer was not found.");
+                Candidate helper = new Candidate(draw, null);
+                if (!Visit(helper, draw, 0) || !helper.hasCustomDraw)
+                    throw new InvalidOperationException("Unsupported SYS sheath drawing path.");
+                candidate.methodsToInstrument.UnionWith(helper.methodsToInstrument);
+                candidate.compTypes.Add(compType);
+            }
+
+            // Let the mod construct its own state and choose empty/full sheath.
+            // Neither the live equipment tracker nor the original primary draw changes.
+            DynamicMethod invoker = new DynamicMethod("RimKataInvokeSysSheathPostfix", typeof(bool),
+                new[] { typeof(Pawn), typeof(Vector3), typeof(Rot4), typeof(PawnRenderFlags) },
+                typeof(RimKataWeaponRenderDiscovery), true);
+            ILGenerator il = invoker.GetILGenerator();
+            LocalBuilder capturedState = il.DeclareLocal(state);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Ldloca, capturedState);
+            il.Emit(OpCodes.Call, prefix);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldarg_3);
+            il.Emit(OpCodes.Ldloc, capturedState);
+            il.Emit(OpCodes.Call, postfix);
+            il.Emit(OpCodes.Ldc_I4_0); // Accessories do not replace the weapon renderer.
+            il.Emit(OpCodes.Ret);
+            candidate.invoke = (Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool>)invoker.CreateDelegate(
+                typeof(Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool>));
+            return candidate;
         }
 
         private static bool Visit(Candidate candidate, MethodInfo method, int depth)
@@ -275,14 +347,18 @@ namespace KRWF.RimKata
         }
 
         private static IEnumerable<CodeInstruction> InstrumentRenderer(
-            IEnumerable<CodeInstruction> instructions)
+            IEnumerable<CodeInstruction> instructions, MethodBase __originalMethod)
         {
+            string owner = __originalMethod.DeclaringType?.FullName;
+            bool sheath = (owner == "SYS.DrawEquipment_WeaponBackPatch" && __originalMethod.Name == "DrawSheath")
+                || (owner == "MihoLib.DrawEquipment_WeaponBackPatch" && __originalMethod.Name == "DrawSheathLogic");
             foreach (CodeInstruction instruction in instructions)
             {
                 if ((instruction.opcode == OpCodes.Call || instruction.opcode == OpCodes.Callvirt)
                     && instruction.operand is MethodInfo called)
                 {
-                    MethodInfo replacement = ReplacementFor(called);
+                    MethodInfo replacement = sheath && called == NativeSheathMesh
+                        ? ProbeSheathMesh : ReplacementFor(called);
                     if (replacement != null)
                     {
                         instruction.opcode = OpCodes.Call;
@@ -359,7 +435,7 @@ namespace KRWF.RimKata
 
             il.Emit(OpCodes.Call, method);
             // Only a prefix that suppresses the original supplies a replacement
-            // renderer. A true-returning prefix may draw unrelated extra effects.
+            // pose. Continuing prefixes may replay only explicitly tagged accessories.
             il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Ret);
@@ -394,6 +470,8 @@ namespace KRWF.RimKata
             internal readonly HashSet<Type> compTypes = new HashSet<Type>();
             internal int instructionCount;
             internal bool hasCustomDraw;
+            internal bool accessoriesOnly;
+            internal Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke;
 
             internal Candidate(MethodInfo prefix, int[] arguments)
             {
@@ -407,12 +485,14 @@ namespace KRWF.RimKata
         {
             private readonly Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke;
             private readonly Type[] compTypes;
+            internal bool AccessoriesOnly { get; }
 
             internal Renderer(
                 Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke,
-                HashSet<Type> compTypes)
+                HashSet<Type> compTypes, bool accessoriesOnly = false)
             {
                 this.invoke = invoke;
+                AccessoriesOnly = accessoriesOnly;
                 this.compTypes = new Type[compTypes.Count];
                 compTypes.CopyTo(this.compTypes);
             }

@@ -103,11 +103,13 @@ namespace KRWF.RimKata
         internal sealed class CaptureScope : IDisposable
         {
             private readonly List<DrawCommand> commands = new List<DrawCommand>(4);
+            private readonly List<DrawCommand> accessories = new List<DrawCommand>(2);
             private readonly List<Mesh> replayMeshes = new List<Mesh>(4);
             private CaptureScope previous;
             private bool disposed = true;
 
             internal int Count => commands.Count;
+            internal int AccessoryCount => accessories.Count;
             internal IReadOnlyList<DrawCommand> Commands => commands;
 
             internal void Enter()
@@ -117,7 +119,11 @@ namespace KRWF.RimKata
                 active = this;
             }
 
-            internal void Record(DrawCommand command) => commands.Add(command);
+            internal void Record(DrawCommand command, bool accessory = false)
+            {
+                commands.Add(command);
+                if (accessory) accessories.Add(command);
+            }
 
             internal bool Replay()
             {
@@ -134,16 +140,17 @@ namespace KRWF.RimKata
 
             internal bool ReplayMirrored(Vector3 pivot, float facingAngle,
                 float visualAngleOffset = 0f, bool sideFacingSecondary = false,
-                bool keepSecondaryHeight = false)
+                bool keepSecondaryHeight = false, bool accessoriesOnly = false)
             {
-                if (disposed || commands.Count == 0) return false;
+                List<DrawCommand> selected = accessoriesOnly ? accessories : commands;
+                if (disposed || selected.Count == 0) return false;
                 replayMeshes.Clear();
                 // Validate the entire batch before drawing any part. Property
                 // blocks have no general snapshot API and may already be reused
                 // by the probed renderer, so those draws need its original path.
-                for (int i = 0; i < commands.Count; i++)
+                for (int i = 0; i < selected.Count; i++)
                 {
-                    DrawCommand command = commands[i];
+                    DrawCommand command = selected[i];
                     if (!command.CanReplay) return false;
                     Mesh replayMesh = command.Mesh;
                     if (!sideFacingSecondary && !TryGetMirroredMesh(command.Mesh, out replayMesh))
@@ -164,9 +171,9 @@ namespace KRWF.RimKata
                     rotation.m23 = pivot.z - rotation.m20 * pivot.x - rotation.m22 * pivot.z;
                     reflection = rotation * reflection;
                 }
-                for (int i = 0; i < commands.Count; i++)
+                for (int i = 0; i < selected.Count; i++)
                 {
-                    DrawCommand command = commands[i];
+                    DrawCommand command = selected[i];
                     Matrix4x4 matrix = reflection * command.Matrix;
                     if (!sideFacingSecondary)
                     {
@@ -196,6 +203,7 @@ namespace KRWF.RimKata
                 previous = null;
                 disposed = true;
                 commands.Clear();
+                accessories.Clear();
                 replayMeshes.Clear();
                 scopePool ??= new Stack<CaptureScope>(2);
                 if (scopePool.Count < 4) scopePool.Push(this);
@@ -222,6 +230,21 @@ namespace KRWF.RimKata
                 BindingFlags.Public | BindingFlags.Static, null, types, null);
         }
 
+        // SYS submits its sheath separately from its custom weapon mesh. Keep
+        // that distinction when MA owns the blade, including SYS's idle path.
+        public static void DrawAccessoryMesh(Mesh mesh, Vector3 position, Quaternion rotation,
+            Material material, int layer)
+        {
+            if (active != null)
+                active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one),
+                    material, layer), accessory: true);
+            else
+            {
+                Graphics.DrawMesh(mesh, position, rotation, material, layer);
+                RimKataWeaponRenderProbe.NotifyMeshDraw();
+            }
+        }
+
         internal static void ClearMeshCache()
         {
             foreach (Mesh mirrored in mirroredMeshes.Values)
@@ -243,7 +266,7 @@ namespace KRWF.RimKata
             return result;
         }
 
-        private static bool TryGetMirroredMesh(Mesh source, out Mesh mirrored)
+        internal static bool TryGetMirroredMesh(Mesh source, out Mesh mirrored)
         {
             if (mirroredMeshes.TryGetValue(source, out mirrored)) return mirrored != null;
             if (!source.isReadable)

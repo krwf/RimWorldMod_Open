@@ -325,6 +325,7 @@ namespace KRWF.RimKata
                     plannedCloseContext = false;
                 }
 
+                RimKataDualWeaponController.InitializeEnemyAttackSearch(pawn);
                 EnsurePathToAssignedTarget();
             };
             initialization.defaultCompleteMode =
@@ -1097,6 +1098,14 @@ namespace KRWF.RimKata
             }
 
             if (!fromQueue
+                && TryCreateEnemyCombatWaitJob(___pawn, newJob, jobGiver, out Job combatWaitJob))
+            {
+                JobMaker.ReturnToPool(newJob);
+                newJob = combatWaitJob;
+                return true;
+            }
+
+            if (!fromQueue
                 && TryCreateEnemyIdleCombatJob(___pawn, newJob, out Job idleCombatJob))
             {
                 JobMaker.ReturnToPool(newJob);
@@ -1355,6 +1364,34 @@ namespace KRWF.RimKata
             return true;
         }
 
+        private static bool TryCreateEnemyCombatWaitJob(
+            Pawn pawn, Job sourceJob, ThinkNode jobGiver, out Job combatJob)
+        {
+            combatJob = null;
+            // Ranged AI (including lancers) waits at its firing position. Its
+            // combat target lives in mindState, not Wait_Combat.targetA.
+            if (sourceJob?.def != JobDefOf.Wait_Combat
+                || sourceJob.playerForced
+                || sourceJob.forceSleep
+                || !((jobGiver ?? sourceJob.jobGiver) is JobGiver_AIFightEnemy)
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || !IsEligibleHostileRimKataPawn(pawn)
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn)) return false;
+
+            Thing target = pawn.mindState?.enemyTarget;
+            if (!IsValidEnemyTarget(pawn, target, false, false)
+                || !RimKataDualWeaponController.CanRushEnemyAttackTarget(pawn, target)) return false;
+
+            Verb verb = RimKataWeaponSlotUtility.BestRangedCombatVerb(pawn, target)
+                ?? RimKataWeaponSlotUtility.CombatVerb(pawn, RimKataWeaponSlotUtility.PrimaryWeapon(pawn));
+            if (verb == null) return false;
+
+            // Do not carry the stationary wait's expiry into the attack cycle.
+            combatJob = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, target);
+            combatJob.verbToUse = verb;
+            return true;
+        }
+
         private static bool ShouldConvertEnemyAttack(Pawn pawn, Job job, out Verb verb)
         {
             verb = null;
@@ -1370,7 +1407,7 @@ namespace KRWF.RimKata
 
             Thing target = job.targetA.Thing;
             if (!IsValidEnemyTarget(pawn, target, job.playerForced, job.killIncappedTarget)
-                || (!RimKataDualWeaponController.CanRushTarget(pawn, target)
+                || (!RimKataDualWeaponController.CanRushEnemyAttackTarget(pawn, target)
                     && !RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(
                         pawn,
                         target)))

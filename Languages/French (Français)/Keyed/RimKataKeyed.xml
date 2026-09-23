@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>Cibles de suppression des restrictions</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>Les cibles activées ignorent les conditions d'accès habituelles et utilisent le profil sélectionné. Les cibles désactivées conservent leurs vérifications d'accès habituelles.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Catégorie</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>Filtre des cadavres</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>Hors cadavres</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>Cadavres</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>Utilisation</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>Xénotypes</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>Mécanoïdes</KRWF_RimKata_TargetMechanoid>

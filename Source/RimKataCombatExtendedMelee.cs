@@ -47,6 +47,18 @@ namespace KRWF.RimKata
                 postfix: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Postfix)),
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedMelee), nameof(Transpiler)),
                 finalizer: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Finalizer)));
+            if (attack.IsPublic)
+            {
+                // The common discovery covers only non-public TryCastShot methods.
+                // CE's public melee override must also report a performed attempt:
+                // misses and defended blows still consume the native attack cycle.
+                Type shot = typeof(Patch_Verb_TryCastShot_RimKata);
+                harmony.Patch(attack,
+                    prefix: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Prefix)),
+                    postfix: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Postfix)),
+                    finalizer: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Finalizer)));
+            }
+            RimKataCombatExtendedRiposte.Apply(harmony, ceMelee);
             return true;
         }
 

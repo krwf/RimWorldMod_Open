@@ -30,6 +30,7 @@ namespace KRWF.RimKata
         private static Type ammoType;
         private static Type rangedVerbType;
         private static Func<ThingComp, bool> canFire;
+        private static Func<ThingComp, bool> useAmmo, hasAmmo;
         private static Action<ThingComp> startReload;
         private static MethodInfo findWeapon;
         private static MethodInfo switchWeapon;
@@ -39,15 +40,20 @@ namespace KRWF.RimKata
         internal static void Apply(Harmony harmony, Type compType)
         {
             MethodInfo ready = AccessTools.PropertyGetter(compType, "CanBeFiredNow");
+            MethodInfo usesAmmo = AccessTools.PropertyGetter(compType, "UseAmmo");
+            MethodInfo reserveAmmo = AccessTools.PropertyGetter(compType, "HasAmmo");
             MethodInfo reload = AccessTools.Method(compType, "TryStartReload", Type.EmptyTypes);
             MethodInfo exhausted = AccessTools.Method(compType, "DoOutOfAmmoAction", Type.EmptyTypes);
+            MethodInfo physicalMelee = AccessTools.Method(typeof(RimKataDualWeaponController), "UsesPhysicalMeleeAction");
             Type inventoryType = AccessTools.TypeByName("CombatExtended.CompInventory");
             Type predicateType = typeof(Func<,,>).MakeGenericType(typeof(ThingWithComps), compType, typeof(bool));
             findWeapon = AccessTools.Method(inventoryType, "TryFindViableWeapon",
                 new[] { typeof(ThingWithComps).MakeByRefType(), typeof(bool), predicateType });
             switchWeapon = AccessTools.Method(inventoryType, "SwitchToNextViableWeapon",
                 new[] { typeof(bool), typeof(bool), typeof(bool), predicateType });
-            if (ready?.ReturnType != typeof(bool) || reload?.ReturnType != typeof(void)
+            if (ready?.ReturnType != typeof(bool) || usesAmmo?.ReturnType != typeof(bool)
+                || reserveAmmo?.ReturnType != typeof(bool) || physicalMelee?.ReturnType != typeof(bool)
+                || reload?.ReturnType != typeof(void)
                 || exhausted?.ReturnType != typeof(void) || findWeapon?.ReturnType != typeof(bool)
                 || switchWeapon?.ReturnType != typeof(bool))
             {
@@ -60,6 +66,8 @@ namespace KRWF.RimKata
                 var comp = Expression.Parameter(typeof(ThingComp), "comp");
                 var instance = Expression.Convert(comp, compType);
                 canFire = Expression.Lambda<Func<ThingComp, bool>>(Expression.Call(instance, ready), comp).Compile();
+                useAmmo = Expression.Lambda<Func<ThingComp, bool>>(Expression.Call(instance, usesAmmo), comp).Compile();
+                hasAmmo = Expression.Lambda<Func<ThingComp, bool>>(Expression.Call(instance, reserveAmmo), comp).Compile();
                 startReload = Expression.Lambda<Action<ThingComp>>(Expression.Call(instance, reload), comp).Compile();
                 var inventory = Expression.Parameter(typeof(ThingComp), "inventory");
                 var weapon = Expression.Parameter(typeof(ThingWithComps).MakeByRefType(), "weapon");
@@ -76,6 +84,8 @@ namespace KRWF.RimKata
                 ValidateOutOfAmmoCalls(PatchProcessor.GetOriginalInstructions(exhausted));
                 harmony.Patch(exhausted, transpiler: new HarmonyMethod(
                     typeof(RimKataCombatExtendedAmmo), nameof(OutOfAmmoTranspiler)));
+                harmony.Patch(physicalMelee, postfix: new HarmonyMethod(
+                    typeof(RimKataCombatExtendedAmmo), nameof(PhysicalMeleePostfix)));
                 rangedVerbType = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
                 ammoType = compType;
             }
@@ -84,6 +94,8 @@ namespace KRWF.RimKata
                 ammoType = null;
                 harmony.Unpatch(exhausted, AccessTools.Method(
                     typeof(RimKataCombatExtendedAmmo), nameof(OutOfAmmoTranspiler)));
+                harmony.Unpatch(physicalMelee, AccessTools.Method(
+                    typeof(RimKataCombatExtendedAmmo), nameof(PhysicalMeleePostfix)));
                 Log.Warning("[RimKata] CE automatic reload integration could not be applied: " + exception.Message);
             }
         }
@@ -115,6 +127,23 @@ namespace KRWF.RimKata
         }
 
         private static WeaponAmmo CreateAmmo(ThingWithComps weapon) => new WeaponAmmo(weapon);
+
+        private static void PhysicalMeleePostfix(
+            Pawn pawn, Verb slotVerb, bool closeCombatContext, ref bool __result)
+        {
+            if (__result || !closeCombatContext || ammoType == null
+                || slotVerb == null || slotVerb.IsMeleeAttack
+                || rangedVerbType?.IsInstanceOfType(slotVerb) != true
+                || pawn?.equipment == null || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)) return;
+            ThingWithComps weapon = slotVerb.EquipmentSource;
+            if (weapon == null || weapon.holdingOwner != pawn.equipment.GetDirectlyHeldThings()) return;
+            WeaponAmmo ammo = Weapons.GetValue(weapon, CreateAmmo);
+            // Exhaustion changes the existing close-action rule, so planning,
+            // physical Verb selection and aim all agree. Empty but reloadable
+            // magazines keep their normal CE/assisted reload path.
+            __result = ammo.comp != null && useAmmo(ammo.comp) && !canFire(ammo.comp)
+                && !hasAmmo(ammo.comp) && !RimKataCombatExtendedAssistedReload.IsReloading(weapon);
+        }
 
         private static void ValidateOutOfAmmoCalls(List<CodeInstruction> codes)
         {

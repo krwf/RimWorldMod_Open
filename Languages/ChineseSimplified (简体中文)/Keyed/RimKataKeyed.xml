@@ -111,6 +111,9 @@
   <KRWF_RimKata_TargetDialogTitle>移除限制的目标</KRWF_RimKata_TargetDialogTitle>
   <KRWF_RimKata_TargetDialogDescription>已启用的目标会绕过通常的使用条件并采用所选配置。已禁用的目标仍按通常条件检查。</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>类别</KRWF_RimKata_TargetCategoryFilter>
+  <KRWF_RimKata_TargetCorpseFilter>尸体筛选</KRWF_RimKata_TargetCorpseFilter>
+  <KRWF_RimKata_TargetNonCorpses>非尸体</KRWF_RimKata_TargetNonCorpses>
+  <KRWF_RimKata_TargetCorpses>尸体</KRWF_RimKata_TargetCorpses>
   <KRWF_RimKata_TargetUsageFilter>使用状态</KRWF_RimKata_TargetUsageFilter>
   <KRWF_RimKata_TargetHumanlike>异种类型</KRWF_RimKata_TargetHumanlike>
   <KRWF_RimKata_TargetMechanoid>机械族</KRWF_RimKata_TargetMechanoid>

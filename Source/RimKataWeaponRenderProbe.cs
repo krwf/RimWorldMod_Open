@@ -253,6 +253,20 @@ namespace KRWF.RimKata
             return !Probing && frame.pawn == pawn && pawn != null;
         }
 
+        internal static void DrawSecondaryExtras(Pawn pawn, ThingWithComps primary, ThingWithComps secondary,
+            Vector3 root, Rot4 facing, PawnRenderFlags flags)
+        {
+            if (Probing || !RimKataWeaponRenderDiscovery.HasRenderers) return;
+            Frame previous = frame;
+            try
+            {
+                frame = new Frame { pawn = pawn, primary = primary, secondary = secondary,
+                    root = root, facing = facing, flags = flags };
+                DrawSpecialSecondary(pawn, secondary, 0f, false, out _, out _);
+            }
+            finally { frame = previous; }
+        }
+
         internal static SecondaryDrawResult DrawSpecialSecondary(
             Pawn pawn, ThingWithComps weapon, float visualAngleOffset, bool allowWeaponPose,
             out Vector3 nativeLoc, out float nativeAngle)
@@ -289,24 +303,33 @@ namespace KRWF.RimKata
                     {
                         bool replaced = renderer.ReplacesOriginal(pawn, frame.root, frame.facing, frame.flags);
                         bool nativeWeapon = nativeDrawSeen;
-                        if (!replaced || (!nativeWeapon && (capture.Count == 0 || !allowWeaponPose)))
+                        bool accessoriesOnly = renderer.AccessoriesOnly || !replaced
+                            || (!nativeWeapon && !allowWeaponPose);
+                        int capturedCount = accessoriesOnly && !renderer.AccessoriesOnly
+                            ? capture.AccessoryCount : capture.Count;
+                        if (capturedCount == 0 && (accessoriesOnly || !nativeWeapon))
                         {
                             continue;
                         }
 
                         // Replay during the capture lifetime. Never cache instance
                         // materials or world-space poses across pawns or frames.
-                        // Native aiming is suppressed during the probe, so when
-                        // it was seen the captured meshes contain only additions
-                        // such as a sheath. Keep those anchored to the pawn.
-                        if (capture.Count > 0 && !capture.ReplayMirrored(
+                        // Native aiming is suppressed during the probe. Custom
+                        // weapon paths mark their sheath submissions separately,
+                        // so MA can retain just those additions, even when the
+                        // renderer lets another mod draw the blade afterwards.
+                        if (capturedCount > 0 && !capture.ReplayMirrored(
                             frame.root, frame.facing.AsAngle,
-                            nativeWeapon ? 0f : visualAngleOffset,
+                            nativeWeapon || accessoriesOnly ? 0f : visualAngleOffset,
                             pawn.Rotation == Rot4.East || pawn.Rotation == Rot4.West,
-                            keepSecondaryHeight: pawn.Rotation == Rot4.East))
+                            keepSecondaryHeight: pawn.Rotation == Rot4.East,
+                            accessoriesOnly: accessoriesOnly && !renderer.AccessoriesOnly))
                         {
                             continue;
                         }
+                        // An accessory pass never claims the blade. MA or the
+                        // normal secondary weapon renderer still owns that draw.
+                        if (accessoriesOnly) continue;
                         if (nativeWeapon)
                         {
                             // Preserve an actual native draw request separately
@@ -341,7 +364,7 @@ namespace KRWF.RimKata
 
         internal static bool TryGetVanillaIdlePose(
             Pawn pawn, ThingWithComps weapon, Vector3 root,
-            out Vector3 drawLoc, out float aimAngle)
+            out Vector3 drawLoc, out float aimAngle, Rot4? facing = null)
         {
             Pawn previousPawn = probePawn;
             ThingWithComps previousWeapon = probeWeapon;
@@ -355,7 +378,7 @@ namespace KRWF.RimKata
                 float factor = pawn.ageTracker?.CurLifeStage?.equipmentDrawDistanceFactor ?? 1f;
                 using (RimKataWeaponDrawCapture.Begin())
                 {
-                    PawnRenderUtility.DrawCarriedWeapon(weapon, root, frame.facing, factor);
+                    PawnRenderUtility.DrawCarriedWeapon(weapon, root, facing ?? frame.facing, factor);
                 }
                 drawLoc = nativeDrawLoc;
                 aimAngle = nativeAimAngle;
