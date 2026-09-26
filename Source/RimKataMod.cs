@@ -75,6 +75,16 @@ namespace KRWF.RimKata
             ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
             ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
             ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedGroundPose.Apply, "ground-pose firing");
+            RimKataDynamicAnimeCombatCompat.Apply();
+            RimKataReboundCompat.Apply();
+            RimKataPocketSandCompat.Apply();
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try { RimKataMuzzleFlashCompat.Apply(harmony); }
+                catch (Exception exception)
+                { Log.Error("[RimKata] Muzzle Flash ground-pose integration failed.\n" + exception); }
+            });
             try
             {
                 RimKataMeleeAnimationCompat.Apply(harmony);
@@ -366,6 +376,7 @@ namespace KRWF.RimKata
             RimKataTargetAccess.Rebuild();
             RimKataEquipmentUtility.InvalidateCaches();
             RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
+            RimKataCrawlFireUtility.NotifySettingsChanged();
             RefreshSettingsSnapshot();
         }
 

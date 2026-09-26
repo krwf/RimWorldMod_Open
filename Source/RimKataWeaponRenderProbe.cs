@@ -50,6 +50,13 @@ namespace KRWF.RimKata
 
         internal static bool Probing => probeDepth > 0;
 
+        internal static ThingWithComps CurrentDrawWeapon(Pawn pawn)
+            => Probing && probePawn == pawn ? probeWeapon
+                : frame.pawn == pawn ? frame.primary : null;
+
+        internal static bool HasSpecialRenderer(ThingDef weapon)
+            => weapon != null && renderersByDef.TryGetValue(weapon, out var renderers) && renderers.Length != 0;
+
         internal static void Initialize(Harmony harmony)
         {
             try
@@ -103,6 +110,13 @@ namespace KRWF.RimKata
 
         internal static int BeginFrame(Pawn pawn, Vector3 root, Rot4 facing, PawnRenderFlags flags)
         {
+            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
+            // A nested draw still needs an empty frame to mask its parent's probe.
+            if (!context.active && frameDepth == 0)
+            {
+                return 0;
+            }
+
             if (Probing || !RimKataWeaponRenderDiscovery.HasRenderers)
             {
                 return 0;
@@ -118,7 +132,6 @@ namespace KRWF.RimKata
             }
             frame = default(Frame);
             int token = ++frameDepth;
-            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             if (!context.active || context.pawn != pawn || context.secondary == null
                 || (flags & PawnRenderFlags.Portrait) != 0
                 || pawn?.Spawned != true || pawn.Dead || pawn.Downed

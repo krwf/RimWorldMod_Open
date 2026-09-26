@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Multiplicador base de refredament dels atacs a distància: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificador d’armadura permesa: ×{0} (aplicat)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificador d’armadura permesa: ×100% (no es porta cap armadura permesa)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Probabilitat de caure</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Disparar cos a terra</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Disparar mentre s'arrossega</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Probabilitat addicional que els trets fallin estant cos a terra</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonificació de sigil de caça estant cos a terra</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Temps d'espera abans de tornar a posar-se cos a terra</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Temps a terra després de caure</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s'arrossega per defecte</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Transicions suaus de punteria</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

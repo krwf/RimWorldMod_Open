@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Grundmultiplikator for nedkøling af afstandsangreb: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modifikator fra aktiveret rustning: ×{0} (anvendt)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modifikator fra aktiveret rustning: ×100 % (ingen aktiveret rustning båret)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Sandsynlighed for at falde</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Skyd liggende</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Skyd under kravlen</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Ekstra chance for ikke at blive ramt i liggende stilling</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus til snigen under jagt i liggende stilling</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Ventetid før man lægger sig ned igen</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tid på jorden efter et fald</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Tillad skydning under kravlen som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Glidende sigteovergange</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Multiplicatorul de bază al timpului de reactivare pentru atacurile la distanță: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificatorul armurii permise: ×{0} (aplicat)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificatorul armurii permise: ×100% (nu este purtată nicio armură permisă)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Șansă de cădere</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Tragere din poziția culcat</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Tragere în timpul târârii</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Șansă suplimentară ca atacurile să rateze ținta culcată</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discreție la vânătoare din poziția culcat</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Întârziere înainte de a reveni în poziția culcat</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Timp petrecut la pământ după cădere</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permite implicit tragerea în timpul târârii</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Tranziții line de ochire</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

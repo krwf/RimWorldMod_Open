@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Základný násobiteľ času obnovenia útokov na diaľku: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modifikátor povoleného brnenia: ×{0} (použitý)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modifikátor povoleného brnenia: ×100 % (nie je oblečené žiadne povolené brnenie)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Pravdepodobnosť pádu</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Streľba v ľahu</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Streľba pri plazení</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Dodatočná šanca útočníka minúť ležiaci cieľ</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus k utajeniu pri love v ľahu</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Oneskorenie pred opätovným ľahnutím</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Čas ležania po páde</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Predvolene povoliť streľbu pri plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Plynulé prechody mierenia</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

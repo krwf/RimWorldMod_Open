@@ -109,7 +109,7 @@ namespace KRWF.RimKata
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(defender))
                 return applyMeleeDamage(verb, target);
 
-            bool avoided = RimKataDefenseUtility.TryResolveCombatExtendedRiposteDefense(
+            bool avoided = RimKataDefenseUtility.TryResolveDirectMeleeDefense(
                 defender, verb.CasterPawn, verb, out bool parried);
             BattleLogEntry_MeleeCombat entry = CreateLog(verb.CasterPawn, defender, verb, null, avoided, parried);
             if (avoided) return new DamageResult();
@@ -136,7 +136,7 @@ namespace KRWF.RimKata
             if (!(target is Pawn defender) || !RimKataEligibilityCache.IsCachedQualifiedPawn(defender))
                 return target.TakeDamage(info);
 
-            bool avoided = RimKataDefenseUtility.TryResolveCombatExtendedRiposteDefense(
+            bool avoided = RimKataDefenseUtility.TryResolveDirectMeleeDefense(
                 defender, attacker, null, out bool parried);
             BattleLogEntry_MeleeCombat entry = CreateLog(attacker, defender, null, shield, avoided, parried);
             if (avoided) return new DamageResult();

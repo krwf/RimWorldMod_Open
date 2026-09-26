@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Базовый множитель перезарядки дальнобойного оружия: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Модификатор разрешённой брони: ×{0} (применён)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Модификатор разрешённой брони: ×100% (разрешённая броня не надета)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Шанс упасть</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Стрельба лёжа</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Стрельба при ползании</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Дополнительный шанс промаха по лежащей цели</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Бонус к скрытности на охоте в положении лёжа</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Задержка перед повторным переходом в положение лёжа</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Время в лежачем положении после падения</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>По умолчанию разрешать стрельбу при ползании</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Плавная смена направления прицеливания</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

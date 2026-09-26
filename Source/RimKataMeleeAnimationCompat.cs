@@ -360,7 +360,8 @@ namespace KRWF.RimKata
             Camera camera, int submesh, MaterialPropertyBlock properties)
         {
             // Preserve the original submission, including worker changes and MPB.
-            Graphics.DrawMesh(mesh, matrix, material, layer, camera, submesh, properties);
+            Graphics.DrawMesh(mesh, RimKataGroundPoseRender.TransformEquipment(current?.Pawn, matrix),
+                material, layer, camera, submesh, properties);
             Frame frame = current;
             if (frame == null || failed || frame.NativeSecondaryCombat) return;
             try
@@ -424,7 +425,7 @@ namespace KRWF.RimKata
             matrix.m20 = -matrix.m20; matrix.m30 = -matrix.m30;
             // North/south hands and weapons stay on the same side of the body.
             // East/west move the whole secondary grip to the opposite layer.
-            if (frame.Pawn.Rotation.IsHorizontal)
+            if (frame.Pawn.Rotation.IsHorizontal && !RimKataGroundPoseRender.WeaponsAboveBody(frame.Pawn))
             {
                 int item = poseRenderer == frame.Renderer ? frame.Item : partIndex(getPart(poseRenderer, "ItemA"));
                 float weaponDepth = (basis * readPose(poseRenderer, item).Matrix).m13;
@@ -432,7 +433,8 @@ namespace KRWF.RimKata
             }
             // Match RimKata's final secondary-slot layer bias.
             matrix.m13 -= 0.001f;
-            Graphics.DrawMesh(mirrored, matrix, material, layer, camera, submesh, properties);
+            Graphics.DrawMesh(mirrored, RimKataGroundPoseRender.TransformEquipment(frame.Pawn, matrix),
+                material, layer, camera, submesh, properties);
         }
 
         private static void Fail(Exception exception)

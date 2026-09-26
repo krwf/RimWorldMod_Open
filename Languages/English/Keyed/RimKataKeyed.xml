@@ -139,6 +139,8 @@
   <KRWF_RimKata_FeatureResponse>parrying</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Ranged dodge</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>somersault</KRWF_RimKata_FeatureTumble>
+  <KRWF_RimKata_FeatureProneFire>Prone fire</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Crawl and fire</KRWF_RimKata_FeatureCrawlFire>
 
   <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
   <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
@@ -162,6 +164,12 @@
   <KRWF_RimKata_ResponseWeaponDurabilityLossChance>Weapon durability-loss chance after a successful parry</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
   <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>Weapon durability lost after a successful parry</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
   <KRWF_RimKata_UnarmedWeaponStealChance>Weapon steal chance after a successful unarmed parry</KRWF_RimKata_UnarmedWeaponStealChance>
+  <KRWF_RimKata_ProneMissChance>Additional miss chance while prone</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Hunting stealth bonus while prone</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Delay before going prone again</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallChance>Fall chance</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_MeleeFallDuration>Time spent fallen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Allow firing while crawling by default</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>Primary</KRWF_RimKata_InspectSlotPrimary>
   <KRWF_RimKata_InspectSlotSecondary>Secondary</KRWF_RimKata_InspectSlotSecondary>
@@ -183,4 +191,5 @@
   <KRWF_RimKata_CooldownVanillaFactor>Base ranged cooldown multiplier: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Enabled armor modifier: ×{0} (applied)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Enabled armor modifier: ×100% (no enabled armor worn)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_SmoothAimTransition>Smooth aim transitions</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

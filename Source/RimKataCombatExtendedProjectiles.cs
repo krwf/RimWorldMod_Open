@@ -45,6 +45,7 @@ namespace KRWF.RimKata
 
         [ThreadStatic] private static ImpactScope current;
         internal static bool HasImpactScope => current != null;
+        internal static Thing CurrentImpactProjectile => current?.projectile;
         internal static bool Enabled => applied;
         internal static bool IsOwnedShot(Thing shot) => Launcher(shot) == RimKataFireContext.Shooter
             && RimKataFireContext.ActiveVerb != null && equipment(shot) == RimKataFireContext.ActiveVerb.EquipmentSource;
@@ -273,7 +274,25 @@ namespace KRWF.RimKata
                 || (hitThing == null && record.target?.Position == __instance.Position)))
             {
                 record.pendingDodge = false;
-                if (TryExplosiveDodge(record)) return false;
+                if (TryExplosiveDodge(record, confirmedImpact: true)) return false;
+            }
+            if (IsDirectBullet(__instance)
+                && __originalMethod.DeclaringType != ProjectileType
+                && RimKataDefenseUtility.TryBeginGroundPoseImpact())
+            {
+                Pawn intended = IntendedTarget(__instance).Pawn;
+                bool avoided = record?.avoided == true || (record?.missedTarget == intended && intended != null)
+                    || RimKataGroundPoseEvents.WasCloseAttackAvoided(record?.closeShot, intended);
+                Thing attacker = Launcher(__instance);
+                if ((!avoided || hitThing != intended)
+                    && RimKataGroundPoseEvents.TryProneDirectMiss(hitThing as Pawn, attacker))
+                {
+                    hitThing = null;
+                    __state.victim = null;
+                    __state.direct = false;
+                }
+                else if (!avoided && intended != null && hitThing != intended)
+                    RimKataGroundPoseUtility.NotifyMiss(intended, attacker, false);
             }
             return true;
         }
@@ -286,17 +305,20 @@ namespace KRWF.RimKata
             return __exception;
         }
 
-        internal static bool TryExplosiveDodge(RimKataCEProjectileState record)
+        internal static bool TryExplosiveDodge(RimKataCEProjectileState record, bool confirmedImpact = false)
         {
             Thing shot = record.projectile;
             Pawn defender = record.target;
             if (defender?.Map == null || shot?.Spawned != true || shot.Destroyed
                 || shot.Map != defender.Map || !IsExplosive(shot)
-                || !RimKataEligibility.CanRollRangedDodge(defender, false)) return false;
+                || (!RimKataEligibility.CanRollRangedDodge(defender, false)
+                    && !RimKataGroundPoseUtility.IsProne(defender))) return false;
             Thing attacker = Launcher(shot);
             if (attacker == defender || (attacker?.Faction != null && attacker.Faction == defender.Faction)) return false;
             if (!RimKataCombatExtendedTrajectory.TryPrepareMiss(shot, defender, out Vector3 destination)) return false;
-            if (!record.avoided && !RimKataDefenseUtility.TryRangedDodge(defender, attacker, null)) return false;
+            if (!record.avoided && !(confirmedImpact && RimKataGroundPoseUtility.TryProneMiss(defender))
+                && !(RimKataEligibility.CanRollRangedDodge(defender, false)
+                    && RimKataDefenseUtility.TryRangedDodge(defender, attacker, null))) return false;
             if (!RimKataCombatExtendedTrajectory.Redirect(shot, destination)) return false;
             record.missedTarget = defender;
             intendedTargetField.SetValue(shot, new LocalTargetInfo(destination.ToIntVec3()));
@@ -450,7 +472,11 @@ namespace KRWF.RimKata
                     activeExplosiveCount += active ? 1 : -1;
                     record.activeExplosive = active;
                 }
-                if (record.pendingDodge && record.dodgeTick <= Verse.Find.TickManager.TicksGame)
+                // CE's launch target does not confirm its ballistic collision.
+                // Keep this existing reservation while prone, so its new miss
+                // chance runs first at a real impact, before ordinary dodge.
+                if (record.pendingDodge && record.dodgeTick <= Verse.Find.TickManager.TicksGame
+                    && !RimKataGroundPoseUtility.IsProne(record.target))
                 {
                     record.pendingDodge = false;
                     RimKataCombatExtendedProjectiles.TryExplosiveDodge(record);

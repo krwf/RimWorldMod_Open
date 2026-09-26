@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Podstawowy mnożnik czasu odnowienia ataków dystansowych: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modyfikator dozwolonego pancerza: ×{0} (zastosowano)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modyfikator dozwolonego pancerza: ×100% (brak założonego dozwolonego pancerza)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Szansa na przewrócenie się</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Strzelanie w pozycji leżącej</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Strzelanie podczas czołgania</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Dodatkowa szansa napastnika na chybienie leżącego celu</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Premia do skrytości podczas polowania w pozycji leżącej</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Opóźnienie przed ponownym położeniem się</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Czas leżenia po upadku</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Domyślnie zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Płynne przejścia celowania</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

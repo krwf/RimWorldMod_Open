@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Grunnmultiplikator for nedkjøling av avstandsangrep: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modifikator fra aktivert rustning: ×{0} (brukt)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modifikator fra aktivert rustning: ×100 % (ingen aktivert rustning brukt)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Sjanse for å falle</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Skyt liggende</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Skyt mens du kryper</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Ekstra sjanse for ikke å bli truffet i liggende stilling</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus til sniking under jakt i liggende stilling</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Ventetid før man legger seg ned igjen</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tid på bakken etter et fall</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Tillat skyting mens man kryper som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Myke sikteoverganger</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

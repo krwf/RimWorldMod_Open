@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Multiplicador base de recarga à distância: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificador da armadura habilitada: ×{0} (aplicado)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificador da armadura habilitada: ×100% (nenhuma armadura habilitada equipada)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Chance de cair</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Tiro deitado</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Disparar enquanto rasteja</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Chance adicional de não ser atingido enquanto deitado</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bônus de furtividade na caça enquanto deitado</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Tempo de espera antes de se deitar novamente</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tempo no chão após cair</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja por padrão</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Transições suaves de mira</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Multiplicateur de base du délai de récupération à distance : {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificateur d'armure autorisée : ×{0} (appliqué)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificateur d'armure autorisée : ×100 % (aucune armure autorisée portée)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Probabilité de chute</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Tir couché</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Tirer en rampant</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Probabilité supplémentaire que les tirs ennemis ratent leur cible en position couchée</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discrétion à la chasse en position couchée</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Délai avant de se coucher à nouveau</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Durée au sol après une chute</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant par défaut</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Transitions de visée fluides</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

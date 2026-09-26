@@ -215,6 +215,15 @@ namespace KRWF.RimKata
         }
     }
 
+    [HarmonyPatch(typeof(Verb_BeatFire), "TryCastShot")]
+    internal static class Patch_VerbBeatFire_RimKataFirePause
+    {
+        private static void Postfix(Verb_BeatFire __instance, bool __result)
+        {
+            if (__result) RimKataDualWeaponController.NotifyFireBeating(__instance.CasterPawn);
+        }
+    }
+
     [HarmonyPatch(typeof(Pawn_MeleeVerbs), nameof(Pawn_MeleeVerbs.TryMeleeAttack))]
     public static class Patch_PawnMeleeVerbs_WaitCombatRimKata
     {
@@ -414,6 +423,7 @@ namespace KRWF.RimKata
                 && entry.actualCombatWasActive;
             entry.forcedNormalSpeedWasActive = forcedNormalSpeedActive;
             entry.actualCombatWasActive = actualCombatActive;
+            if (forcedSpeedEnded) RimKataCrawlFireUtility.NotifyCombatEnded(map);
 
             if (forcedSpeedStarted
                 || (actualCombatStarted
@@ -686,6 +696,7 @@ namespace KRWF.RimKata
             {
                 RimKataDormantHostileMovementRegistry.NotifyPathStarted(
                     ___pawn);
+                RimKataCrawlFireUtility.NotifyPathStarted(___pawn);
             }
         }
     }
@@ -706,6 +717,7 @@ namespace KRWF.RimKata
             {
                 RimKataDormantHostileMovementRegistry.NotifyPathCellEntered(
                     ___pawn);
+                RimKataGroundPoseUtility.NotifyTargetMoved(___pawn);
             }
         }
     }
@@ -716,6 +728,7 @@ namespace KRWF.RimKata
         public static void Postfix(Pawn ___pawn)
         {
             RimKataDormantHostileMovementRegistry.NotifyPathStopped(___pawn);
+            RimKataCrawlFireUtility.NotifyPathStopped(___pawn);
         }
     }
 }

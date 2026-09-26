@@ -842,11 +842,19 @@ namespace KRWF.RimKata
         public static void Prefix(
             Thing launcher,
             Thing equipment,
+            ref Vector3 origin,
             ref LocalTargetInfo usedTarget,
             LocalTargetInfo intendedTarget,
             ref ProjectileHitFlags hitFlags,
             ref ThingDef targetCoverDef)
         {
+            Verb firingVerb = Patch_Verb_TryCastShot_RimKata.CurrentVerb ?? RimKataFireContext.ActiveVerb;
+            if (firingVerb != null && firingVerb.Caster == launcher && firingVerb.EquipmentSource == equipment
+                && RimKataGroundPoseUtility.TryGetShotCenter(firingVerb, out Vector3 groundCenter, headCentered: true))
+            {
+                origin.x = groundCenter.x;
+                origin.z = groundCenter.z;
+            }
             if (launcher != RimKataFireContext.Shooter
                 || equipment != RimKataFireContext.ActiveVerb?.EquipmentSource
                 || !RimKataFireContext.CloseShot
@@ -1199,6 +1207,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            RimKataGroundPoseEvents.ProjectileImpact(__instance, ref __0, __1);
             return true;
         }
 

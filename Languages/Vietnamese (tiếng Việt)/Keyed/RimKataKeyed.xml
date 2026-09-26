@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Hệ số hồi chiêu tầm xa cơ bản: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Hệ số giáp được bật: ×{0} (đã áp dụng)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Hệ số giáp được bật: ×100% (không mặc giáp được bật)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Xác suất ngã</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Bắn khi nằm sấp</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Bắn khi bò</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Xác suất bổ sung khiến đạn bắn tới trượt khi nằm sấp</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Thưởng ẩn mình khi săn ở tư thế nằm sấp</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Thời gian chờ trước khi nằm sấp lại</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Thời gian nằm sau khi ngã</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Mặc định cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Chuyển hướng ngắm mượt mà</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

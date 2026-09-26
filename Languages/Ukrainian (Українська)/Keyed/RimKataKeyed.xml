@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Базовий множник перезарядження дальнобійної зброї: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Модифікатор дозволеної броні: ×{0} (застосовано)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Модифікатор дозволеної броні: ×100% (дозволену броню не вдягнено)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Шанс упасти</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Стрільба лежачи</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Стрільба під час повзання</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Додатковий шанс промаху по лежачій цілі</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Бонус до непомітності на полюванні в положенні лежачи</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Затримка перед повторним переходом у положення лежачи</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Час перебування лежачи після падіння</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Типово дозволяти стрільбу під час повзання</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Плавна зміна напрямку прицілювання</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

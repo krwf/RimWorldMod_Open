@@ -139,6 +139,8 @@
   <KRWF_RimKata_FeatureResponse>쳐내기</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>원거리 회피</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>공중제비</KRWF_RimKata_FeatureTumble>
+  <KRWF_RimKata_FeatureProneFire>엎드려 쏴</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>기면서 쏴</KRWF_RimKata_FeatureCrawlFire>
   
   <KRWF_RimKata_EnableRimKataA>RimKata-A</KRWF_RimKata_EnableRimKataA>
   <KRWF_RimKata_EnableRimKataP>RimKata-P</KRWF_RimKata_EnableRimKataP>
@@ -162,6 +164,12 @@
   <KRWF_RimKata_ResponseWeaponDurabilityLossChance>쳐내기 성공 시 무기 내구도 소모 확률</KRWF_RimKata_ResponseWeaponDurabilityLossChance>
   <KRWF_RimKata_ResponseWeaponDurabilityLossAmount>쳐내기 성공 시 무기 내구도 소모 값</KRWF_RimKata_ResponseWeaponDurabilityLossAmount>
   <KRWF_RimKata_UnarmedWeaponStealChance>맨손 쳐내기 성공 시 무기 탈취 확률</KRWF_RimKata_UnarmedWeaponStealChance>
+  <KRWF_RimKata_ProneMissChance>엎드려서 추가로 빗나갈 확률</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>엎드린 상태의 사냥 은폐 보너스</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>다시 엎드릴 시간</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallChance>넘어질 확률</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_MeleeFallDuration>넘어져 있을 시간</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>기면서 쏴 사격 허용 기본값</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>주</KRWF_RimKata_InspectSlotPrimary>
   <KRWF_RimKata_InspectSlotSecondary>부</KRWF_RimKata_InspectSlotSecondary>
@@ -183,4 +191,5 @@
   <KRWF_RimKata_CooldownVanillaFactor>기본 원거리 재사용 대기시간 배율: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>허용 방어구 보정: ×{0} (적용됨)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>허용 방어구 보정: ×100% (착용한 허용 방어구 없음)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_SmoothAimTransition>부드러운 조준 전환</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

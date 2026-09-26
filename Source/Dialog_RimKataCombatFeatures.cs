@@ -27,6 +27,8 @@ namespace KRWF.RimKata
         private bool responseEnabled;
         private bool rangedDodgeEnabled;
         private bool tumbleEnabled;
+        private bool proneFireEnabled;
+        private bool crawlFireEnabled;
 
         private static readonly string[] LabelKeys =
         {
@@ -39,7 +41,9 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureTargetRush",
             "KRWF_RimKata_FeatureResponse",
             "KRWF_RimKata_FeatureRangedDodge",
-            "KRWF_RimKata_FeatureTumble"
+            "KRWF_RimKata_FeatureTumble",
+            "KRWF_RimKata_FeatureProneFire",
+            "KRWF_RimKata_FeatureCrawlFire"
         };
 
         public Dialog_RimKataCombatFeatures(RimKataSettings settings)
@@ -59,6 +63,8 @@ namespace KRWF.RimKata
                 responseEnabled = settings.responseEnabled;
                 rangedDodgeEnabled = settings.rangedDodgeEnabled;
                 tumbleEnabled = settings.tumbleEnabled;
+                proneFireEnabled = settings.proneFireEnabled;
+                crawlFireEnabled = settings.crawlFireEnabled;
             }
 
             doCloseX = false;
@@ -132,6 +138,8 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[7], ref responseEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[8], ref rangedDodgeEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[9], ref tumbleEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[10], ref proneFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[11], ref crawlFireEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -202,7 +210,9 @@ namespace KRWF.RimKata
                 || settings.targetRushEnabled != targetRushEnabled
                 || settings.responseEnabled != responseEnabled
                 || settings.rangedDodgeEnabled != rangedDodgeEnabled
-                || settings.tumbleEnabled != tumbleEnabled;
+                || settings.tumbleEnabled != tumbleEnabled
+                || settings.proneFireEnabled != proneFireEnabled
+                || settings.crawlFireEnabled != crawlFireEnabled;
 
             settings.secondaryWeaponEnabled = secondaryWeaponEnabled;
             settings.singleShotConversionEnabled =
@@ -216,6 +226,8 @@ namespace KRWF.RimKata
             settings.responseEnabled = responseEnabled;
             settings.rangedDodgeEnabled = rangedDodgeEnabled;
             settings.tumbleEnabled = tumbleEnabled;
+            settings.proneFireEnabled = proneFireEnabled;
+            settings.crawlFireEnabled = crawlFireEnabled;
 
             if (changed)
             {

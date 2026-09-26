@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Grundmultiplikator för nedkylning av distansangrepp: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modifierare från aktiverad rustning: ×{0} (tillämpad)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modifierare från aktiverad rustning: ×100 % (ingen aktiverad rustning bärs)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Chans att falla</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Skjut liggande</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Skjut under krypning</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Extra chans att inte bli träffad i liggande ställning</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Smygbonus vid jakt i liggande ställning</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Väntetid innan man lägger sig ner igen</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tid på marken efter ett fall</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Tillåt skjutning under krypning som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Mjuka siktövergångar</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

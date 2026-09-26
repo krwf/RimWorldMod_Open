@@ -107,6 +107,7 @@ namespace KRWF.RimKata
             ApplyPublicShotPatches(harmony, launcher);
             RimKataCombatExtendedPrepared.Apply(harmony);
             RimKataCombatExtendedNativeAttack.Apply(harmony, launcher);
+            RimKataCombatExtendedCrawlFire.Apply(harmony, shooter);
         }
 
         private static void ApplyPublicShotPatches(Harmony harmony, Type launcher)

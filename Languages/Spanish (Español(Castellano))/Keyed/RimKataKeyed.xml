@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Multiplicador base de recarga a distancia: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificador de armadura permitida: ×{0} (aplicado)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificador de armadura permitida: ×100% (no se lleva armadura permitida)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Probabilidad de caerse</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Disparar cuerpo a tierra</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Disparar mientras se arrastra</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Probabilidad adicional de que los disparos enemigos fallen al estar cuerpo a tierra</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonificación de sigilo de caza al estar cuerpo a tierra</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Espera antes de volver a ponerse cuerpo a tierra</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tiempo en el suelo tras una caída</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar al arrastrarse por defecto</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Transiciones de apuntado suaves</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

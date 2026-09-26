@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Etähyökkäysten palautumisajan peruskerroin: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Käytössä olevan haarniskan muunnin: ×{0} (käytössä)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Käytössä olevan haarniskan muunnin: ×100 % (käytössä olevaa haarniskaa ei ole puettu)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Kaatumisen todennäköisyys</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Ampuminen makuulta</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Ampuminen ryömiessä</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Lisätodennäköisyys välttää osuma makuulla</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Metsästyksen hiiviskelybonus makuulla</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Odotusaika ennen uudelleen makuulle menoa</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Maassaoloaika kaatumisen jälkeen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä oletusarvoisesti</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Sulavat tähtäyssiirtymät</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Moltiplicatore di base del tempo di recupero degli attacchi a distanza: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modificatore armatura abilitata: ×{0} (applicato)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modificatore armatura abilitata: ×100% (nessuna armatura abilitata indossata)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Probabilità di cadere</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Tiro da sdraiati</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Sparare strisciando</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Probabilità aggiuntiva di non essere colpiti da sdraiati</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus alla furtività nella caccia da sdraiati</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Attesa prima di sdraiarsi di nuovo</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tempo a terra dopo una caduta</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Consenti di sparare strisciando per impostazione predefinita</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Transizioni di mira fluide</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

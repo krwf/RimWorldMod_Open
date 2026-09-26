@@ -49,6 +49,14 @@ namespace KRWF.RimKata
         public bool responsePoseLookAtFocus;
         public bool closeDodgeActive;
         public float closeDodgeAngle;
+        public bool groundPoseActive;
+        public bool groundPoseFallen;
+        public float groundPoseAngle;
+        public float groundPoseDirection;
+        public float groundPoseProgress;
+        public Vector3 groundPoseOffset;
+        public Vector3 groundPoseWeaponOffset;
+        public Rot4 groundPoseFacing;
     }
 
     public sealed class RimKataTrackedRangedProjectile : IExposable
@@ -302,7 +310,7 @@ namespace KRWF.RimKata
             Map map = pawn?.Map;
             if (pawn != null
                 && map != null
-                && (state.VisualActive || state.CloseDodgeActive))
+                && (state.VisualActive || state.CloseDodgeActive || state.groundPose?.VisualActive == true))
             {
                 BodyVisualByPawn[pawn] = map;
                 return;
@@ -492,6 +500,10 @@ namespace KRWF.RimKata
         public bool closeAttackRequestFromAttackGizmo;
         internal bool temporaryInactive;
         internal bool temporaryInactivityCleanupPending;
+        public RimKataGroundPoseState groundPose;
+        // Rebuilt by the active Hunt toil after loading; the weapon timers below
+        // are already serialized with their usual slot state.
+        internal RimKataHuntingSession huntingSession;
 
         public bool VisualActive => pawn != null
             && ((visualState != RimKataVisualState.None
@@ -564,13 +576,17 @@ namespace KRWF.RimKata
             || idleProjectileSearchTriggerPending
             || MovementFireContinuityActive
             || StoredCooldownActive
+            || huntingSession != null
             || WeaponCyclesActive
             || IncomingThreatActive
             || MeleeThreatClearPending
             || CloseAttackRequestActive
             || sharedTargetSearch?.KeepsCombatAlive == true
             || dedicatedFollowupJobPending
-            || weaponSwapPending;
+            || weaponSwapPending
+            // Only decide whether a finished combat state still owns a pose.
+            // Active ordinary combat returns above without reading pose state.
+            || groundPose != null;
         public float VisualProgress => totalTicks <= 0 ? 1f : 1f - ticksRemaining / (float)totalTicks;
         public float AdditionalTumbleProgress =>
             additionalTumbleTotalTicks <= 0
@@ -614,6 +630,7 @@ namespace KRWF.RimKata
         public void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
+            Scribe_Deep.Look(ref groundPose, "groundPose");
             Scribe_Values.Look(ref visualState, "visualState", RimKataVisualState.None);
             Scribe_Values.Look(ref ticksRemaining, "ticksRemaining");
             Scribe_Values.Look(ref totalTicks, "totalTicks");
@@ -1261,7 +1278,17 @@ namespace KRWF.RimKata
                 responsePoseFocus = responsePoseFocus,
                 responsePoseLookAtFocus = responsePoseLookAtFocus,
                 closeDodgeActive = CloseDodgeActive,
-                closeDodgeAngle = CurrentCloseDodgeAngle
+                closeDodgeAngle = CurrentCloseDodgeAngle,
+                groundPoseActive = groundPose?.VisualActive == true,
+                groundPoseFallen = groundPose != null && (groundPose.phase == RimKataFallPhase.Falling
+                    || groundPose.phase == RimKataFallPhase.Fallen
+                    || (groundPose.phase == RimKataFallPhase.Rising && !groundPose.risingFromProne)),
+                groundPoseAngle = groundPose?.DrawAngle ?? 0f,
+                groundPoseDirection = groundPose?.angle ?? 0f,
+                groundPoseProgress = groundPose?.DrawProgress ?? 0f,
+                groundPoseOffset = groundPose?.DrawOffset ?? Vector3.zero,
+                groundPoseWeaponOffset = groundPose?.DrawWeaponOffset ?? Vector3.zero,
+                groundPoseFacing = groundPose?.DrawFacing ?? Rot4.Invalid
             };
         }
 
@@ -1604,6 +1631,12 @@ namespace KRWF.RimKata
 
         private readonly object statesLock = new object();
         private List<RimKataPawnCombatState> states = new List<RimKataPawnCombatState>();
+        private readonly List<RimKataPawnCombatState> groundPoseParticipants =
+            new List<RimKataPawnCombatState>();
+        // A re-prone deadline must not keep an otherwise idle combat state ticking.
+        internal Dictionary<Pawn, long> groundPoseResumeTicks = new Dictionary<Pawn, long>();
+        private List<Pawn> groundPoseResumeKeys;
+        private List<long> groundPoseResumeValues;
         private readonly Dictionary<Pawn, RimKataPawnCombatState> statesByPawn =
             new Dictionary<Pawn, RimKataPawnCombatState>();
         private List<RimKataTrackedRangedProjectile>
@@ -1701,6 +1734,7 @@ namespace KRWF.RimKata
         {
             RimKataEligibilityCache.ForgetMap(map);
             RimKataDormantHostileMovementRegistry.NotifyMapRemoved(map);
+            RimKataGroundPoseUtility.ClearMap(map);
             lock (statesLock)
             {
                 for (int i = 0; i < states.Count; i++)
@@ -1721,6 +1755,7 @@ namespace KRWF.RimKata
             interceptionShotLinksByShot.Clear();
             interceptionShotLinksByTarget.Clear();
             RimKataResponseVisualParticipantCache.ClearForMap(map);
+            groundPoseResumeTicks.Clear();
             base.MapRemoved();
         }
 
@@ -1729,7 +1764,18 @@ namespace KRWF.RimKata
             base.ExposeData();
             lock (statesLock)
             {
+                if (Scribe.mode == LoadSaveMode.Saving && groundPoseResumeTicks.Count != 0)
+                {
+                    // Lazy cleanup at saving, never a per-tick pawn traversal.
+                    var expired = new List<Pawn>();
+                    foreach (var pair in groundPoseResumeTicks)
+                        if (pair.Key.Destroyed || pair.Key.Dead || pair.Key.Map != map
+                            || pair.Value <= (long)Find.TickManager.TicksGame) expired.Add(pair.Key);
+                    foreach (Pawn pawn in expired) groundPoseResumeTicks.Remove(pawn);
+                }
                 Scribe_Collections.Look(ref states, "rimKataPawnStates", LookMode.Deep);
+                Scribe_Collections.Look(ref groundPoseResumeTicks, "rimKataGroundPoseResumeTicks",
+                    LookMode.Reference, LookMode.Value, ref groundPoseResumeKeys, ref groundPoseResumeValues);
                 Scribe_Collections.Look(
                     ref trackedRangedProjectiles,
                     "rimKataTrackedRangedProjectiles",
@@ -1768,6 +1814,7 @@ namespace KRWF.RimKata
 
                 if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 {
+                    groundPoseResumeTicks ??= new Dictionary<Pawn, long>();
                     pendingProjectileValidations ??=
                         new Dictionary<Projectile, PendingProjectileValidation>();
                     weatherRangeCapInitialized = false;
@@ -1886,9 +1933,21 @@ namespace KRWF.RimKata
                             state.pawn, state.pawn.CurJobDef, state);
                     }
                 }
+                // Only event-registered poses are visited. Ordinary combat states
+                // never enter the pose scheduler, even to test an active flag.
+                for (int i = groundPoseParticipants.Count - 1; i >= 0; i--)
+                    RimKataGroundPoseUtility.Tick(groundPoseParticipants[i]);
             }
             RimKataDormantHostileMovementRegistry.ProcessPending(map, actualCombatActive);
         }
+
+        internal void RegisterGroundPose(RimKataPawnCombatState state)
+        {
+            if (!groundPoseParticipants.Contains(state)) groundPoseParticipants.Add(state);
+        }
+
+        internal void UnregisterGroundPose(RimKataPawnCombatState state)
+            => groundPoseParticipants.Remove(state);
 
         internal void RegisterCloseProjectile(RimKataCloseProjectileState shot)
         {
@@ -2053,6 +2112,16 @@ namespace KRWF.RimKata
             }
 
             return marked;
+        }
+
+        internal bool WasRangedProjectileAvoided(Projectile projectile, Pawn target)
+        {
+            if (projectile == null || target == null) return false;
+            lock (statesLock)
+            {
+                return trackedRangedProjectilesByProjectile.TryGetValue(projectile, out var tracked)
+                    && tracked.target == target && tracked.avoided;
+            }
         }
 
         internal bool TryConsumeAvoidedRangedProjectile(
@@ -2969,6 +3038,7 @@ namespace KRWF.RimKata
         private void RebuildStateIndex()
         {
             RimKataResponseVisualParticipantCache.ClearForMap(map);
+            RimKataGroundPoseUtility.ClearMap(map);
             foreach (Pawn indexedPawn in statesByPawn.Keys)
             {
                 RimKataCombatStatePresenceCache.Clear(indexedPawn, map);
@@ -2987,6 +3057,7 @@ namespace KRWF.RimKata
                     state.ownerComponent = this;
                     RimKataCombatStatePresenceCache.Mark(state.pawn, this);
                     statesByPawn[state.pawn] = state;
+                    RimKataGroundPoseUtility.Rebuild(state);
                     RimKataResponseVisualParticipantCache.Refresh(state);
                     RimKataResponseVisualParticipantCache
                         .RefreshBodyVisual(state);
@@ -2997,6 +3068,7 @@ namespace KRWF.RimKata
         private void RemoveStateAt(int index)
         {
             RimKataPawnCombatState state = states[index];
+            RimKataGroundPoseUtility.Clear(state);
             if (state != null) state.ownerComponent = null;
             states.RemoveAt(index);
             RimKataResponseVisualParticipantCache.Clear(state?.pawn);
@@ -3348,7 +3420,8 @@ namespace KRWF.RimKata
                         && !state.DeflectionActive
                         && !state.DeflectionSpinActive
                         && !state.ResponsePoseActive
-                        && !state.CloseDodgeActive))
+                        && !state.CloseDodgeActive
+                        && state.groundPose?.VisualActive != true))
                 {
                     return false;
                 }

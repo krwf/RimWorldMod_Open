@@ -39,6 +39,7 @@ namespace KRWF.RimKata
         internal Pawn pawn;
         internal RimKataPawnCombatState state;
         internal RimKataWeaponCycleState cycle;
+        internal RimKataHuntingSession huntingSession;
         internal ThingWithComps weapon;
         internal Verb verb;
         internal Verb cycleVerb;
@@ -70,6 +71,7 @@ namespace KRWF.RimKata
         private VerbBinding nativeBinding;
         private RimKataFireContext.ScopeState previousContext;
         private Stance_RimKataAim previousAim;
+        private Stance previousHuntingStance;
         // Used only by the optional CE patches; the common firing path never reads it.
         internal int extraAimTicks;
 
@@ -118,8 +120,8 @@ namespace KRWF.RimKata
             currentTarget(verb) = target;
             currentDestination(verb) = LocalTargetInfo.Invalid;
             surpriseAttack(verb) = false;
-            canHitNonTargetPawns(verb) = true;
-            preventFriendlyFire(verb) = false;
+            canHitNonTargetPawns(verb) = huntingSession == null;
+            preventFriendlyFire(verb) = huntingSession != null && job.preventFriendlyFire;
             nonInterruptingSelfCast(verb) = true;
             cancelled = false;
             Started = false;
@@ -161,7 +163,7 @@ namespace KRWF.RimKata
             Thing targetThing = target.Thing;
             if (targetThing != null && (!targetThing.Spawned || targetThing.Map != pawn.Map
                 || (targetThing is Pawn victim && (victim.Dead
-                    || (RimKataTargeting.IsIncapacitatedTarget(victim)
+                    || (huntingSession == null && RimKataTargeting.IsIncapacitatedTarget(victim)
                         && !(playerForced && killIncappedTarget))))))
             {
                 return false;
@@ -257,6 +259,7 @@ namespace KRWF.RimKata
         {
             Executing = true;
             previousAim = pawn.stances?.curStance as Stance_RimKataAim;
+            previousHuntingStance = huntingSession != null ? pawn.stances?.curStance : null;
             pawn.rotationTracker.FaceCell(verb.CurrentTarget.Cell);
             movingShot = !verb.IsMeleeAttack && !closeShot && pawn.pather?.MovingNow == true;
             previousContext = RimKataFireContext.Begin(
@@ -291,7 +294,12 @@ namespace KRWF.RimKata
         {
             if (pawn.stances?.curStance is Stance_Busy busy && busy.verb == verb)
             {
-                if (previousAim != null)
+                if (huntingSession != null)
+                {
+                    if (pawn.CurJob == job && previousHuntingStance != null)
+                        pawn.stances.curStance = previousHuntingStance;
+                }
+                else if (previousAim != null)
                 {
                     pawn.stances.curStance = previousAim;
                 }
@@ -303,6 +311,7 @@ namespace KRWF.RimKata
                 }
             }
             previousAim = null;
+            previousHuntingStance = null;
         }
 
         private void CompleteRequest(bool resetNative)
@@ -426,6 +435,7 @@ namespace KRWF.RimKata
             pawn = null;
             state = null;
             cycle = null;
+            huntingSession = null;
             weapon = null;
             verb = null;
             cycleVerb = null;
@@ -436,6 +446,7 @@ namespace KRWF.RimKata
             interceptionTarget = null;
             previousContext = default;
             previousAim = null;
+            previousHuntingStance = null;
             Started = false;
             HasFired = false;
         }

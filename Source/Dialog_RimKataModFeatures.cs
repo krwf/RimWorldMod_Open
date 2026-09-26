@@ -17,7 +17,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 14f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
+        private const float ContentHeight = RowHeight * 19f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -36,6 +36,11 @@ namespace KRWF.RimKata
         private float responseWeaponDurabilityLossChancePercent;
         private int responseWeaponDurabilityLossAmount;
         private float unarmedWeaponStealChancePercent;
+        private int proneResumeDelayTicks;
+        private float meleeFallChancePercent;
+        private int meleeFallDurationTicks;
+        private bool crawlFireDefaultAllowed;
+        private bool smoothAimTransition;
         private string touchCandidateBuffer;
         private string shortCandidateBuffer;
         private string mediumCandidateBuffer;
@@ -47,6 +52,9 @@ namespace KRWF.RimKata
         private string durabilityChanceBuffer;
         private string durabilityAmountBuffer;
         private string unarmedWeaponStealBuffer;
+        private string proneResumeDelayBuffer;
+        private string meleeFallChanceBuffer;
+        private string meleeFallDurationBuffer;
 
         private static readonly string[] NumericLabelKeys =
         {
@@ -60,14 +68,19 @@ namespace KRWF.RimKata
             "KRWF_RimKata_ResponseAccidentalFireChance",
             "KRWF_RimKata_ResponseWeaponDurabilityLossChance",
             "KRWF_RimKata_ResponseWeaponDurabilityLossAmount",
-            "KRWF_RimKata_UnarmedWeaponStealChance"
+            "KRWF_RimKata_UnarmedWeaponStealChance",
+            "KRWF_RimKata_ProneResumeDelay",
+            "KRWF_RimKata_MeleeFallChance",
+            "KRWF_RimKata_MeleeFallDuration"
         };
 
         private static readonly string[] CheckboxLabelKeys =
         {
             "KRWF_RimKata_ShowRangedWeaponCooldown",
             "KRWF_RimKata_ShowMeleeWeaponAimTime",
-            "KRWF_RimKata_ShowFocusedAttackLine"
+            "KRWF_RimKata_ShowFocusedAttackLine",
+            "KRWF_RimKata_CrawlFireDefaultAllowed",
+            "KRWF_RimKata_SmoothAimTransition"
         };
 
         private static readonly string[] HeaderKeys =
@@ -97,6 +110,11 @@ namespace KRWF.RimKata
                 responseWeaponDurabilityLossChancePercent = settings.responseWeaponDurabilityLossChancePercent;
                 responseWeaponDurabilityLossAmount = settings.responseWeaponDurabilityLossAmount;
                 unarmedWeaponStealChancePercent = settings.unarmedWeaponStealChancePercent;
+                proneResumeDelayTicks = settings.proneResumeDelayTicks;
+                meleeFallChancePercent = settings.meleeFallChancePercent;
+                meleeFallDurationTicks = settings.meleeFallDurationTicks;
+                crawlFireDefaultAllowed = settings.crawlFireDefaultAllowed;
+                smoothAimTransition = settings.smoothAimTransition;
             }
             touchCandidateBuffer = touchCandidateLimit.ToString();
             shortCandidateBuffer = shortCandidateLimit.ToString();
@@ -109,6 +127,9 @@ namespace KRWF.RimKata
             durabilityChanceBuffer = responseWeaponDurabilityLossChancePercent.ToString();
             durabilityAmountBuffer = responseWeaponDurabilityLossAmount.ToString();
             unarmedWeaponStealBuffer = unarmedWeaponStealChancePercent.ToString();
+            proneResumeDelayBuffer = proneResumeDelayTicks.ToString();
+            meleeFallChanceBuffer = meleeFallChancePercent.ToString();
+            meleeFallDurationBuffer = meleeFallDurationTicks.ToString();
 
             doCloseX = false;
             doCloseButton = false;
@@ -181,6 +202,11 @@ namespace KRWF.RimKata
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[8], ref responseWeaponDurabilityLossChancePercent, ref durabilityChanceBuffer);
             DrawIntRow(viewRect.width, ref y, NumericLabelKeys[9], ref responseWeaponDurabilityLossAmount, ref durabilityAmountBuffer);
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[10], ref unarmedWeaponStealChancePercent, ref unarmedWeaponStealBuffer);
+            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[11], ref proneResumeDelayTicks, ref proneResumeDelayBuffer);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref meleeFallChancePercent, ref meleeFallChanceBuffer);
+            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[13], ref meleeFallDurationTicks, ref meleeFallDurationBuffer);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[3], ref crawlFireDefaultAllowed);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref smoothAimTransition);
             Widgets.EndScrollView();
             DrawButtons(new Rect(inRect.x, inRect.yMax - ButtonHeight, inRect.width, ButtonHeight));
             Text.Font = previousFont;
@@ -203,6 +229,11 @@ namespace KRWF.RimKata
                 || settings.immediateTumbleChancePercent != immediateTumbleChancePercent
                 || settings.responseAttackerSpinChancePercent != responseAttackerSpinChancePercent
                 || settings.unarmedWeaponStealChancePercent != unarmedWeaponStealChancePercent
+                || settings.proneResumeDelayTicks != proneResumeDelayTicks
+                || settings.meleeFallChancePercent != meleeFallChancePercent
+                || settings.meleeFallDurationTicks != meleeFallDurationTicks
+                || settings.crawlFireDefaultAllowed != crawlFireDefaultAllowed
+                || settings.smoothAimTransition != smoothAimTransition
                 || settings.responseAccidentalFireChancePercent != responseAccidentalFireChancePercent
                 || settings.responseWeaponDurabilityLossChancePercent != responseWeaponDurabilityLossChancePercent
                 || settings.responseWeaponDurabilityLossAmount != responseWeaponDurabilityLossAmount;
@@ -217,6 +248,11 @@ namespace KRWF.RimKata
             settings.immediateTumbleChancePercent = immediateTumbleChancePercent;
             settings.responseAttackerSpinChancePercent = responseAttackerSpinChancePercent;
             settings.unarmedWeaponStealChancePercent = unarmedWeaponStealChancePercent;
+            settings.proneResumeDelayTicks = proneResumeDelayTicks;
+            settings.meleeFallChancePercent = meleeFallChancePercent;
+            settings.meleeFallDurationTicks = meleeFallDurationTicks;
+            settings.crawlFireDefaultAllowed = crawlFireDefaultAllowed;
+            settings.smoothAimTransition = smoothAimTransition;
             settings.responseAccidentalFireChancePercent = responseAccidentalFireChancePercent;
             settings.responseWeaponDurabilityLossChancePercent = responseWeaponDurabilityLossChancePercent;
             settings.responseWeaponDurabilityLossAmount = responseWeaponDurabilityLossAmount;
@@ -249,6 +285,17 @@ namespace KRWF.RimKata
             RimKataSettingsDrawer.DrawFloatField(
                 new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
                 ref value, ref buffer, 0f, 100f, "%");
+            DrawRowLabel(new Rect(FieldWidth + ColumnGap, y, width - FieldWidth - ColumnGap, RowHeight), key.Translate());
+            y += RowHeight;
+        }
+
+        private static void DrawTickRow(float width, ref float y, string key, ref int value, ref string buffer)
+        {
+            RimKataSettingsDrawer.DrawIntField(
+                new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
+                ref value, ref buffer,
+                RimKataSettings.MinimumGroundPoseDurationTicks,
+                RimKataSettings.MaximumGroundPoseDurationTicks, "tick");
             DrawRowLabel(new Rect(FieldWidth + ColumnGap, y, width - FieldWidth - ColumnGap, RowHeight), key.Translate());
             y += RowHeight;
         }

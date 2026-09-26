@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Grundmultiplikator der Fernkampfabklingzeit: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Modifikator durch aktivierte Rüstung: ×{0} (angewandt)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Modifikator durch aktivierte Rüstung: ×100 % (keine aktivierte Rüstung getragen)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Wahrscheinlichkeit umzufallen</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Schießen im Liegen</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Schießen beim Kriechen</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Zusätzliche Chance, im Liegen nicht getroffen zu werden</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Bonus auf Jagdtarnung im Liegen</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Wartezeit vor erneutem Hinlegen</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Liegedauer nach einem Sturz</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen standardmäßig erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Sanfte Zielwechsel</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>基础远程冷却倍率：{0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>已启用护甲修正：×{0}（已应用）</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>已启用护甲修正：×100%（未穿戴已启用护甲）</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>摔倒概率</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>卧姿射击</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>爬行射击</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>卧倒时使敌方射击落空的额外概率</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>卧倒时的狩猎隐蔽加成</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>再次卧倒前的等待时间</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>摔倒后的躺卧时间</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>默认允许爬行时射击</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>平滑瞄准过渡</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

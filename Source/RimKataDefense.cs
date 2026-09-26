@@ -42,6 +42,7 @@ namespace KRWF.RimKata
             public Pawn avoidedPawn;
             public Pawn resolvedPawn;
             public bool resolvedWasAvoided;
+            public bool groundPoseChecked;
         }
 
         [ThreadStatic] private static List<ProjectileDefenseFrame> projectileDefenseFrames;
@@ -209,6 +210,21 @@ namespace KRWF.RimKata
             }
         }
 
+        internal static bool TryBeginGroundPoseImpact()
+        {
+            if (projectileDefenseDepth <= 0 || projectileDefenseFrames == null)
+                return false;
+
+            int index = projectileDefenseDepth - 1;
+            ProjectileDefenseFrame frame = projectileDefenseFrames[index];
+            if (frame.groundPoseChecked)
+                return false;
+
+            frame.groundPoseChecked = true;
+            projectileDefenseFrames[index] = frame;
+            return true;
+        }
+
         public static RimKataDefenseOutcome ResolveCloseDefense(
             Pawn defender,
             Pawn attacker,
@@ -274,6 +290,7 @@ namespace KRWF.RimKata
                 RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender);
             if (Rand.Chance(dodgeChance))
             {
+                RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, false);
                 return RimKataCloseDefensePrecheck.FirstDodgeSucceeded;
             }
 
@@ -344,17 +361,20 @@ namespace KRWF.RimKata
             return parried;
         }
 
-        internal static bool TryResolveCombatExtendedRiposteDefense(
+        internal static bool TryResolveDirectMeleeDefense(
             Pawn defender, Pawn attacker, Verb attackingVerb, out bool parried)
         {
             parried = false;
             if (defender == null || attacker == null || !RimKataEligibility.CanUseDefense(defender))
                 return false;
 
-            // CE applies a riposte directly, without setting the selected Verb's
-            // CurrentTarget. Use its explicit participants and roll only once.
+            // Direct counterblows do not set the selected Verb's CurrentTarget.
+            // Use their explicit participants and roll only once.
             if (Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
+            {
+                RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, true);
                 return true;
+            }
             if (RimKataTargeting.IsAutomaticEnemy(defender, attacker)
                 && defender.CanReachImmediate(attacker, PathEndMode.Touch))
                 defender.Map?.GetComponent<RimKataMapComponent>()?.EnterCloseCombat(defender, attacker);
@@ -450,7 +470,8 @@ namespace KRWF.RimKata
             Pawn defender = projectile?.intendedTarget.Pawn;
             if (defender == null
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(defender)
-                || !RimKataEligibility.CanRollRangedDodgeVerified(defender, false)
+                || (!RimKataEligibility.CanRollRangedDodgeVerified(defender, false)
+                    && !RimKataGroundPoseUtility.IsProne(defender))
                 || projectile.Destroyed || !projectile.Spawned
                 || defender.Map != projectile.Map
                 || (projectile.usedTarget.Pawn != defender
@@ -479,13 +500,17 @@ namespace KRWF.RimKata
             Projectile projectile, Pawn defender, bool alreadyAvoided)
         {
             if (defender == null || ExplosiveDodgeTarget(projectile) != defender
-                || !RimKataEligibility.CanRollRangedDodge(defender, false)
+                || (!RimKataEligibility.CanRollRangedDodge(defender, false)
+                    && !RimKataGroundPoseUtility.IsProne(defender))
                 || !RimKataProjectileMissUtility.TryPrepareMiss(projectile, defender, out var flight))
             {
                 return false;
             }
 
-            if (!alreadyAvoided && !TryRangedDodge(defender, projectile.Launcher, projectile))
+            if (!alreadyAvoided
+                && !RimKataGroundPoseUtility.TryProneMiss(defender)
+                && !(RimKataEligibility.CanRollRangedDodge(defender, false)
+                    && TryRangedDodge(defender, projectile.Launcher, projectile)))
             {
                 return false;
             }
@@ -517,6 +542,7 @@ namespace KRWF.RimKata
             {
                 component.BeginImmediateTumble(defender);
                 component.MarkCurrentRangedProjectilesAvoided(defender);
+                RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, false);
                 return true;
             }
 
@@ -546,6 +572,7 @@ namespace KRWF.RimKata
                 }
 
                 component.MarkCurrentRangedProjectilesAvoided(defender);
+                RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, false);
                 return true;
             }
 
@@ -560,6 +587,8 @@ namespace KRWF.RimKata
                 projectile,
                 component,
                 dodgeDurationTicks);
+
+            RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, false);
 
             return true;
         }
@@ -748,6 +777,7 @@ namespace KRWF.RimKata
                     && meleeResolution
                     && Rand.Chance(closeDodgeChance))
                 {
+                    RimKataGroundPoseUtility.NotifyAvoidance(defender, closeAttacker, false);
                     RecordCloseAttackResolution(defender, true);
                     RecordProjectileDefense(defender, true);
                     MarkProjectileAvoided(defender);
@@ -788,6 +818,7 @@ namespace KRWF.RimKata
                 if (meleeResolution
                     && Rand.Chance(closeDodgeChance))
                 {
+                    RimKataGroundPoseUtility.NotifyAvoidance(defender, closeAttacker, false);
                     RecordCloseAttackResolution(defender, true);
                     RecordProjectileDefense(defender, true);
                     MarkProjectileAvoided(defender);
@@ -1133,6 +1164,11 @@ namespace KRWF.RimKata
             float distanceFactor = defender.ageTracker?.CurLifeStage?.equipmentDrawDistanceFactor ?? 1f;
             float drawDistance = (0.4f + weapon.def.equippedDistanceOffset) * distanceFactor;
             Vector3 equipmentCenter = drawLoc + new Vector3(0f, 0f, drawDistance).RotatedBy(aimAngle);
+            if (RimKataGroundPoseUtility.TryGetResponseCenter(defender, weapon, focus, out Vector3 posedCenter))
+            {
+                equipmentCenter.x = posedCenter.x;
+                equipmentCenter.z = posedCenter.z;
+            }
             Vector3 effectOffset = equipmentCenter - defender.Position.ToVector3Shifted();
             Effecter effecter = EffecterDefOf.Deflect_General.Spawn(defender.Position, defender.Map, effectOffset, 1f);
             effecter?.Cleanup();

@@ -349,6 +349,19 @@ namespace KRWF.RimKata
         public const float DefaultImmediateTumbleChancePercent = 3f;
         public const float DefaultResponseAttackerSpinChancePercent = 20f;
         public const float DefaultUnarmedWeaponStealChancePercent = 3f;
+        public const float DefaultProneMissChancePercent = 30f;
+        public const float DefaultProneMissChanceGrowthPerLevelPercent = 1f;
+        public const float DefaultProneMissChanceMinimumPercent = 10f;
+        public const bool DefaultProneMissChanceFixed = true;
+        public const float DefaultProneHuntingStealthBonusPercent = 15f;
+        public const float DefaultProneHuntingStealthBonusGrowthPerLevelPercent = 1f;
+        public const float DefaultProneHuntingStealthBonusMinimumPercent = 0f;
+        public const bool DefaultProneHuntingStealthBonusFixed = true;
+        public const int DefaultProneResumeDelayTicks = 50;
+        public const float DefaultMeleeFallChancePercent = 1f;
+        public const int DefaultMeleeFallDurationTicks = 50;
+        public const int MinimumGroundPoseDurationTicks = 0;
+        public const int MaximumGroundPoseDurationTicks = int.MaxValue;
         public const float DefaultResponseWeaponDurabilityLossChancePercent = 0f;
         public const int DefaultResponseWeaponDurabilityLossAmount = 1;
         public const int MinimumResponseWeaponDurabilityLossAmount = 1;
@@ -393,6 +406,10 @@ namespace KRWF.RimKata
         public const bool DefaultResponseEnabled = true;
         public const bool DefaultRangedDodgeEnabled = true;
         public const bool DefaultTumbleEnabled = true;
+        public const bool DefaultProneFireEnabled = true;
+        public const bool DefaultCrawlFireEnabled = true;
+        public const bool DefaultCrawlFireDefaultAllowed = true;
+        public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
 
         public static readonly string[] DefaultEnabledWeaponDefNames =
@@ -463,6 +480,17 @@ namespace KRWF.RimKata
         public float immediateTumbleChancePercent = DefaultImmediateTumbleChancePercent;
         public float responseAttackerSpinChancePercent = DefaultResponseAttackerSpinChancePercent;
         public float unarmedWeaponStealChancePercent = DefaultUnarmedWeaponStealChancePercent;
+        public float proneMissChancePercent = DefaultProneMissChancePercent;
+        public float proneMissChanceGrowthPerLevelPercent = DefaultProneMissChanceGrowthPerLevelPercent;
+        public float proneMissChanceMinimumPercent = DefaultProneMissChanceMinimumPercent;
+        public bool proneMissChanceFixed = DefaultProneMissChanceFixed;
+        public float proneHuntingStealthBonusPercent = DefaultProneHuntingStealthBonusPercent;
+        public float proneHuntingStealthBonusGrowthPerLevelPercent = DefaultProneHuntingStealthBonusGrowthPerLevelPercent;
+        public float proneHuntingStealthBonusMinimumPercent = DefaultProneHuntingStealthBonusMinimumPercent;
+        public bool proneHuntingStealthBonusFixed = DefaultProneHuntingStealthBonusFixed;
+        public int proneResumeDelayTicks = DefaultProneResumeDelayTicks;
+        public float meleeFallChancePercent = DefaultMeleeFallChancePercent;
+        public int meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
         public float responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
         public int responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
         public float creepJoinerDependencyGeneChancePercent = DefaultCreepJoinerDependencyGeneChancePercent;
@@ -512,6 +540,10 @@ namespace KRWF.RimKata
         public bool responseEnabled = DefaultResponseEnabled;
         public bool rangedDodgeEnabled = DefaultRangedDodgeEnabled;
         public bool tumbleEnabled = DefaultTumbleEnabled;
+        public bool proneFireEnabled = DefaultProneFireEnabled;
+        public bool crawlFireEnabled = DefaultCrawlFireEnabled;
+        public bool crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+        public bool smoothAimTransition = DefaultSmoothAimTransition;
         // Legacy blanket override is only read to migrate into the shared target list.
         internal bool accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         internal bool targetAccessInitialized;
@@ -599,6 +631,13 @@ namespace KRWF.RimKata
         public float ImmediateTumbleChance => ChanceFromPercent(immediateTumbleChancePercent);
         public float ResponseAttackerSpinChance => ChanceFromPercent(responseAttackerSpinChancePercent);
         public float UnarmedWeaponStealChance => ChanceFromPercent(unarmedWeaponStealChancePercent);
+        public float GetProneMissChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
+            pawn, proneMissChanceFixed, proneMissChancePercent,
+            proneMissChanceMinimumPercent, proneMissChanceGrowthPerLevelPercent, SkillDefOf.Shooting));
+        public float GetProneHuntingStealthBonus(Pawn pawn) => ChanceFromPercent(ResolvePercent(
+            pawn, proneHuntingStealthBonusFixed, proneHuntingStealthBonusPercent,
+            proneHuntingStealthBonusMinimumPercent, proneHuntingStealthBonusGrowthPerLevelPercent, SkillDefOf.Shooting));
+        public float MeleeFallChance => ChanceFromPercent(meleeFallChancePercent);
         public float AiSecondaryWeaponChance => ChanceFromPercent(aiSecondaryWeaponChancePercent);
         internal string ActiveProfileId
         {
@@ -677,6 +716,17 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref immediateTumbleChancePercent, "immediateTumbleChancePercent", preservePreviousCombatDefaults ? 0f : DefaultImmediateTumbleChancePercent);
             Scribe_Values.Look(ref responseAttackerSpinChancePercent, "responseAttackerSpinChancePercent", preservePreviousCombatDefaults ? 0f : DefaultResponseAttackerSpinChancePercent);
             Scribe_Values.Look(ref unarmedWeaponStealChancePercent, "unarmedWeaponStealChancePercent", DefaultUnarmedWeaponStealChancePercent);
+            Scribe_Values.Look(ref proneMissChancePercent, "proneMissChancePercent", DefaultProneMissChancePercent);
+            Scribe_Values.Look(ref proneMissChanceGrowthPerLevelPercent, "proneMissChanceGrowthPerLevelPercent", DefaultProneMissChanceGrowthPerLevelPercent);
+            Scribe_Values.Look(ref proneMissChanceMinimumPercent, "proneMissChanceMinimumPercent", DefaultProneMissChanceMinimumPercent);
+            LookFixedMode(ref proneMissChanceFixed, "proneMissChanceFixed", DefaultProneMissChanceFixed, "proneMissChancePercent");
+            Scribe_Values.Look(ref proneHuntingStealthBonusPercent, "proneHuntingStealthBonusPercent", DefaultProneHuntingStealthBonusPercent);
+            Scribe_Values.Look(ref proneHuntingStealthBonusGrowthPerLevelPercent, "proneHuntingStealthBonusGrowthPerLevelPercent", DefaultProneHuntingStealthBonusGrowthPerLevelPercent);
+            Scribe_Values.Look(ref proneHuntingStealthBonusMinimumPercent, "proneHuntingStealthBonusMinimumPercent", DefaultProneHuntingStealthBonusMinimumPercent);
+            Scribe_Values.Look(ref proneHuntingStealthBonusFixed, "proneHuntingStealthBonusFixed", DefaultProneHuntingStealthBonusFixed);
+            Scribe_Values.Look(ref proneResumeDelayTicks, "proneResumeDelayTicks", DefaultProneResumeDelayTicks);
+            Scribe_Values.Look(ref meleeFallChancePercent, "meleeFallChancePercent", DefaultMeleeFallChancePercent);
+            Scribe_Values.Look(ref meleeFallDurationTicks, "meleeFallDurationTicks", DefaultMeleeFallDurationTicks);
             if (preservePreviousCombatDefaults)
                 combatDefaultsVersion = CurrentCombatDefaultsVersion;
             Scribe_Values.Look(ref responseWeaponDurabilityLossChancePercent, "responseWeaponDurabilityLossChancePercent", DefaultResponseWeaponDurabilityLossChancePercent);
@@ -735,6 +785,10 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref responseEnabled, "responseEnabled", DefaultResponseEnabled);
             Scribe_Values.Look(ref rangedDodgeEnabled, "rangedDodgeEnabled", DefaultRangedDodgeEnabled);
             Scribe_Values.Look(ref tumbleEnabled, "tumbleEnabled", DefaultTumbleEnabled);
+            Scribe_Values.Look(ref proneFireEnabled, "proneFireEnabled", DefaultProneFireEnabled);
+            Scribe_Values.Look(ref crawlFireEnabled, "crawlFireEnabled", DefaultCrawlFireEnabled);
+            Scribe_Values.Look(ref crawlFireDefaultAllowed, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
+            Scribe_Values.Look(ref smoothAimTransition, "smoothAimTransition", DefaultSmoothAimTransition);
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
             Scribe_Collections.Look(ref enabledWeaponDefNames, "enabledWeaponDefNames", LookMode.Value);
@@ -852,6 +906,15 @@ namespace KRWF.RimKata
             immediateTumbleChancePercent = SanitizePercent(immediateTumbleChancePercent, DefaultImmediateTumbleChancePercent);
             responseAttackerSpinChancePercent = SanitizePercent(responseAttackerSpinChancePercent, DefaultResponseAttackerSpinChancePercent);
             unarmedWeaponStealChancePercent = SanitizePercent(unarmedWeaponStealChancePercent, DefaultUnarmedWeaponStealChancePercent);
+            proneMissChancePercent = SanitizePercent(proneMissChancePercent, DefaultProneMissChancePercent);
+            proneMissChanceGrowthPerLevelPercent = SanitizePercent(proneMissChanceGrowthPerLevelPercent, DefaultProneMissChanceGrowthPerLevelPercent);
+            proneMissChanceMinimumPercent = SanitizePercent(proneMissChanceMinimumPercent, DefaultProneMissChanceMinimumPercent);
+            proneHuntingStealthBonusPercent = SanitizePercent(proneHuntingStealthBonusPercent, DefaultProneHuntingStealthBonusPercent);
+            proneHuntingStealthBonusGrowthPerLevelPercent = SanitizePercent(proneHuntingStealthBonusGrowthPerLevelPercent, DefaultProneHuntingStealthBonusGrowthPerLevelPercent);
+            proneHuntingStealthBonusMinimumPercent = SanitizePercent(proneHuntingStealthBonusMinimumPercent, DefaultProneHuntingStealthBonusMinimumPercent);
+            proneResumeDelayTicks = Mathf.Clamp(proneResumeDelayTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            meleeFallChancePercent = SanitizePercent(meleeFallChancePercent, DefaultMeleeFallChancePercent);
+            meleeFallDurationTicks = Mathf.Clamp(meleeFallDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             responseAccidentalFireChancePercent = SanitizePercent(
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
         }
@@ -927,6 +990,17 @@ namespace KRWF.RimKata
             immediateTumbleChancePercent = DefaultImmediateTumbleChancePercent;
             responseAttackerSpinChancePercent = DefaultResponseAttackerSpinChancePercent;
             unarmedWeaponStealChancePercent = DefaultUnarmedWeaponStealChancePercent;
+            proneMissChancePercent = DefaultProneMissChancePercent;
+            proneMissChanceGrowthPerLevelPercent = DefaultProneMissChanceGrowthPerLevelPercent;
+            proneMissChanceMinimumPercent = DefaultProneMissChanceMinimumPercent;
+            proneMissChanceFixed = DefaultProneMissChanceFixed;
+            proneHuntingStealthBonusPercent = DefaultProneHuntingStealthBonusPercent;
+            proneHuntingStealthBonusGrowthPerLevelPercent = DefaultProneHuntingStealthBonusGrowthPerLevelPercent;
+            proneHuntingStealthBonusMinimumPercent = DefaultProneHuntingStealthBonusMinimumPercent;
+            proneHuntingStealthBonusFixed = DefaultProneHuntingStealthBonusFixed;
+            proneResumeDelayTicks = DefaultProneResumeDelayTicks;
+            meleeFallChancePercent = DefaultMeleeFallChancePercent;
+            meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
             responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -956,6 +1030,10 @@ namespace KRWF.RimKata
             movingFireEnabled = DefaultMovingFireEnabled;
             closeFireEnabled = DefaultCloseFireEnabled;
             targetRushEnabled = DefaultTargetRushEnabled;
+            proneFireEnabled = DefaultProneFireEnabled;
+            crawlFireEnabled = DefaultCrawlFireEnabled;
+            crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+            smoothAimTransition = DefaultSmoothAimTransition;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }
 

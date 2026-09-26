@@ -166,6 +166,7 @@ namespace KRWF.RimKata
                 snapshot.additionalTumbleActive = false;
                 snapshot.dodgeMovementActive = false;
                 snapshot.closeDodgeActive = false;
+                snapshot.groundPoseActive = false;
             }
 
             return true;
@@ -257,6 +258,7 @@ namespace KRWF.RimKata
                         || (snapshot.visualActive
                             && snapshot.visualState == RimKataVisualState.Tumble)
                         || snapshot.closeDodgeActive
+                        || snapshot.groundPoseActive
                         || (snapshot.responsePoseActive
                             && snapshot.responsePoseLookAtFocus);
         }
@@ -817,6 +819,10 @@ namespace KRWF.RimKata
             }
 
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
+            // External animation renderers can enter here outside the ordinary
+            // equipment draw pass. Keep final weapon submission in this pawn's
+            // ground-pose scope without changing the external animation itself.
+            bool groundPoseScope = RimKataGroundPoseRender.PushEquipment(pawn, PawnRenderFlags.None);
             drawingPair = true;
             currentEquipmentPivot = root;
             try
@@ -829,6 +835,7 @@ namespace KRWF.RimKata
                 drawingSecondary = false;
                 currentEquipmentPivot = default(Vector3);
                 drawingPair = false;
+                RimKataGroundPoseRender.PopEquipment(groundPoseScope);
             }
         }
 
@@ -858,8 +865,23 @@ namespace KRWF.RimKata
         public static void DrawCombatIndicators(Pawn pawn)
         {
             if (pawn?.Spawned != true
-                || !Find.Selector.IsSelected(pawn)
-                || !RimKataDualWeaponController
+                || !Find.Selector.IsSelected(pawn))
+            {
+                return;
+            }
+
+            if (RimKataCrawlFireUtility.TryGetCooldownIndicator(pawn, out Verb crawlVerb,
+                    out LocalTargetInfo crawlTarget, out int crawlTicks))
+            {
+                if (crawlVerb.verbProps?.drawAimPie == true
+                    && RimKataTargetAccess.SettingsFor(pawn)?.showRangedWeaponCooldown != false
+                    && TryGetIndicatorWeaponCenter(pawn, crawlVerb.EquipmentSource, out Vector3 crawlCenter))
+                    DrawBlackAimPie(crawlCenter, crawlTarget, Mathf.Clamp(crawlTicks, 1, 360),
+                        CombatIndicatorBaseAltitude);
+                return;
+            }
+
+            if (!RimKataDualWeaponController
                     .MayNeedCombatIndicatorFrame(pawn)
                 || !RimKataVisualUtility.TryGetUiLoadout(
                     pawn,
@@ -1075,7 +1097,9 @@ namespace KRWF.RimKata
                     ? responseFocus
                     : visual.target;
 
-                aimAngle = AngleToTarget(pawn, target, fallbackAngle);
+                aimAngle = responseTarget
+                    ? AngleToTarget(pawn, weapon, target, fallbackAngle)
+                    : VisualAimAngle(pawn, weapon, visual, fallbackAngle);
                 drawLoc = EquipmentCenter(
                     pawn,
                     weapon,
@@ -1207,6 +1231,9 @@ namespace KRWF.RimKata
                 return;
             }
 
+            bool weaponCentered = TryGetIndicatorWeaponCenter(pawn, verb.EquipmentSource,
+                out Vector3 weaponCenter);
+
             if (verb.IsMeleeAttack)
             {
                 if (warming)
@@ -1215,13 +1242,15 @@ namespace KRWF.RimKata
                         ?.showMeleeWeaponAimTime != false)
                     {
                         float radius = Mathf.Min(0.5f, visual.warmupTicksRemaining * 0.002f);
-                        DrawBlackCooldownCircle(pawn.Drawer.DrawPos + new Vector3( 0f, altitudeOffset, 0f), radius);
+                        DrawBlackCooldownCircle((weaponCentered ? weaponCenter : pawn.Drawer.DrawPos)
+                            + new Vector3(0f, altitudeOffset, 0f), radius);
                     }
                 }
                 else if (cooling)
                 {
                     float radius = Mathf.Min(0.5f, visual.cooldownTicksRemaining * 0.002f);
-                    GenDraw.DrawCooldownCircle(pawn.Drawer.DrawPos + new Vector3( 0f, altitudeOffset, 0f), radius);
+                    GenDraw.DrawCooldownCircle((weaponCentered ? weaponCenter : pawn.Drawer.DrawPos)
+                        + new Vector3(0f, altitudeOffset, 0f), radius);
                 }
 
                 return;
@@ -1232,7 +1261,8 @@ namespace KRWF.RimKata
                 && verb.verbProps?.drawAimPie == true)
             {
                 int degrees = Mathf.Clamp(visual.warmupTicksRemaining, 1, 360);
-                DrawAimPie(pawn, visual.target, degrees, altitudeOffset);
+                DrawAimPie(weaponCentered ? weaponCenter : pawn.DrawPos,
+                    visual.target, degrees, altitudeOffset);
 
                 return;
             }
@@ -1245,8 +1275,38 @@ namespace KRWF.RimKata
                 && verb.verbProps?.drawAimPie == true)
             {
                 int degrees = Mathf.Clamp(visual.cooldownTicksRemaining, 1, 360);
-                DrawBlackAimPie(pawn, visual.target, degrees, altitudeOffset);
+                DrawBlackAimPie(weaponCentered ? weaponCenter : pawn.DrawPos,
+                    visual.target, degrees, altitudeOffset);
             }
+        }
+
+        private static bool TryGetIndicatorWeaponCenter(Pawn pawn, ThingWithComps weapon,
+            out Vector3 center)
+            => RimKataGroundPoseRender.TryGetWeaponCenter(pawn, weapon, out center)
+                || RimKataCrawlFireRender.TryGetWeaponCenter(pawn, weapon, out center);
+
+        internal static bool TryDrawGroundWarmup(Stance_Warmup warmup, float pieSizeFactor)
+        {
+            Pawn pawn = warmup?.stanceTracker?.pawn;
+            if (pawn?.Spawned != true || !Find.Selector.IsSelected(pawn)
+                || !warmup.focusTarg.IsValid || warmup.ticksLeft <= 0
+                || !TryGetIndicatorWeaponCenter(pawn, warmup.verb?.EquipmentSource, out Vector3 center))
+                return false;
+            DrawAimPie(center, warmup.focusTarg, (int)(warmup.ticksLeft * pieSizeFactor),
+                CombatIndicatorBaseAltitude);
+            return true;
+        }
+
+        internal static bool TryDrawGroundCooldown(Stance_Cooldown cooldown)
+        {
+            Pawn pawn = cooldown?.stanceTracker?.pawn;
+            if (pawn?.Spawned != true || !Find.Selector.IsSelected(pawn)
+                || cooldown.ticksLeft <= 0
+                || !TryGetIndicatorWeaponCenter(pawn, cooldown.verb?.EquipmentSource, out Vector3 center))
+                return false;
+            GenDraw.DrawCooldownCircle(center + new Vector3(0f, CombatIndicatorBaseAltitude, 0f),
+                Mathf.Min(0.5f, cooldown.ticksLeft * 0.002f));
+            return true;
         }
 
         private static void DrawBlackCooldownCircle(
@@ -1265,57 +1325,55 @@ namespace KRWF.RimKata
         }
 
         private static void DrawAimPie(
-            Pawn pawn,
+            Vector3 origin,
             LocalTargetInfo target,
             int degreesWide,
             float altitudeOffset)
         {
-            if (pawn == null
-                || !target.IsValid
+            if (!target.IsValid
                 || degreesWide <= 0)
             {
                 return;
             }
 
-            Vector3 center = pawn.DrawPos
+            Vector3 center = origin
                 + new Vector3(0f, altitudeOffset, 0f);
             GenDraw.DrawAimPieRaw(
                 center,
-                AimPieFacing(pawn, target),
+                AimPieFacing(origin, target),
                 Mathf.Min(360, degreesWide));
         }
 
         private static void DrawBlackAimPie(
-            Pawn pawn,
+            Vector3 origin,
             LocalTargetInfo target,
             int degreesWide,
             float altitudeOffset)
         {
-            if (pawn == null
-                || !target.IsValid
+            if (!target.IsValid
                 || degreesWide <= 0)
             {
                 return;
             }
 
             degreesWide = Mathf.Min(360, degreesWide);
-            float facing = AimPieFacing(pawn, target);
+            float facing = AimPieFacing(origin, target);
 
-            Vector3 center = pawn.DrawPos + new Vector3( 0f, altitudeOffset, 0f);
+            Vector3 center = origin + new Vector3( 0f, altitudeOffset, 0f);
             center += Quaternion.AngleAxis( facing, Vector3.up) * Vector3.forward * 0.8f;
             Quaternion rotation = Quaternion.AngleAxis( facing + degreesWide / 2f - 90f, Vector3.up);
             Graphics.DrawMesh(MeshPool.pies[degreesWide], center, rotation, BlackCombatIndicatorMaterial, 0);
         }
 
         private static float AimPieFacing(
-            Pawn pawn,
+            Vector3 origin,
             LocalTargetInfo target)
         {
             Vector3 targetPosition = target.HasThing
                 && target.Thing.Spawned
                     ? target.Thing.DrawPos
                     : target.Cell.ToVector3Shifted();
-            Vector3 direction = targetPosition - pawn.DrawPos;
+            Vector3 direction = targetPosition - origin;
             direction.y = 0f;
             return direction.sqrMagnitude > 0.001f
                 ? direction.AngleFlat()
@@ -1435,12 +1493,44 @@ namespace KRWF.RimKata
                 + EquipmentRadial(weapon, aimAngle, distanceFactor);
         }
 
-        private static float AngleToTarget(Pawn pawn, LocalTargetInfo target, float fallback)
+        internal static float VisualAimAngle(
+            Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)
         {
+            if (!visual.turning)
+                return AngleToTarget(pawn, weapon, visual.target, fallback);
+            float destination = AngleToTarget(pawn, weapon, visual.turnTarget, fallback);
+            return Mathf.Repeat(Mathf.LerpAngle(visual.turnStartAngle, destination,
+                Mathf.SmoothStep(0f, 1f, visual.turnProgress)), 360f);
+        }
+
+        internal static void AdjustCooldownAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle)
+        {
+            // Reuse the qualified pawn's existing render scope. Ordinary pawns
+            // never look up a combat cycle, and paired draws already resolve each hand.
+            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
+            if (drawingPair || !context.active || context.secondary != null
+                || equipment != context.primary || !(equipment is ThingWithComps weapon)
+                || (context.snapshotActive && context.snapshot.responsePoseWeapon == weapon
+                    && RimKataVisualUtility.TryGetLiveResponseFocus(context.pawn, context.snapshot, out _))
+                || !RimKataDualWeaponController.TryGetVisualData(context.pawn, weapon, out var visual)
+                || !visual.turning) return;
+            float angle = VisualAimAngle(context.pawn, weapon, visual, aimAngle);
+            Vector3 pivot = ResolveEquipmentPivot(context.pawn, weapon, drawLoc, aimAngle);
+            float layer = drawLoc.y;
+            drawLoc = pivot + (drawLoc - pivot).RotatedBy(Mathf.DeltaAngle(aimAngle, angle));
+            drawLoc.y = layer;
+            aimAngle = angle;
+        }
+
+        internal static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback)
+        {
+            if (!target.IsValid) return fallback;
             Vector3 targetPosition = target.HasThing && target.Thing.Spawned
                 ? target.Thing.DrawPos
                 : target.Cell.ToVector3Shifted();
-            Vector3 aim = targetPosition - pawn.DrawPos;
+            Vector3 origin = RimKataGroundPoseRender.TryGetRangedAimOrigin(pawn, weapon, out Vector3 headOrigin)
+                ? headOrigin : pawn.DrawPos;
+            Vector3 aim = targetPosition - origin;
             return aim.sqrMagnitude > 0.001f ? aim.AngleFlat() : fallback;
         }
 
@@ -1722,6 +1812,16 @@ namespace KRWF.RimKata
     }
 
     [HarmonyPatch(
+        typeof(Stance_Warmup),
+        nameof(Stance_Warmup.StanceDraw))]
+    internal static class Patch_StanceWarmup_RimKataGroundIndicator
+    {
+        private static bool Prefix(Stance_Warmup __instance, bool ___drawAimPie, float ___pieSizeFactor)
+            => !___drawAimPie || !RimKataDualWeaponRenderUtility.TryDrawGroundWarmup(
+                __instance, ___pieSizeFactor);
+    }
+
+    [HarmonyPatch(
         typeof(Stance_Cooldown),
         nameof(Stance_Cooldown.StanceDraw))]
     public static class Patch_StanceCooldown_RimKataRangedIndicator
@@ -1729,7 +1829,8 @@ namespace KRWF.RimKata
         public static bool Prefix(Stance_Cooldown __instance)
         {
             return !RimKataDualWeaponRenderUtility
-                .ClaimsVanillaCombatCooldown(__instance);
+                    .ClaimsVanillaCombatCooldown(__instance)
+                && !RimKataDualWeaponRenderUtility.TryDrawGroundCooldown(__instance);
         }
     }
 
@@ -1825,8 +1926,11 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(PawnRenderTree), nameof(PawnRenderTree.ParallelPreDraw))]
     public static class Patch_PawnRenderTree_RimKataTumbleRotation
     {
-        public static void Prefix(ref PawnDrawParms parms)
+        public static void Prefix(ref PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
+            out RimKataVisualSnapshot __state)
         {
+            RimKataGroundPoseHead.Restore(___drawRequests);
+            __state = default;
             if (parms.Portrait
                 || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     parms.pawn,
@@ -1836,6 +1940,9 @@ namespace KRWF.RimKata
             }
 
             bool additionalTumble = snapshot.additionalTumbleActive;
+            if (snapshot.groundPoseActive) __state = snapshot;
+            if (snapshot.groundPoseActive && snapshot.groundPoseFacing.IsValid)
+                parms.facing = snapshot.groundPoseFacing;
             bool stationaryTumble = snapshot.visualActive  && snapshot.visualState == RimKataVisualState.Tumble;
             if (!additionalTumble && !stationaryTumble && !snapshot.closeDodgeActive)
             {
@@ -1869,14 +1976,25 @@ namespace KRWF.RimKata
 
             parms.matrix = adjustedMatrix;
         }
+
+        public static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
+            RimKataVisualSnapshot __state)
+        {
+            if (__state.groundPoseActive)
+                RimKataGroundPoseRender.Prepare(parms, ___drawRequests, __state);
+        }
     }
 
     [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.DrawEquipmentAiming))]
     public static class Patch_PawnRenderUtility_RimKataDualWeapons
     {
         [HarmonyPriority(Priority.First)]
-        public static bool Prefix(Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool Prefix(Thing eq, ref Vector3 drawLoc, ref float aimAngle)
         {
+            if (RimKataCrawlFireRender.TryHandleEquipment(eq, out bool drawOriginal))
+                return drawOriginal;
+            RimKataDualWeaponRenderUtility.AdjustCooldownAim(eq, ref drawLoc, ref aimAngle);
+            RimKataGroundPoseRender.AdjustWeaponAim(eq, ref drawLoc, ref aimAngle);
             if (RimKataWeaponRenderProbe.TryCaptureNativeDraw(eq, drawLoc, aimAngle))
             {
                 return false;
@@ -1896,6 +2014,8 @@ namespace KRWF.RimKata
                 new[] { typeof(Mesh), typeof(Matrix4x4), typeof(Material), typeof(int) });
             MethodInfo drawSecondaryMesh = AccessTools.Method(typeof(RimKataDualWeaponRenderUtility),
                 nameof(RimKataDualWeaponRenderUtility.DrawSecondaryEquipmentMesh));
+            MethodInfo drawPrimaryMesh = AccessTools.Method(typeof(RimKataGroundPoseRender),
+                nameof(RimKataGroundPoseRender.DrawPrimaryMesh));
             FieldInfo drawingSecondary = AccessTools.Field(typeof(RimKataDualWeaponRenderUtility),
                 "drawingSecondary");
 
@@ -1913,14 +2033,14 @@ namespace KRWF.RimKata
                 }
                 else if (instruction.Calls(drawMesh))
                 {
-                    // Leave the original draw call intact for the primary slot.
-                    // Its arguments remain on the stack while checking this gate.
+                    // Primary geometry stays intact; the scoped ground-pose
+                    // overlay is applied only at the final submission.
                     Label secondaryDraw = generator.DefineLabel();
                     Label drawComplete = generator.DefineLabel();
                     yield return new CodeInstruction(OpCodes.Ldsfld, drawingSecondary)
                         .MoveLabelsFrom(instruction).MoveBlocksFrom(instruction);
                     yield return new CodeInstruction(OpCodes.Brtrue, secondaryDraw);
-                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Call, drawPrimaryMesh);
                     yield return new CodeInstruction(OpCodes.Br, drawComplete);
                     CodeInstruction secondaryCall = new CodeInstruction(OpCodes.Call, drawSecondaryMesh);
                     secondaryCall.labels.Add(secondaryDraw);
@@ -1950,6 +2070,9 @@ namespace KRWF.RimKata
         {
             __state = visualAngleOffset;
             visualAngleOffset = 0f;
+
+            if (RimKataCrawlFireRender.Drawing)
+                return;
 
             ref readonly RimKataGunReadyDrawContext renderContext =
                 ref RimKataGunReadyDrawUtility.Current;
@@ -2100,21 +2223,28 @@ namespace KRWF.RimKata
             try
             {
                 current.scopePawn = pawn;
-                if (portrait || pawn?.Spawned != true)
+                if (portrait || pawn == null)
                 {
                     return scopeToken;
                 }
 
-                if (pawn.equipment?.Primary == null)
+                // Access and response events publish these participants. An ordinary
+                // draw must not discover eligibility, equipment, or combat state.
+                bool rimKataUser = RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
+                if ((!rimKataUser
+                        && !RimKataResponseVisualParticipantCache.IsParticipant(pawn))
+                    || !pawn.Spawned)
                 {
                     return scopeToken;
                 }
 
-                bool rimKataUser = RimKataVisualUtility
+                ThingWithComps primary = null;
+                ThingWithComps rawSecondary = null;
+                rimKataUser = rimKataUser && RimKataVisualUtility
                     .TryGetCachedWorldLoadout(
                         pawn,
-                        out ThingWithComps primary,
-                        out ThingWithComps rawSecondary);
+                        out primary,
+                        out rawSecondary);
                 bool statePresent = RimKataCombatStatePresenceCache.TryGetOwner(
                     pawn,
                     out RimKataMapComponent component);
@@ -2148,6 +2278,11 @@ namespace KRWF.RimKata
                     secondary = participantSecondary;
                 }
 
+                if (primary == null)
+                {
+                    return scopeToken;
+                }
+
                 bool mayNeedGunReadyTarget = rimKataUser
                     && MayNeedGunReadyTarget(pawn, statePresent);
                 bool gunReadyCandidate = mayNeedGunReadyTarget
@@ -2160,6 +2295,7 @@ namespace KRWF.RimKata
                     && !(pawn.stances?.curStance is Stance_Busy);
                 bool needsActiveContext = secondary != null
                     || responseParticipant
+                    || (statePresent && pawn.stances?.curStance is Stance_RimKataAim)
                     || gunReadyCandidate;
                 if (!needsActiveContext)
                 {
@@ -2314,6 +2450,7 @@ namespace KRWF.RimKata
         {
             internal int gunReady;
             internal int probe;
+            internal bool groundPose;
         }
 
         [HarmonyPriority(Priority.First)]
@@ -2325,6 +2462,7 @@ namespace KRWF.RimKata
             out DrawScope __state)
         {
             __state = default(DrawScope);
+            __state.groundPose = RimKataGroundPoseRender.PushEquipment(pawn, flags);
             __state.gunReady = RimKataGunReadyDrawUtility.Push(pawn, flags);
             __state.probe = RimKataWeaponRenderProbe.BeginFrame(pawn, drawPos, facing, flags);
         }
@@ -2340,6 +2478,7 @@ namespace KRWF.RimKata
             finally
             {
                 RimKataGunReadyDrawUtility.Pop(__state.gunReady);
+                RimKataGroundPoseRender.PopEquipment(__state.groundPose);
             }
             return __exception;
         }

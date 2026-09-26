@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>基本射撃クールダウン倍率：{0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>有効な防具の補正：×{0}（適用済み）</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>有効な防具の補正：×100%（有効な防具を未着用）</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>転倒確率</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>伏せ撃ち</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>這いながら射撃</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>伏せた状態で敵の射撃が外れる追加確率</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>伏せた状態での狩猟ステルスボーナス</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>再び伏せるまでの待機時間</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>転倒後に横たわる時間</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃をデフォルトで許可</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>滑らかな照準切り替え</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

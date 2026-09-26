@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Távolsági visszatöltési alapszorzó: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Engedélyezett páncél módosítója: ×{0} (alkalmazva)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Engedélyezett páncél módosítója: ×100% (nincs engedélyezett páncél viselve)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Elesés esélye</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Fekve tüzelés</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Kúszás közbeni tüzelés</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Fekvő célpont elleni támadások extra hibázási esélye</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Vadászati lopakodási bónusz fekve</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Várakozási idő az újbóli lefekvés előtt</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Elesés utáni földön fekvés ideje</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés alapértelmezett engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Sima célzási átmenetek</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

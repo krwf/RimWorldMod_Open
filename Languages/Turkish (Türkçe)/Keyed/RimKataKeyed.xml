@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Temel menzilli saldırı bekleme süresi çarpanı: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Etkin zırh değiştiricisi: ×{0} (uygulandı)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Etkin zırh değiştiricisi: ×100% (etkin zırh kuşanılmamış)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Düşme olasılığı</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Yüzüstü yatarak ateş</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Sürünerek ateş</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Yüzüstü yatan hedefe yapılan saldırıların ek ıskalama olasılığı</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Yüzüstü yatarken av gizliliği bonusu</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Tekrar yüzüstü yatmadan önceki bekleme süresi</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Düştükten sonra yerde kalma süresi</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye varsayılan olarak izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Yumuşak nişan geçişleri</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

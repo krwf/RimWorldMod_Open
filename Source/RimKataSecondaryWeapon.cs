@@ -130,6 +130,13 @@ namespace KRWF.RimKata
             pendingPrimaryReplacements[pawn] = secondary;
         }
 
+        internal bool HasPendingPrimaryReplacement(Pawn pawn)
+        {
+            return pawn?.Spawned == true && !pawn.Dead && !pawn.Downed
+                && pendingPrimaryReplacements.TryGetValue(pawn, out ThingWithComps secondary)
+                && StillHeld(pawn, secondary) && pawn.equipment.Primary == secondary;
+        }
+
         internal void CancelPrimaryReplacement(Pawn pawn, ThingWithComps removed = null)
         {
             if (pawn != null && pendingPrimaryReplacements.Count > 0
@@ -275,7 +282,8 @@ namespace KRWF.RimKata
         public void RecordDroppedLoadout(
             Pawn pawn,
             ThingWithComps primary,
-            ThingWithComps secondary)
+            ThingWithComps secondary,
+            bool primaryRetained = false)
         {
             if (pawn == null
                 || primary == null
@@ -294,7 +302,8 @@ namespace KRWF.RimKata
                 pawn = pawn,
                 primary = primary,
                 secondary = secondary,
-                phase = RimKataSecondaryRecoveryPhase.WaitingForPrimary
+                phase = primaryRetained ? RimKataSecondaryRecoveryPhase.PrimaryRecovered
+                    : RimKataSecondaryRecoveryPhase.WaitingForPrimary
             });
         }
 
@@ -309,6 +318,21 @@ namespace KRWF.RimKata
                 && job?.def == JobDefOf.Equip
                 && job.playerForced != true
                 && job.GetTarget(TargetIndex.A).Thing == incoming;
+        }
+
+        internal void KeepRecoveryForRetainedPrimary(Pawn pawn, ThingWithComps primary)
+        {
+            RimKataSecondaryRecovery recovery = FindRecovery(pawn);
+            if (recovery == null) return;
+            if (recovery.primary != primary || recovery.secondary == null || recovery.secondary.Destroyed)
+            {
+                RemoveRecovery(pawn);
+                return;
+            }
+            // A second down before the old secondary is recovered does not
+            // cancel that recovery when the same primary is still retained.
+            recovery.phase = RimKataSecondaryRecoveryPhase.PrimaryRecovered;
+            recovery.nextRetryTick = Find.TickManager?.TicksGame ?? 0;
         }
 
         public void NotifyAutomaticPrimaryPickupIssued(Pawn pawn, Job job)
@@ -717,6 +741,7 @@ namespace KRWF.RimKata
     {
         public static void Postfix(Pawn pawn, ref Job __result)
         {
+            RimKataDownedWeaponUtility.NotifyRecoveryJob(pawn, __result);
             RimKataSecondaryWeaponRegistry registry =
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;
             if (__result != null)
@@ -890,10 +915,18 @@ namespace KRWF.RimKata
             bool accessVerified)
         {
             return RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
-                && (accessVerified
+                && CanUseOneHandWeapon(pawn, primary, accessVerified);
+        }
+
+        internal static bool CanUseOneHandWeapon(
+            Pawn pawn,
+            ThingWithComps weapon,
+            bool accessVerified = false)
+        {
+            return (accessVerified
                     || RimKataEligibility.HasRimKataAccess(pawn))
-                && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
-                && RimKataGripUtility.GripTypeFor(primary?.def) == RimKataGripType.OneHand;
+                && RimKataEquipmentUtility.IsWeaponEnabled(weapon?.def)
+                && RimKataGripUtility.GripTypeFor(weapon?.def) == RimKataGripType.OneHand;
         }
 
         public static bool CanAttackTargetWithoutRushing(Pawn pawn, Thing target)
@@ -1296,6 +1329,7 @@ namespace KRWF.RimKata
             ThingWithComps changedEquipment,
             bool removed)
         {
+            RimKataDownedWeaponUtility.NotifyEquipmentChanged(pawn, changedEquipment, removed);
             if (pawn?.Spawned != true
                 || changedEquipment == null)
             {
@@ -1309,6 +1343,10 @@ namespace KRWF.RimKata
                 RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
             {
+                if (state != null)
+                {
+                    RimKataDualWeaponController.NotifyLoadoutChanged(pawn, state);
+                }
                 RimKataColonistBarWeaponCache.Refresh(pawn);
                 return;
             }
@@ -1732,6 +1770,11 @@ namespace KRWF.RimKata
             ref ThingWithComps __1)
         {
             Pending.Remove(__instance);
+            if (RimKataDownedWeaponUtility.TryGetRestoration(___pawn, eq, out _))
+            {
+                __1 = null;
+                return false;
+            }
             ThingWithComps primary = __instance.Primary;
             ThingWithComps secondary = RimKataWeaponSlotUtility.SecondaryWeapon(___pawn);
             if (primary == null || eq == null)
@@ -2663,6 +2706,22 @@ namespace KRWF.RimKata
             __state = registry?.IsExpectedAutomaticPrimaryRecovery(
                 ___pawn,
                 newEq) == true;
+
+            if (RimKataDownedWeaponUtility.TryGetRestoration(___pawn, newEq, out ThingWithComps retained))
+            {
+                bool restored = false;
+                RimKataDownedWeaponUtility.BeginRestoration(___pawn);
+                try
+                {
+                    restored = TryInsertPrimaryBeforeSecondary(__instance, ___pawn, newEq, retained);
+                    if (!restored) RestoreUnheldIncoming(___pawn, newEq);
+                }
+                finally
+                {
+                    RimKataDownedWeaponUtility.EndRestoration(___pawn, restored);
+                }
+                return false;
+            }
 
             if (Patch_DebugToolsPawns_RimKataSecondaryWeapon
                 .TryGetActivePrimaryReplacement(

@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Basismultiplier voor de afkoeltijd van afstandsaanvallen: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Aanpassing door ingeschakeld pantser: ×{0} (toegepast)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Aanpassing door ingeschakeld pantser: ×100% (geen ingeschakeld pantser gedragen)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Kans om te vallen</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Schieten in buikligging</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Schieten tijdens het kruipen</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Extra kans om in buikligging niet geraakt te worden</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Sluipbonus bij jagen in buikligging</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Wachttijd voor opnieuw gaan liggen</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Tijd op de grond na een val</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen standaard toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Vloeiende richtovergangen</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

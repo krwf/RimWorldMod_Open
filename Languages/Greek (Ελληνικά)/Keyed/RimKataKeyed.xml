@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Βασικός πολλαπλασιαστής χρόνου επαναφοράς όπλου εξ αποστάσεως: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Τροποποιητής ενεργής πανοπλίας: ×{0} (εφαρμόστηκε)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Τροποποιητής ενεργής πανοπλίας: ×100% (δεν φοριέται ενεργή πανοπλία)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Πιθανότητα πτώσης</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Βολή από πρηνή θέση</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Βολή κατά το σύρσιμο</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Επιπλέον πιθανότητα αστοχίας επιθέσεων κατά πρηνούς στόχου</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Μπόνους απόκρυψης στο κυνήγι σε πρηνή θέση</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Καθυστέρηση πριν από την επιστροφή σε πρηνή θέση</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Χρόνος παραμονής στο έδαφος μετά την πτώση</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Να επιτρέπεται η βολή κατά το σύρσιμο από προεπιλογή</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Ομαλές μεταβάσεις στόχευσης</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

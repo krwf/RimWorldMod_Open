@@ -183,4 +183,13 @@
   <KRWF_RimKata_CooldownVanillaFactor>Kaugrünnaku jahtumisaja põhikordaja: {0}</KRWF_RimKata_CooldownVanillaFactor>
   <KRWF_RimKata_CooldownArmorFactorApplied>Lubatud soomuse muutja: ×{0} (rakendatud)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Lubatud soomuse muutja: ×100% (lubatud soomust ei kanta)</KRWF_RimKata_CooldownArmorFactorInactive>
+  <KRWF_RimKata_MeleeFallChance>Kukkumise tõenäosus</KRWF_RimKata_MeleeFallChance>
+  <KRWF_RimKata_FeatureProneFire>Lamades tulistamine</KRWF_RimKata_FeatureProneFire>
+  <KRWF_RimKata_FeatureCrawlFire>Roomates tulistamine</KRWF_RimKata_FeatureCrawlFire>
+  <KRWF_RimKata_ProneMissChance>Lisatõenäosus lamades tabamust vältida</KRWF_RimKata_ProneMissChance>
+  <KRWF_RimKata_ProneHuntingStealthBonus>Jahil hiilimise boonus lamades</KRWF_RimKata_ProneHuntingStealthBonus>
+  <KRWF_RimKata_ProneResumeDelay>Ooteaeg enne uuesti pikali heitmist</KRWF_RimKata_ProneResumeDelay>
+  <KRWF_RimKata_MeleeFallDuration>Pärast kukkumist maas viibimise aeg</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine vaikimisi</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_SmoothAimTransition>Sujuvad sihtimisüleminekud</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

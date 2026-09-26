@@ -155,6 +155,13 @@ namespace KRWF.RimKata
             base.StanceTick();
         }
 
+        protected override void Expire()
+        {
+            bool wasCurrent = stanceTracker.curStance == this;
+            base.Expire();
+            if (wasCurrent) RimKataDualWeaponController.NotifyBodyAimEnded(Pawn);
+        }
+
         internal bool TryGetCachedMovementDirection(out IntVec3 direction)
         {
             int code = cachedMovementDirectionCode;

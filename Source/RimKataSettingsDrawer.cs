@@ -31,6 +31,12 @@ namespace KRWF.RimKata
         public string rangedDodgeDurationTicks;
         public string rangedDodgeDurationGrowthTicks;
         public string rangedDodgeDurationBaseTicks;
+        public string proneMissChance;
+        public string proneMissChanceGrowth;
+        public string proneMissChanceMinimum;
+        public string proneHuntingStealthBonus;
+        public string proneHuntingStealthBonusGrowth;
+        public string proneHuntingStealthBonusMinimum;
         public string customCandidateRange;
         public string responseWeaponDurabilityLossChance;
         public string responseWeaponDurabilityLossAmount;
@@ -79,6 +85,12 @@ namespace KRWF.RimKata
             rangedDodgeDurationTicks = settings.rangedDodgeDurationTicks.ToString();
             rangedDodgeDurationGrowthTicks = settings.rangedDodgeDurationGrowthPerLevelTicks.ToString();
             rangedDodgeDurationBaseTicks = settings.rangedDodgeDurationBaseTicks.ToString();
+            proneMissChance = settings.proneMissChancePercent.ToString();
+            proneMissChanceGrowth = settings.proneMissChanceGrowthPerLevelPercent.ToString();
+            proneMissChanceMinimum = settings.proneMissChanceMinimumPercent.ToString();
+            proneHuntingStealthBonus = settings.proneHuntingStealthBonusPercent.ToString();
+            proneHuntingStealthBonusGrowth = settings.proneHuntingStealthBonusGrowthPerLevelPercent.ToString();
+            proneHuntingStealthBonusMinimum = settings.proneHuntingStealthBonusMinimumPercent.ToString();
             customCandidateRange = settings.customCandidateRange > 0f
                 ? settings.customCandidateRange.ToString("0.##")
                 : string.Empty;
@@ -279,6 +291,16 @@ namespace KRWF.RimKata
                 ref settings.rangedDodgeChanceMinimumPercent, ref buffers.rangedDodgeChanceMinimum,
                 100f, 100f, showMinimum);
             DrawDurationRow(viewRect.width, ref y, settings, buffers, showMinimum);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_ProneMissChance", SkillDefOf.Shooting,
+                ref settings.proneMissChanceFixed, ref settings.proneMissChancePercent, ref buffers.proneMissChance,
+                ref settings.proneMissChanceGrowthPerLevelPercent, ref buffers.proneMissChanceGrowth,
+                ref settings.proneMissChanceMinimumPercent, ref buffers.proneMissChanceMinimum,
+                100f, 100f, showMinimum, 100f);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_ProneHuntingStealthBonus", SkillDefOf.Shooting,
+                ref settings.proneHuntingStealthBonusFixed, ref settings.proneHuntingStealthBonusPercent, ref buffers.proneHuntingStealthBonus,
+                ref settings.proneHuntingStealthBonusGrowthPerLevelPercent, ref buffers.proneHuntingStealthBonusGrowth,
+                ref settings.proneHuntingStealthBonusMinimumPercent, ref buffers.proneHuntingStealthBonusMinimum,
+                100f, 100f, showMinimum, 100f);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_InterceptionChance", SkillDefOf.Shooting,
                 ref settings.interceptionChanceFixed, ref settings.interceptionChancePercent, ref buffers.interceptionChance,
                 ref settings.interceptionChanceGrowthPerLevelPercent, ref buffers.interceptionChanceGrowth,
@@ -780,7 +802,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private static void DrawIntField(
+        internal static void DrawIntField(
             Rect rect,
             ref int value,
             ref string buffer,
@@ -827,7 +849,7 @@ namespace KRWF.RimKata
 
         private static float CalculateContentHeight()
         {
-            const int rowCount = 21;
+            const int rowCount = 23;
             const int sectionCount = 3;
             return ButtonHeight * 3f + 3f
                 + rowCount * RowHeight
@@ -842,6 +864,8 @@ namespace KRWF.RimKata
             return settings != null
                 && (!settings.rangedDodgeDurationFixed
                     || !settings.rangedDodgeChanceFixed
+                    || !settings.proneMissChanceFixed
+                    || !settings.proneHuntingStealthBonusFixed
                     || !settings.meleeResponseChanceFixed
                     || !settings.responseDisarmChanceFixed
                     || !settings.meleeDodgeChanceFixed
@@ -860,6 +884,8 @@ namespace KRWF.RimKata
             string[] keys =
             {
                 "KRWF_RimKata_RangedDodgeDuration",
+                "KRWF_RimKata_ProneMissChance",
+                "KRWF_RimKata_ProneHuntingStealthBonus",
                 "KRWF_RimKata_RangedDodgeChance",
                 "KRWF_RimKata_MeleeResponseChance",
                 "KRWF_RimKata_ResponseDisarmChance",
@@ -901,6 +927,14 @@ namespace KRWF.RimKata
             settings.rangedDodgeDurationGrowthPerLevelTicks = RimKataSettings.DefaultRangedDodgeDurationGrowthPerLevelTicks;
             settings.rangedDodgeDurationBaseTicks = RimKataSettings.DefaultRangedDodgeDurationBaseTicks;
             settings.rangedDodgeDurationFixed = RimKataSettings.DefaultRangedDodgeDurationFixed;
+            settings.proneMissChancePercent = RimKataSettings.DefaultProneMissChancePercent;
+            settings.proneMissChanceGrowthPerLevelPercent = RimKataSettings.DefaultProneMissChanceGrowthPerLevelPercent;
+            settings.proneMissChanceMinimumPercent = RimKataSettings.DefaultProneMissChanceMinimumPercent;
+            settings.proneMissChanceFixed = RimKataSettings.DefaultProneMissChanceFixed;
+            settings.proneHuntingStealthBonusPercent = RimKataSettings.DefaultProneHuntingStealthBonusPercent;
+            settings.proneHuntingStealthBonusGrowthPerLevelPercent = RimKataSettings.DefaultProneHuntingStealthBonusGrowthPerLevelPercent;
+            settings.proneHuntingStealthBonusMinimumPercent = RimKataSettings.DefaultProneHuntingStealthBonusMinimumPercent;
+            settings.proneHuntingStealthBonusFixed = RimKataSettings.DefaultProneHuntingStealthBonusFixed;
             settings.rangedDodgeChancePercent = RimKataSettings.DefaultRangedDodgeChancePercent;
             settings.rangedDodgeChanceGrowthPerLevelPercent = RimKataSettings.DefaultRangedDodgeChanceGrowthPerLevelPercent;
             settings.rangedDodgeChanceMinimumPercent = RimKataSettings.DefaultRangedDodgeChanceMinimumPercent;

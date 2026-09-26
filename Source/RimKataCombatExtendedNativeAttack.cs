@@ -15,6 +15,8 @@ namespace KRWF.RimKata
         {
             internal Verb verb;
             internal RimKataVanillaOpeningAttempt attempt;
+            internal LocalTargetInfo aimTarget;
+            internal bool notifyAim;
         }
 
         [ThreadStatic] private static OpeningState activeOpening;
@@ -56,12 +58,26 @@ namespace KRWF.RimKata
                 RimKataDualWeaponController.CommitVanillaOpening(pawn, verb, attempt);
         }
 
+        private static void NotifyOrDeferAim(Verb verb, LocalTargetInfo target)
+        {
+            if (activeOpening.verb == verb)
+            {
+                activeOpening.aimTarget = target;
+                activeOpening.notifyAim = true;
+            }
+            else
+                RimKataDualWeaponController.NotifyNativeAimStarted(verb, target);
+        }
+
         private static void OpeningPostfix(Verb __instance, bool __result)
         {
             OpeningState opening = activeOpening;
             // Consume before the handoff: changing stance/jobs may start another cast.
             activeOpening = default;
-            if (__result && opening.verb == __instance && opening.attempt.prepared)
+            if (!__result || opening.verb != __instance) return;
+            if (opening.notifyAim)
+                RimKataDualWeaponController.NotifyNativeAimStarted(__instance, opening.aimTarget);
+            if (opening.attempt.prepared)
                 RimKataDualWeaponController.CommitVanillaOpening(
                     __instance.CasterPawn, __instance, opening.attempt);
         }
@@ -73,9 +89,11 @@ namespace KRWF.RimKata
         }
 
         private static IEnumerable<CodeInstruction> OpeningTranspiler(IEnumerable<CodeInstruction> instructions)
-            => ReplaceCall(instructions,
-                AccessTools.Method(typeof(RimKataDualWeaponController), nameof(RimKataDualWeaponController.CommitVanillaOpening)),
-                nameof(CommitOrDeferOpening));
+            => ReplaceCall(ReplaceCall(instructions,
+                    AccessTools.Method(typeof(RimKataDualWeaponController), nameof(RimKataDualWeaponController.CommitVanillaOpening)),
+                    nameof(CommitOrDeferOpening)),
+                AccessTools.Method(typeof(RimKataDualWeaponController), nameof(RimKataDualWeaponController.NotifyNativeAimStarted)),
+                nameof(NotifyOrDeferAim));
 
         private static void Patch(Harmony harmony, string target, string transpiler)
             => harmony.Patch(AccessTools.Method(typeof(RimKataNativeAttack), target),

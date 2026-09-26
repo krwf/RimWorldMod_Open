@@ -113,6 +113,7 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(StatWorker), "GetAdditionalOffsetsAndFactorsExplanation")]
     public static class Patch_StatWorker_RimKataPreviewScenarioFactor
     {
+        [HarmonyAfter("defaults.1trickPwnyta")]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var getFactor = AccessTools.Method(typeof(Scenario), nameof(Scenario.GetStatFactor));
