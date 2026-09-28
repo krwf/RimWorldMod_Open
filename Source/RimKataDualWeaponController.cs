@@ -57,7 +57,12 @@ namespace KRWF.RimKata
         public int visualAimTicksRemaining;
         internal Thing cooldownTurnTarget;
         internal float cooldownTurnStartAngle;
+        // Remaining cooldown at turn start; keep this origin for elapsed time.
         internal int cooldownTurnTicks;
+        internal float CooldownTurnProgress => cooldownTurnTicks > 0
+            ? Mathf.Clamp01((float)(cooldownTurnTicks - cooldownTicksRemaining)
+                / Mathf.Min(cooldownTurnTicks, 24))
+            : 1f;
         private int lastTimerTick = -1;
         private int responseCooldownAppliedTick = -1;
         internal Verb boundVerb;
@@ -4996,8 +5001,7 @@ namespace KRWF.RimKata
                 data.turnTarget = new LocalTargetInfo(livePlannedTarget);
                 data.turning = true;
                 data.turnStartAngle = cycle.cooldownTurnStartAngle;
-                data.turnProgress = 1f - Mathf.Clamp01(
-                    (float)cycle.cooldownTicksRemaining / cycle.cooldownTurnTicks);
+                data.turnProgress = cycle.CooldownTurnProgress;
             }
             return target.IsValid || cycle.cooldownTicksRemaining > 0;
         }
@@ -7297,8 +7301,7 @@ namespace KRWF.RimKata
                         turnTarget = new LocalTargetInfo(cycle.cooldownTurnTarget),
                         turning = true,
                         turnStartAngle = start,
-                        turnProgress = 1f - Mathf.Clamp01(
-                            (float)cycle.cooldownTicksRemaining / cycle.cooldownTurnTicks)
+                        turnProgress = cycle.CooldownTurnProgress
                     };
                     start = RimKataDualWeaponRenderUtility.VisualAimAngle(
                         pawn, cycle.weapon, previousVisual, start);

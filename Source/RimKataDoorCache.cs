@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Xml;
 using HarmonyLib;
 using RimWorld;
@@ -15,11 +16,15 @@ namespace KRWF.RimKata
         private static string modRoot;
         private readonly Game game;
         private string gameId = Guid.NewGuid().ToString("N");
+        private string environmentKey;
+        private XmlDocument runtimeEnvironment;
+        private string runtimeEnvironmentKey;
         private RimKataDoorCacheStore store;
         private readonly HashSet<Building_Door> pending = new HashSet<Building_Door>();
         private readonly HashSet<string> reported = new HashSet<string>(StringComparer.Ordinal);
         private bool scheduled;
         private bool storeAttempted;
+        private bool cleanupScheduled;
 
         public RimKataDoorCache(Game game) { this.game = game; }
 
@@ -32,17 +37,65 @@ namespace KRWF.RimKata
 
         public override void ExposeData()
         {
+            if (Scribe.mode == LoadSaveMode.Saving)
+            {
+                try
+                {
+                    EnsureEnvironment();
+                    environmentKey = runtimeEnvironmentKey;
+                }
+                catch (Exception exception)
+                {
+                    environmentKey = null;
+                    Warn("environment", exception);
+                }
+            }
             Scribe_Values.Look(ref gameId, "gameId");
+            Scribe_Values.Look(ref environmentKey, "environmentKey");
             // Old saves without this component receive an ID when first loaded.
             // It becomes persistent on their next save, independent of filenames.
             if (!Guid.TryParseExact(gameId, "N", out _)) gameId = Guid.NewGuid().ToString("N");
+        }
+
+        public override void LoadedGame() => ScheduleCleanup();
+
+        private void EnsureEnvironment()
+        {
+            if (runtimeEnvironment != null) return;
+            XmlDocument captured = RimKataDoorCacheEnvironment.Capture();
+            runtimeEnvironmentKey = RimKataDoorCacheStore.EnvironmentKey(captured);
+            runtimeEnvironment = captured;
+        }
+
+        internal void ScheduleCleanup()
+        {
+            if (cleanupScheduled || !ReferenceEquals(game, Verse.Current.Game)) return;
+            cleanupScheduled = true;
+            LongEventHandler.ExecuteWhenFinished(Cleanup);
+        }
+
+        private void Cleanup()
+        {
+            cleanupScheduled = false;
+            if (!ReferenceEquals(game, Verse.Current.Game) || string.IsNullOrEmpty(modRoot)) return;
+            try
+            {
+                EnsureEnvironment();
+                RimKataDoorCacheCleanup.Prune(Path.Combine(modRoot, "door"),
+                    GenFilePaths.SavedGamesFolderPath, gameId, runtimeEnvironmentKey);
+            }
+            catch (Exception exception) { Warn("cleanup", exception); }
         }
 
         private bool EnsureStore()
         {
             if (storeAttempted) return store != null;
             storeAttempted = true;
-            try { store = new RimKataDoorCacheStore(modRoot, gameId, RimKataDoorCacheEnvironment.Capture()); }
+            try
+            {
+                EnsureEnvironment();
+                store = new RimKataDoorCacheStore(modRoot, gameId, runtimeEnvironment);
+            }
             catch (Exception exception) { Warn("directory", exception); }
             return store != null;
         }
@@ -222,7 +275,7 @@ namespace KRWF.RimKata
         private void Warn(string key, Exception exception)
         {
             if (reported.Add(key))
-                Log.Warning("[RimKata] Door cache preparation failed (" + key + "). " + exception.Message);
+                Log.Warning("[RimKata] Door cache operation failed (" + key + "). " + exception.Message);
         }
     }
 
@@ -230,5 +283,17 @@ namespace KRWF.RimKata
     internal static class Patch_BuildingDoor_RimKataCache
     {
         private static void Postfix(Building_Door __instance) => RimKataDoorCache.Current?.NotifySpawned(__instance);
+    }
+
+    // SafeSaver rethrows failures; GameDataSaveLoader.SaveGame catches them. Only
+    // this normal-return boundary proves the final save file was installed.
+    [HarmonyPatch(typeof(SafeSaver), nameof(SafeSaver.Save),
+        new[] { typeof(string), typeof(string), typeof(Action), typeof(bool) })]
+    internal static class Patch_SaveGame_RimKataDoorCacheCleanup
+    {
+        private static void Postfix(string __1, bool __runOriginal)
+        {
+            if (__runOriginal && __1 == "savegame") RimKataDoorCache.Current?.ScheduleCleanup();
+        }
     }
 }
