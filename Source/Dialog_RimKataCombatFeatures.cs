@@ -24,6 +24,7 @@ namespace KRWF.RimKata
         private bool movingFireEnabled;
         private bool closeFireEnabled;
         private bool targetRushEnabled;
+        private bool breachEnabled;
         private bool responseEnabled;
         private bool rangedDodgeEnabled;
         private bool tumbleEnabled;
@@ -39,6 +40,7 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureMovingFire",
             "KRWF_RimKata_FeatureCloseFire",
             "KRWF_RimKata_FeatureTargetRush",
+            "KRWF_RimKata_FeatureBreach",
             "KRWF_RimKata_FeatureResponse",
             "KRWF_RimKata_FeatureRangedDodge",
             "KRWF_RimKata_FeatureTumble",
@@ -60,6 +62,7 @@ namespace KRWF.RimKata
                 movingFireEnabled = settings.movingFireEnabled;
                 closeFireEnabled = settings.closeFireEnabled;
                 targetRushEnabled = settings.targetRushEnabled;
+                breachEnabled = settings.breachEnabled;
                 responseEnabled = settings.responseEnabled;
                 rangedDodgeEnabled = settings.rangedDodgeEnabled;
                 tumbleEnabled = settings.tumbleEnabled;
@@ -135,11 +138,12 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[4], ref movingFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[5], ref closeFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[6], ref targetRushEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[7], ref responseEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[8], ref rangedDodgeEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[9], ref tumbleEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[10], ref proneFireEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[11], ref crawlFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[7], ref breachEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[8], ref responseEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[9], ref rangedDodgeEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[10], ref tumbleEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[11], ref proneFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[12], ref crawlFireEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -208,6 +212,7 @@ namespace KRWF.RimKata
                 || settings.movingFireEnabled != movingFireEnabled
                 || settings.closeFireEnabled != closeFireEnabled
                 || settings.targetRushEnabled != targetRushEnabled
+                || settings.breachEnabled != breachEnabled
                 || settings.responseEnabled != responseEnabled
                 || settings.rangedDodgeEnabled != rangedDodgeEnabled
                 || settings.tumbleEnabled != tumbleEnabled
@@ -223,6 +228,7 @@ namespace KRWF.RimKata
             settings.movingFireEnabled = movingFireEnabled;
             settings.closeFireEnabled = closeFireEnabled;
             settings.targetRushEnabled = targetRushEnabled;
+            settings.breachEnabled = breachEnabled;
             settings.responseEnabled = responseEnabled;
             settings.rangedDodgeEnabled = rangedDodgeEnabled;
             settings.tumbleEnabled = tumbleEnabled;

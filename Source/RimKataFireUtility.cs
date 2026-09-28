@@ -622,6 +622,7 @@ namespace KRWF.RimKata
         public static void Postfix(Verb __instance, bool __result)
         {
             if (RimKataFireContext.ActiveVerb == __instance
+                && RimKataBreachCombat.AllowsAttack(__instance)
                 && (__result || __instance.IsMeleeAttack))
             {
                 RimKataFireContext.ShotFired = true;
@@ -1207,6 +1208,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            if (!__1) RimKataBreachCombat.TryDirectMiss(ref __0);
             RimKataGroundPoseEvents.ProjectileImpact(__instance, ref __0, __1);
             return true;
         }

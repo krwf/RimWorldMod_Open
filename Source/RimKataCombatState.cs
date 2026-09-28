@@ -219,8 +219,71 @@ namespace KRWF.RimKata
             new ConcurrentDictionary<Pawn, Entry>();
         private static readonly ConcurrentDictionary<ThingWithComps, Pawn>
             ByWeapon = new ConcurrentDictionary<ThingWithComps, Pawn>();
-        private static readonly ConcurrentDictionary<Pawn, Map>
-            BodyVisualByPawn = new ConcurrentDictionary<Pawn, Map>();
+        internal sealed class BodyVisualEntry
+        {
+            internal Map map;
+            internal bool body, groundPose;
+            internal RimKataBreachVisual? breach;
+            internal ThingWithComps crawlWeapon;
+            internal LocalTargetInfo crawlTarget;
+        }
+
+        private static readonly ConcurrentDictionary<Pawn, BodyVisualEntry>
+            BodyVisualByPawn = new ConcurrentDictionary<Pawn, BodyVisualEntry>();
+
+        internal static BodyVisualEntry BodyVisualFor(Pawn pawn)
+            => pawn != null && BodyVisualByPawn.TryGetValue(pawn, out var entry) ? entry : null;
+
+        // Publish immutable replacements at existing participant events. Render
+        // consumers share this record instead of querying each pose registry.
+        private static BodyVisualEntry CopyBodyVisual(Pawn pawn)
+        {
+            BodyVisualEntry old = BodyVisualFor(pawn);
+            // Cleanup can run after Current.Game has changed but before its
+            // maps exist. An old pawn's map index belongs to the previous game.
+            // Copy the published map; only live publication resolves pawn.Map.
+            return new BodyVisualEntry { map = old?.map, body = old?.body == true,
+                groundPose = old?.groundPose == true, breach = old?.breach,
+                crawlWeapon = old?.crawlWeapon, crawlTarget = old?.crawlTarget ?? LocalTargetInfo.Invalid };
+        }
+
+        private static void StoreBodyVisual(Pawn pawn, BodyVisualEntry entry)
+        {
+            if (entry.body || entry.breach.HasValue || entry.crawlWeapon != null)
+                BodyVisualByPawn[pawn] = entry;
+            else BodyVisualByPawn.TryRemove(pawn, out _);
+        }
+
+        internal static void PublishBreach(Pawn pawn, RimKataBreachVisual? visual)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                if (!visual.HasValue && BodyVisualFor(pawn)?.breach.HasValue != true) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                if (visual.HasValue) entry.map = pawn.Map;
+                entry.breach = visual;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void PublishCrawl(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null && weapon == null
+                    || old != null && old.crawlWeapon == weapon && old.crawlTarget == target) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                if (weapon != null) entry.map = pawn.Map;
+                entry.crawlWeapon = weapon;
+                entry.crawlTarget = target;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void ClearCrawl(Pawn pawn) => PublishCrawl(pawn, null, LocalTargetInfo.Invalid);
 
         public static bool IsParticipant(Pawn pawn)
         {
@@ -229,7 +292,7 @@ namespace KRWF.RimKata
 
         public static bool IsBodyVisualParticipant(Pawn pawn)
         {
-            return pawn != null && BodyVisualByPawn.ContainsKey(pawn);
+            return BodyVisualFor(pawn)?.body == true;
         }
 
         public static bool TryGetParticipantWeapons(
@@ -307,18 +370,20 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state)
         {
             Pawn pawn = state?.pawn;
-            Map map = pawn?.Map;
-            if (pawn != null
-                && map != null
-                && (state.VisualActive || state.CloseDodgeActive || state.groundPose?.VisualActive == true))
+            if (pawn == null) return;
+            lock (UpdateLock)
             {
-                BodyVisualByPawn[pawn] = map;
-                return;
-            }
-
-            if (pawn != null)
-            {
-                BodyVisualByPawn.TryRemove(pawn, out Map _);
+                Map map = pawn.Map;
+                bool ground = map != null && state.groundPose?.VisualActive == true;
+                bool body = map != null && (state.VisualActive || state.CloseDodgeActive || ground);
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null && !body || old != null && old.body == body
+                    && old.groundPose == ground && old.map == map) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                entry.map = map;
+                entry.groundPose = ground;
+                entry.body = body;
+                StoreBodyVisual(pawn, entry);
             }
         }
 
@@ -334,10 +399,19 @@ namespace KRWF.RimKata
                 RemoveEntry(pawn);
             }
 
-            BodyVisualByPawn.TryRemove(pawn, out Map _);
+            // A combat-state reset must not remove an independently owned
+            // breach/crawl pose. Their own completion events clear those fields.
+            lock (UpdateLock)
+            {
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null || !old.body && !old.groundPose) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                entry.body = entry.groundPose = false;
+                StoreBodyVisual(pawn, entry);
+            }
         }
 
-        internal static void ClearForMap(Map map)
+        internal static void ClearForMap(Map map, bool allVisuals = true)
         {
             if (map == null)
             {
@@ -355,11 +429,12 @@ namespace KRWF.RimKata
                 }
             }
 
-            foreach (KeyValuePair<Pawn, Map> pair in BodyVisualByPawn)
+            foreach (KeyValuePair<Pawn, BodyVisualEntry> pair in BodyVisualByPawn)
             {
-                if (pair.Value == map)
+                if (pair.Value.map == map)
                 {
-                    BodyVisualByPawn.TryRemove(pair.Key, out Map _);
+                    if (allVisuals) BodyVisualByPawn.TryRemove(pair.Key, out _);
+                    else Clear(pair.Key);
                 }
             }
         }
@@ -3037,7 +3112,7 @@ namespace KRWF.RimKata
 
         private void RebuildStateIndex()
         {
-            RimKataResponseVisualParticipantCache.ClearForMap(map);
+            RimKataResponseVisualParticipantCache.ClearForMap(map, false);
             RimKataGroundPoseUtility.ClearMap(map);
             foreach (Pawn indexedPawn in statesByPawn.Keys)
             {

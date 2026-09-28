@@ -1,6 +1,7 @@
 using HarmonyLib;
 using RimWorld;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using Verse;
 using Verse.AI;
@@ -213,6 +214,34 @@ namespace KRWF.RimKata
         {
             RimKataDraftedFireController.ProcessJobTrackerTick(___pawn);
         }
+    }
+
+    [HarmonyPatch(typeof(JobDriver_Wait), "CheckForAutoAttack")]
+    internal static class Patch_WaitAutoAttack_RimKataTargetSearch
+    {
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            var field = AccessTools.Field(typeof(Job), nameof(Job.canUseRangedWeapon));
+            int index = codes.FindIndex(code => code.LoadsField(field));
+            if (index < 0 || codes.FindIndex(index + 1, code => code.LoadsField(field)) >= 0)
+            {
+                Log.Error("[RimKata] Could not locate the Wait ranged-search gate; native targeting was left unchanged.");
+                return codes;
+            }
+            // Extend only the existing ranged gate. Nearby melee and fire beating
+            // still run, and the Job's saved canUseRangedWeapon flag stays intact.
+            codes.InsertRange(index + 1, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                    typeof(Patch_WaitAutoAttack_RimKataTargetSearch), nameof(AllowsRangedSearch)))
+            });
+            return codes;
+        }
+
+        private static bool AllowsRangedSearch(bool allowed, JobDriver_Wait driver)
+            => allowed && !RimKataDualWeaponController.ShouldSuppressVanillaTargetSearch(driver.pawn);
     }
 
     [HarmonyPatch(typeof(Verb_BeatFire), "TryCastShot")]

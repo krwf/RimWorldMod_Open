@@ -1387,6 +1387,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            RimKataBreachCombat.NotifyMeleeAttempt(__instance);
             return true;
         }
 

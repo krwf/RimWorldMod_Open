@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Vuren tijdens bewegen</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Vuren van dichtbij</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Bestorming</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Doorbraak</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Pareren</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Afstandsaanval ontwijken</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Salto</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Sluipbonus bij jagen in buikligging</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Wachttijd voor opnieuw gaan liggen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tijd op de grond na een val</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Bewegingsduur tijdens de doorbraak</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Wachttijd na aankomst op de doorbraakbestemming</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen standaard toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Vloeiende richtovergangen</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

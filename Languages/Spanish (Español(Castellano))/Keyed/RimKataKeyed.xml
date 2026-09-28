@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Disparo en movimiento</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Disparo a corta distancia</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Carga</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Irrupción</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parada</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Esquiva a distancia</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>voltereta</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonificación de sigilo de caza al estar cuerpo a tierra</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Espera antes de volver a ponerse cuerpo a tierra</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tiempo en el suelo tras una caída</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Tiempo de movimiento durante la irrupción</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Tiempo de espera al llegar al destino de la irrupción</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar al arrastrarse por defecto</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transiciones de apuntado suaves</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

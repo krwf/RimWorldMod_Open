@@ -19,6 +19,7 @@ namespace KRWF.RimKata
         private static readonly ConditionalWeakTable<Pawn, EquipmentFrame> equipmentFrames =
             new ConditionalWeakTable<Pawn, EquipmentFrame>();
         [ThreadStatic] private static Frame current;
+        [ThreadStatic] private static Frame breachOwnedFrame;
         internal static Func<object, string, object> getPart;
         internal static Func<object, int, object> getOverride;
         internal static Func<object, int> partIndex, animationType;
@@ -175,21 +176,30 @@ namespace KRWF.RimKata
 
         private static bool FilterPart(bool visible, int index)
         {
+            if (breachOwnedFrame != null)
+                return visible && index != breachOwnedFrame.Item
+                    && index != breachOwnedFrame.MainHand && index != breachOwnedFrame.OtherHand;
             if (current == null) return visible;
             current.Part = index;
             return visible && index != current.OtherHand;
         }
 
-        private static void Begin(object __instance, bool cullDraw, out Frame __state)
+        private static void Begin(object __instance, bool cullDraw, out DrawScope __state)
         {
-            __state = current;
+            __state = new DrawScope { previous = current, previousBreach = breachOwnedFrame };
             current = null;
+            breachOwnedFrame = null;
             if (failed || cullDraw || destroyed(__instance) || map(__instance) != Find.CurrentMap
                 || Find.CurrentMap == null) return;
             try
             {
                 Frame frame = frames.GetValue(__instance, value => new Frame(value));
-                if (!frame.Prepare()) return;
+                if (!frame.Prepare(out bool breachOwned, allowBreach: true)) return;
+                if (breachOwned)
+                {
+                    breachOwnedFrame = frame;
+                    return;
+                }
                 frame.Part = -1;
                 frame.WeaponDrawn = false;
                 frame.ReplayDrawn = false;
@@ -201,9 +211,10 @@ namespace KRWF.RimKata
             catch (Exception exception) { Fail(exception); }
         }
 
-        private static Exception End(Exception __exception, Frame __state)
+        private static Exception End(Exception __exception, DrawScope __state)
         {
-            current = __state;
+            current = __state.previous;
+            breachOwnedFrame = __state.previousBreach;
             return __exception;
         }
 
@@ -279,7 +290,8 @@ namespace KRWF.RimKata
             if (failed || !RimKataMeleeAnimationReplay.Active || RimKataWeaponRenderProbe.Probing || (flags & PawnRenderFlags.Portrait) != 0
                 || pawn?.Spawned != true || pawn.Dead || pawn.Downed
                 || !RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(pawn, out ThingWithComps secondary)
-                || secondary == null || !RimKataVisualUtility.IsSecondaryUsable(pawn, pawn.equipment?.Primary, secondary)) return;
+                || secondary == null || !RimKataVisualUtility.IsSecondaryUsable(pawn, pawn.equipment?.Primary, secondary)
+                || RimKataBreachWeaponRender.Owns(pawn)) return;
             EquipmentFrame frame = equipmentFrames.GetValue(pawn, _ => new EquipmentFrame());
             frame.Pawn = pawn; frame.Primary = pawn.equipment.Primary; frame.Secondary = secondary;
             frame.Root = drawPos; frame.Facing = facing; frame.Flags = flags; frame.SecondaryDrawn = false;
@@ -457,6 +469,11 @@ namespace KRWF.RimKata
             }
         }
 
+        private struct DrawScope
+        {
+            internal Frame previous, previousBreach;
+        }
+
         internal sealed class Frame
         {
             internal readonly object Renderer, ItemOverride;
@@ -485,8 +502,8 @@ namespace KRWF.RimKata
                 Renderer = renderer;
                 if (animationType(definition(renderer)) != idleType) return;
                 object item = getPart(renderer, "ItemA"), hand = getPart(renderer, "HandA"), other = getPart(renderer, "HandB");
-                if (item == null || hand == null || (!secondaryOnly && other == null)) return;
-                Item = partIndex(item); MainHand = partIndex(hand);
+                if (item == null) return;
+                Item = partIndex(item); MainHand = hand == null ? -1 : partIndex(hand);
                 OtherHand = other == null ? -1 : partIndex(other);
                 ItemOverride = getOverride(renderer, Item);
             }
@@ -498,11 +515,24 @@ namespace KRWF.RimKata
             }
 
             internal bool Prepare()
+                => Prepare(out _, allowBreach: false);
+
+            internal bool Prepare(out bool breachOwned, bool allowBreach)
             {
+                breachOwned = false;
                 if (ItemOverride == null) return false;
                 var primary = weapon(ItemOverride) as ThingWithComps;
                 Pawn = RimKataVisualUtility.FindPawnOwner(primary);
-                if (Pawn?.Spawned != true || Pawn.Dead || Pawn.Downed || Pawn.carryTracker?.CarriedThing != null
+                if (Pawn?.Spawned != true || Pawn.Dead || Pawn.Downed || Pawn.carryTracker?.CarriedThing != null)
+                    return false;
+                // Breach owns the held weapon even without a registered offhand.
+                // Only its weapon and linked hands are hidden; other MA parts stay native.
+                if (allowBreach && RimKataBreachWeaponRender.Owns(Pawn) && primary == Pawn.equipment?.Primary)
+                {
+                    breachOwned = true;
+                    return true;
+                }
+                if (MainHand < 0 || (!Standalone && OtherHand < 0)
                     || !RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(Pawn, out ThingWithComps registered)
                     || registered == null
                     || !ReferenceEquals(currentAnimation(Pawn), Renderer)
@@ -513,7 +543,7 @@ namespace KRWF.RimKata
 
             internal bool PrepareWeapon(ThingWithComps secondary)
             {
-                if (ItemOverride == null) return false;
+                if (ItemOverride == null || MainHand < 0 || (!Standalone && OtherHand < 0)) return false;
                 if (lastSecondary != secondary)
                 {
                     object tweak = getTweak(secondary.def);

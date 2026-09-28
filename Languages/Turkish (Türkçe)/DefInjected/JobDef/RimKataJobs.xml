@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_EquipSecondary.reportString>TargetA nesnesini RimKata ikincil silahı olarak kuşanıyor.</RimKata_EquipSecondary.reportString>
+  <RimKata_Breach.reportString>Kapıyı kırarak giriyor.</RimKata_Breach.reportString>
 </LanguageData>

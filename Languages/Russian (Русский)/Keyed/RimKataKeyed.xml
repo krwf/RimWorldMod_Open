@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Стрельба на ходу</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Стрельба вблизи</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Рывок</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Прорыв</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Парирование</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Уклонение от дальних атак</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Кувырок</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Бонус к скрытности на охоте в положении лёжа</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Задержка перед повторным переходом в положение лёжа</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Время в лежачем положении после падения</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Время движения при прорыве</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Время ожидания после достижения точки прорыва</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>По умолчанию разрешать стрельбу при ползании</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Плавная смена направления прицеливания</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

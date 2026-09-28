@@ -224,6 +224,7 @@ namespace KRWF.RimKata
         private static void RayImpactPrefix(Thing __instance, ref Thing hitThing, Vector3 muzzle, out RayImpactState __state)
         {
             __state = default(RayImpactState);
+            RimKataBreachCombat.TryDirectMiss(ref hitThing);
             RimKataCEProjectileMapComponent component = Component(__instance.Map);
             if (component?.Find(__instance) == null) component?.Register(__instance, true);
             RimKataCEProjectileState record = component?.Find(__instance);
@@ -275,6 +276,11 @@ namespace KRWF.RimKata
             {
                 record.pendingDodge = false;
                 if (TryExplosiveDodge(record, confirmedImpact: true)) return false;
+            }
+            if (RimKataBreachCombat.TryDirectMiss(ref hitThing))
+            {
+                __state.victim = null;
+                __state.direct = false;
             }
             if (IsDirectBullet(__instance)
                 && __originalMethod.DeclaringType != ProjectileType

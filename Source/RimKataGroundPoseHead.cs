@@ -212,6 +212,7 @@ namespace KRWF.RimKata
             List<PawnGraphicDrawRequest> requests)
         {
             if (Volatile.Read(ref pendingCount) == 0 || parms.Portrait || parms.pawn == null
+                || RimKataWorldRenderContext.BodyFor(parms.pawn)?.groundPose != true
                 || !Entries.TryGetValue(parms.pawn, out Entry entry)) return default;
             Replacement replacement = entry.replacement;
             if (replacement?.destination == null || replacement.destination != requests) return default;
@@ -261,6 +262,13 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(PawnRenderTree), nameof(PawnRenderTree.Draw))]
     internal static class Patch_PawnRenderTree_RimKataHeadDraw
     {
+        [HarmonyPriority(Priority.First)]
+        private static void Prefix(PawnDrawParms parms, out RimKataWorldRenderContext.Scope __state)
+            => __state = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
+
+        private static void Finalizer(RimKataWorldRenderContext.Scope __state)
+            => RimKataWorldRenderContext.End(__state);
+
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,
             MethodBase original, ILGenerator generator)
         {
@@ -272,15 +280,43 @@ namespace KRWF.RimKata
             LocalBuilder aimedParms = generator.DeclareLocal(typeof(PawnDrawParms));
             FieldInfo requests = AccessTools.Field(typeof(PawnRenderTree), "drawRequests");
             FieldInfo node = AccessTools.Field(typeof(PawnGraphicDrawRequest), nameof(PawnGraphicDrawRequest.node));
+            FieldInfo headNodes = AccessTools.Field(typeof(RimKataGroundPoseHead.DrawContext), "headNodes");
             MethodInfo capture = AccessTools.Method(typeof(RimKataGroundPoseHead), nameof(RimKataGroundPoseHead.ResolveDrawContext));
             MethodInfo resolve = AccessTools.Method(typeof(RimKataGroundPoseHead), nameof(RimKataGroundPoseHead.DrawParms));
+            var originalCodes = new List<CodeInstruction>(instructions);
+            var headCodes = new List<CodeInstruction>(originalCodes.Count);
+            var labels = new Dictionary<Label, Label>();
+            foreach (CodeInstruction code in originalCodes)
+                foreach (Label label in code.labels)
+                    labels[label] = generator.DefineLabel();
+            foreach (CodeInstruction code in originalCodes)
+            {
+                var copy = new CodeInstruction(code);
+                for (int i = 0; i < copy.labels.Count; i++) copy.labels[i] = labels[copy.labels[i]];
+                if (copy.operand is Label branch) copy.operand = labels[branch];
+                else if (copy.operand is Label[] branches)
+                {
+                    var targets = new Label[branches.Length];
+                    for (int i = 0; i < targets.Length; i++) targets[i] = labels[branches[i]];
+                    copy.operand = targets;
+                }
+                headCodes.Add(copy);
+            }
+            Label headDraw = generator.DefineLabel();
+            headCodes[0].labels.Add(headDraw);
             yield return new CodeInstruction(OpCodes.Ldarg_1);
             yield return new CodeInstruction(OpCodes.Ldarg_0);
             yield return new CodeInstruction(OpCodes.Ldfld, requests);
             yield return new CodeInstruction(OpCodes.Call, capture);
             yield return new CodeInstruction(OpCodes.Stloc, drawContext);
+            yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
+            yield return new CodeInstruction(OpCodes.Ldfld, headNodes);
+            yield return new CodeInstruction(OpCodes.Brtrue, headDraw);
+            // Ordinary draws retain the original loop, including other transpilers
+            // and its exception blocks. They never execute a per-node pose helper.
+            foreach (CodeInstruction code in originalCodes) yield return code;
             bool insideDraw = false;
-            foreach (CodeInstruction code in instructions)
+            foreach (CodeInstruction code in headCodes)
             {
                 if (insideDraw && code.opcode == OpCodes.Ldarg_1)
                 {

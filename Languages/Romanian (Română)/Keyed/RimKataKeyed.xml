@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Foc în mișcare</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Foc de la mică distanță</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Șarjă</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Spargere a ușii</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parare</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Eschivă la distanță</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>salt mortal</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discreție la vânătoare din poziția culcat</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Întârziere înainte de a reveni în poziția culcat</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Timp petrecut la pământ după cădere</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Durata deplasării în timpul spargerii ușii</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Timp de așteptare la destinație după spargerea ușii</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permite implicit tragerea în timpul târârii</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Tranziții line de ochire</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <JobDef>
+    <defName>RimKata_Breach</defName>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataBreach</driverClass>
+    <reportString>breaching a door.</reportString>
+    <alwaysShowWeapon>true</alwaysShowWeapon>
+    <casualInterruptible>false</casualInterruptible>
+    <collideWithPawns>true</collideWithPawns>
+  </JobDef>
+  <JobDef>
     <defName>RimKata_Attack</defName>
     <driverClass>KRWF.RimKata.JobDriver_RimKataAttack</driverClass>
     <alwaysShowWeapon>true</alwaysShowWeapon>

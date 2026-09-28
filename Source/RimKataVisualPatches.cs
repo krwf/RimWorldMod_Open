@@ -9,6 +9,116 @@ using Verse;
 
 namespace KRWF.RimKata
 {
+    // Share the existing event-published participant classification throughout
+    // one render call, including the negative result for ordinary pawns.
+    public static class RimKataWorldRenderContext
+    {
+        public struct Scope
+        {
+            internal Frame previous;
+            internal bool pushed;
+        }
+
+        internal sealed class Frame
+        {
+            internal Frame next;
+            internal Pawn pawn;
+            internal bool portrait, response, responseRead, snapshotRead, snapshotActive;
+            internal RimKataResponseVisualParticipantCache.BodyVisualEntry body;
+            internal RimKataVisualSnapshot snapshot;
+        }
+
+        [ThreadStatic] private static Frame current;
+        [ThreadStatic] private static Frame spare;
+
+        internal static Scope Begin(Pawn pawn, bool portrait = false)
+        {
+            if (current != null && current.pawn == pawn && current.portrait == portrait) return default;
+            var scope = new Scope { previous = current, pushed = true };
+            // Reuse render-stack storage; ordinary pawns neither allocate a
+            // snapshot nor copy its fields through every nested scope.
+            Frame frame = spare ?? new Frame();
+            spare = frame.next;
+            frame.next = null;
+            frame.pawn = pawn;
+            frame.portrait = portrait;
+            frame.body = portrait ? null : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
+            current = frame;
+            return scope;
+        }
+
+        internal static void End(Scope scope)
+        {
+            if (!scope.pushed) return;
+            Frame finished = current;
+            current = scope.previous;
+            finished.pawn = null;
+            finished.body = null;
+            if (finished.snapshotRead) finished.snapshot = default;
+            finished.snapshotRead = finished.snapshotActive = false;
+            finished.responseRead = finished.response = false;
+            finished.next = spare;
+            spare = finished;
+        }
+
+        internal static RimKataResponseVisualParticipantCache.BodyVisualEntry BodyFor(Pawn pawn)
+            => current != null && current.pawn == pawn ? current.body
+                : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
+
+        internal static bool ResponseFor(Pawn pawn)
+        {
+            if (current == null || current.pawn != pawn)
+                return RimKataResponseVisualParticipantCache.IsParticipant(pawn);
+            if (!current.responseRead)
+            {
+                current.responseRead = true;
+                current.response = !current.portrait
+                    && RimKataResponseVisualParticipantCache.IsParticipant(pawn);
+            }
+            return current.response;
+        }
+
+        internal static bool TryBreach(Pawn pawn, out RimKataBreachVisual visual)
+        {
+            var body = BodyFor(pawn);
+            visual = body?.breach ?? default;
+            return body?.breach.HasValue == true;
+        }
+
+        internal static bool TryCrawl(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)
+        {
+            var body = BodyFor(pawn);
+            weapon = body?.crawlWeapon;
+            target = body?.crawlTarget ?? LocalTargetInfo.Invalid;
+            return weapon != null;
+        }
+
+        internal static bool TrySnapshot(Pawn pawn, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)
+        {
+            if (pawn != null && current != null && current.pawn == pawn)
+                return ReadSnapshot(current, owner, out snapshot);
+            snapshot = default;
+            return (RimKataResponseVisualParticipantCache.IsParticipant(pawn)
+                    || RimKataResponseVisualParticipantCache.BodyVisualFor(pawn)?.body == true)
+                && (owner != null || RimKataCombatStatePresenceCache.TryGetOwner(pawn, out owner))
+                && RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot(pawn, owner, out snapshot);
+        }
+
+        private static bool ReadSnapshot(Frame frame, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)
+        {
+            if (!frame.snapshotRead)
+            {
+                frame.snapshotRead = true;
+                if (!frame.portrait && (frame.body?.body == true || ResponseFor(frame.pawn))
+                    && (owner != null || RimKataCombatStatePresenceCache.TryGetOwner(frame.pawn, out owner)))
+                    frame.snapshotActive = RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot(
+                        frame.pawn, owner, out frame.snapshot);
+            }
+            snapshot = frame.snapshot;
+            return frame.snapshotActive;
+        }
+    }
+
     public static class RimKataVisualUtility
     {
         public static bool IsCachedWorldVisualUser(Pawn pawn)
@@ -119,15 +229,7 @@ namespace KRWF.RimKata
             Pawn pawn,
             out RimKataVisualSnapshot snapshot)
         {
-            snapshot = default(RimKataVisualSnapshot);
-            if (!RimKataResponseVisualParticipantCache.IsParticipant(pawn)
-                && !RimKataResponseVisualParticipantCache
-                    .IsBodyVisualParticipant(pawn))
-            {
-                return false;
-            }
-
-            return TryGetActiveSnapshot(pawn, out snapshot);
+            return RimKataWorldRenderContext.TrySnapshot(pawn, null, out snapshot);
         }
 
         internal static bool TryGetCachedActiveSnapshot(
@@ -135,25 +237,17 @@ namespace KRWF.RimKata
             RimKataMapComponent component,
             out RimKataVisualSnapshot snapshot)
         {
-            snapshot = default(RimKataVisualSnapshot);
-            if (!RimKataResponseVisualParticipantCache.IsParticipant(pawn)
-                && !RimKataResponseVisualParticipantCache
-                    .IsBodyVisualParticipant(pawn))
-            {
-                return false;
-            }
-
-            return TryGetQualifiedOrResponseSnapshot(pawn, component, out snapshot);
+            return RimKataWorldRenderContext.TrySnapshot(pawn, component, out snapshot);
         }
 
-        private static bool TryGetQualifiedOrResponseSnapshot(
+        internal static bool TryGetQualifiedOrResponseSnapshot(
             Pawn pawn,
             RimKataMapComponent component,
             out RimKataVisualSnapshot snapshot)
         {
             snapshot = default(RimKataVisualSnapshot);
             bool qualified = RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
-            if ((!qualified && !RimKataResponseVisualParticipantCache.IsParticipant(pawn))
+            if ((!qualified && !RimKataWorldRenderContext.ResponseFor(pawn))
                 || component?.TryGetActiveVisualSnapshot(pawn, out snapshot) != true)
             {
                 return false;
@@ -1837,16 +1931,20 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.DynamicDrawPhaseAt))]
     public static class Patch_PawnRenderer_RimKataDodgeOffset
     {
+        [HarmonyPriority(Priority.First)]
         public static void Prefix(
             Pawn ___pawn,
             DrawPhase phase,
             ref Vector3 drawLoc,
-            ref Rot4? rotOverride)
+            ref Rot4? rotOverride,
+            out RimKataWorldRenderContext.Scope __state)
         {
+            __state = default;
             if (phase == DrawPhase.EnsureInitialized)
             {
                 return;
             }
+            __state = RimKataWorldRenderContext.Begin(___pawn);
 
             if (!RimKataCombatStatePresenceCache.TryGetOwner(
                     ___pawn,
@@ -1902,13 +2000,19 @@ namespace KRWF.RimKata
                 rotOverride = responseFacing;
             }
         }
+
+        public static void Finalizer(RimKataWorldRenderContext.Scope __state)
+            => RimKataWorldRenderContext.End(__state);
     }
 
     [HarmonyPatch(typeof(PawnRenderer), "ParallelGetPreRenderResults")]
     public static class Patch_PawnRenderer_RimKataDynamicRotationCache
     {
-        public static void Prefix(Pawn ___pawn, ref bool disableCache)
+        [HarmonyPriority(Priority.First)]
+        public static void Prefix(Pawn ___pawn, ref bool disableCache,
+            out RimKataWorldRenderContext.Scope __state)
         {
+            __state = RimKataWorldRenderContext.Begin(___pawn);
             if (!RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     ___pawn,
                     out RimKataVisualSnapshot snapshot))
@@ -1921,16 +2025,27 @@ namespace KRWF.RimKata
                 disableCache = true;
             }
         }
+
+        public static void Finalizer(RimKataWorldRenderContext.Scope __state)
+            => RimKataWorldRenderContext.End(__state);
     }
 
     [HarmonyPatch(typeof(PawnRenderTree), nameof(PawnRenderTree.ParallelPreDraw))]
     public static class Patch_PawnRenderTree_RimKataTumbleRotation
     {
-        public static void Prefix(ref PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
-            out RimKataVisualSnapshot __state)
+        public struct RenderScope
         {
-            RimKataGroundPoseHead.Restore(___drawRequests);
+            internal RimKataWorldRenderContext.Scope context;
+            internal RimKataVisualSnapshot snapshot;
+        }
+
+        [HarmonyPriority(Priority.First)]
+        public static void Prefix(ref PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
+            out RenderScope __state)
+        {
             __state = default;
+            __state.context = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
+            RimKataGroundPoseHead.Restore(___drawRequests);
             if (parms.Portrait
                 || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     parms.pawn,
@@ -1940,7 +2055,7 @@ namespace KRWF.RimKata
             }
 
             bool additionalTumble = snapshot.additionalTumbleActive;
-            if (snapshot.groundPoseActive) __state = snapshot;
+            if (snapshot.groundPoseActive) __state.snapshot = snapshot;
             if (snapshot.groundPoseActive && snapshot.groundPoseFacing.IsValid)
                 parms.facing = snapshot.groundPoseFacing;
             bool stationaryTumble = snapshot.visualActive  && snapshot.visualState == RimKataVisualState.Tumble;
@@ -1978,11 +2093,14 @@ namespace KRWF.RimKata
         }
 
         public static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
-            RimKataVisualSnapshot __state)
+            RenderScope __state)
         {
-            if (__state.groundPoseActive)
-                RimKataGroundPoseRender.Prepare(parms, ___drawRequests, __state);
+            if (__state.snapshot.groundPoseActive)
+                RimKataGroundPoseRender.Prepare(parms, ___drawRequests, __state.snapshot);
         }
+
+        public static void Finalizer(RenderScope __state)
+            => RimKataWorldRenderContext.End(__state.context);
     }
 
     [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.DrawEquipmentAiming))]
@@ -2223,7 +2341,7 @@ namespace KRWF.RimKata
             try
             {
                 current.scopePawn = pawn;
-                if (portrait || pawn == null)
+                if (portrait || pawn == null || RimKataBreachWeaponRender.Active)
                 {
                     return scopeToken;
                 }
@@ -2232,7 +2350,7 @@ namespace KRWF.RimKata
                 // draw must not discover eligibility, equipment, or combat state.
                 bool rimKataUser = RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
                 if ((!rimKataUser
-                        && !RimKataResponseVisualParticipantCache.IsParticipant(pawn))
+                        && !RimKataWorldRenderContext.ResponseFor(pawn))
                     || !pawn.Spawned)
                 {
                     return scopeToken;

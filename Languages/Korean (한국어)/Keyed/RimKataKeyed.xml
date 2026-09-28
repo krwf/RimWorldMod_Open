@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>이동 사격</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>근접 사격</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>돌격</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>돌파</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>쳐내기</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>원거리 회피</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>공중제비</KRWF_RimKata_FeatureTumble>
@@ -169,6 +170,8 @@
   <KRWF_RimKata_ProneResumeDelay>다시 엎드릴 시간</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallChance>넘어질 확률</KRWF_RimKata_MeleeFallChance>
   <KRWF_RimKata_MeleeFallDuration>넘어져 있을 시간</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>돌파 시 이동 시간</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>돌파 지점 도달 후 대기 시간</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>기면서 쏴 사격 허용 기본값</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>주</KRWF_RimKata_InspectSlotPrimary>

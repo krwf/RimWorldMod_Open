@@ -232,6 +232,7 @@ namespace KRWF.RimKata
             Settings = GetSettings<RimKataSettings>();
             RimKataAllowedWeaponStore.ConfigureRoot(content.RootDir);
             RimKataAllowedWeaponStore.InstallCaptureHook();
+            RimKataDoorCache.ConfigureRoot(content.RootDir);
             Profiles = new RimKataProfileStore(content.RootDir);
             uiBuffers.SyncFrom(Settings);
         }

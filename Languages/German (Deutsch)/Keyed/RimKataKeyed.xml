@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Feuern in Bewegung</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Feuern auf kurze Distanz</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Ansturm</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Durchbruch</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Parieren</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Fernkampfausweichen</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Salto</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus auf Jagdtarnung im Liegen</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Wartezeit vor erneutem Hinlegen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Liegedauer nach einem Sturz</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Bewegungsdauer beim Durchbruch</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Wartezeit nach Erreichen des Durchbruchziels</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen standardmäßig erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sanfte Zielwechsel</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

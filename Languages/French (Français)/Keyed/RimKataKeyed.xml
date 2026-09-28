@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Tir en mouvement</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Tir à courte portée</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Charge</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Effraction</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parade</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Esquive à distance</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>roulade</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discrétion à la chasse en position couchée</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Délai avant de se coucher à nouveau</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Durée au sol après une chute</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Durée de déplacement lors de l’effraction</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Temps d’attente à l’arrivée après l’effraction</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant par défaut</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transitions de visée fluides</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

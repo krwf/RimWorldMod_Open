@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Disparo em movimento</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Disparo a curta distância</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Investida</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Arrombamento</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>aparar</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Esquiva à distância</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>cambalhota</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bônus de furtividade na caça enquanto deitado</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Tempo de espera antes de se deitar novamente</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tempo no chão após cair</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Tempo de movimento durante o arrombamento</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Tempo de espera após chegar ao destino do arrombamento</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja por padrão</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transições suaves de mira</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Liikumiselt tulistamine</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Lähidistantsilt tulistamine</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Sööst</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Läbimurre</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Tõrjumine</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Kaugrünnakust põiklemine</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Kukerpall</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Jahil hiilimise boonus lamades</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Ooteaeg enne uuesti pikali heitmist</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Pärast kukkumist maas viibimise aeg</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Liikumisaeg läbimurde ajal</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Ooteaeg pärast läbimurde sihtkohta jõudmist</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine vaikimisi</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sujuvad sihtimisüleminekud</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -590,7 +590,8 @@ namespace KRWF.RimKata
                 && tickedJob.TryTakePostTickCombatState(out RimKataPawnCombatState tickedState))
             {
                 // Keep handoffs in the original post-tick phase, using the Job's state.
-                TryConsumePendingDedicatedFollowupJob(pawn, tickedState);
+                if (!tickedJob.IsStructureMelee)
+                    TryConsumePendingDedicatedFollowupJob(pawn, tickedState);
                 return;
             }
 
@@ -618,6 +619,9 @@ namespace KRWF.RimKata
             }
 
             RimKataPawnCombatState state = component?.GetState(pawn, false);
+            // A breach's native drafted wait keeps firefighting and job choice,
+            // while this participant alone delays automatic weapon cycles.
+            if (RimKataBreachUtility.IsWaiting(pawn)) return;
             Job currentJob = pawn.CurJob;
             if (fromJobTracker)
             {
@@ -2127,6 +2131,27 @@ namespace KRWF.RimKata
 
             return knownState?.primaryWeaponCycle?.focusedTarget != target
                 && knownState?.secondaryWeaponCycle?.focusedTarget != target;
+        }
+
+        internal static bool ShouldSuppressVanillaTargetSearch(Pawn pawn)
+        {
+            // Native completion can restore Stance_Mobile inside our attack.
+            // Its Wait callback must not select another target in that scope.
+            if (RimKataAutomaticCastSuppression.ActiveFor(pawn)) return true;
+            if (!RimKataCombatStatePresenceCache.TryGetOwner(pawn, out var owner))
+                return false;
+
+            RimKataPawnCombatState state = owner.GetState(pawn, false);
+            if (state == null || pawn.InMentalState
+                || (state.huntingSession != null && state.huntingSession.Job == pawn.CurJob)
+                || !CombatTickPermissions.AllowsCurrentJob(pawn.CurJob)
+                || !CanContinueWeaponCycles(pawn, state)) return false;
+
+            // Reuse the live ownership rules, including pending opening handoff
+            // and shared search. A stored state alone must not block native fire.
+            if (HasCombatContinuity(pawn, state)) return true;
+            return CycleForWeapon(state, pawn.CurrentEffectiveVerb?.EquipmentSource as ThingWithComps)
+                ?.cooldownTicksRemaining > 0;
         }
 
         public static bool ShouldSuppressVanillaCast(
@@ -3697,6 +3722,7 @@ namespace KRWF.RimKata
                 || state.dedicatedFollowupJobRequestedTick < 0
                 || state.dedicatedFollowupJobRequestedTick > currentTick
                 || currentTick > state.dedicatedFollowupJobRequestedTick + 1
+                || RimKataBreachUtility.IsWaiting(pawn)
                 || (state.projectileWakeResumeJob != null
                     && state.projectileWakeResumeJob == state.dedicatedFollowupJobSourceJob
                     && !CanStartQueuedProjectileWake(pawn))
@@ -4517,6 +4543,11 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            // A vanilla structure Job does not wait for our per-slot timer.
+            // Keep its native recovery unless the dedicated cycle owns the hit.
+            if (focus.Thing is Building && pawn.CurJobDef == JobDefOf.AttackMelee)
+                return false;
+
             ThingWithComps weapon = verb.EquipmentSource as ThingWithComps;
             if (weapon == null
                 || weapon.Destroyed
@@ -4548,6 +4579,124 @@ namespace KRWF.RimKata
                 pawn.Position);
 
             return true;
+        }
+
+        internal static bool TryConvertStructureMeleeJob(Pawn pawn, Job job)
+        {
+            if (job?.def != JobDefOf.AttackMelee
+                || !(job.targetA.Thing is Building target)
+                || pawn?.Spawned != true || pawn.InMentalState || pawn.IsBurning()
+                || pawn.kindDef.canMeleeAttack != true
+                || !target.Spawned || target.Map != pawn.Map
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn)) return false;
+
+            ThingWithComps primary = RimKataWeaponSlotUtility.PrimaryWeapon(pawn);
+            Verb verb = ResolveStructureMeleeVerb(pawn, primary, target);
+            if (verb == null && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, primary, true))
+                verb = ResolveStructureMeleeVerb(pawn,
+                    RimKataWeaponSlotUtility.SecondaryWeapon(pawn), target);
+            if (verb == null) return false;
+            // The saved melee Verb distinguishes this order from ranged attacks
+            // on a building. No new persistent pawn flag or automatic search.
+            job.def = RimKataDefOf.RimKata_Attack;
+            job.verbToUse = verb;
+            return true;
+        }
+
+        private static Verb ResolveStructureMeleeVerb(Pawn pawn, ThingWithComps weapon, Thing target)
+        {
+            if (pawn == null || target == null || weapon == null
+                || !RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)) return null;
+            List<Verb> verbs = weapon.TryGetComp<CompEquippable>()?.AllVerbs;
+            if (verbs == null) return null;
+            var usable = new List<Verb>(verbs.Count);
+            float highestWeight = 0f;
+            for (int i = 0; i < verbs.Count; i++)
+            {
+                Verb verb = verbs[i];
+                if (verb?.IsMeleeAttack != true || !verb.IsStillUsableBy(pawn)
+                    || !verb.Available()) continue;
+                usable.Add(verb);
+                highestWeight = Mathf.Max(highestWeight, VerbUtility.InitialVerbWeight(verb, pawn));
+            }
+            // Preserve native melee weighting and target/edifice suitability,
+            // while keeping each hand restricted to its own weapon's attacks.
+            return usable.TryRandomElementByWeight(
+                verb => new VerbEntry(verb, pawn, usable, highestWeight).GetSelectionWeight(target),
+                out Verb selected) ? selected : null;
+        }
+
+        internal static void TickStructureMelee(Pawn pawn, JobDriver_RimKataAttack driver)
+        {
+            Thing target = pawn.CurJob?.targetA.Thing;
+            if (driver.StructureMeleeLimitReached)
+            {
+                driver.EndRimKataJobWith(JobCondition.Succeeded);
+                return;
+            }
+            if (pawn.Spawned != true || pawn.InMentalState || pawn.IsBurning()
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn))
+            {
+                driver.EndRimKataJobWith(JobCondition.InterruptForced);
+                return;
+            }
+            if (target?.Spawned != true || target.Destroyed || target.Map != pawn.Map)
+            {
+                driver.EndRimKataJobWith(JobCondition.Succeeded);
+                return;
+            }
+            RimKataPawnCombatState state = StateFor(pawn, true);
+            driver.ShareCombatStateWithPostTick(state);
+            int tick = Find.TickManager.TicksGame;
+            if (state.dualLastDrivenTick == tick) return;
+            state.dualLastDrivenTick = tick;
+            BindCurrentWeapons(pawn, state, true);
+            state.primaryWeaponCycle.TickTimers();
+            state.secondaryWeaponCycle.TickTimers();
+            if (!pawn.CanReachImmediate(target, PathEndMode.Touch))
+            {
+                if (pawn.pather?.Moving != true || pawn.pather.Destination.Thing != target)
+                {
+                    if (!pawn.CanReach(target, PathEndMode.Touch, Danger.Deadly))
+                        driver.EndRimKataJobWith(JobCondition.Incompletable);
+                    else pawn.pather.StartPath(target, PathEndMode.Touch);
+                }
+                return;
+            }
+            pawn.pather.StopDead();
+            state.dualEngagementActive = true;
+            state.dualCloseCombatActive = true;
+            state.dualCloseTarget = target;
+            if (RimKataTemporaryInactivity.IsInactive(pawn) || ShouldPauseFireForDodge(pawn)) return;
+            TickStructureMeleeCycle(pawn, state, state.primaryWeaponCycle, target, tick);
+            if (!target.Destroyed && pawn.jobs.curDriver == driver)
+                TickStructureMeleeCycle(pawn, state, state.secondaryWeaponCycle, target, tick);
+            UpdateBodyAimStance(pawn, state);
+        }
+
+        private static void TickStructureMeleeCycle(Pawn pawn, RimKataPawnCombatState state,
+            RimKataWeaponCycleState cycle, Thing target, int tick)
+        {
+            if (cycle.weapon == null || !cycle.ordinaryWeaponEnabled || cycle.NativeAttackPending
+                || cycle.cooldownTicksRemaining > 1) return;
+            Verb melee = cycle.plannedActionVerb;
+            if (melee?.IsMeleeAttack != true || melee.EquipmentSource != cycle.weapon
+                || !melee.IsStillUsableBy(pawn) || !melee.IsUsableOn(target) || !melee.Available())
+            {
+                if (cycle.plannedActionVerb != null) cycle.ClearPlan();
+                melee = ResolveStructureMeleeVerb(pawn, cycle.weapon, target);
+            }
+            if (melee == null) return;
+            CycleVerbAvailability availability = new CycleVerbAvailability
+            {
+                verb = melee, evaluated = true, closeContext = true, usable = true
+            };
+            // Reuse native execution and completion, but keep this explicit Job
+            // fixed on its structure. Guns use their own bash/poke Verb here.
+            TickWeaponCycle(pawn, state, cycle, target, true, false, true,
+                StanceBlocksRimKata(pawn), out Thing _, false, false, tick, null,
+                ref availability);
         }
 
         public static bool HasUsableWeapon(Pawn pawn, bool closeCombatContext)
@@ -6571,6 +6720,8 @@ namespace KRWF.RimKata
         internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)
         {
             if (attack.huntingSession != null) return attack.huntingSession.CanContinue();
+            if (attack.pawn.jobs?.curDriver is JobDriver_RimKataAttack driver
+                && driver.IsStructureMelee && driver.StructureMeleeLimitReached) return false;
             return !attack.cycle.ResponseCooldownAppliedThisTick
                 && !MovementBlocksFire(attack.pawn, attack.state)
                 && !ShouldPauseFireForDodge(attack.pawn)
@@ -6588,6 +6739,10 @@ namespace KRWF.RimKata
             FinishCycleAction(attack, acted, cancelled, out Thing promoted, ref availability);
             Pawn pawn = attack.pawn;
             RimKataPawnCombatState state = attack.state;
+            if (acted && pawn.CurJob == attack.job
+                && pawn.jobs.curDriver is JobDriver_RimKataAttack driver
+                && driver.IsStructureMelee)
+                driver.NotifyStructureMeleeAttack();
             if (promoted != null && pawn.CurJob == attack.job)
             {
                 TryPromoteAutomaticJobTarget(

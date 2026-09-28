@@ -107,6 +107,7 @@ namespace KRWF.RimKata
             Moving.Clear();
             Verbs.Clear();
             Weapons.Clear();
+            foreach (Pawn pawn in Aims.Keys) RimKataResponseVisualParticipantCache.ClearCrawl(pawn);
             Aims.Clear();
             hasAims = false;
             FireOverrides.Clear();
@@ -116,7 +117,7 @@ namespace KRWF.RimKata
             Verbs.Count != 0 && verb != null && Verbs.ContainsKey(verb);
 
         internal static bool CanStartCast(Verb verb) =>
-            verb != null && Verbs.TryGetValue(verb, out var entry) && entry.starting;
+            Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry) && entry.starting;
 
         internal static bool IsCrawlWeapon(ThingWithComps weapon) =>
             Weapons.Count != 0 && weapon != null && Weapons.Contains(weapon);
@@ -240,8 +241,10 @@ namespace KRWF.RimKata
             && pawn.stances?.stunner.Stunned != true;
 
         internal static bool CanContinue(Verb verb) =>
-            verb != null && Verbs.TryGetValue(verb, out var entry)
-            && !entry.removed && entry.casting && entry.record.activeDowned && entry.record.fireAllowed
+            Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry) && CanContinue(entry);
+
+        private static bool CanContinue(RimKataCrawlFireEntry entry) =>
+            !entry.removed && entry.casting && entry.record.activeDowned && entry.record.fireAllowed
             && !entry.record.weapon.Destroyed && ActuallyMoving(entry.record.pawn, firing: true)
             && ValidTarget(entry, entry.target);
 
@@ -307,6 +310,7 @@ namespace KRWF.RimKata
             entry.fired = false;
             Aims[pawn] = new Aim { weapon = entry.record.weapon, target = entry.target };
             hasAims = true;
+            RimKataResponseVisualParticipantCache.PublishCrawl(pawn, entry.record.weapon, entry.target);
             bool started;
             entry.starting = true;
             try
@@ -351,10 +355,20 @@ namespace KRWF.RimKata
                 Find.TickManager.TicksGame + Math.Max(1, entry.cooldownTicks));
         }
 
-        internal static void NotifyBurstStep(Verb verb)
+        internal static bool PrepareBurstStep(Verb verb, out RimKataCrawlFireEntry entry)
         {
-            if (verb != null && Verbs.TryGetValue(verb, out var entry)
-                && verb.state != VerbState.Bursting) FinishBurst(entry);
+            entry = null;
+            if (Verbs.Count == 0 || verb == null || !Verbs.TryGetValue(verb, out entry)) return true;
+            if (CanContinue(entry)) return true;
+            Cancel(entry);
+            return false;
+        }
+
+        internal static void NotifyBurstStep(RimKataCrawlFireEntry entry)
+        {
+            // Reuse the participant captured for this burst step; the native call
+            // may have stopped its path and removed the entry in the meantime.
+            if (entry != null && !entry.removed && entry.verb.state != VerbState.Bursting) FinishBurst(entry);
         }
 
         private static void FinishBurst(RimKataCrawlFireEntry entry)
@@ -369,7 +383,7 @@ namespace KRWF.RimKata
 
         internal static void CancelCast(Verb verb)
         {
-            if (verb != null && Verbs.TryGetValue(verb, out var entry)) Cancel(entry);
+            if (Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry)) Cancel(entry);
         }
 
         private static void Cancel(RimKataCrawlFireEntry entry)
@@ -386,14 +400,16 @@ namespace KRWF.RimKata
         private static void ClearAim(Pawn pawn)
         {
             if (Aims.TryRemove(pawn, out _) && Aims.IsEmpty) hasAims = false;
+            RimKataResponseVisualParticipantCache.ClearCrawl(pawn);
         }
 
         internal static void NotifyHit(Thing victim, DamageInfo info, DamageWorker.DamageResult result)
         {
             if (Retained.Count == 0 || !(victim is Pawn) || !(info.Instigator is Pawn shooter)
-                || !Retained.TryGetValue(shooter, out var record) || record.hasHitWhileCrawling
-                || info.Def?.isRanged != true || info.Weapon != record.weapon.def
+                || info.Def?.isRanged != true
                 || result == null || (result.totalDamageDealt <= 0f && result.hitThing != victim)
+                || !Retained.TryGetValue(shooter, out var record) || record.hasHitWhileCrawling
+                || info.Weapon != record.weapon.def
                 || !ActuallyMoving(shooter)
                 || !RimKataCrawlFireHits.IsTrackedHit(record, victim))
                 return;
@@ -462,15 +478,11 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Verb), "TryCastNextBurstShot")]
     internal static class Patch_Verb_RimKataCrawlBurst
     {
-        private static bool Prefix(Verb __instance)
-        {
-            if (!RimKataCrawlFireUtility.IsCrawlVerb(__instance)
-                || RimKataCrawlFireUtility.CanContinue(__instance)) return true;
-            RimKataCrawlFireUtility.CancelCast(__instance);
-            return false;
-        }
+        private static bool Prefix(Verb __instance, out RimKataCrawlFireEntry __state)
+            => RimKataCrawlFireUtility.PrepareBurstStep(__instance, out __state);
 
-        private static void Postfix(Verb __instance) => RimKataCrawlFireUtility.NotifyBurstStep(__instance);
+        private static void Postfix(RimKataCrawlFireEntry __state)
+            => RimKataCrawlFireUtility.NotifyBurstStep(__state);
     }
 
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.Notify_UsedVerb))]

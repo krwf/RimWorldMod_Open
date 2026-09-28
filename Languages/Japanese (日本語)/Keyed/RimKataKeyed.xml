@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>移動射撃</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>近距離射撃</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>突撃</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>突破</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>パリィ</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>射撃回避</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>宙返り</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>伏せた状態での狩猟ステルスボーナス</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>再び伏せるまでの待機時間</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>転倒後に横たわる時間</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>突破時の移動時間</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>突破先に到達した後の待機時間</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃をデフォルトで許可</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>滑らかな照準切り替え</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Moving fire</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Close-range fire</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Charge</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Breach</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parrying</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Ranged dodge</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>somersault</KRWF_RimKata_FeatureTumble>
@@ -169,6 +170,8 @@
   <KRWF_RimKata_ProneResumeDelay>Delay before going prone again</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallChance>Fall chance</KRWF_RimKata_MeleeFallChance>
   <KRWF_RimKata_MeleeFallDuration>Time spent fallen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Movement duration during breach</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Wait time after reaching the breach destination</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Allow firing while crawling by default</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>Primary</KRWF_RimKata_InspectSlotPrimary>

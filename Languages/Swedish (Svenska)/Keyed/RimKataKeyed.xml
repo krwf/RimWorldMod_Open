@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Skjutning under rörelse</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Skjutning på nära håll</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Stormning</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Genombrott</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Parering</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Undvikande av distansangrepp</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Kullerbytta</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Smygbonus vid jakt i liggande ställning</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Väntetid innan man lägger sig ner igen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tid på marken efter ett fall</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Rörelsetid under genombrott</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Väntetid efter ankomst till genombrottets mål</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillåt skjutning under krypning som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Mjuka siktövergångar</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

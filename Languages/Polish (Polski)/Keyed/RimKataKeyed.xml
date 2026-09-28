@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Strzelanie w ruchu</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Ogień z bliskiej odległości</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Szarża</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Wyważenie drzwi</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parowanie</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Unik przed atakiem dystansowym</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>salto</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Premia do skrytości podczas polowania w pozycji leżącej</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Opóźnienie przed ponownym położeniem się</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Czas leżenia po upadku</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Czas ruchu podczas wyważania drzwi</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Czas oczekiwania po dotarciu do celu wyważenia</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Domyślnie zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Płynne przejścia celowania</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Skyting i bevegelse</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Skyting på nært hold</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Stormangrep</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Gjennombrudd</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Parering</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Unnvikelse av avstandsangrep</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Salto</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus til sniking under jakt i liggende stilling</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Ventetid før man legger seg ned igjen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tid på bakken etter et fall</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Bevegelsestid under gjennombrudd</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Ventetid etter ankomst til gjennombruddets mål</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillat skyting mens man kryper som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Myke sikteoverganger</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

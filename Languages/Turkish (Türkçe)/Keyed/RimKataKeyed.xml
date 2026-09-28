@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Hareket hâlinde ateş</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Yakın mesafeden ateş</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Hücum</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Kapıyı kırarak girme</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Savuşturma</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Menzilli saldırıdan kaçınma</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Takla</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Yüzüstü yatarken av gizliliği bonusu</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Tekrar yüzüstü yatmadan önceki bekleme süresi</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Düştükten sonra yerde kalma süresi</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Kapıyı kırarak girerken hareket süresi</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Kapıyı kırıp hedefe ulaştıktan sonra bekleme süresi</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye varsayılan olarak izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Yumuşak nişan geçişleri</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Ampuminen liikkeessä</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Ampuminen lähietäisyydeltä</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Rynnäkkö</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Läpimurto</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Torjunta</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Etähyökkäyksen väistö</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Kuperkeikka</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Metsästyksen hiiviskelybonus makuulla</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Odotusaika ennen uudelleen makuulle menoa</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Maassaoloaika kaatumisen jälkeen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Liikkumisaika läpimurron aikana</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Odotusaika läpimurron määränpäähän saavuttua</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä oletusarvoisesti</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sulavat tähtäyssiirtymät</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

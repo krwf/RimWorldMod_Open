@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Střelba za pohybu</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Střelba na krátkou vzdálenost</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Výpad</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Průlom</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>vykrytí</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Úhyb před útokem na dálku</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>kotrmelec</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus ke skrytí při lovu vleže</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Prodleva před opětovným ulehnutím</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Doba ležení po pádu</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Doba pohybu během průlomu</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Doba čekání po dosažení cíle průlomu</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Ve výchozím nastavení povolit střelbu při plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Plynulé přechody zamíření</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

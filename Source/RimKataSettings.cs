@@ -360,6 +360,8 @@ namespace KRWF.RimKata
         public const int DefaultProneResumeDelayTicks = 50;
         public const float DefaultMeleeFallChancePercent = 1f;
         public const int DefaultMeleeFallDurationTicks = 50;
+        public const int DefaultBreachSlideDurationTicks = 120;
+        public const int DefaultBreachWaitDurationTicks = 60;
         public const int MinimumGroundPoseDurationTicks = 0;
         public const int MaximumGroundPoseDurationTicks = int.MaxValue;
         public const float DefaultResponseWeaponDurabilityLossChancePercent = 0f;
@@ -403,6 +405,7 @@ namespace KRWF.RimKata
         public const bool DefaultMovingFireEnabled = true;
         public const bool DefaultCloseFireEnabled = true;
         public const bool DefaultTargetRushEnabled = true;
+        public const bool DefaultBreachEnabled = true;
         public const bool DefaultResponseEnabled = true;
         public const bool DefaultRangedDodgeEnabled = true;
         public const bool DefaultTumbleEnabled = true;
@@ -491,6 +494,8 @@ namespace KRWF.RimKata
         public int proneResumeDelayTicks = DefaultProneResumeDelayTicks;
         public float meleeFallChancePercent = DefaultMeleeFallChancePercent;
         public int meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
+        public int breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
+        public int breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
         public float responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
         public int responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
         public float creepJoinerDependencyGeneChancePercent = DefaultCreepJoinerDependencyGeneChancePercent;
@@ -537,6 +542,7 @@ namespace KRWF.RimKata
         public bool movingFireEnabled = DefaultMovingFireEnabled;
         public bool closeFireEnabled = DefaultCloseFireEnabled;
         public bool targetRushEnabled = DefaultTargetRushEnabled;
+        public bool breachEnabled = DefaultBreachEnabled;
         public bool responseEnabled = DefaultResponseEnabled;
         public bool rangedDodgeEnabled = DefaultRangedDodgeEnabled;
         public bool tumbleEnabled = DefaultTumbleEnabled;
@@ -727,6 +733,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref proneResumeDelayTicks, "proneResumeDelayTicks", DefaultProneResumeDelayTicks);
             Scribe_Values.Look(ref meleeFallChancePercent, "meleeFallChancePercent", DefaultMeleeFallChancePercent);
             Scribe_Values.Look(ref meleeFallDurationTicks, "meleeFallDurationTicks", DefaultMeleeFallDurationTicks);
+            Scribe_Values.Look(ref breachSlideDurationTicks, "breachSlideDurationTicks", DefaultBreachSlideDurationTicks);
+            Scribe_Values.Look(ref breachWaitDurationTicks, "breachWaitDurationTicks", DefaultBreachWaitDurationTicks);
             if (preservePreviousCombatDefaults)
                 combatDefaultsVersion = CurrentCombatDefaultsVersion;
             Scribe_Values.Look(ref responseWeaponDurabilityLossChancePercent, "responseWeaponDurabilityLossChancePercent", DefaultResponseWeaponDurabilityLossChancePercent);
@@ -779,6 +787,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref explosiveInterceptionEnabled, "explosiveInterceptionEnabled", DefaultExplosiveInterceptionEnabled);
             Scribe_Values.Look(ref closeFireEnabled, "closeFireEnabled", DefaultCloseFireEnabled);
             Scribe_Values.Look(ref targetRushEnabled, "targetRushEnabled", DefaultTargetRushEnabled);
+            Scribe_Values.Look(ref breachEnabled, "breachEnabled", DefaultBreachEnabled);
             Scribe_Values.Look(ref accessRestrictionsDisabled, "accessRestrictionsDisabled", DefaultAccessRestrictionsDisabled);
             Scribe_Values.Look(ref targetAccessInitialized, "targetAccessInitialized", false);
             Scribe_Collections.Look(ref targetAccessRules, "targetAccessRules", LookMode.Deep);
@@ -915,6 +924,8 @@ namespace KRWF.RimKata
             proneResumeDelayTicks = Mathf.Clamp(proneResumeDelayTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             meleeFallChancePercent = SanitizePercent(meleeFallChancePercent, DefaultMeleeFallChancePercent);
             meleeFallDurationTicks = Mathf.Clamp(meleeFallDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            breachSlideDurationTicks = Mathf.Clamp(breachSlideDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            breachWaitDurationTicks = Mathf.Clamp(breachWaitDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             responseAccidentalFireChancePercent = SanitizePercent(
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
         }
@@ -1001,6 +1012,8 @@ namespace KRWF.RimKata
             proneResumeDelayTicks = DefaultProneResumeDelayTicks;
             meleeFallChancePercent = DefaultMeleeFallChancePercent;
             meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
+            breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
+            breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
             responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -1030,6 +1043,7 @@ namespace KRWF.RimKata
             movingFireEnabled = DefaultMovingFireEnabled;
             closeFireEnabled = DefaultCloseFireEnabled;
             targetRushEnabled = DefaultTargetRushEnabled;
+            breachEnabled = DefaultBreachEnabled;
             proneFireEnabled = DefaultProneFireEnabled;
             crawlFireEnabled = DefaultCrawlFireEnabled;
             crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
@@ -1127,6 +1141,7 @@ namespace KRWF.RimKata
             movingFireEnabled = DefaultMovingFireEnabled;
             closeFireEnabled = DefaultCloseFireEnabled;
             targetRushEnabled = DefaultTargetRushEnabled;
+            breachEnabled = DefaultBreachEnabled;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }
 

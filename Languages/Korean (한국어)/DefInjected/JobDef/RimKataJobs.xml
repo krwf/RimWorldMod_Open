@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_EquipSecondary.reportString>TargetA을(를) RimKata 추가 무기로 장착하는 중.</RimKata_EquipSecondary.reportString>
+  <RimKata_Breach.reportString>문을 돌파하는 중.</RimKata_Breach.reportString>
 </LanguageData>

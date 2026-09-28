@@ -154,6 +154,7 @@ namespace KRWF.RimKata
 
         private static void NotifyMap(Pawn pawn, bool inactive)
         {
+            if (inactive) RimKataBreachUtility.NotifyEligibilityLost(pawn);
             pawn?.Map?.GetComponent<RimKataMapComponent>()?
                 .RequestTemporaryInactivityUpdate(pawn, inactive);
         }

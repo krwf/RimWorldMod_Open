@@ -17,7 +17,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 19f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
+        private const float ContentHeight = RowHeight * 21f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -39,6 +39,8 @@ namespace KRWF.RimKata
         private int proneResumeDelayTicks;
         private float meleeFallChancePercent;
         private int meleeFallDurationTicks;
+        private int breachSlideDurationTicks;
+        private int breachWaitDurationTicks;
         private bool crawlFireDefaultAllowed;
         private bool smoothAimTransition;
         private string touchCandidateBuffer;
@@ -55,6 +57,8 @@ namespace KRWF.RimKata
         private string proneResumeDelayBuffer;
         private string meleeFallChanceBuffer;
         private string meleeFallDurationBuffer;
+        private string breachSlideDurationBuffer;
+        private string breachWaitDurationBuffer;
 
         private static readonly string[] NumericLabelKeys =
         {
@@ -71,7 +75,9 @@ namespace KRWF.RimKata
             "KRWF_RimKata_UnarmedWeaponStealChance",
             "KRWF_RimKata_ProneResumeDelay",
             "KRWF_RimKata_MeleeFallChance",
-            "KRWF_RimKata_MeleeFallDuration"
+            "KRWF_RimKata_MeleeFallDuration",
+            "KRWF_RimKata_BreachSlideDuration",
+            "KRWF_RimKata_BreachWaitDuration"
         };
 
         private static readonly string[] CheckboxLabelKeys =
@@ -113,6 +119,8 @@ namespace KRWF.RimKata
                 proneResumeDelayTicks = settings.proneResumeDelayTicks;
                 meleeFallChancePercent = settings.meleeFallChancePercent;
                 meleeFallDurationTicks = settings.meleeFallDurationTicks;
+                breachSlideDurationTicks = settings.breachSlideDurationTicks;
+                breachWaitDurationTicks = settings.breachWaitDurationTicks;
                 crawlFireDefaultAllowed = settings.crawlFireDefaultAllowed;
                 smoothAimTransition = settings.smoothAimTransition;
             }
@@ -130,6 +138,8 @@ namespace KRWF.RimKata
             proneResumeDelayBuffer = proneResumeDelayTicks.ToString();
             meleeFallChanceBuffer = meleeFallChancePercent.ToString();
             meleeFallDurationBuffer = meleeFallDurationTicks.ToString();
+            breachSlideDurationBuffer = breachSlideDurationTicks.ToString();
+            breachWaitDurationBuffer = breachWaitDurationTicks.ToString();
 
             doCloseX = false;
             doCloseButton = false;
@@ -205,6 +215,8 @@ namespace KRWF.RimKata
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[11], ref proneResumeDelayTicks, ref proneResumeDelayBuffer);
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref meleeFallChancePercent, ref meleeFallChanceBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[13], ref meleeFallDurationTicks, ref meleeFallDurationBuffer);
+            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[14], ref breachSlideDurationTicks, ref breachSlideDurationBuffer);
+            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[15], ref breachWaitDurationTicks, ref breachWaitDurationBuffer);
             DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[3], ref crawlFireDefaultAllowed);
             DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref smoothAimTransition);
             Widgets.EndScrollView();
@@ -232,6 +244,8 @@ namespace KRWF.RimKata
                 || settings.proneResumeDelayTicks != proneResumeDelayTicks
                 || settings.meleeFallChancePercent != meleeFallChancePercent
                 || settings.meleeFallDurationTicks != meleeFallDurationTicks
+                || settings.breachSlideDurationTicks != breachSlideDurationTicks
+                || settings.breachWaitDurationTicks != breachWaitDurationTicks
                 || settings.crawlFireDefaultAllowed != crawlFireDefaultAllowed
                 || settings.smoothAimTransition != smoothAimTransition
                 || settings.responseAccidentalFireChancePercent != responseAccidentalFireChancePercent
@@ -251,6 +265,8 @@ namespace KRWF.RimKata
             settings.proneResumeDelayTicks = proneResumeDelayTicks;
             settings.meleeFallChancePercent = meleeFallChancePercent;
             settings.meleeFallDurationTicks = meleeFallDurationTicks;
+            settings.breachSlideDurationTicks = breachSlideDurationTicks;
+            settings.breachWaitDurationTicks = breachWaitDurationTicks;
             settings.crawlFireDefaultAllowed = crawlFireDefaultAllowed;
             settings.smoothAimTransition = smoothAimTransition;
             settings.responseAccidentalFireChancePercent = responseAccidentalFireChancePercent;

@@ -343,6 +343,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer));
             else
             {
@@ -355,6 +356,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer, Camera camera)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer, camera));
             else
             {
@@ -367,6 +369,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer));
             else
@@ -380,6 +383,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer, Camera camera)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer, camera));
             else
@@ -395,6 +399,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));
@@ -412,6 +417,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage));
@@ -429,6 +435,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, bool useLightProbes)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material,
                     layer, camera, submeshIndex, properties, castShadows, receiveShadows, probeAnchor,
@@ -448,6 +455,7 @@ namespace KRWF.RimKata
             ShadowCastingMode castShadows, bool receiveShadows, Transform probeAnchor,
             LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
+            if (active == null && RimKataBreachWeaponRender.Active) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));

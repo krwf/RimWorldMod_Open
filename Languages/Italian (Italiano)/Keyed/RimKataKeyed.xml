@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Fuoco in movimento</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Fuoco a corto raggio</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Carica</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Irruzione</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parata</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Schivata a distanza</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>capriola</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus alla furtività nella caccia da sdraiati</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Attesa prima di sdraiarsi di nuovo</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tempo a terra dopo una caduta</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Durata del movimento durante l’irruzione</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Tempo di attesa all’arrivo dopo l’irruzione</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Consenti di sparare strisciando per impostazione predefinita</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transizioni di mira fluide</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

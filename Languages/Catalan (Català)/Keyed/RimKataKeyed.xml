@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Tir en moviment</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Tir a curta distància</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Càrrega</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Irrupció</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>parada</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Esquiva a distància</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>salt mortal</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonificació de sigil de caça estant cos a terra</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Temps d'espera abans de tornar a posar-se cos a terra</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Temps a terra després de caure</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Temps de moviment durant la irrupció</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Temps d’espera en arribar al destí de la irrupció</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s'arrossega per defecte</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transicions suaus de punteria</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

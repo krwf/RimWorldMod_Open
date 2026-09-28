@@ -95,10 +95,7 @@ namespace KRWF.RimKata
 
         internal static bool PushEquipment(Pawn pawn, PawnRenderFlags flags)
         {
-            Frame next = null;
-            if (Volatile.Read(ref activeFrameCount) != 0
-                && (flags & PawnRenderFlags.Portrait) == 0 && pawn != null)
-                Frames.TryGetValue(pawn, out next);
+            Frame next = (flags & PawnRenderFlags.Portrait) == 0 ? FrameFor(pawn) : null;
             if (next == null && equipmentFrame == null) return false;
             (parents ??= new Stack<Frame>(2)).Push(equipmentFrame);
             equipmentFrame = next;
@@ -110,18 +107,29 @@ namespace KRWF.RimKata
             if (pushed) equipmentFrame = parents.Pop();
         }
 
+        private static Frame FrameFor(Pawn pawn)
+        {
+            // The enclosing world-render scope already classified this pawn,
+            // including ordinary pawns. Only published poses reach Frames.
+            if (pawn == null || RimKataWorldRenderContext.BodyFor(pawn)?.groundPose != true) return null;
+            if (equipmentFrame?.pawn == pawn) return equipmentFrame;
+            return Volatile.Read(ref activeFrameCount) != 0 && Frames.TryGetValue(pawn, out Frame frame)
+                ? frame : null;
+        }
+
         internal static bool WeaponsAboveBody(Pawn pawn = null)
         {
+            if (RimKataBreachRender.WeaponsAboveBody(pawn)) return true;
             if (pawn == null) return equipmentFrame?.weaponLayerOffset > 0f;
-            return Volatile.Read(ref activeFrameCount) != 0
-                && Frames.TryGetValue(pawn, out Frame frame) && frame.weaponLayerOffset > 0f;
+            return FrameFor(pawn)?.weaponLayerOffset > 0f;
         }
 
         internal static bool TryGetWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)
         {
             center = default;
-            if (Volatile.Read(ref activeFrameCount) == 0 || pawn == null || weapon == null
-                || !Frames.TryGetValue(pawn, out Frame frame) || !frame.weaponIndicators) return false;
+            if (weapon == null) return false;
+            Frame frame = FrameFor(pawn);
+            if (frame == null || !frame.weaponIndicators) return false;
             if (frame.firstDrawWeapon == weapon && frame.firstDrawFrame == Time.frameCount)
                 center = frame.firstDrawCenter;
             else if (frame.secondDrawWeapon == weapon && frame.secondDrawFrame == Time.frameCount)
@@ -132,8 +140,8 @@ namespace KRWF.RimKata
 
         internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)
         {
-            if (Volatile.Read(ref activeFrameCount) == 0 || pawn == null
-                || !Frames.TryGetValue(pawn, out Frame frame)) return;
+            Frame frame = FrameFor(pawn);
+            if (frame == null) return;
             // The shadow is drawn after the body. Use that body's final center,
             // including rolling, while retaining the shadow's own ground layer.
             drawLoc.x = frame.shadowCenter.x;
@@ -143,9 +151,9 @@ namespace KRWF.RimKata
         internal static bool TryGetRangedAimOrigin(Pawn pawn, ThingWithComps weapon, out Vector3 origin)
         {
             origin = default;
-            if (Volatile.Read(ref activeFrameCount) == 0 || pawn == null
-                || weapon?.def.IsRangedWeapon != true
-                || !Frames.TryGetValue(pawn, out Frame frame) || !frame.headCenter.HasValue) return false;
+            if (weapon?.def.IsRangedWeapon != true) return false;
+            Frame frame = FrameFor(pawn);
+            if (frame == null || !frame.headCenter.HasValue) return false;
             origin = frame.PlaceWeapon(frame.placement.anchor);
             return true;
         }
@@ -198,16 +206,18 @@ namespace KRWF.RimKata
             => TransformEquipment(equipmentFrame, matrix, externalPrimary: true);
 
         internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)
-            => Volatile.Read(ref activeFrameCount) != 0 && pawn != null
-                && Frames.TryGetValue(pawn, out Frame frame)
-                ? TransformEquipment(frame, matrix) : matrix;
+        {
+            Frame frame = FrameFor(pawn);
+            return frame != null ? TransformEquipment(frame, matrix)
+                : RimKataBreachRender.TransformEquipment(pawn, matrix);
+        }
 
         private static Matrix4x4 TransformEquipment(Frame frame, Matrix4x4 matrix, bool externalPrimary = false)
         {
             if (frame == null)
             {
                 RimKataCrawlFireRender.ObserveWeaponCenter(new Vector3(matrix.m03, matrix.m13, matrix.m23));
-                return matrix;
+                return RimKataBreachRender.TransformEquipment(matrix);
             }
             // All weapon renderers share the resolved head pivot and retain
             // their original motion and rotation. Never feed back into the head.
@@ -226,6 +236,7 @@ namespace KRWF.RimKata
             if (equipmentFrame == null)
             {
                 RimKataCrawlFireRender.ObserveWeaponCenter(position);
+                RimKataBreachRender.TransformEquipment(ref position, ref rotation);
                 return;
             }
             ThingWithComps weapon = ObserveWeapon(equipmentFrame, position, externalPrimary: true);
@@ -276,7 +287,7 @@ namespace KRWF.RimKata
 
         internal static Matrix4x4 TransformAccessory(Matrix4x4 matrix)
         {
-            if (equipmentFrame == null) return matrix;
+            if (equipmentFrame == null) return RimKataBreachRender.TransformEquipment(matrix);
             Vector3 position = equipmentFrame.weapons.MultiplyPoint3x4(
                 new Vector3(matrix.m03, matrix.m13, matrix.m23));
             matrix.m03 = position.x;
@@ -316,8 +327,16 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(PawnRenderer), "DrawShadowInternal")]
     internal static class Patch_PawnRenderer_RimKataGroundPoseShadow
     {
-        private static void Prefix(Pawn ___pawn, ref Vector3 drawLoc)
-            => RimKataGroundPoseRender.PlaceShadow(___pawn, ref drawLoc);
+        [HarmonyPriority(Priority.First)]
+        private static void Prefix(Pawn ___pawn, ref Vector3 drawLoc,
+            out RimKataWorldRenderContext.Scope __state)
+        {
+            __state = RimKataWorldRenderContext.Begin(___pawn);
+            RimKataGroundPoseRender.PlaceShadow(___pawn, ref drawLoc);
+        }
+
+        private static void Finalizer(RimKataWorldRenderContext.Scope __state)
+            => RimKataWorldRenderContext.End(__state);
     }
 
     [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.DrawEquipmentAiming))]

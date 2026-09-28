@@ -257,12 +257,18 @@ namespace KRWF.RimKata
         private bool plannedCloseAttack;
         private bool plannedCloseContext;
         private bool dualCycleStateImported;
+        private bool structureMelee;
+        private int structureMeleeAttacksMade;
         private bool endingJob;
         private RimKataPawnCombatState postTickCombatState;
 
         private Thing AssignedTarget => TargetThingA;
         private bool IsPlayerForced => job?.playerForced == true;
-        internal bool CanAbsorbAutomaticAttackJob => !endingJob;
+        internal bool IsStructureMelee => structureMelee || (job?.targetA.Thing is Building
+            && job.verbToUse?.IsMeleeAttack == true);
+        internal bool CanAbsorbAutomaticAttackJob => !endingJob && !IsStructureMelee;
+        internal bool StructureMeleeLimitReached => structureMeleeAttacksMade > 0
+            && structureMeleeAttacksMade >= job.maxNumMeleeAttacks;
 
         public override string GetReport()
         {
@@ -282,6 +288,8 @@ namespace KRWF.RimKata
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
+            if (IsStructureMelee && job.targetA.Thing is IAttackTarget target)
+                pawn.Map.attackTargetReservationManager.Reserve(pawn, job, target);
             return true;
         }
 
@@ -295,6 +303,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref plannedCloseAttack, "rimKataPlannedCloseAttack");
             Scribe_Values.Look(ref plannedCloseContext, "rimKataPlannedCloseContext");
             Scribe_Values.Look(ref dualCycleStateImported, "rimKataDualCycleStateImported");
+            Scribe_Values.Look(ref structureMelee, "rimKataStructureMelee");
+            Scribe_Values.Look(ref structureMeleeAttacksMade, "rimKataStructureMeleeAttacksMade");
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -305,6 +315,11 @@ namespace KRWF.RimKata
                 postTickCombatState = null;
                 ClearPlannedAttack();
                 ClearAimStance();
+                if (IsStructureMelee)
+                {
+                    RimKataDualWeaponController.Reset(pawn, false);
+                    QueueNearbyStructureMeleeAttack();
+                }
                 RimKataDualWeaponController
                     .NotifyDedicatedCombatJobFinished(pawn);
             });
@@ -313,6 +328,16 @@ namespace KRWF.RimKata
                 "RimKataCombatInitialization");
             initialization.initAction = delegate
             {
+                if (IsStructureMelee)
+                {
+                    structureMelee = true;
+                    if (!dualCycleStateImported)
+                    {
+                        RimKataDualWeaponController.Reset(pawn, false);
+                        dualCycleStateImported = true;
+                    }
+                    return;
+                }
                 if (!dualCycleStateImported)
                 {
                     dualCycleStateImported = true;
@@ -361,7 +386,45 @@ namespace KRWF.RimKata
 
         private void CombatTick()
         {
-            RimKataDualWeaponController.TickCombat(pawn, false);
+            if (IsStructureMelee)
+                RimKataDualWeaponController.TickStructureMelee(pawn, this);
+            else
+                RimKataDualWeaponController.TickCombat(pawn, false);
+        }
+
+        internal void NotifyStructureMeleeAttack()
+        {
+            // End on the next Job tick, after the native Verb's completion has
+            // unwound. Other queued weapons observe the limit before executing.
+            structureMeleeAttacksMade++;
+        }
+
+        private void QueueNearbyStructureMeleeAttack()
+        {
+            Thing target = AssignedTarget;
+            if (!pawn.IsPlayerControlled || !pawn.Drafted || job.playerInterruptedForced
+                || target?.def.autoTargetNearbyIdenticalThings != true
+                || pawn.jobs.jobQueue.Count != 0 || pawn.Map == null) return;
+
+            // Match AttackMelee's finish action, including destroyed targets whose
+            // last position anchors the next identical structure search.
+            foreach (IntVec3 cell in GenRadial.RadialCellsAround(target.Position, 4f, false).InRandomOrder())
+            {
+                if (!cell.InBounds(pawn.Map)) continue;
+                foreach (Thing nearby in cell.GetThingList(pawn.Map))
+                {
+                    if (nearby.def != target.def
+                        || !pawn.CanReach(nearby, PathEndMode.Touch, Danger.Deadly)) continue;
+                    Job followup = job.Clone();
+                    followup.def = JobDefOf.AttackMelee;
+                    followup.targetA = nearby;
+                    // This Verb marked the converted structure job. Let the next
+                    // native order re-evaluate its current loadout and target.
+                    followup.verbToUse = null;
+                    pawn.jobs.jobQueue.EnqueueFirst(followup);
+                    return;
+                }
+            }
         }
 
         internal void ShareCombatStateWithPostTick(RimKataPawnCombatState state)
@@ -915,6 +978,11 @@ namespace KRWF.RimKata
                 return true;
             }
 
+            // StartJob's breach hook gets first refusal. In particular, a gun's
+            // explicit melee order must not become a ranged close-fire order.
+            if (job?.def == JobDefOf.AttackMelee && job.targetA.Thing is Building)
+                return true;
+
             if (Patch_CommandVerbTarget_RimKataSecondarySwap
                     .TryConsumePendingMeleeAttack(
                         ___pawn,
@@ -1037,6 +1105,13 @@ namespace KRWF.RimKata
             ThinkNode jobGiver,
             bool fromQueue)
         {
+            if (newJob?.def == RimKataDefOf.RimKata_Attack && !newJob.playerForced
+                && RimKataBreachUtility.IsWaiting(___pawn))
+            {
+                JobMaker.ReturnToPool(newJob);
+                newJob = null;
+                return false;
+            }
             if (___pawn?.InMentalState == true)
             {
                 if (newJob?.def != RimKataDefOf.RimKata_Attack)
@@ -1055,6 +1130,14 @@ namespace KRWF.RimKata
                 JobMaker.ReturnToPool(newJob);
                 newJob = null;
                 return false;
+            }
+
+            if (newJob?.def == JobDefOf.AttackMelee && newJob.targetA.Thing is Building)
+            {
+                if (___pawn?.IsPlayerControlled == false
+                    && !RimKataBreachEvents.PreserveAIDoorAttack(___pawn, newJob))
+                    RimKataDualWeaponController.TryConvertStructureMeleeJob(___pawn, newJob);
+                return true;
             }
 
             Job counterattackOpeningJob = newJob;
@@ -1402,6 +1485,7 @@ namespace KRWF.RimKata
         private static bool ShouldConvertEnemyAttack(Pawn pawn, Job job, out Verb verb)
         {
             verb = null;
+            if (RimKataBreachEvents.PreserveAIDoorAttack(pawn, job)) return false;
             bool vanillaCombatJob = job?.def == JobDefOf.AttackStatic || job?.def == JobDefOf.AttackMelee;
             if (!vanillaCombatJob
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)

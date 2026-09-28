@@ -227,7 +227,8 @@ namespace KRWF.RimKata
         internal static void NotifyAimStarted(Pawn pawn, Verb verb, LocalTargetInfo target,
             bool knownInsideCandidateRange = false)
         {
-            if (pawn?.Spawned != true || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)) return;
+            if (pawn?.Spawned != true || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || RimKataBreachUtility.Get(pawn) != null) return;
             Active.TryGetValue(pawn, out var state);
             if (state?.groundPose?.phase == RimKataFallPhase.Rising) return;
             if (state?.groundPose != null && !state.groundPose.PronePose) return;

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Tüzelés mozgás közben</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Közelről leadott lövés</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Roham</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Áttörés</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>hárítás</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Távolsági kitérés</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>bukfenc</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Vadászati lopakodási bónusz fekve</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Várakozási idő az újbóli lefekvés előtt</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Elesés utáni földön fekvés ideje</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Mozgás időtartama áttörés közben</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Várakozási idő az áttörés célpontjának elérése után</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés alapértelmezett engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sima célzási átmenetek</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

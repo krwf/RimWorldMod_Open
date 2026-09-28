@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>Bắn khi di chuyển</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>Bắn tầm gần</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>Xung phong</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>Phá cửa xông vào</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>Đỡ đòn</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>Né tầm xa</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>Nhào lộn</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Thưởng ẩn mình khi săn ở tư thế nằm sấp</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Thời gian chờ trước khi nằm sấp lại</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Thời gian nằm sau khi ngã</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>Thời gian di chuyển khi phá cửa</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>Thời gian chờ sau khi đến đích đột phá</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Mặc định cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Chuyển hướng ngắm mượt mà</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -136,6 +136,7 @@
   <KRWF_RimKata_FeatureMovingFire>移动射击</KRWF_RimKata_FeatureMovingFire>
   <KRWF_RimKata_FeatureCloseFire>近距离射击</KRWF_RimKata_FeatureCloseFire>
   <KRWF_RimKata_FeatureTargetRush>冲锋</KRWF_RimKata_FeatureTargetRush>
+  <KRWF_RimKata_FeatureBreach>破门突入</KRWF_RimKata_FeatureBreach>
   <KRWF_RimKata_FeatureResponse>格挡</KRWF_RimKata_FeatureResponse>
   <KRWF_RimKata_FeatureRangedDodge>远程闪避</KRWF_RimKata_FeatureRangedDodge>
   <KRWF_RimKata_FeatureTumble>翻滚</KRWF_RimKata_FeatureTumble>
@@ -190,6 +191,8 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>卧倒时的狩猎隐蔽加成</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>再次卧倒前的等待时间</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>摔倒后的躺卧时间</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_BreachSlideDuration>破门后的移动时间</KRWF_RimKata_BreachSlideDuration>
+  <KRWF_RimKata_BreachWaitDuration>到达突入终点后的等待时间</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>默认允许爬行时射击</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>平滑瞄准过渡</KRWF_RimKata_SmoothAimTransition>
 </LanguageData>

@@ -47,7 +47,7 @@ namespace KRWF.RimKata
         internal static bool TryGetWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)
         {
             center = default;
-            if (weapon == null || !RimKataCrawlFireUtility.TryGetAim(pawn, out var aimed, out _)
+            if (weapon == null || !RimKataWorldRenderContext.TryCrawl(pawn, out var aimed, out _)
                 || aimed != weapon || !Centers.TryGetValue(weapon, out WeaponCenter sample)
                 || sample.pawn != pawn || sample.frame != Time.frameCount) return false;
             center = pawn.DrawPos + sample.offset;
@@ -57,9 +57,9 @@ namespace KRWF.RimKata
         internal static void AdjustFacing(Pawn pawn, Vector3 rootLoc, PawnRenderFlags flags,
             ref float angle, ref Rot4 facing)
         {
-            if (!RimKataCrawlFireUtility.TryGetAim(pawn, out _, out LocalTargetInfo target)
-                || (flags & (PawnRenderFlags.Portrait | PawnRenderFlags.Cache
-                    | PawnRenderFlags.Invisible | PawnRenderFlags.NeverAimWeapon)) != 0)
+            if ((flags & (PawnRenderFlags.Portrait | PawnRenderFlags.Cache
+                    | PawnRenderFlags.Invisible | PawnRenderFlags.NeverAimWeapon)) != 0
+                || !RimKataWorldRenderContext.TryCrawl(pawn, out _, out LocalTargetInfo target))
                 return;
 
             Vector3 targetPosition = target.HasThing && target.Thing.Spawned
@@ -77,7 +77,7 @@ namespace KRWF.RimKata
             current = default;
             if ((parms.flags & (PawnRenderFlags.Portrait | PawnRenderFlags.Cache
                     | PawnRenderFlags.Invisible | PawnRenderFlags.NeverAimWeapon)) != 0
-                || !RimKataCrawlFireUtility.TryGetAim(parms.pawn, out ThingWithComps weapon,
+                || !RimKataWorldRenderContext.TryCrawl(parms.pawn, out ThingWithComps weapon,
                     out LocalTargetInfo target)
                 || !RimKataGroundPoseHead.TryGetHeadMatrix(parms, out Matrix4x4 head))
                 return previous;

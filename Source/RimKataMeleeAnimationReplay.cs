@@ -264,7 +264,8 @@ namespace KRWF.RimKata
             // Attack playback belongs to the slot, not to the external-renderer
             // probe. Vanilla weapons need no discovered renderer to animate.
             if (!enabled || weapon?.def.IsMeleeWeapon != true || pawn == null
-                || !playback.TryGetValue(pawn, out Playback state) || state.AttackDef == null) return false;
+                || !playback.TryGetValue(pawn, out Playback state) || state.AttackDef == null
+                || RimKataBreachWeaponRender.Owns(pawn)) return false;
             try
             {
                 if (!TryGetCombatState(pawn, weapon, out state) || TryGetFrame(pawn, weapon, out _)) return false;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <ThingDef ParentName="BaseFilth">
+    <defName>KRWF_RimKataBreachDoorDebris</defName>
+    <label>broken door</label>
+    <description>A door torn from its frame during a breach. It can be cleaned up.</description>
+    <thingClass>KRWF.RimKata.Filth_RimKataBreachDoor</thingClass>
+    <drawerType>RealtimeOnly</drawerType>
+    <graphicData>
+      <texPath>Things/Filth/Trash</texPath>
+      <graphicClass>Graphic_Cluster</graphicClass>
+    </graphicData>
+    <filth>
+      <placementMask><li>Terrain</li><li>Unnatural</li></placementMask>
+      <maxThickness>1</maxThickness>
+      <cleaningWorkToReduceThickness>100</cleaningWorkToReduceThickness>
+      <canFilthAttach>false</canFilthAttach>
+      <rainWashes>false</rainWashes>
+    </filth>
+  </ThingDef>
+</Defs>
