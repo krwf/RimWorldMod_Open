@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>SYS Gun Spinning for Miho Ratkin</name>
+  <author>ktwf</author>
+  <packageId>krwf.sysgunspinningcompat</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <description>미호와 랫킨에 포함된 SYS 무기 렌더 패치가 Yayo's Animation 및 다른 무기 렌더 패치를 전역으로 막는 문제를 해결합니다.
+
+무기 본체는 RimWorld의 원래 렌더 경로와 Yayo's Animation에 맡기고, SYS의 빈 칼집과 등에 멘 칼집 그래픽은 유지합니다.</description>
+  <modIconPath>Mod_Icon</modIconPath>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077</steamWorkshopUrl>
+    </li>
+    <li>
+      <packageId>com.yayo.yayoAni.continued</packageId>
+      <displayName>Yayo's Animation (Continued)</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2877292196</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+    <li>erdelf.HumanoidAlienRaces</li>
+    <li>com.yayo.yayoAni.continued</li>
+    <li>miho.fortifiedoutremer</li>
+    <li>Solaris.RatkinRaceMod</li>
+  </loadAfter>
+</ModMetaData>

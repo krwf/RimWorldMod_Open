@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <KRWF_EMK_CameraDollyButtons>Pulsanti per spostare la visuale</KRWF_EMK_CameraDollyButtons>
+  <KRWF_EMK_CameraDollyKeys>Tasti per spostare la visuale</KRWF_EMK_CameraDollyKeys>
+  <KRWF_EMK_m0Click>[m0] - Clic sinistro</KRWF_EMK_m0Click>
+  <KRWF_EMK_m1Click>[m1] - Clic destro</KRWF_EMK_m1Click>
+  <KRWF_EMK_m2Click>[m2] - Clic centrale</KRWF_EMK_m2Click>
+  <KRWF_EMK_m3Click>[m3] - Aggiuntivo 1</KRWF_EMK_m3Click>
+  <KRWF_EMK_m4Click>[m4] - Aggiuntivo 2</KRWF_EMK_m4Click>
+  <KRWF_EMK_m5Click>[m5] - Aggiuntivo 3</KRWF_EMK_m5Click>
+  <KRWF_EMK_m6Click>[m6] - Aggiuntivo 4</KRWF_EMK_m6Click>
+  <KRWF_EMK_DisableTabClosing>Impedisci la chiusura delle schede</KRWF_EMK_DisableTabClosing>
+  <KRWF_EMK_HoldInputMode>Ripetizione tenendo premuto</KRWF_EMK_HoldInputMode>
+</LanguageData>

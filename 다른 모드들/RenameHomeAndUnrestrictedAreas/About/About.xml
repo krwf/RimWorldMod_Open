@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Rename home &amp; unrestricted Areas</name>
+  <author>KRWF</author>
+  <packageId>KRWF.RenameHomeAndUnrestrictedAreas</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <description> '제한 없음'과 '주거구역'의 이름 변경이 가능해집니다.
+  Allows renaming of the Home and Unrestricted areas.</description>
+  <modIconPath>RHAUA_Icon</modIconPath>
+</ModMetaData>

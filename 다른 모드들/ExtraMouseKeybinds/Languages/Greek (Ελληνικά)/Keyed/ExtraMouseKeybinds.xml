@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <KRWF_EMK_CameraDollyButtons>Κουμπιά ποντικιού για μετακίνηση κάμερας</KRWF_EMK_CameraDollyButtons>
+  <KRWF_EMK_CameraDollyKeys>Πλήκτρα για μετακίνηση κάμερας</KRWF_EMK_CameraDollyKeys>
+  <KRWF_EMK_m0Click>[m0] - Αριστερό κλικ</KRWF_EMK_m0Click>
+  <KRWF_EMK_m1Click>[m1] - Δεξί κλικ</KRWF_EMK_m1Click>
+  <KRWF_EMK_m2Click>[m2] - Μεσαίο κλικ</KRWF_EMK_m2Click>
+  <KRWF_EMK_m3Click>[m3] - Πρόσθετο 1</KRWF_EMK_m3Click>
+  <KRWF_EMK_m4Click>[m4] - Πρόσθετο 2</KRWF_EMK_m4Click>
+  <KRWF_EMK_m5Click>[m5] - Πρόσθετο 3</KRWF_EMK_m5Click>
+  <KRWF_EMK_m6Click>[m6] - Πρόσθετο 4</KRWF_EMK_m6Click>
+  <KRWF_EMK_DisableTabClosing>Αποτροπή κλεισίματος καρτελών</KRWF_EMK_DisableTabClosing>
+  <KRWF_EMK_HoldInputMode>Επανάληψη με παρατεταμένο πάτημα</KRWF_EMK_HoldInputMode>
+</LanguageData>

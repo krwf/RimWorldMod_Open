@@ -1,0 +1,49 @@
+RimWorld 1.6 AltitudeLayer list
+
+Valid XML layer numbers: 0-39
+Layer step: 0.36585367
+Relative layer offsets may be positive or negative integers. An offset of 0 preserves the base layer.
+
+CartHaulFramework defaults:
+
+Number	Name			Actual Y
+0	BelowTerrain		0
+1	TerrainEdges		0.365853667
+2	Terrain			0.731707335
+3	TerrainScatter		1.097561
+4	Floor			1.46341467
+5	Conduits			1.82926834
+6	FloorCoverings		2.195122
+7	FloorEmplacement		2.56097555
+8	Filth			2.92682934
+9	Zone			3.29268312
+10	SmallWire		3.65853667
+11	LowPlant			4.02439
+12	MoteLow			4.390244
+13	Shadows			4.756098
+14	DoorMoveable		5.121951
+15	Building			5.487805
+16	BuildingBelowTop		5.85365868
+17	BuildingOnTop		6.21951246
+18	Item			6.58536625
+19	ItemImportant		6.95121956
+20	LayingPawn		7.31707335
+21	PawnRope		7.682927
+22	Projectile			8.04878
+23	Pawn			8.414635
+24	PawnUnused		8.780488
+25	PawnState		9.146341
+26	Blueprint			9.512196
+27	MoteOverheadLow	9.878049
+28	MoteOverhead		10.2439022
+29	Gas			10.6097565
+30	Skyfaller			10.97561
+31	Weather			11.341464
+32	LightingOverlay		11.7073174
+33	VisEffects			12.0731707
+34	FogOfWar		12.4390249
+35	Darkness			12.8048782
+36	WorldClipper		13.1707325
+37	Silhouettes		13.5365858
+38	MapDataOverlay		13.9024391
+39	MetaOverlays		14.2682934

@@ -4,7 +4,6 @@
 /Source/.vs/
 /.codex-build/
 /.vs/
-*.txt
 *.user
 *.suo
 *.ps1

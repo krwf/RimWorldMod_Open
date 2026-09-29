@@ -1,0 +1,56 @@
+Catalan (Catala)
+ChineseSimplified (??中文)
+ChineseTraditional (繁體中文)
+Czech (?e?tina)
+Danish (Dansk)
+Dutch (Nederlands)
+English
+Estonian (Eesti)
+Finnish (Suomi)
+French (Francais)
+German (Deutsch)
+Greek (Ελληνικ?)
+Hungarian (Magyar)
+Italian (Italiano)
+Japanese (日本語)
+Korean (한국어)
+Norwegian (Norsk Bokmal)
+Polish (Polski)
+Portuguese (Portugues)
+PortugueseBrazilian (Portugues Brasileiro)
+Romanian (Roman?)
+Russian (Русский)
+Slovak (Sloven?ina)
+Spanish (Espanol(Castellano))
+SpanishLatin (Espanol(Latinoamerica))
+Swedish (Svenska)
+Turkish (Turkce)
+Ukrainian (Укра?нська)
+Vietnamese (ti?ng Vi?t)
+
+중국어 간체
+중국어 번체
+일본어
+한국어
+체코어
+덴마크어
+독일어
+영어
+스페인어 - 스페인
+스페인어 - 중남미
+그리스어
+프랑스어
+이탈리아어
+헝가리어
+네덜란드어
+노르웨이어
+폴란드어
+포르투갈어 - 포르투갈
+포르투갈어 - 브라질
+루마니아어
+러시아어
+핀란드어
+스웨덴어
+튀르키예어
+베트남어
+우크라이나어
