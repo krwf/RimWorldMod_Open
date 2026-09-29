@@ -1,0 +1,15 @@
+[h2]14.돌파[/h2]
+자격자가 닫힌 문에 근접 공격을 한다면 발동합니다.
+문의 4방향 중 하나라도 3칸이 비어있어야 합니다.
+확정 피격 투사체를 전부 흘립니다.
+근접 공격을 받거나 이동 명령을 내리면 취소됩니다.
+돌파 적용 중엔 시선을 돌리지 않고 공격합니다.
+[img]https://raw.githubusercontent.com/krwf/RimWorldMod_Open/main/gifs/029.gif[/img]
+
+[h2]14.Breach[/h2]
+Activates when an eligible pawn performs a melee attack on a closed door.
+At least one of the four sides of the door must have three open tiles.
+Deflects all guaranteed-hit projectiles.
+Breach is canceled if the pawn is hit by a melee attack or given a movement order.
+While Breach is active, the pawn attacks without changing their facing direction.
+[img]https://raw.githubusercontent.com/krwf/RimWorldMod_Open/main/gifs/029.gif[/img]
