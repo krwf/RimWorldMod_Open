@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>equipando TargetA como arma secundária RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Arrombando a porta.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Subjugando TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>atacando TargetA enquanto mantém a imobilização.</RimKata_SubdueCombat.reportString>
 </LanguageData>

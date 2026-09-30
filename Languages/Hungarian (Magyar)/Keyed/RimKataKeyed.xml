@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Várakozási idő az áttörés célpontjának elérése után</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés alapértelmezett engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sima célzási átmenetek</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Lefogás</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Lefogás</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Lefogható tömeg határa</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Ütközéses kábítás ideje lefogáskor</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Támadás lefogás közben</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Megtámadja a tartott karaktert. Minden lefogás kezdetén kikapcsolva.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Lefogási műveletek</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Eldobja vagy leteszi a tartott karaktert.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Eldobás</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} túl nehéz (határ: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Ez a célpont nem fogható le.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Felemel és lefog egy karaktert a megengedett tömeghatáron belül.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Támadások engedélyezése</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Engedélyezi a támadást egy karakter lefogása közben. A kikapcsolás leállítja az aktuális támadást; az újbóli bekapcsolás nem folytatja automatikusan.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>A támadások le vannak tiltva.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Sebzésátadás</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>A kapott sebzést a lefogott szereplőre hárítja. Kikapcsolva a kitérés vagy a közelharc megkezdése elengedi a lefogott szereplőt.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

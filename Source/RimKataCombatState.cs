@@ -224,6 +224,7 @@ namespace KRWF.RimKata
             internal Map map;
             internal bool body, groundPose;
             internal RimKataBreachVisual? breach;
+            internal RimKataSubdueVisual? subdue;
             internal ThingWithComps crawlWeapon;
             internal LocalTargetInfo crawlTarget;
         }
@@ -243,13 +244,13 @@ namespace KRWF.RimKata
             // maps exist. An old pawn's map index belongs to the previous game.
             // Copy the published map; only live publication resolves pawn.Map.
             return new BodyVisualEntry { map = old?.map, body = old?.body == true,
-                groundPose = old?.groundPose == true, breach = old?.breach,
+                groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue,
                 crawlWeapon = old?.crawlWeapon, crawlTarget = old?.crawlTarget ?? LocalTargetInfo.Invalid };
         }
 
         private static void StoreBodyVisual(Pawn pawn, BodyVisualEntry entry)
         {
-            if (entry.body || entry.breach.HasValue || entry.crawlWeapon != null)
+            if (entry.body || entry.breach.HasValue || entry.subdue.HasValue || entry.crawlWeapon != null)
                 BodyVisualByPawn[pawn] = entry;
             else BodyVisualByPawn.TryRemove(pawn, out _);
         }
@@ -284,6 +285,20 @@ namespace KRWF.RimKata
         }
 
         internal static void ClearCrawl(Pawn pawn) => PublishCrawl(pawn, null, LocalTargetInfo.Invalid);
+
+        internal static void PublishSubdue(Pawn pawn, Map map, RimKataSubdueVisual? visual)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                if (!visual.HasValue && BodyVisualFor(pawn)?.subdue.HasValue != true) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                // A held pawn is despawned. Its participant belongs to the carrier's map.
+                if (visual.HasValue) entry.map = map;
+                entry.subdue = visual;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
 
         public static bool IsParticipant(Pawn pawn)
         {
@@ -1276,6 +1291,7 @@ namespace KRWF.RimKata
 
         public void EnterCloseCombat(Thing trigger)
         {
+            if (trigger != null) RimKataSubdueDefense.ReleaseForDefense(pawn, trigger);
             closeCombatTrigger = trigger;
         }
 

@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>wyposaża TargetA jako dodatkową broń RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Wyważa drzwi.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Obezwładnianie TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>atakuje TargetA, utrzymując chwyt.</RimKata_SubdueCombat.reportString>
 </LanguageData>

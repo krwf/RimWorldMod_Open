@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Wachttijd na aankomst op de doorbraakbestemming</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen standaard toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Vloeiende richtovergangen</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Overmeesteren</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Overmeesteren</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Massalimiet voor overmeesteren</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Verdovingsduur bij botsing na overmeesteren</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Aanval tijdens overmeesteren</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Val de vastgehouden persoon aan. Uitgeschakeld aan het begin van elke overmeestering.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Overmeesteringsacties</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Gooi de vastgehouden persoon of zet die neer.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Gooien</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} is te zwaar (limiet: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Dit doelwit kan niet worden overmeesterd.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Til een persoon binnen de toegestane massalimiet op en houd die vast.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Aanvallen toestaan</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Staat aanvallen toe terwijl een personage wordt vastgehouden. Uitschakelen stopt de huidige aanval; opnieuw inschakelen hervat die aanval niet automatisch.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Aanvallen zijn uitgeschakeld.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Schadeoverdracht</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Draagt ontvangen schade over aan de vastgehouden pawn. Als dit uitstaat, wordt de pawn losgelaten bij ontwijken of het aangaan van een gevecht van dichtbij.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

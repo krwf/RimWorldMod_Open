@@ -54,6 +54,7 @@ namespace KRWF.RimKata
 
         public static bool TryQueuePhysicalMeleeAttack(Pawn pawn, Thing target)
         {
+            if (RimKataSubdueCombat.TryHandleMeleeAttempt(pawn, target)) return true;
             if (pawn?.Map == null
                 || pawn.InMentalState
                 || target == null
@@ -219,6 +220,12 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(JobDriver_Wait), "CheckForAutoAttack")]
     internal static class Patch_WaitAutoAttack_RimKataTargetSearch
     {
+        private static void Prefix(out RimKataSubdueState __state)
+            => __state = RimKataSubdueAutomaticFire.Begin();
+
+        private static void Finalizer(RimKataSubdueState __state)
+            => RimKataSubdueAutomaticFire.End(__state);
+
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var codes = new List<CodeInstruction>(instructions);
@@ -228,6 +235,25 @@ namespace KRWF.RimKata
             {
                 Log.Error("[RimKata] Could not locate the Wait ranged-search gate; native targeting was left unchanged.");
                 return codes;
+            }
+            var carry = AccessTools.Method(typeof(PawnUtility), nameof(PawnUtility.IsCarryingPawn));
+            var fireAtWill = AccessTools.PropertyGetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.FireAtWill));
+            var start = AccessTools.Method(typeof(Pawn), nameof(Pawn.TryStartAttack));
+            if (codes.FindAll(code => code.Calls(carry)).Count != 1
+                || codes.FindAll(code => code.Calls(fireAtWill)).Count != 1
+                || codes.FindAll(code => code.Calls(start)).Count != 1)
+            {
+                Log.Error("[RimKata] Could not locate the Wait subdue acquisition gates; native targeting was left unchanged.");
+                return codes;
+            }
+            foreach (CodeInstruction code in codes)
+            {
+                string replacement = code.Calls(carry) ? nameof(RimKataSubdueAutomaticFire.IsCarryingPawn)
+                    : code.Calls(fireAtWill) ? nameof(RimKataSubdueAutomaticFire.FireAtWill)
+                    : code.Calls(start) ? nameof(RimKataSubdueAutomaticFire.TryStartAttack) : null;
+                if (replacement == null) continue;
+                code.opcode = OpCodes.Call;
+                code.operand = AccessTools.Method(typeof(RimKataSubdueAutomaticFire), replacement);
             }
             // Extend only the existing ranged gate. Nearby melee and fire beating
             // still run, and the Job's saved canUseRangedWeapon flag stays intact.
@@ -241,7 +267,7 @@ namespace KRWF.RimKata
         }
 
         private static bool AllowsRangedSearch(bool allowed, JobDriver_Wait driver)
-            => allowed && !RimKataDualWeaponController.ShouldSuppressVanillaTargetSearch(driver.pawn);
+            => RimKataSubdueAutomaticFire.AllowsRangedSearch(allowed, driver.pawn);
     }
 
     [HarmonyPatch(typeof(Verb_BeatFire), "TryCastShot")]

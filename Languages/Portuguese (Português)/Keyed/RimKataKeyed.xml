@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Tempo de espera após chegar ao destino do arrombamento</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja por predefinição</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transições suaves de mira</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Subjugar</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Subjugar</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Limite de massa para subjugar</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Duração do atordoamento por impacto ao subjugar</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Ataque de subjugação</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Ataca a personagem agarrada. Desativado no início de cada subjugação.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Ações de subjugação</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Atira ou pousa a personagem agarrada.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Atirar</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} tem demasiado peso (limite: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Não é possível subjugar este alvo.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Levanta e segura uma personagem dentro do limite de massa permitido.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Permitir ataques</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Permite atacar enquanto se segura uma personagem. Desativar esta opção interrompe o ataque atual; reativá-la não retoma esse ataque automaticamente.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Os ataques estão desativados.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferência de dano</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfere o dano recebido para a personagem subjugada. Quando desativado, esquivar ou entrar em combate próximo liberta a personagem.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

@@ -31,6 +31,9 @@ namespace KRWF.RimKata
         public string rangedDodgeDurationTicks;
         public string rangedDodgeDurationGrowthTicks;
         public string rangedDodgeDurationBaseTicks;
+        public string subdueMassMultiplier;
+        public string subdueMassMultiplierGrowth;
+        public string subdueMassMultiplierMinimum;
         public string proneMissChance;
         public string proneMissChanceGrowth;
         public string proneMissChanceMinimum;
@@ -85,6 +88,9 @@ namespace KRWF.RimKata
             rangedDodgeDurationTicks = settings.rangedDodgeDurationTicks.ToString();
             rangedDodgeDurationGrowthTicks = settings.rangedDodgeDurationGrowthPerLevelTicks.ToString();
             rangedDodgeDurationBaseTicks = settings.rangedDodgeDurationBaseTicks.ToString();
+            subdueMassMultiplier = settings.subdueMassMultiplierPercent.ToString();
+            subdueMassMultiplierGrowth = settings.subdueMassMultiplierGrowthPerLevelPercent.ToString();
+            subdueMassMultiplierMinimum = settings.subdueMassMultiplierMinimumPercent.ToString();
             proneMissChance = settings.proneMissChancePercent.ToString();
             proneMissChanceGrowth = settings.proneMissChanceGrowthPerLevelPercent.ToString();
             proneMissChanceMinimum = settings.proneMissChanceMinimumPercent.ToString();
@@ -291,6 +297,11 @@ namespace KRWF.RimKata
                 ref settings.rangedDodgeChanceMinimumPercent, ref buffers.rangedDodgeChanceMinimum,
                 100f, 100f, showMinimum);
             DrawDurationRow(viewRect.width, ref y, settings, buffers, showMinimum);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_SubdueMassLimit", SkillDefOf.Melee,
+                ref settings.subdueMassMultiplierFixed, ref settings.subdueMassMultiplierPercent, ref buffers.subdueMassMultiplier,
+                ref settings.subdueMassMultiplierGrowthPerLevelPercent, ref buffers.subdueMassMultiplierGrowth,
+                ref settings.subdueMassMultiplierMinimumPercent, ref buffers.subdueMassMultiplierMinimum,
+                MaximumMultiplierPercent, MaximumMultiplierPercent, showMinimum);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_ProneMissChance", SkillDefOf.Shooting,
                 ref settings.proneMissChanceFixed, ref settings.proneMissChancePercent, ref buffers.proneMissChance,
                 ref settings.proneMissChanceGrowthPerLevelPercent, ref buffers.proneMissChanceGrowth,
@@ -849,7 +860,7 @@ namespace KRWF.RimKata
 
         private static float CalculateContentHeight()
         {
-            const int rowCount = 23;
+            const int rowCount = 24;
             const int sectionCount = 3;
             return ButtonHeight * 3f + 3f
                 + rowCount * RowHeight
@@ -863,6 +874,7 @@ namespace KRWF.RimKata
         {
             return settings != null
                 && (!settings.rangedDodgeDurationFixed
+                    || !settings.subdueMassMultiplierFixed
                     || !settings.rangedDodgeChanceFixed
                     || !settings.proneMissChanceFixed
                     || !settings.proneHuntingStealthBonusFixed
@@ -884,6 +896,7 @@ namespace KRWF.RimKata
             string[] keys =
             {
                 "KRWF_RimKata_RangedDodgeDuration",
+                "KRWF_RimKata_SubdueMassLimit",
                 "KRWF_RimKata_ProneMissChance",
                 "KRWF_RimKata_ProneHuntingStealthBonus",
                 "KRWF_RimKata_RangedDodgeChance",
@@ -927,6 +940,10 @@ namespace KRWF.RimKata
             settings.rangedDodgeDurationGrowthPerLevelTicks = RimKataSettings.DefaultRangedDodgeDurationGrowthPerLevelTicks;
             settings.rangedDodgeDurationBaseTicks = RimKataSettings.DefaultRangedDodgeDurationBaseTicks;
             settings.rangedDodgeDurationFixed = RimKataSettings.DefaultRangedDodgeDurationFixed;
+            settings.subdueMassMultiplierPercent = RimKataSettings.DefaultSubdueMassMultiplierPercent;
+            settings.subdueMassMultiplierGrowthPerLevelPercent = RimKataSettings.DefaultSubdueMassMultiplierGrowthPerLevelPercent;
+            settings.subdueMassMultiplierMinimumPercent = RimKataSettings.DefaultSubdueMassMultiplierMinimumPercent;
+            settings.subdueMassMultiplierFixed = RimKataSettings.DefaultSubdueMassMultiplierFixed;
             settings.proneMissChancePercent = RimKataSettings.DefaultProneMissChancePercent;
             settings.proneMissChanceGrowthPerLevelPercent = RimKataSettings.DefaultProneMissChanceGrowthPerLevelPercent;
             settings.proneMissChanceMinimumPercent = RimKataSettings.DefaultProneMissChanceMinimumPercent;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <JobDef>
+    <defName>RimKata_Subdue</defName>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataSubdue</driverClass>
+    <reportString>subduing TargetA.</reportString>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <casualInterruptible>false</casualInterruptible>
+    <collideWithPawns>true</collideWithPawns>
+    <carryThingAfterJob>true</carryThingAfterJob>
+  </JobDef>
+  <JobDef>
+    <defName>RimKata_SubdueCombat</defName>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataSubdueCombat</driverClass>
+    <reportString>attacking TargetA while subduing.</reportString>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <casualInterruptible>false</casualInterruptible>
+    <collideWithPawns>true</collideWithPawns>
+    <carryThingAfterJob>true</carryThingAfterJob>
+  </JobDef>
+</Defs>

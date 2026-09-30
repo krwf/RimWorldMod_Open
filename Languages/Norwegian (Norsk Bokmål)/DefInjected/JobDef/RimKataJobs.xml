@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>utstyrer TargetA som et sekundært RimKata-våpen.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Bryter gjennom døren.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Overmanner TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>angriper TargetA mens grepet opprettholdes.</RimKata_SubdueCombat.reportString>
 </LanguageData>

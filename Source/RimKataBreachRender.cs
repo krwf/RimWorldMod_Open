@@ -26,6 +26,7 @@ namespace KRWF.RimKata
             internal Frame previousFrame;
             internal RimKataWorldRenderContext.Scope context;
             internal RimKataBreachWeaponRender.Scope weapons;
+            internal RimKataSubdueWeaponRender.Scope subdueWeapons;
             internal bool pushed;
         }
 
@@ -33,6 +34,7 @@ namespace KRWF.RimKata
         {
             internal bool active;
             internal RimKataBreachVisual visual;
+            internal RimKataSubdueVisual? subdue;
         }
 
         private static readonly ConcurrentDictionary<Pawn, Frame> Frames = new ConcurrentDictionary<Pawn, Frame>();
@@ -159,8 +161,18 @@ namespace KRWF.RimKata
 
         internal static void DrawDoor(PawnDrawParms parms)
         {
-            if (parms.Portrait || !RimKataBreachUtility.TryGetVisual(parms.pawn, out RimKataBreachVisual visual)
-                || visual.door == null) return;
+            if (parms.Portrait) return;
+            var body = RimKataWorldRenderContext.BodyFor(parms.pawn);
+            if (body?.subdue.HasValue == true)
+            {
+                // Carried.PostDraw skips equipment extras when it draws a pawn.
+                // The carrier's completed body draw owns its weapon instead.
+                RimKataSubdueWeaponRender.DrawParticipant(parms, body.subdue.Value);
+                return;
+            }
+            if (body?.breach.HasValue != true) return;
+            RimKataBreachVisual visual = body.breach.Value;
+            if (visual.door == null) return;
             Vector3 location = visual.doorOrigin;
             if (visual.carryDoor)
                 location = Frames.TryGetValue(parms.pawn, out Frame frame) ? frame.foot
@@ -176,8 +188,17 @@ namespace KRWF.RimKata
         private static void Prefix(ref PawnDrawParms parms, out RimKataBreachRender.BodyScope __state)
         {
             __state = default;
-            __state.active = !parms.Portrait
-                && RimKataBreachRender.TryPose(parms.pawn, out __state.visual);
+            if (parms.Portrait) return;
+            var body = RimKataWorldRenderContext.BodyFor(parms.pawn);
+            __state.subdue = body?.subdue;
+            if (__state.subdue.HasValue)
+            {
+                parms.facing = __state.subdue.Value.BodyFacing;
+                return;
+            }
+            __state.visual = body?.breach ?? default;
+            __state.active = body?.breach.HasValue == true
+                && (__state.visual.poseActive || __state.visual.protectedPose);
             if (__state.active) parms.facing = __state.visual.facing;
         }
 
@@ -187,7 +208,9 @@ namespace KRWF.RimKata
         {
             // Standing protection only fixes facing. Its equipment/shadow no
             // longer consumes a sliding frame, so do not rebuild one per draw.
-            if (__state.active && __state.visual.poseActive)
+            if (__state.subdue.HasValue)
+                RimKataSubdueRender.Prepare(parms, ___drawRequests, __state.subdue.Value);
+            else if (__state.active && __state.visual.poseActive)
                 RimKataBreachRender.Prepare(parms, ___drawRequests, __state.visual);
         }
     }
@@ -205,8 +228,11 @@ namespace KRWF.RimKata
         private static void Prefix(Pawn ___pawn, DrawPhase phase, ref Rot4? rotOverride)
         {
             if (phase == DrawPhase.EnsureInitialized) return;
-            if (RimKataBreachRender.TryPose(___pawn, out RimKataBreachVisual visual))
-                rotOverride = visual.facing;
+            var body = RimKataWorldRenderContext.BodyFor(___pawn);
+            if (body?.subdue.HasValue == true) rotOverride = body.subdue.Value.BodyFacing;
+            else if (body?.breach.HasValue == true
+                && (body.breach.Value.poseActive || body.breach.Value.protectedPose))
+                rotOverride = body.breach.Value.facing;
         }
     }
 
@@ -215,7 +241,8 @@ namespace KRWF.RimKata
     {
         private static void Prefix(Pawn ___pawn, ref bool disableCache)
         {
-            if (RimKataBreachRender.TryPose(___pawn, out var visual) && visual.poseActive) disableCache = true;
+            var body = RimKataWorldRenderContext.BodyFor(___pawn);
+            if (body?.subdue.HasValue == true || body?.breach?.poseActive == true) disableCache = true;
         }
     }
 
@@ -237,19 +264,28 @@ namespace KRWF.RimKata
             var context = RimKataWorldRenderContext.Begin(pawn, (flags & PawnRenderFlags.Portrait) != 0);
             __state = RimKataBreachRender.PushEquipment(pawn, flags);
             __state.context = context;
+            RimKataSubdueVisual? subdue = RimKataWorldRenderContext.BodyFor(pawn)?.subdue;
+            __state.subdueWeapons = RimKataSubdueWeaponRender.Begin(pawn, drawPos, flags, subdue);
             bool participant = RimKataBreachRender.TryGetEquipmentVisual(pawn, out var visual);
-            __state.weapons = RimKataBreachWeaponRender.Begin(pawn, drawPos, flags, participant, visual);
+            __state.weapons = RimKataBreachWeaponRender.Begin(pawn, drawPos, flags,
+                participant && !subdue.HasValue, visual);
             if ((flags & PawnRenderFlags.Portrait) == 0
+                && subdue.HasValue) facing = subdue.Value.facing;
+            else if ((flags & PawnRenderFlags.Portrait) == 0
                 && participant && (visual.poseActive || visual.protectedPose)) facing = visual.facing;
         }
 
         [HarmonyPriority(Priority.Last)]
-        private static void Postfix() => RimKataBreachWeaponRender.Draw();
+        private static void Postfix()
+        {
+            RimKataBreachWeaponRender.Draw();
+        }
 
         [HarmonyPriority(Priority.Last)]
         private static void Finalizer(RimKataBreachRender.EquipmentScope __state)
         {
             RimKataBreachWeaponRender.End(__state.weapons);
+            RimKataSubdueWeaponRender.End(__state.subdueWeapons);
             RimKataBreachRender.PopEquipment(__state);
             RimKataWorldRenderContext.End(__state.context);
         }

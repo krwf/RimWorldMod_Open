@@ -195,4 +195,21 @@
   <KRWF_RimKata_CooldownArmorFactorApplied>Enabled armor modifier: ×{0} (applied)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>Enabled armor modifier: ×100% (no enabled armor worn)</KRWF_RimKata_CooldownArmorFactorInactive>
   <KRWF_RimKata_SmoothAimTransition>Smooth aim transitions</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Subdue</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Subdue</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Subdue mass limit</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Subdue impact stun duration</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Subdue attack</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Attack the pawn being held. Disabled at the start of each subdual.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Subdue actions</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Throw or put down the pawn being held.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Throw</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} is too heavy (limit: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Cannot subdue this target.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Pick up and hold a pawn within the allowed mass limit.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Allow attacks</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Allows attacks while holding a pawn. Turning this off stops the current attack; turning it on does not resume that attack automatically.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Attacks are disabled.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Damage transfer</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfer incoming damage to the subdued pawn. When disabled, dodging or entering close combat releases the subdued pawn.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

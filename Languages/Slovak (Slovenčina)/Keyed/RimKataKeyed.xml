@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Čas čakania po dosiahnutí cieľa prielomu</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Predvolene povoliť streľbu pri plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Plynulé prechody mierenia</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Spacifikovať</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Spacifikovať</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Hmotnostný limit pre spacifikovanie</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Trvanie omráčenia nárazom pri spacifikovaní</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Útok pri spacifikovaní</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Útočí na držanú postavu. Na začiatku každého spacifikovania je vypnuté.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Akcie spacifikovania</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Hoďte držanú postavu alebo ju položte.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Hodiť</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} je príliš ťažký cieľ (limit: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Tento cieľ nemožno spacifikovať.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Zdvihne a podrží postavu v povolenom hmotnostnom limite.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Povoliť útoky</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Umožňuje útočiť počas držania postavy. Vypnutie zastaví aktuálny útok; opätovné zapnutie ho automaticky neobnoví.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Útoky sú zakázané.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Prenos poškodenia</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Prenáša utrpené poškodenie na držanú postavu. Po vypnutí sa pri úhybe alebo začatí boja zblízka držaná postava uvoľní.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

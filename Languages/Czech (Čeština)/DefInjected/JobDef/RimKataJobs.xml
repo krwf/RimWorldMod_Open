@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>vybavuje TargetA jako sekundární zbraň RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Proráží dveře.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Zpacifikovává TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>útočí na TargetA a zároveň drží postavu.</RimKata_SubdueCombat.reportString>
 </LanguageData>

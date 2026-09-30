@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Doba čekání po dosažení cíle průlomu</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Ve výchozím nastavení povolit střelbu při plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Plynulé přechody zamíření</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Zpacifikovat</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Zpacifikovat</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Hmotnostní limit pro zpacifikování</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Doba omráčení nárazem při zpacifikování</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Útok při zpacifikování</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Útočí na drženou postavu. Na začátku každého zpacifikování je vypnuto.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Akce zpacifikování</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Hoďte drženou postavu nebo ji položte.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Hodit</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} je příliš těžký cíl (limit: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Tento cíl nelze zpacifikovat.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Zvedne a podrží postavu v povoleném hmotnostním limitu.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Povolit útoky</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Umožňuje útočit při držení postavy. Vypnutí zastaví aktuální útok; opětovné zapnutí jej automaticky neobnoví.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Útoky jsou zakázány.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Přenos poškození</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Přenáší utrpěné poškození na drženou postavu. Po vypnutí se při úhybu nebo zahájení boje zblízka držená postava uvolní.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

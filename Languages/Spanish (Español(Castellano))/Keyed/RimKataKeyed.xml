@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Tiempo de espera al llegar al destino de la irrupción</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar al arrastrarse por defecto</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transiciones de apuntado suaves</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Someter</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Someter</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Límite de masa para someter</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Duración del aturdimiento por impacto al someter</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Ataque de sometimiento</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Ataca al personaje sujetado. Desactivado al inicio de cada sometimiento.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Acciones de sometimiento</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Lanza o deja en el suelo al personaje sujetado.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Lanzar</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} pesa demasiado (límite: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>No se puede someter a este objetivo.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Levanta y sujeta a un personaje dentro del límite de masa permitido.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Permitir ataques</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Permite atacar mientras se sujeta a un personaje. Desactivar esta opción detiene el ataque actual; volver a activarla no lo reanuda automáticamente.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Los ataques están desactivados.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferencia de daño</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfiere el daño recibido al personaje sometido. Al desactivarlo, esquivar o entrar en combate cuerpo a cuerpo libera al personaje.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

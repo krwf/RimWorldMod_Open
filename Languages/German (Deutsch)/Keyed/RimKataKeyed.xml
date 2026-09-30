@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Wartezeit nach Erreichen des Durchbruchziels</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen standardmäßig erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sanfte Zielwechsel</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Überwältigen</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Überwältigen</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Massengrenze zum Überwältigen</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Betäubungsdauer durch Aufprall beim Überwältigen</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Angriff beim Überwältigen</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Greift die festgehaltene Figur an. Zu Beginn jeder Überwältigung deaktiviert.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Überwältigungsaktionen</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Wirft die festgehaltene Figur oder setzt sie ab.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Werfen</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} ist zu schwer (Grenze: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Dieses Ziel kann nicht überwältigt werden.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Hebt eine Figur innerhalb der erlaubten Massengrenze hoch und hält sie fest.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Angriffe erlauben</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Erlaubt Angriffe, während eine Figur festgehalten wird. Das Deaktivieren stoppt den aktuellen Angriff; erneutes Aktivieren setzt ihn nicht automatisch fort.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Angriffe sind deaktiviert.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Schadensübertragung</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Überträgt erlittenen Schaden auf die festgehaltene Figur. Bei deaktivierter Option wird sie beim Ausweichen oder beim Eintritt in den Nahkampf losgelassen.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

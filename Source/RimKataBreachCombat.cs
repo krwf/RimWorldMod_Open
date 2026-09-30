@@ -63,6 +63,7 @@ namespace KRWF.RimKata
 
         private static bool AllowsAttack(Verb verb, Pawn pawn, int version)
         {
+            if (!RimKataSubdueCombat.AllowsAttack(verb, pawn)) return false;
             if (attackVerb == verb && attackPawn == pawn && attackVersion == version)
                 return attackAllowed;
             bool allowed = !RimKataBreachUtility.BlocksAttacks(pawn);
@@ -79,7 +80,7 @@ namespace KRWF.RimKata
             scope = default;
             if (verb is Verb_BeatFire) return true;
             var registry = RimKataBreachUtility.Registry;
-            if (registry == null || registry.states.Count == 0) return true;
+            if ((registry == null || registry.states.Count == 0) && !RimKataSubdueUtility.Any) return true;
             Pawn pawn = verb?.CasterPawn;
             if (pawn == null) return true;
             int version = RimKataBreachUtility.AttackStateVersion;
@@ -136,6 +137,11 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_VerbStartCast_RimKataBreach
     {
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         private static IEnumerable<MethodBase> TargetMethods()
             => RimKataBreachCombat.VerbMethods(nameof(Verb.TryStartCastOn), typeof(bool),
                 new[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool),
@@ -157,6 +163,11 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_VerbWarmup_RimKataBreach
     {
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         private static IEnumerable<MethodBase> TargetMethods()
             => RimKataBreachCombat.VerbMethods(nameof(Verb.WarmupComplete), typeof(void), Type.EmptyTypes);
 
@@ -182,6 +193,11 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_VerbShot_RimKataBreach
     {
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         private static IEnumerable<MethodBase> TargetMethods()
             => RimKataBreachCombat.VerbMethods("TryCastShot", typeof(bool), Type.EmptyTypes);
 

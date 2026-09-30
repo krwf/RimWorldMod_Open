@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>бере TargetA як додаткову зброю RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Проламує двері.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Захоплює TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>атакує TargetA, продовжуючи утримувати персонажа.</RimKata_SubdueCombat.reportString>
 </LanguageData>

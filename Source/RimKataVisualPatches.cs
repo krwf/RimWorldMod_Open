@@ -2341,7 +2341,8 @@ namespace KRWF.RimKata
             try
             {
                 current.scopePawn = pawn;
-                if (portrait || pawn == null || RimKataBreachWeaponRender.Active)
+                if (portrait || pawn == null || RimKataBreachWeaponRender.Active
+                    || RimKataSubdueWeaponRender.Active)
                 {
                     return scopeToken;
                 }

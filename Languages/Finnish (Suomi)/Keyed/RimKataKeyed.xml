@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Odotusaika läpimurron määränpäähän saavuttua</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä oletusarvoisesti</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sulavat tähtäyssiirtymät</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Taltuta</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Taltuta</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Taltuttamisen massaraja</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Taltutuksen törmäystainnutuksen kesto</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Taltutushyökkäys</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Hyökkää kannetun hahmon kimppuun. Pois käytöstä jokaisen taltutuksen alussa.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Taltutustoiminnot</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Heitä kannettu hahmo tai laske hänet maahan.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Heitä</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} on liian painava (raja: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Tätä kohdetta ei voi taltuttaa.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Nosta ja pidä kiinni hahmosta sallitun massarajan puitteissa.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Salli hyökkäykset</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Sallii hyökkäämisen pidettäessä hahmoa otteessa. Poistaminen käytöstä pysäyttää nykyisen hyökkäyksen; ottaminen uudelleen käyttöön ei jatka sitä automaattisesti.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Hyökkäykset on estetty.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Vahingon siirto</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Siirtää saadun vahingon kiinni pidettyyn hahmoon. Kun toiminto on pois käytöstä, hahmo päästetään irti väistettäessä tai lähitaistelun alkaessa.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

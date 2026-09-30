@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>突破先に到達した後の待機時間</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃をデフォルトで許可</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>滑らかな照準切り替え</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>制圧</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>制圧</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>制圧可能な重量</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>制圧時の衝突による気絶時間</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>制圧攻撃</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>抱えている対象を攻撃します。制圧開始時は毎回無効です。</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>制圧行動</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>抱えている対象を投げるか、降ろします。</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>投げる</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0}は重すぎます（上限：{1} kg）。</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>この対象は制圧できません。</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>重量制限内のポーンを持ち上げて拘束します。</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>攻撃を許可</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>ポーンを拘束中の攻撃を許可します。無効にすると現在の攻撃を中止します。再び有効にしても、中止した攻撃は自動では再開しません。</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>攻撃の許可が無効です。</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>ダメージ転嫁</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>受けるダメージを制圧中の相手に転嫁します。無効にすると、回避または近接戦闘の開始時に相手を解放します。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

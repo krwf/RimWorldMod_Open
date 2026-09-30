@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>equipaggia TargetA come arma secondaria RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Fa irruzione attraverso la porta.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Sopraffazione di TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>attacca TargetA mantenendo la presa.</RimKata_SubdueCombat.reportString>
 </LanguageData>

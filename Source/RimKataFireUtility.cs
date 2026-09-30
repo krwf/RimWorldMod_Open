@@ -566,6 +566,11 @@ namespace KRWF.RimKata
     {
         [ThreadStatic] internal static Verb CurrentVerb;
 
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         public static IEnumerable<MethodBase> TargetMethods()
         {
             HashSet<MethodBase> methods = new HashSet<MethodBase>();
@@ -642,6 +647,12 @@ namespace KRWF.RimKata
     public static class Patch_Verb_WarmupComplete_RimKataOpeningSingleShot
     {
         [ThreadStatic] private static Verb activeWarmup;
+
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         public static IEnumerable<MethodBase> TargetMethods()
         {
             HashSet<MethodBase> methods = new HashSet<MethodBase>();

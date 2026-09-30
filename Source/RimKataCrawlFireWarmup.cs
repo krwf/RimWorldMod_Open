@@ -12,6 +12,11 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_Verb_RimKataCrawlWarmup
     {
+        private static bool Prepare(MethodBase original) => RimKataExternalPatchGuard.Prepare(original);
+
+        private static Exception Cleanup(MethodBase original, Exception exception)
+            => RimKataExternalPatchGuard.Cleanup(original, exception);
+
         private static readonly Type[] CastSignature =
         {
             typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool),

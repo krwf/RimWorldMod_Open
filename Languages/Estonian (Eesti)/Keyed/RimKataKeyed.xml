@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Ooteaeg pärast läbimurde sihtkohta jõudmist</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine vaikimisi</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sujuvad sihtimisüleminekud</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Alista</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Alista</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Alistamise massipiir</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Alistamise kokkupõrke uimastusaeg</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Rünnak alistamisel</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Ründa kinnihoitavat tegelast. Iga alistamise alguses välja lülitatud.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Alistamise tegevused</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Viska või pane kinnihoitav tegelane maha.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Viska</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} on liiga raske (piir: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Seda sihtmärki ei saa alistada.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Tõsta üles ja hoia kinni lubatud massipiiri jäävat tegelast.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Luba rünnakud</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Lubab rünnata tegelast kinni hoides. Väljalülitamine peatab käimasoleva rünnaku; uuesti sisselülitamine ei jätka seda automaatselt.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Rünnakud on keelatud.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Kahju ülekandmine</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Kannab saadud kahju üle kinnihoitud tegelasele. Kui see on välja lülitatud, vabastatakse tegelane põiklemisel või lähivõitlusse astumisel.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

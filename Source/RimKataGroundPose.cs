@@ -388,6 +388,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyAvoidance(Pawn defender, Thing attacker, bool melee)
         {
+            RimKataSubdueDefense.ReleaseForDefense(defender);
             RimKataPawnCombatState state = StateFor(defender);
             if (state == null) return;
             if (!melee)

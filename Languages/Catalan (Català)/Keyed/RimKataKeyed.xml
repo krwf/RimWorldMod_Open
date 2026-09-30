@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Temps d’espera en arribar al destí de la irrupció</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s'arrossega per defecte</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transicions suaus de punteria</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Sotmetre</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Sotmetre</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Límit de massa per sotmetre</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Durada de l&apos;atordiment per impacte en sotmetre</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Atac de submissió</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Ataca el personatge subjectat. Desactivat a l&apos;inici de cada submissió.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Accions de submissió</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Llança o deixa a terra el personatge subjectat.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Llançar</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} pesa massa (límit: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>No es pot sotmetre aquest objectiu.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Aixeca i subjecta un personatge dins del límit de massa permès.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Permet els atacs</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Permet atacar mentre se subjecta un peó. Desactivar-ho atura l&apos;atac actual; tornar-ho a activar no el reprèn automàticament.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Els atacs estan desactivats.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferència de dany</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfereix el dany rebut al peó sotmès. Si es desactiva, el peó l’allibera en esquivar o entrar en combat cos a cos.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

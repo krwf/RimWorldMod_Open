@@ -3087,7 +3087,8 @@ namespace KRWF.RimKata
             ref RimKataPawnCombatState state,
             bool allowMovementSearch)
         {
-            if (!RimKataEligibility.CanOperateCombatWeapon(pawn))
+            if (!RimKataEligibility.CanOperateCombatWeapon(pawn)
+                || RimKataSubdueUtility.IsHolding(pawn))
             {
                 return false;
             }
@@ -4527,6 +4528,9 @@ namespace KRWF.RimKata
             Verb verb,
             LocalTargetInfo focus)
         {
+            // The held-pawn cycle already owns this cooldown. Do not register
+            // another ordinary slot cycle or start a shared target search.
+            if (RimKataSubdueCombat.OwnsAttack(pawn, verb)) return true;
             if (pawn?.Map == null
                 || pawn.InMentalState
                 || verb == null
@@ -8126,6 +8130,11 @@ namespace KRWF.RimKata
             out RimKataVanillaOpeningAttempt __state)
         {
             __state = default(RimKataVanillaOpeningAttempt);
+            if (RimKataSubdueAutomaticFire.TryTakeOpening(__instance, __0, out bool subdueStarted))
+            {
+                __result = subdueStarted;
+                return false;
+            }
             if (RimKataCrawlFireUtility.IsCrawlVerb(__instance))
             {
                 bool allowed = RimKataCrawlFireUtility.CanStartCast(__instance);
@@ -8164,6 +8173,7 @@ namespace KRWF.RimKata
             bool __result,
             RimKataVanillaOpeningAttempt __state)
         {
+            if (RimKataSubdueUtility.IsHolding(__instance?.CasterPawn)) return;
             if (RimKataCrawlFireUtility.IsCrawlVerb(__instance)) return;
             try
             {

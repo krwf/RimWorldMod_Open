@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="EtherealThingBase">
+    <defName>RimKata_ThrownPawn</defName>
+    <label>thrown pawn</label>
+    <thingClass>KRWF.RimKata.RimKataThrownPawn</thingClass>
+    <useHitPoints>false</useHitPoints>
+    <selectable>false</selectable>
+    <drawOffscreen>true</drawOffscreen>
+    <tickerType>Normal</tickerType>
+    <altitudeLayer>Skyfaller</altitudeLayer>
+    <drawerType>RealtimeOnly</drawerType>
+  </ThingDef>
+</Defs>

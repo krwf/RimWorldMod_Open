@@ -25,6 +25,8 @@ namespace KRWF.RimKata
         private bool closeFireEnabled;
         private bool targetRushEnabled;
         private bool breachEnabled;
+        private bool subdueEnabled;
+        private bool subdueDamageTransferEnabled;
         private bool responseEnabled;
         private bool rangedDodgeEnabled;
         private bool tumbleEnabled;
@@ -41,6 +43,8 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureCloseFire",
             "KRWF_RimKata_FeatureTargetRush",
             "KRWF_RimKata_FeatureBreach",
+            "KRWF_RimKata_FeatureSubdue",
+            "KRWF_RimKata_FeatureSubdueDamageTransfer",
             "KRWF_RimKata_FeatureResponse",
             "KRWF_RimKata_FeatureRangedDodge",
             "KRWF_RimKata_FeatureTumble",
@@ -63,6 +67,8 @@ namespace KRWF.RimKata
                 closeFireEnabled = settings.closeFireEnabled;
                 targetRushEnabled = settings.targetRushEnabled;
                 breachEnabled = settings.breachEnabled;
+                subdueEnabled = settings.subdueEnabled;
+                subdueDamageTransferEnabled = settings.subdueDamageTransferEnabled;
                 responseEnabled = settings.responseEnabled;
                 rangedDodgeEnabled = settings.rangedDodgeEnabled;
                 tumbleEnabled = settings.tumbleEnabled;
@@ -139,11 +145,14 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[5], ref closeFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[6], ref targetRushEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[7], ref breachEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[8], ref responseEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[9], ref rangedDodgeEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[10], ref tumbleEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[11], ref proneFireEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[12], ref crawlFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[8], ref subdueEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[9], ref subdueDamageTransferEnabled,
+                "KRWF_RimKata_FeatureSubdueDamageTransferDesc");
+            DrawCheckbox(inRect, ref y, LabelKeys[10], ref responseEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[11], ref rangedDodgeEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[12], ref tumbleEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[13], ref proneFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[14], ref crawlFireEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -213,6 +222,8 @@ namespace KRWF.RimKata
                 || settings.closeFireEnabled != closeFireEnabled
                 || settings.targetRushEnabled != targetRushEnabled
                 || settings.breachEnabled != breachEnabled
+                || settings.subdueEnabled != subdueEnabled
+                || settings.subdueDamageTransferEnabled != subdueDamageTransferEnabled
                 || settings.responseEnabled != responseEnabled
                 || settings.rangedDodgeEnabled != rangedDodgeEnabled
                 || settings.tumbleEnabled != tumbleEnabled
@@ -229,6 +240,8 @@ namespace KRWF.RimKata
             settings.closeFireEnabled = closeFireEnabled;
             settings.targetRushEnabled = targetRushEnabled;
             settings.breachEnabled = breachEnabled;
+            settings.subdueEnabled = subdueEnabled;
+            settings.subdueDamageTransferEnabled = subdueDamageTransferEnabled;
             settings.responseEnabled = responseEnabled;
             settings.rangedDodgeEnabled = rangedDodgeEnabled;
             settings.tumbleEnabled = tumbleEnabled;
@@ -241,9 +254,15 @@ namespace KRWF.RimKata
             }
         }
 
-        private static void DrawCheckbox(Rect inRect, ref float y, string key, ref bool value)
+        private static void DrawCheckbox(Rect inRect, ref float y, string key, ref bool value,
+            string descriptionKey = null)
         {
-            Widgets.CheckboxLabeled(new Rect(inRect.x, y, inRect.width, RowHeight), key.Translate(), ref value, paintable: true);
+            Rect rowRect = new Rect(inRect.x, y, inRect.width, RowHeight);
+            Widgets.CheckboxLabeled(rowRect, key.Translate(), ref value, paintable: true);
+            if (descriptionKey != null)
+            {
+                TooltipHandler.TipRegion(rowRect, descriptionKey.Translate());
+            }
             y += RowHeight;
         }
 

@@ -819,6 +819,7 @@ namespace KRWF.RimKata
         public static bool Prefix(Verb __instance, LocalTargetInfo target)
         {
             Pawn pawn = __instance?.CasterPawn;
+            if (RimKataSubdueCombat.TryHandleWeaponOrder(__instance, target)) return false;
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || RimKataAttackGizmoTargetContext.Active)
             {
@@ -973,6 +974,9 @@ namespace KRWF.RimKata
     {
         public static bool Prefix(Pawn ___pawn, ref Job job)
         {
+            // The hold-specific StartJob hook converts this request before
+            // native cleanup, without adding it to the ordinary weapon cycles.
+            if (RimKataSubdueUtility.IsHolding(___pawn)) return true;
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
             {
                 return true;
@@ -1105,6 +1109,7 @@ namespace KRWF.RimKata
             ThinkNode jobGiver,
             bool fromQueue)
         {
+            if (newJob?.def == RimKataDefOf.RimKata_SubdueCombat) return true;
             if (newJob?.def == RimKataDefOf.RimKata_Attack && !newJob.playerForced
                 && RimKataBreachUtility.IsWaiting(___pawn))
             {

@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Kapıyı kırıp hedefe ulaştıktan sonra bekleme süresi</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye varsayılan olarak izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Yumuşak nişan geçişleri</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Etkisizleştir</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Etkisizleştir</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Etkisizleştirme kütle sınırı</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Etkisizleştirme çarpma sersemliği süresi</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Etkisizleştirme saldırısı</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Tutulan karaktere saldırır. Her etkisizleştirmenin başında devre dışıdır.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Etkisizleştirme eylemleri</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Tutulan karakteri fırlatır veya yere bırakır.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Fırlat</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} çok ağır (sınır: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Bu hedef etkisizleştirilemez.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>İzin verilen kütle sınırındaki bir karakteri kaldırır ve tutar.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Saldırılara izin ver</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Bir karakteri tutarken saldırılara izin verir. Kapatmak mevcut saldırıyı durdurur; yeniden açmak bu saldırıyı otomatik olarak sürdürmez.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Saldırılar devre dışı.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Hasar aktarımı</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Alınan hasarı etkisiz hâle getirilen kişiye aktarır. Devre dışıyken kaçınma veya yakın dövüşe girme, tutulan kişiyi serbest bırakır.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Χρόνος αναμονής μετά την άφιξη στον προορισμό της διάρρηξης</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Να επιτρέπεται η βολή κατά το σύρσιμο από προεπιλογή</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Ομαλές μεταβάσεις στόχευσης</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Ακινητοποίηση</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Ακινητοποίηση</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Όριο μάζας ακινητοποίησης</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Διάρκεια αναισθητοποίησης από πρόσκρουση</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Επίθεση ακινητοποίησης</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Επιτίθεται στον κρατούμενο χαρακτήρα. Απενεργοποιημένη στην αρχή κάθε ακινητοποίησης.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Ενέργειες ακινητοποίησης</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Ρίξτε ή αφήστε κάτω τον κρατούμενο χαρακτήρα.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Ρίψη</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>Ο στόχος {0} είναι πολύ βαρύς (όριο: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Αυτός ο στόχος δεν μπορεί να ακινητοποιηθεί.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Σηκώνει και κρατά έναν χαρακτήρα εντός του επιτρεπόμενου ορίου μάζας.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Να επιτρέπονται επιθέσεις</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Επιτρέπει επιθέσεις ενώ κρατάτε έναν χαρακτήρα. Η απενεργοποίηση σταματά την τρέχουσα επίθεση· η επανενεργοποίηση δεν τη συνεχίζει αυτόματα.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Οι επιθέσεις είναι απενεργοποιημένες.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Μεταφορά ζημιάς</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Μεταφέρει την εισερχόμενη ζημιά στον ακινητοποιημένο χαρακτήρα. Όταν είναι ανενεργό, η αποφυγή ή η έναρξη μάχης σώμα με σώμα τον απελευθερώνει.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

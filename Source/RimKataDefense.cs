@@ -354,6 +354,7 @@ namespace KRWF.RimKata
             if (RimKataEligibility.CanRollMeleeDodge(defender)
                 && Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
             {
+                RimKataSubdueDefense.ReleaseForDefense(defender);
                 return true;
             }
 
@@ -528,6 +529,9 @@ namespace KRWF.RimKata
 
         public static bool TryRangedDodge(Pawn defender, Thing attacker, Projectile projectile)
         {
+            // Only using the held pawn as a shield disables ranged evasion.
+            if (RimKataSubdueDefense.HoldsLivingTarget(defender)) return false;
+
             RimKataMapComponent component = defender.Map?.GetComponent<RimKataMapComponent>();
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(defender);
 
@@ -540,6 +544,7 @@ namespace KRWF.RimKata
                 && immediateTumbleChance > 0f
                 && Rand.Chance(immediateTumbleChance))
             {
+                RimKataSubdueDefense.ReleaseForDefense(defender);
                 component.BeginImmediateTumble(defender);
                 component.MarkCurrentRangedProjectilesAvoided(defender);
                 RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, false);
@@ -581,6 +586,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            RimKataSubdueDefense.ReleaseForDefense(defender);
             RimKataDodgeMovementUtility.ApplySuccessfulRangedDodge(
                 defender,
                 attacker,
@@ -1388,6 +1394,7 @@ namespace KRWF.RimKata
             }
 
             RimKataBreachCombat.NotifyMeleeAttempt(__instance);
+            RimKataSubdueCombat.NotifyIncomingMeleeAttempt(__instance);
             return true;
         }
 

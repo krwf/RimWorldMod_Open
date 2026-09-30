@@ -332,6 +332,10 @@ namespace KRWF.RimKata
         public const float DefaultRangedDodgeDurationGrowthPerLevelTicks = 1f;
         public const int DefaultRangedDodgeDurationBaseTicks = 40;
         public const bool DefaultRangedDodgeDurationFixed = true;
+        public const float DefaultSubdueMassMultiplierPercent = 160f;
+        public const float DefaultSubdueMassMultiplierGrowthPerLevelPercent = 6f;
+        public const float DefaultSubdueMassMultiplierMinimumPercent = 40f;
+        public const bool DefaultSubdueMassMultiplierFixed = true;
         public const int MinimumRangedDodgeDurationTicks = 1;
         public const int MaximumRangedDodgeDurationTicks = 600;
 
@@ -362,6 +366,7 @@ namespace KRWF.RimKata
         public const int DefaultMeleeFallDurationTicks = 50;
         public const int DefaultBreachSlideDurationTicks = 120;
         public const int DefaultBreachWaitDurationTicks = 60;
+        public const int DefaultSubdueImpactStunTicks = 180;
         public const int MinimumGroundPoseDurationTicks = 0;
         public const int MaximumGroundPoseDurationTicks = int.MaxValue;
         public const float DefaultResponseWeaponDurabilityLossChancePercent = 0f;
@@ -406,6 +411,8 @@ namespace KRWF.RimKata
         public const bool DefaultCloseFireEnabled = true;
         public const bool DefaultTargetRushEnabled = true;
         public const bool DefaultBreachEnabled = true;
+        public const bool DefaultSubdueEnabled = true;
+        public const bool DefaultSubdueDamageTransferEnabled = true;
         public const bool DefaultResponseEnabled = true;
         public const bool DefaultRangedDodgeEnabled = true;
         public const bool DefaultTumbleEnabled = true;
@@ -417,10 +424,65 @@ namespace KRWF.RimKata
 
         public static readonly string[] DefaultEnabledWeaponDefNames =
         {
-            "Gun_Revolver",
+            // Vanilla and official DLC equipment; explosive weapons stay opt-in.
+            "AlphaThrumboHorn",
+            "Beer",
+            "Bow_Great",
+            "Bow_Great_Unique",
+            "Bow_Recurve",
+            "Bow_Short",
+            "ElephantTusk",
+            "Flamebow",
+            "Gun_AssaultRifle",
+            "Gun_AssaultRifle_Unique",
             "Gun_Autopistol",
+            "Gun_BeamGraser",
+            "Gun_BeamRepeater",
+            "Gun_BeamRepeater_Unique",
+            "Gun_BoltActionRifle",
+            "Gun_BoltActionRifle_Unique",
+            "Gun_ChainShotgun",
+            "Gun_ChainShotgun_Unique",
+            "Gun_ChargeLance",
+            "Gun_ChargeLance_Unique",
+            "Gun_ChargeRifle",
+            "Gun_ChargeRifle_Unique",
+            "Gun_HeavySMG",
+            "Gun_HeavySMG_Unique",
+            "Gun_HellcatRifle",
+            "Gun_HellcatRifle_Unique",
+            "Gun_Incinerator",
+            "Gun_LMG",
+            "Gun_LMG_Unique",
             "Gun_MachinePistol",
-            "Gun_Revolver_Unique"
+            "Gun_Minigun",
+            "Gun_Minigun_Unique",
+            "Gun_PumpShotgun",
+            "Gun_Revolver",
+            "Gun_Revolver_Unique",
+            "Gun_SniperRifle",
+            "Gun_SniperRifle_Unique",
+            "MastodonTusk",
+            "MeleeWeapon_Axe",
+            "MeleeWeapon_BreachAxe",
+            "MeleeWeapon_Club",
+            "MeleeWeapon_Gladius",
+            "MeleeWeapon_Ikwa",
+            "MeleeWeapon_Knife",
+            "MeleeWeapon_LongSword",
+            "MeleeWeapon_Mace",
+            "MeleeWeapon_MonoSword",
+            "MeleeWeapon_MonoSwordBladelink",
+            "MeleeWeapon_PlasmaSword",
+            "MeleeWeapon_PlasmaSwordBladelink",
+            "MeleeWeapon_PsyfocusStaff",
+            "MeleeWeapon_Spear",
+            "MeleeWeapon_Warhammer",
+            "MeleeWeapon_Zeushammer",
+            "MeleeWeapon_ZeusHammerBladelink",
+            "NerveSpiker",
+            "Pila",
+            "ThrumboHorn"
         };
 
         public static readonly string[] DefaultEnabledArmorDefNames =
@@ -469,6 +531,10 @@ namespace KRWF.RimKata
         public float rangedDodgeDurationGrowthPerLevelTicks = DefaultRangedDodgeDurationGrowthPerLevelTicks;
         public int rangedDodgeDurationBaseTicks = DefaultRangedDodgeDurationBaseTicks;
         public bool rangedDodgeDurationFixed = DefaultRangedDodgeDurationFixed;
+        public float subdueMassMultiplierPercent = DefaultSubdueMassMultiplierPercent;
+        public float subdueMassMultiplierGrowthPerLevelPercent = DefaultSubdueMassMultiplierGrowthPerLevelPercent;
+        public float subdueMassMultiplierMinimumPercent = DefaultSubdueMassMultiplierMinimumPercent;
+        public bool subdueMassMultiplierFixed = DefaultSubdueMassMultiplierFixed;
 
         public RimKataCandidateRangeMode candidateRangeMode = DefaultCandidateRangeMode;
         public float customCandidateRange = DefaultCustomCandidateRange;
@@ -496,6 +562,7 @@ namespace KRWF.RimKata
         public int meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
         public int breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
         public int breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
+        public int subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
         public float responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
         public int responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
         public float creepJoinerDependencyGeneChancePercent = DefaultCreepJoinerDependencyGeneChancePercent;
@@ -543,6 +610,8 @@ namespace KRWF.RimKata
         public bool closeFireEnabled = DefaultCloseFireEnabled;
         public bool targetRushEnabled = DefaultTargetRushEnabled;
         public bool breachEnabled = DefaultBreachEnabled;
+        public bool subdueEnabled = DefaultSubdueEnabled;
+        public bool subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
         public bool responseEnabled = DefaultResponseEnabled;
         public bool rangedDodgeEnabled = DefaultRangedDodgeEnabled;
         public bool tumbleEnabled = DefaultTumbleEnabled;
@@ -590,6 +659,10 @@ namespace KRWF.RimKata
                 MinimumRangedDodgeDurationTicks,
                 MaximumRangedDodgeDurationTicks);
         }
+
+        public float GetSubdueMassMultiplier(Pawn pawn) => MultiplierFromPercent(ResolvePercent(
+            pawn, subdueMassMultiplierFixed, subdueMassMultiplierPercent,
+            subdueMassMultiplierMinimumPercent, subdueMassMultiplierGrowthPerLevelPercent, SkillDefOf.Melee));
 
         public float GetRangedDodgeChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
             pawn, rangedDodgeChanceFixed, rangedDodgeChancePercent,
@@ -709,6 +782,10 @@ namespace KRWF.RimKata
             LookRenamedFloat(ref rangedDodgeDurationGrowthPerLevelTicks, "rangedDodgeDurationGrowthPerLevelTicks", "rangedDodgeDurationGrowthPerLevelPercent", DefaultRangedDodgeDurationGrowthPerLevelTicks);
             Scribe_Values.Look(ref rangedDodgeDurationBaseTicks, "rangedDodgeDurationBaseTicks", DefaultRangedDodgeDurationBaseTicks);
             LookFixedMode(ref rangedDodgeDurationFixed, "rangedDodgeDurationFixed", DefaultRangedDodgeDurationFixed, "rangedDodgeDurationTicks");
+            Scribe_Values.Look(ref subdueMassMultiplierPercent, "subdueMassMultiplierPercent", DefaultSubdueMassMultiplierPercent);
+            Scribe_Values.Look(ref subdueMassMultiplierGrowthPerLevelPercent, "subdueMassMultiplierGrowthPerLevelPercent", DefaultSubdueMassMultiplierGrowthPerLevelPercent);
+            Scribe_Values.Look(ref subdueMassMultiplierMinimumPercent, "subdueMassMultiplierMinimumPercent", DefaultSubdueMassMultiplierMinimumPercent);
+            Scribe_Values.Look(ref subdueMassMultiplierFixed, "subdueMassMultiplierFixed", DefaultSubdueMassMultiplierFixed);
             Scribe_Values.Look(ref candidateRangeMode, "candidateRangeMode", DefaultCandidateRangeMode);
             Scribe_Values.Look(ref customCandidateRange, "customCandidateRange", DefaultCustomCandidateRange);
             Scribe_Values.Look(ref touchCandidateLimit, "touchCandidateLimit", DefaultTouchCandidateLimit);
@@ -735,6 +812,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref meleeFallDurationTicks, "meleeFallDurationTicks", DefaultMeleeFallDurationTicks);
             Scribe_Values.Look(ref breachSlideDurationTicks, "breachSlideDurationTicks", DefaultBreachSlideDurationTicks);
             Scribe_Values.Look(ref breachWaitDurationTicks, "breachWaitDurationTicks", DefaultBreachWaitDurationTicks);
+            Scribe_Values.Look(ref subdueImpactStunTicks, "subdueImpactStunTicks", DefaultSubdueImpactStunTicks);
             if (preservePreviousCombatDefaults)
                 combatDefaultsVersion = CurrentCombatDefaultsVersion;
             Scribe_Values.Look(ref responseWeaponDurabilityLossChancePercent, "responseWeaponDurabilityLossChancePercent", DefaultResponseWeaponDurabilityLossChancePercent);
@@ -788,6 +866,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref closeFireEnabled, "closeFireEnabled", DefaultCloseFireEnabled);
             Scribe_Values.Look(ref targetRushEnabled, "targetRushEnabled", DefaultTargetRushEnabled);
             Scribe_Values.Look(ref breachEnabled, "breachEnabled", DefaultBreachEnabled);
+            Scribe_Values.Look(ref subdueEnabled, "subdueEnabled", DefaultSubdueEnabled);
+            Scribe_Values.Look(ref subdueDamageTransferEnabled, "subdueDamageTransferEnabled", DefaultSubdueDamageTransferEnabled);
             Scribe_Values.Look(ref accessRestrictionsDisabled, "accessRestrictionsDisabled", DefaultAccessRestrictionsDisabled);
             Scribe_Values.Look(ref targetAccessInitialized, "targetAccessInitialized", false);
             Scribe_Collections.Look(ref targetAccessRules, "targetAccessRules", LookMode.Deep);
@@ -926,6 +1006,10 @@ namespace KRWF.RimKata
             meleeFallDurationTicks = Mathf.Clamp(meleeFallDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             breachSlideDurationTicks = Mathf.Clamp(breachSlideDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             breachWaitDurationTicks = Mathf.Clamp(breachWaitDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            subdueMassMultiplierPercent = SanitizeNonNegative(subdueMassMultiplierPercent, DefaultSubdueMassMultiplierPercent);
+            subdueMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(subdueMassMultiplierGrowthPerLevelPercent, DefaultSubdueMassMultiplierGrowthPerLevelPercent);
+            subdueMassMultiplierMinimumPercent = SanitizeNonNegative(subdueMassMultiplierMinimumPercent, DefaultSubdueMassMultiplierMinimumPercent);
             responseAccidentalFireChancePercent = SanitizePercent(
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
         }
@@ -988,6 +1072,10 @@ namespace KRWF.RimKata
             rangedDodgeDurationGrowthPerLevelTicks = DefaultRangedDodgeDurationGrowthPerLevelTicks;
             rangedDodgeDurationBaseTicks = DefaultRangedDodgeDurationBaseTicks;
             rangedDodgeDurationFixed = DefaultRangedDodgeDurationFixed;
+            subdueMassMultiplierPercent = DefaultSubdueMassMultiplierPercent;
+            subdueMassMultiplierGrowthPerLevelPercent = DefaultSubdueMassMultiplierGrowthPerLevelPercent;
+            subdueMassMultiplierMinimumPercent = DefaultSubdueMassMultiplierMinimumPercent;
+            subdueMassMultiplierFixed = DefaultSubdueMassMultiplierFixed;
             candidateRangeMode = DefaultCandidateRangeMode;
             customCandidateRange = DefaultCustomCandidateRange;
             touchCandidateLimit = DefaultTouchCandidateLimit;
@@ -1014,6 +1102,7 @@ namespace KRWF.RimKata
             meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
             breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
             breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
+            subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
             responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -1044,6 +1133,8 @@ namespace KRWF.RimKata
             closeFireEnabled = DefaultCloseFireEnabled;
             targetRushEnabled = DefaultTargetRushEnabled;
             breachEnabled = DefaultBreachEnabled;
+            subdueEnabled = DefaultSubdueEnabled;
+            subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
             proneFireEnabled = DefaultProneFireEnabled;
             crawlFireEnabled = DefaultCrawlFireEnabled;
             crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;

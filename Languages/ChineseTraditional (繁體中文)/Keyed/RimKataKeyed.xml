@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>到達突入終點後的等待時間</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>預設允許爬行時射擊</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>平滑瞄準過渡</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>壓制</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>壓制</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>可壓制重量</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>壓制撞擊暈眩時間</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>壓制攻擊</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>攻擊抱住的目標。每次開始壓制時預設關閉。</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>壓制行動</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>投擲或放下抱住的目標。</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>投擲</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0}過重（上限：{1}公斤）。</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>無法壓制此目標。</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>舉起並控制重量上限以內的角色。</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>允許攻擊</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>允許在擒抱角色時攻擊。關閉此項會停止目前的攻擊；重新開啟不會自動恢復該攻擊。</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>攻擊已停用。</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>傷害轉移</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>將受到的傷害轉移給被制服的角色。關閉後，閃避或進入近戰時會釋放該角色。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

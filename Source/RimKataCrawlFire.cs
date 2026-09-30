@@ -511,7 +511,11 @@ namespace KRWF.RimKata
     internal static class Patch_Pawn_RimKataCrawlFireGizmo
     {
         private static void Postfix(Pawn __instance, ref IEnumerable<Gizmo> __result)
-            => __result = RimKataCrawlFireUtility.AddGizmos(__instance, __result);
+        {
+            var hold = RimKataSubdueUtility.Get(__instance);
+            __result = hold != null ? RimKataSubdueGizmos.ForPawn(__result, hold)
+                : RimKataCrawlFireUtility.AddGizmos(__instance, __result);
+        }
     }
 
     [HarmonyPatch(typeof(Pawn), nameof(Pawn.DeSpawn))]

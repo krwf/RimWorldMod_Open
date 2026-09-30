@@ -140,6 +140,7 @@ namespace KRWF.RimKata
     internal static class Patch_PawnRenderUtility_RimKataBreachWeapon
     {
         [HarmonyPriority(Priority.First + 100)]
-        private static bool Prefix(Thing eq) => !RimKataBreachWeaponRender.SuppressNative(eq);
+        private static bool Prefix(Thing eq) => !RimKataBreachWeaponRender.SuppressNative(eq)
+            && !RimKataSubdueWeaponRender.SuppressNative(eq);
     }
 }

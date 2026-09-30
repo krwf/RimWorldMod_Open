@@ -239,7 +239,11 @@ namespace KRWF.RimKata
                 users.qualified.RemoveAt(lastIndex);
                 users.qualifiedIndices.Remove(pawn);
             }
-            if (!qualified) RimKataBreachUtility.NotifyEligibilityLost(pawn);
+            if (!qualified)
+            {
+                RimKataBreachUtility.NotifyEligibilityLost(pawn);
+                RimKataSubdueUtility.NotifyEligibilityLost(pawn);
+            }
             RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
             RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, qualified);
         }

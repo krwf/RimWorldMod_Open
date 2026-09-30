@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>TargetA als RimKata-Sekundärwaffe ausrüsten.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Bricht durch die Tür.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Überwältigt TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>greift TargetA an und hält dabei die Figur weiter fest.</RimKata_SubdueCombat.reportString>
 </LanguageData>

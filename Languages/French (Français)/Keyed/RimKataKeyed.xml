@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Temps d’attente à l’arrivée après l’effraction</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant par défaut</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transitions de visée fluides</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Maîtriser</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Maîtriser</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Masse maximale à maîtriser</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Durée d&apos;étourdissement à l&apos;impact après maîtrise</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Attaque de maîtrise</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Attaque le personnage retenu. Désactivée au début de chaque maîtrise.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Actions de maîtrise</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Lance ou dépose le personnage retenu.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Lancer</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} est trop lourd (limite : {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Impossible de maîtriser cette cible.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Soulève et retient un personnage dans la limite de masse autorisée.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Autoriser les attaques</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Permet d&apos;attaquer tout en maintenant un personnage. Désactiver cette option arrête l&apos;attaque en cours ; la réactiver ne reprend pas automatiquement cette attaque.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Les attaques sont désactivées.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Transfert des dégâts</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfère les dégâts reçus au pion maîtrisé. Si cette option est désactivée, une esquive ou l’entrée en combat rapproché libère le pion.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

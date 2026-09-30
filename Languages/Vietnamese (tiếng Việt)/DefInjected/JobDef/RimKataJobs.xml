@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>đang trang bị TargetA làm vũ khí phụ RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Đang phá cửa xông vào.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Đang khống chế TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>tấn công TargetA trong khi vẫn duy trì khống chế.</RimKata_SubdueCombat.reportString>
 </LanguageData>

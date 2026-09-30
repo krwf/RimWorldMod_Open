@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_Breach.reportString>Breaching the door.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>subduing TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>attacking TargetA while maintaining a hold.</RimKata_SubdueCombat.reportString>
 </LanguageData>

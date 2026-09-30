@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Ventetid efter ankomst til gennembruddets mål</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillad skydning under kravlen som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Glidende sigteovergange</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Overmand</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Overmand</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Massegrænse for overmanding</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Bedøvelsestid ved sammenstød efter overmanding</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Angreb under overmanding</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Angrib den fastholdte figur. Deaktiveret ved starten af hver overmanding.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Overmandingshandlinger</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Kast eller sæt den fastholdte figur ned.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Kast</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} er for tung (grænse: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Dette mål kan ikke overmandes.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Løft og fasthold en figur inden for den tilladte massegrænse.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Tillad angreb</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Tillader angreb, mens en figur holdes fast. Deaktivering stopper det aktuelle angreb; aktivering genoptager ikke angrebet automatisk.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Angreb er deaktiveret.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Skadesoverførsel</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Overfører modtaget skade til den fastholdte figur. Når dette er slået fra, slippes figuren ved undvigelse eller nærkamp.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

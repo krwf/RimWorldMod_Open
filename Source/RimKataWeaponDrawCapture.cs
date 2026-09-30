@@ -62,7 +62,8 @@ namespace KRWF.RimKata
             internal void Submit(Mesh mesh, Matrix4x4 matrix,
                 bool mirrorSecondaryDepth = false, bool adjustSecondaryHeight = false,
                 Vector3 pawnPivot = default(Vector3), bool keepSecondaryHeight = false,
-                float weaponAngleOffset = 0f, bool lowerSecondaryDepth = false, bool accessory = false)
+                float weaponAngleOffset = 0f, bool lowerSecondaryDepth = false, bool accessory = false,
+                bool finalPose = false)
             {
                 // Final Unity submission boundary for native and captured secondary
                 // draws. East and west use the same per-draw depth reflection;
@@ -96,8 +97,9 @@ namespace KRWF.RimKata
                         * matrix;
                     matrix.SetColumn(3, position);
                 }
-                matrix = accessory ? RimKataGroundPoseRender.TransformAccessory(matrix)
-                    : RimKataGroundPoseRender.TransformEquipment(matrix);
+                if (!finalPose)
+                    matrix = accessory ? RimKataGroundPoseRender.TransformAccessory(matrix)
+                        : RimKataGroundPoseRender.TransformEquipment(matrix);
                 DrawInternal(mesh, SubmeshIndex, matrix, Material, Layer, Camera, Properties,
                     CastShadows, ReceiveShadows, ProbeAnchor, LightProbeUsage, LightProbeProxyVolume);
             }
@@ -130,15 +132,67 @@ namespace KRWF.RimKata
                 if (accessory) accessories.Add(command);
             }
 
-            internal bool Replay()
+            internal bool Replay(bool weaponsOnly = false)
             {
                 if (disposed || commands.Count == 0) return false;
+                bool replayed = false;
                 for (int i = 0; i < commands.Count; i++)
+                {
+                    if (weaponsOnly && accessories.Contains(commands[i])) continue;
                     if (!commands[i].CanReplay) return false;
+                }
                 for (int i = 0; i < commands.Count; i++)
                 {
                     DrawCommand command = commands[i];
+                    if (weaponsOnly && accessories.Contains(command)) continue;
                     command.Submit(command.Mesh, command.Matrix, accessory: accessories.Contains(command));
+                    replayed = true;
+                }
+                return replayed;
+            }
+
+            internal bool ReplayHeldWeapon(Vector3 position, float rotation,
+                float maximumAltitude = float.PositiveInfinity)
+            {
+                if (disposed) return false;
+                int first = -1;
+                float bottom = float.PositiveInfinity;
+                float top = float.NegativeInfinity;
+                for (int i = 0; i < commands.Count; i++)
+                {
+                    if (accessories.Contains(commands[i])) continue;
+                    if (!commands[i].CanReplay) return false;
+                    if (first < 0) first = i;
+                    bottom = Mathf.Min(bottom, commands[i].Matrix.m13);
+                    top = Mathf.Max(top, commands[i].Matrix.m13);
+                }
+                if (first < 0) return false;
+                Matrix4x4 reference = commands[first].Matrix;
+                Vector3 origin = reference.GetColumn(3);
+                float weaponBottom = position.y;
+                float layerScale = 1f;
+                // North/south keep all custom weapon parts between the carrier
+                // and the held pawn. Compress only depth gaps when necessary;
+                // geometry, facing and the part order remain unchanged.
+                if (top > bottom && weaponBottom + top - bottom > maximumAltitude)
+                    layerScale = Mathf.Clamp01((maximumAltitude - weaponBottom) / (top - bottom));
+                // The requested altitude is the bottom of the held weapon, not
+                // merely its first part. Keep multipart layer gaps while placing
+                // even rear layers inside the requested weapon band.
+                position.y += origin.y - bottom;
+                // Ignore the planar mesh's zero Y scale when reading its angle.
+                float sourceAngle = Mathf.Atan2(reference.m02, reference.m22) * Mathf.Rad2Deg;
+                Matrix4x4 transform = Matrix4x4.Translate(position)
+                    * Matrix4x4.Rotate(Quaternion.AngleAxis(rotation - sourceAngle, Vector3.up))
+                    * Matrix4x4.Translate(-origin);
+                for (int i = 0; i < commands.Count; i++)
+                {
+                    DrawCommand command = commands[i];
+                    if (accessories.Contains(command)) continue;
+                    Matrix4x4 matrix = transform * command.Matrix;
+                    if (layerScale < 1f)
+                        matrix.m13 = weaponBottom + (command.Matrix.m13 - bottom) * layerScale;
+                    command.Submit(command.Mesh, matrix, finalPose: true);
                 }
                 return true;
             }
@@ -343,7 +397,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer));
             else
             {
@@ -356,7 +410,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer, Camera camera)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer, camera));
             else
             {
@@ -369,7 +423,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer));
             else
@@ -383,7 +437,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer, Camera camera)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer, camera));
             else
@@ -399,7 +453,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));
@@ -417,7 +471,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage));
@@ -435,7 +489,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, bool useLightProbes)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material,
                     layer, camera, submeshIndex, properties, castShadows, receiveShadows, probeAnchor,
@@ -455,7 +509,7 @@ namespace KRWF.RimKata
             ShadowCastingMode castShadows, bool receiveShadows, Transform probeAnchor,
             LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
-            if (active == null && RimKataBreachWeaponRender.Active) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));

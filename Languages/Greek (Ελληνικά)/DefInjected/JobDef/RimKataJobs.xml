@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>εξοπλίζει το TargetA ως δευτερεύον όπλο RimKata.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>Σπάει την πόρτα.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>Ακινητοποιεί TargetA.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>επιτίθεται στο TargetA διατηρώντας τη λαβή.</RimKata_SubdueCombat.reportString>
 </LanguageData>

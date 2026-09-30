@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Väntetid efter ankomst till genombrottets mål</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillåt skjutning under krypning som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Mjuka siktövergångar</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Övermanna</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Övermanna</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Massgräns för övermanning</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Bedövningstid vid kollision efter övermanning</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Attack under övermanning</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Attackera figuren som hålls fast. Avaktiverad i början av varje övermanning.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Övermanningsåtgärder</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Kasta eller sätt ner figuren som hålls fast.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Kasta</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} är för tung (gräns: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Detta mål kan inte övermannas.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Lyft och håll fast en figur inom den tillåtna massgränsen.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Tillåt attacker</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Tillåter attacker medan en figur hålls fast. Inaktivering stoppar den aktuella attacken; aktivering återupptar inte attacken automatiskt.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Attacker är inaktiverade.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Skadeöverföring</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Överför mottagen skada till den fasthållna figuren. När detta är avstängt släpps figuren vid undanmanöver eller närstrid.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

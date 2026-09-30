@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Время ожидания после достижения точки прорыва</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>По умолчанию разрешать стрельбу при ползании</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Плавная смена направления прицеливания</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Схватить</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Схватить</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Предел массы для захвата</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Длительность оглушения при ударе после захвата</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Атака при захвате</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Атакует удерживаемого персонажа. Отключено в начале каждого захвата.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Действия при захвате</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Бросить или опустить удерживаемого персонажа.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Бросить</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} слишком тяжёлый (предел: {1} кг).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Эту цель нельзя схватить.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Поднять и удерживать персонажа в пределах допустимой массы.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Разрешить атаки</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Позволяет атаковать, удерживая персонажа. Отключение останавливает текущую атаку; повторное включение не возобновляет её автоматически.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Атаки отключены.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Перенос урона</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Переносит получаемый урон на удерживаемого персонажа. При отключении уклонение или вступление в ближний бой освобождает его.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

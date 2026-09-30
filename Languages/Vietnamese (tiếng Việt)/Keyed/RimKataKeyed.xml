@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Thời gian chờ sau khi đến đích đột phá</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Mặc định cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Chuyển hướng ngắm mượt mà</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Khống chế</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Khống chế</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Giới hạn khối lượng khống chế</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Thời gian choáng do va chạm khi khống chế</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Tấn công khi khống chế</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Tấn công nhân vật đang bị giữ. Tắt khi bắt đầu mỗi lần khống chế.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Hành động khống chế</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Ném hoặc đặt nhân vật đang bị giữ xuống.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Ném</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} quá nặng (giới hạn: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Không thể khống chế mục tiêu này.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Nhấc và giữ một nhân vật trong giới hạn khối lượng cho phép.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Cho phép tấn công</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Cho phép tấn công khi đang giữ một nhân vật. Tắt tùy chọn này sẽ dừng đòn tấn công hiện tại; bật lại sẽ không tự động tiếp tục đòn tấn công đó.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Tấn công đã bị vô hiệu hóa.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Chuyển sát thương</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Chuyển sát thương nhận vào sang nhân vật đang bị khống chế. Khi tắt, né tránh hoặc bước vào cận chiến sẽ thả nhân vật đó ra.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

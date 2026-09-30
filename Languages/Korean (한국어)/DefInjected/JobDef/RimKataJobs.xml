@@ -2,4 +2,6 @@
 <LanguageData>
   <RimKata_EquipSecondary.reportString>TargetA을(를) RimKata 추가 무기로 장착하는 중.</RimKata_EquipSecondary.reportString>
   <RimKata_Breach.reportString>문을 돌파하는 중.</RimKata_Breach.reportString>
+  <RimKata_Subdue.reportString>TargetA을(를) 제압하는 중.</RimKata_Subdue.reportString>
+  <RimKata_SubdueCombat.reportString>TargetA을(를) 공격하며 제압을 유지하는 중.</RimKata_SubdueCombat.reportString>
 </LanguageData>

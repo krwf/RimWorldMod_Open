@@ -195,4 +195,21 @@
   <KRWF_RimKata_CooldownArmorFactorApplied>허용 방어구 보정: ×{0} (적용됨)</KRWF_RimKata_CooldownArmorFactorApplied>
   <KRWF_RimKata_CooldownArmorFactorInactive>허용 방어구 보정: ×100% (착용한 허용 방어구 없음)</KRWF_RimKata_CooldownArmorFactorInactive>
   <KRWF_RimKata_SmoothAimTransition>부드러운 조준 전환</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>제압</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>제압</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>제압 가능한 무게</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>제압 충격 기절 시간</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>제압 공격</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>제압 중인 대상을 공격합니다. 제압을 시작할 때마다 비활성 상태입니다.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>제압 행동</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>제압 중인 대상을 던지거나 내려놓습니다.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>던지기</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0}의 질량이 제압 한도를 초과합니다(한도: {1}kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>이 대상은 제압할 수 없습니다.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>제압 가능한 무게 이내의 폰을 들어 올려 붙잡습니다.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>공격 허용</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>제압 중 공격을 허용합니다. 끄면 현재 공격을 중지하며, 다시 켜도 중지한 공격은 자동으로 재개하지 않습니다.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>공격 허용이 꺼져 있습니다.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>피해 전가</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>받는 피해를 제압 대상에게 전가합니다. 비활성화하면 회피하거나 근접 전투에 진입할 때 제압을 해제합니다.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

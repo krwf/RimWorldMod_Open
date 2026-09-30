@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Tempo di attesa all’arrivo dopo l’irruzione</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Consenti di sparare strisciando per impostazione predefinita</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transizioni di mira fluide</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Sopraffare</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Sopraffare</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Massa massima da sopraffare</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Durata dello stordimento da impatto dopo sopraffazione</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Attacco di sopraffazione</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Attacca il personaggio trattenuto. Disattivato all&apos;inizio di ogni sopraffazione.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Azioni di sopraffazione</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Lancia o posa il personaggio trattenuto.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Lanciare</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} è troppo pesante (limite: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Impossibile sopraffare questo bersaglio.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Solleva e trattiene un personaggio entro il limite di massa consentito.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Consenti attacchi</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Consente di attaccare mentre si tiene fermo un personaggio. Disattivare questa opzione interrompe l&apos;attacco attuale; riattivarla non lo riprende automaticamente.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Gli attacchi sono disattivati.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Trasferimento danni</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Trasferisce i danni subiti al personaggio immobilizzato. Se disattivato, una schivata o l’inizio del combattimento ravvicinato libera il personaggio.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>

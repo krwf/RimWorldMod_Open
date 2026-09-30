@@ -375,6 +375,53 @@ namespace KRWF.RimKata
             return SecondaryDrawResult.None;
         }
 
+        // The subdue participant owns one primary weapon. Reuse discovered
+        // renderers without substituting live equipment or mirroring a slot.
+        internal static bool DrawSpecialHeldPrimary(Pawn pawn, ThingWithComps weapon,
+            Vector3 root, Rot4 facing, PawnRenderFlags flags, Vector3 position, float rotation,
+            float maximumAltitude = float.PositiveInfinity)
+        {
+            if (Probing || pawn == null || weapon == null || failedProbes.Contains(weapon.def)
+                || !renderersByDef.TryGetValue(weapon.def, out var renderers)) return false;
+            Pawn previousPawn = probePawn;
+            ThingWithComps previousWeapon = probeWeapon;
+            bool previousNative = nativeDrawSeen;
+            probePawn = pawn;
+            probeWeapon = weapon;
+            probeDepth++;
+            try
+            {
+                foreach (var renderer in renderers)
+                {
+                    if (renderer.AccessoriesOnly) continue;
+                    nativeDrawSeen = false;
+                    using (var capture = RimKataWeaponDrawCapture.Begin())
+                    {
+                        bool replaced = renderer.ReplacesOriginal(pawn, root, facing, flags);
+                        // Native requests use the independent one-hand fallback.
+                        // Keep custom geometry and multipart offsets, but give the
+                        // entire weapon the same held-target aim/thrust pose.
+                        if (replaced && !nativeDrawSeen
+                            && capture.ReplayHeldWeapon(position, rotation, maximumAltitude)) return true;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                if (failedProbes.Add(weapon.def))
+                    Log.Warning("[RimKata] Could not draw the held primary weapon for "
+                        + weapon.def.defName + ": " + exception.GetType().Name);
+            }
+            finally
+            {
+                probeDepth--;
+                probePawn = previousPawn;
+                probeWeapon = previousWeapon;
+                nativeDrawSeen = previousNative;
+            }
+            return false;
+        }
+
         internal static bool TryGetVanillaIdlePose(
             Pawn pawn, ThingWithComps weapon, Vector3 root,
             out Vector3 drawLoc, out float aimAngle, Rot4? facing = null)

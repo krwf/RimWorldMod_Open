@@ -195,4 +195,21 @@
   <KRWF_RimKata_BreachWaitDuration>Czas oczekiwania po dotarciu do celu wyważenia</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Domyślnie zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Płynne przejścia celowania</KRWF_RimKata_SmoothAimTransition>
+  <KRWF_RimKata_FeatureSubdue>Obezwładnij</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_Subdue>Obezwładnij</KRWF_RimKata_Subdue>
+  <KRWF_RimKata_SubdueMassLimit>Limit masy do obezwładnienia</KRWF_RimKata_SubdueMassLimit>
+  <KRWF_RimKata_SubdueImpactStunDuration>Czas ogłuszenia przy uderzeniu po obezwładnieniu</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_SubdueAttack>Atak podczas obezwładnienia</KRWF_RimKata_SubdueAttack>
+  <KRWF_RimKata_SubdueAttackDesc>Atakuje trzymaną postać. Wyłączony na początku każdego obezwładnienia.</KRWF_RimKata_SubdueAttackDesc>
+  <KRWF_RimKata_SubdueActions>Działania przy obezwładnieniu</KRWF_RimKata_SubdueActions>
+  <KRWF_RimKata_SubdueActionsDesc>Rzuć trzymaną postacią lub ją odłóż.</KRWF_RimKata_SubdueActionsDesc>
+  <KRWF_RimKata_SubdueThrow>Rzuć</KRWF_RimKata_SubdueThrow>
+  <KRWF_RimKata_SubdueTooHeavy>{0} ma zbyt dużą masę (limit: {1} kg).</KRWF_RimKata_SubdueTooHeavy>
+  <KRWF_RimKata_SubdueUnavailable>Nie można obezwładnić tego celu.</KRWF_RimKata_SubdueUnavailable>
+  <KRWF_RimKata_SubdueDesc>Podnosi i przytrzymuje postać w dozwolonym limicie masy.</KRWF_RimKata_SubdueDesc>
+  <KRWF_RimKata_SubdueAllowAttack>Zezwól na ataki</KRWF_RimKata_SubdueAllowAttack>
+  <KRWF_RimKata_SubdueAllowAttackDesc>Pozwala atakować podczas trzymania postaci. Wyłączenie zatrzymuje bieżący atak; ponowne włączenie nie wznawia go automatycznie.</KRWF_RimKata_SubdueAllowAttackDesc>
+  <KRWF_RimKata_SubdueAttackNotAllowed>Ataki są wyłączone.</KRWF_RimKata_SubdueAttackNotAllowed>
+  <KRWF_RimKata_FeatureSubdueDamageTransfer>Przenoszenie obrażeń</KRWF_RimKata_FeatureSubdueDamageTransfer>
+  <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Przenosi otrzymywane obrażenia na obezwładnioną postać. Po wyłączeniu unik lub rozpoczęcie walki w zwarciu uwalnia tę postać.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
 </LanguageData>
