@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>프로필 적용 항목</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>전투 요소</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>모드 요소</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>연출 요소</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>활성 요소</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>적용값</KRWF_RimKata_AppliedValue>
@@ -170,8 +171,12 @@
   <KRWF_RimKata_ProneResumeDelay>다시 엎드릴 시간</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallChance>넘어질 확률</KRWF_RimKata_MeleeFallChance>
   <KRWF_RimKata_MeleeFallDuration>넘어져 있을 시간</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>넘어진 동안 오사 방지</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>돌파 시 이동 시간</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>돌파 지점 도달 후 대기 시간</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>기본값</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>아군에게 기면서 쏴 허용</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>적군에게 기면서 쏴 허용</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>기면서 쏴 사격 허용 기본값</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>주</KRWF_RimKata_InspectSlotPrimary>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>공격 허용이 꺼져 있습니다.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>피해 전가</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>받는 피해를 제압 대상에게 전가합니다. 비활성화하면 회피하거나 근접 전투에 진입할 때 제압을 해제합니다.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>슬라이딩</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>떨치기</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>슬라이딩 확률</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>떨치기 확률</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>유전자 확률</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>확률이 있음</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>없음</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>전체 초기화</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>필터 결과 초기화</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>휘청이는 자</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>크립조이너</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

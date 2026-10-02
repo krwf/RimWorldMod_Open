@@ -162,7 +162,7 @@ namespace KRWF.RimKata
             verifiedMeleeDodgeTarget = target;
             try
             {
-                // GetDodgeChance already includes the existing vanilla dodge bonus hook.
+                // GetDodgeChance already includes the vanilla dodge bonus hook.
                 return ReadMeleeProbability(
                     ResolveMeleeProbabilityVerb(target),
                     target,
@@ -176,8 +176,7 @@ namespace KRWF.RimKata
 
         private static Verb_MeleeAttack ResolveMeleeProbabilityVerb(Pawn pawn)
         {
-            // Read an owned instance without choosing an attack, checking weapon permissions,
-            // or consuming random numbers. The native getters do not use its tool or weapon.
+            // Native probability getters do not use this Verb's tool or weapon.
             if (pawn?.meleeVerbs != null
                 && SelectedMeleeVerb(pawn.meleeVerbs) is Verb_MeleeAttack selected
                 && selected.CasterPawn == pawn)
@@ -210,8 +209,6 @@ namespace KRWF.RimKata
                 return 0f;
             }
 
-            // Parry and RimKata close gunfire are non-surprise actions. Borrow only the
-            // probability getter; restore this instance's prior attack context even on failure.
             bool previousSurpriseAttack = MeleeSurpriseAttack(verb);
             MeleeSurpriseAttack(verb) = false;
             try
@@ -313,7 +310,6 @@ namespace KRWF.RimKata
                     (cooldownTicks + burstSpacingTicks) / originalBurstCount));
             }
 
-            // Keep the two integer timers' sum on the nearest whole-tick cycle.
             float adjustedWarmupTicks = AdjustedWarmupTicks(verb);
             int warmupTicks = Mathf.Max(
                 0,
@@ -332,8 +328,7 @@ namespace KRWF.RimKata
 
         private static float AdjustedWarmupTicks(Verb verb, float aimingFactor)
         {
-            // The native Verb already carries the converted warmup. Keep the
-            // original fixed input here so the established cycle rounding is exact.
+            // The Verb already has converted warmup; rounding needs the original value.
             float warmupSeconds = RimKataPreparedWeaponData.TryGetPrepared(
                     verb, out RimKataPreparedWeaponValues prepared)
                 ? prepared.OriginalWarmupSeconds

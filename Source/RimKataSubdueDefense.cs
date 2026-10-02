@@ -6,8 +6,7 @@ namespace KRWF.RimKata
 {
     public sealed partial class RimKataSubdueState
     {
-        // Damage callbacks can reflect damage back to the carrier. Keep this
-        // guard on the exact relation, so unrelated damage can still transfer.
+        // Reflected damage can reenter this exact relation during transfer.
         internal bool redirectingDamage;
     }
 
@@ -25,10 +24,17 @@ namespace KRWF.RimKata
 
         internal static bool ReleaseForDefense(Pawn pawn, Thing closeTarget = null)
         {
-            var state = RimKataSubdueUtility.Get(pawn);
+            return ReleaseKnownForDefense(RimKataSubdueUtility.Get(pawn), closeTarget);
+        }
+
+        internal static bool ReleaseKnownForDefense(RimKataSubdueState state, Thing closeTarget = null,
+            bool? knownAdjacent = null)
+        {
             if (state == null || IsDamageTransferEnabled(state)) return false;
+            Pawn pawn = state.pawn;
             if (closeTarget != null && (closeTarget == state.target || !closeTarget.Spawned
-                || closeTarget.Map != pawn.Map || !pawn.CanReachImmediate(closeTarget, PathEndMode.Touch)))
+                || closeTarget.Map != pawn.Map
+                || !(knownAdjacent ?? pawn.CanReachImmediate(closeTarget, PathEndMode.Touch))))
                 return false;
             RimKataSubdueUtility.Release(state);
             return RimKataSubdueUtility.Get(pawn) != state;
@@ -45,8 +51,7 @@ namespace KRWF.RimKata
             }
             if (!IsDamageTransferEnabled(state)) return false;
 
-            // A close shot can reach TakeDamage even when its melee result is
-            // a miss. Let the existing defense hook consume that result.
+            // A close-shot miss can still reach TakeDamage before the defense hook consumes it.
             if (RimKataDefenseUtility.TryGetCloseAttackData(carrier,
                     out bool meleeResolution, out bool meleeHit)
                 && ((meleeResolution && !meleeHit)
@@ -58,9 +63,7 @@ namespace KRWF.RimKata
             state.redirectingDamage = true;
             try
             {
-                // The original body part belongs to the carrier's body. All
-                // other damage properties stay intact; the held pawn applies
-                // its own body-part selection, damage factors and armor once.
+                // The original body part belongs to the carrier, not the recipient.
                 damage.SetHitPart(null);
                 state.target.TakeDamage(damage);
             }
@@ -70,8 +73,7 @@ namespace KRWF.RimKata
                 if (!RimKataSubdueUtility.IsRelationValid(state) || state.target.Dead)
                     RimKataSubdueUtility.Remove(state);
             }
-            // The recipient may have died and ended the relation above. This
-            // hit is still consumed and must never fall back onto the carrier.
+            // Recipient death can end the relation during TakeDamage; this hit is still consumed.
             return true;
         }
     }
@@ -84,7 +86,6 @@ namespace KRWF.RimKata
             ref DamageWorker.DamageResult __result)
         {
             // TakeDamage applies ThingDef multipliers before PreApplyDamage.
-            // Redirect at entry, before either pawn's mitigation is applied.
             if (!RimKataSubdueUtility.Any || !(__instance is Pawn carrier)
                 || !RimKataSubdueDefense.TryTransfer(carrier, dinfo)) return true;
             __result = new DamageWorker.DamageResult();

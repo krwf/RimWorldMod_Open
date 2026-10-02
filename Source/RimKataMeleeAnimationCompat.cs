@@ -10,8 +10,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // No attributes or external assembly reference: these hooks exist only when
-    // Melee Animation is loaded. They never execute attack events.
     internal static class RimKataMeleeAnimationCompat
     {
         private static readonly ConditionalWeakTable<object, Frame> frames =
@@ -103,15 +101,13 @@ namespace KRWF.RimKata
             filterBridge = CreatePartFilter(renderer, snapshot, part);
             RimKataMeleeAnimationWeaponDraw.BindApi(renderer, snapshot, ov);
 
-            // Only our own rendering entry points are bypassed while MA owns
-            // this pawn's weapon. Nothing is added to ordinary pawn rendering.
             try
             {
                 harmony.Patch(AccessTools.Method(renderer, "Draw"), prefix: Hook(nameof(Begin)),
                     transpiler: Hook(nameof(Transpiler)), postfix: Hook(nameof(FinishDraw)), finalizer: Hook(nameof(End)));
                 harmony.Patch(AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "TryDrawPair"),
                     prefix: Hook(nameof(PairPrefix)));
-                harmony.Patch(AccessTools.Method(typeof(PawnRenderUtility), nameof(PawnRenderUtility.DrawEquipmentAndApparelExtras)),
+                harmony.Patch(AccessTools.Method(typeof(RimKataEquipmentRenderHooks), nameof(RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras)),
                     prefix: Hook(nameof(BeginEquipment)), finalizer: Hook(nameof(EndEquipment)));
                 harmony.Patch(AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "DrawWeapon"),
                     prefix: Hook(nameof(DrawSlot)));
@@ -140,7 +136,6 @@ namespace KRWF.RimKata
 
         private static MethodInfo CreatePartFilter(Type renderer, Type snapshot, Type part)
         {
-            // The typed bridge reads the struct without boxing it every part/frame.
             var method = new DynamicMethod("RimKata_MeleeAnimation_FilterPart", typeof(bool),
                 new[] { renderer, snapshot.MakeByRefType() }, typeof(RimKataMeleeAnimationCompat), true);
             ILGenerator il = method.GetILGenerator();
@@ -291,7 +286,7 @@ namespace KRWF.RimKata
                 || pawn?.Spawned != true || pawn.Dead || pawn.Downed
                 || !RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(pawn, out ThingWithComps secondary)
                 || secondary == null || !RimKataVisualUtility.IsSecondaryUsable(pawn, pawn.equipment?.Primary, secondary)
-                || RimKataBreachWeaponRender.Owns(pawn)) return;
+                || RimKataBreachWeaponRender.Owns(pawn) || RimKataReactiveRender.Owns(pawn)) return;
             EquipmentFrame frame = equipmentFrames.GetValue(pawn, _ => new EquipmentFrame());
             frame.Pawn = pawn; frame.Primary = pawn.equipment.Primary; frame.Secondary = secondary;
             frame.Root = drawPos; frame.Facing = facing; frame.Flags = flags; frame.SecondaryDrawn = false;
@@ -311,8 +306,6 @@ namespace KRWF.RimKata
             {
                 if (OwnsRender(__state.Pawn))
                 {
-                    // MA submits its weapon separately. Keep the discovered sheath
-                    // passes, but prevent EndFrame from duplicating the blade.
                     DrawExtras(__state);
                     RimKataWeaponRenderProbe.NotifySecondaryDraw(__state.Secondary);
                 }
@@ -355,8 +348,7 @@ namespace KRWF.RimKata
                 && frame.Secondary.def.IsMeleeWeapon && pawn.stances?.curStance is Stance_Busy busy
                 && busy.verb?.EquipmentSource == frame.Secondary)
             {
-                // The shared body stance may belong to the other hand. Do not
-                // inherit its thrust as the primary gun's own draw origin.
+                // The shared body stance may carry the other hand's thrust offset.
                 equipmentPivot = frame.Root;
                 if (RimKataWeaponRenderProbe.TryGetVanillaIdlePose(pawn, weapon, frame.Root,
                     out Vector3 idleLoc, out float idleAngle, frame.Facing))
@@ -371,15 +363,12 @@ namespace KRWF.RimKata
         private static void Submit(Mesh mesh, Matrix4x4 matrix, Material material, int layer,
             Camera camera, int submesh, MaterialPropertyBlock properties)
         {
-            // Preserve the original submission, including worker changes and MPB.
             Graphics.DrawMesh(mesh, RimKataGroundPoseRender.TransformEquipment(current?.Pawn, matrix),
                 material, layer, camera, submesh, properties);
             Frame frame = current;
             if (frame == null || failed || frame.NativeSecondaryCombat) return;
             try
             {
-                // Submit while the source animator's part/root is current. Only
-                // replace shared drawing after our own poses actually submitted.
                 if (frame.Replay != null && (frame.Part == frame.Item || frame.Part == frame.MainHand))
                 {
                     int originalPart = frame.Part;
@@ -407,8 +396,6 @@ namespace KRWF.RimKata
                         0f, fy ? -frame.Offset.y : frame.Offset.y),
                         Quaternion.AngleAxis(fx ^ fy ? -frame.Angle : frame.Angle, Vector3.up), frame.Scale);
                     Matrix4x4 basis = root(frame.Renderer);
-                    // Carry final worker placement and the secondary's own grip.
-                    // Its cutout passes are rebuilt without modifying the source MPB.
                     Matrix4x4 adjustment = matrix * (basis * pose.Matrix).inverse;
                     Matrix4x4 secondaryMatrix = adjustment * basis * pose.WithoutTweak * s * tweak * s;
                     RimKataMeleeAnimationWeaponDraw.Draw(frame, frame.Renderer, frame.Item,
@@ -435,15 +422,12 @@ namespace KRWF.RimKata
             matrix = basis * reflection * basis.inverse * matrix;
             matrix.m00 = -matrix.m00; matrix.m10 = -matrix.m10;
             matrix.m20 = -matrix.m20; matrix.m30 = -matrix.m30;
-            // North/south hands and weapons stay on the same side of the body.
-            // East/west move the whole secondary grip to the opposite layer.
             if (frame.Pawn.Rotation.IsHorizontal && !RimKataGroundPoseRender.WeaponsAboveBody(frame.Pawn))
             {
                 int item = poseRenderer == frame.Renderer ? frame.Item : partIndex(getPart(poseRenderer, "ItemA"));
                 float weaponDepth = (basis * readPose(poseRenderer, item).Matrix).m13;
                 matrix.m13 += 2f * (basis.m13 - weaponDepth);
             }
-            // Match RimKata's final secondary-slot layer bias.
             matrix.m13 -= 0.001f;
             Graphics.DrawMesh(mirrored, RimKataGroundPoseRender.TransformEquipment(frame.Pawn, matrix),
                 material, layer, camera, submesh, properties);
@@ -525,9 +509,8 @@ namespace KRWF.RimKata
                 Pawn = RimKataVisualUtility.FindPawnOwner(primary);
                 if (Pawn?.Spawned != true || Pawn.Dead || Pawn.Downed || Pawn.carryTracker?.CarriedThing != null)
                     return false;
-                // Breach owns the held weapon even without a registered offhand.
-                // Only its weapon and linked hands are hidden; other MA parts stay native.
-                if (allowBreach && RimKataBreachWeaponRender.Owns(Pawn) && primary == Pawn.equipment?.Primary)
+                if (allowBreach && (RimKataBreachWeaponRender.Owns(Pawn) || RimKataReactiveRender.Owns(Pawn))
+                    && primary == Pawn.equipment?.Primary)
                 {
                     breachOwned = true;
                     return true;

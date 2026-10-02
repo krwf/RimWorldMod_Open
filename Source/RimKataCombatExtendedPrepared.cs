@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Install only alongside CE. Ordinary preparation and timing keep their
-    // original instructions when CE is absent, including no adapter calls.
     internal static class RimKataCombatExtendedPrepared
     {
         private static readonly MethodInfo NativeBurstCount = AccessTools.PropertyGetter(
@@ -43,8 +41,6 @@ namespace KRWF.RimKata
             if (RimKataPreparedWeaponData.TryGetPrepared(verb, out RimKataPreparedWeaponValues prepared)
                 && !RimKataCombatExtendedFire.PreparedModeIsCurrent(verb, prepared))
             {
-                // Restore before ordinary binding samples the new mode. The CE
-                // helper retains its existing per-verb/mode burst selection cache.
                 RimKataPreparedWeaponData.Restore(verb);
             }
         }
@@ -79,8 +75,7 @@ namespace KRWF.RimKata
             {
                 CodeInstruction code = codes[i];
                 if (code.opcode != OpCodes.Ldfld || !Equals(code.operand, NativeWarmup)) continue;
-                // The prepared value is already on the stack at this field read.
-                // Add the current verb while retaining the original branch labels.
+                // The prepared value is already on the IL stack; append the current verb before calling CeWarmup.
                 code.opcode = OpCodes.Ldarg_0;
                 code.operand = null;
                 codes.Insert(++i, new CodeInstruction(OpCodes.Call, CeWarmup));

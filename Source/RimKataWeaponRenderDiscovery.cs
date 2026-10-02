@@ -48,8 +48,7 @@ namespace KRWF.RimKata
         internal static bool HasRenderers => renderers.Count != 0;
         internal static IReadOnlyList<Renderer> Renderers => renderers;
 
-        // Call after mod startup constructors have registered their render patches.
-        // Discovery reads managed IL; it never invokes a renderer or equips a pawn.
+        // Discovery runs after external mod constructors register their render patches.
         internal static void Initialize(Harmony harmony)
         {
             if (initialized || harmony == null)
@@ -92,9 +91,7 @@ namespace KRWF.RimKata
                 }
             }
 
-            // This optional mod replaces the SYS prefix with an accessory-only
-            // postfix. Its delegate boundary is known, so bind its actual SYS
-            // helpers explicitly rather than traversing arbitrary delegates.
+            // The accessory-only SYS postfix uses delegates outside managed call-graph discovery.
             foreach (Patch patch in patches.Postfixes)
             {
                 MethodInfo postfix = patch.PatchMethod;
@@ -108,8 +105,7 @@ namespace KRWF.RimKata
                 catch (Exception exception) { ReportUnsupported(postfix, exception); }
             }
 
-            // Read every candidate before adding our transpiler, so shared helpers
-            // are not classified from IL that already contains our capture calls.
+            // Classify candidates before our transpilers alter shared helper IL.
             HashSet<MethodInfo> instrumented = new HashSet<MethodInfo>();
             List<Renderer> discovered = new List<Renderer>();
             foreach (Candidate candidate in candidates)
@@ -136,8 +132,6 @@ namespace KRWF.RimKata
                 }
                 catch (Exception exception)
                 {
-                    // Replacements forward unchanged outside a probe. A partially
-                    // instrumented candidate is therefore safe to leave uninvoked.
                     ReportUnsupported(candidate.prefix, exception);
                 }
             }
@@ -160,7 +154,7 @@ namespace KRWF.RimKata
                 throw new InvalidOperationException("Unsupported SYS sheath postfix signature.");
 
             Candidate candidate = new Candidate(postfix, null) { accessoriesOnly = true };
-            candidate.methodsToInstrument.Add(postfix); // Substitute only its Primary reads.
+            candidate.methodsToInstrument.Add(postfix);
             foreach (Type compType in adapters.Keys)
             {
                 Type renderer = compType.Assembly.GetType("SYS.DrawEquipment_WeaponBackPatch");
@@ -174,8 +168,6 @@ namespace KRWF.RimKata
                 candidate.compTypes.Add(compType);
             }
 
-            // Let the mod construct its own state and choose empty/full sheath.
-            // Neither the live equipment tracker nor the original primary draw changes.
             DynamicMethod invoker = new DynamicMethod("RimKataInvokeSysSheathPostfix", typeof(bool),
                 new[] { typeof(Pawn), typeof(Vector3), typeof(Rot4), typeof(PawnRenderFlags) },
                 typeof(RimKataWeaponRenderDiscovery), true);
@@ -188,7 +180,7 @@ namespace KRWF.RimKata
             il.Emit(OpCodes.Ldarg_3);
             il.Emit(OpCodes.Ldloc, capturedState);
             il.Emit(OpCodes.Call, postfix);
-            il.Emit(OpCodes.Ldc_I4_0); // Accessories do not replace the weapon renderer.
+            il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ret);
             candidate.invoke = (Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool>)invoker.CreateDelegate(
                 typeof(Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool>));
@@ -221,8 +213,6 @@ namespace KRWF.RimKata
 
             foreach (CodeInstruction instruction in instructions)
             {
-                // Indirect calls cannot be assigned a reliable weapon owner by
-                // this bounded call graph. Do not turn them into a negative cache.
                 if (instruction.opcode == OpCodes.Calli)
                 {
                     return false;
@@ -250,8 +240,6 @@ namespace KRWF.RimKata
 
                 if (IsUnsupportedDrawingLeaf(candidate, called))
                 {
-                    // A probe must not submit an unwrapped draw while collecting
-                    // another supported mesh from the same renderer.
                     return false;
                 }
 
@@ -288,8 +276,6 @@ namespace KRWF.RimKata
                 || declaringType?.FullName == "UnityEngine.GL"
                 || declaringType?.FullName == "UnityEngine.Rendering.CommandBuffer")
             {
-                // Includes newer RenderMesh/Blit APIs and deferred command buffers,
-                // not just DrawMesh overloads unknown to the capture adapter.
                 return true;
             }
 
@@ -298,9 +284,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Do not replay an opaque drawing helper from a different assembly.
-            // This is a conservative boundary check, not a proof that arbitrary
-            // foreign getters cannot have side effects or submit deferred work.
             return called.Name.StartsWith("Draw", StringComparison.OrdinalIgnoreCase)
                 || called.Name.StartsWith("Render", StringComparison.OrdinalIgnoreCase)
                 || called.Name.StartsWith("Blit", StringComparison.OrdinalIgnoreCase)
@@ -386,8 +369,7 @@ namespace KRWF.RimKata
             for (int i = 0; i < parameters.Length; i++)
             {
                 ParameterInfo parameter = parameters[i];
-                // Patch bookkeeping/ref arguments depend on Harmony's surrounding
-                // invocation. Replaying those without their owner is unsupported.
+                // Harmony bookkeeping/ref arguments depend on their original patch invocation.
                 if (parameter.ParameterType.IsByRef
                     || parameter.Name?.StartsWith("__", StringComparison.Ordinal) == true)
                 {
@@ -434,8 +416,6 @@ namespace KRWF.RimKata
             }
 
             il.Emit(OpCodes.Call, method);
-            // Only a prefix that suppresses the original supplies a replacement
-            // pose. Continuing prefixes may replay only explicitly tagged accessories.
             il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ceq);
             il.Emit(OpCodes.Ret);
@@ -531,9 +511,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // The caller owns the live pawn/equipment capture scope. This invokes
-            // third-party render code, not a sandbox: discovery bounds call shapes
-            // and rewrites draws/Primary reads, but cannot roll back arbitrary writes.
             internal bool ReplacesOriginal(Pawn pawn, Vector3 rootLoc, Rot4 facing, PawnRenderFlags flags)
             {
                 return invoke(pawn, rootLoc, facing, flags);

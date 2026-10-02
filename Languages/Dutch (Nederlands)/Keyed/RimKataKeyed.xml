@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profielinstellingen</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Gevechtsfuncties</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modfuncties</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuele effecten</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Activeringsfuncties</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Toegepaste waarde</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Sluipbonus bij jagen in buikligging</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Wachttijd voor opnieuw gaan liggen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tijd op de grond na een val</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Eigen vuur vermijden na een val</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Bewegingsduur tijdens de doorbraak</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wachttijd na aankomst op de doorbraakbestemming</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Standaardwaarden</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Schieten tijdens het kruipen toestaan voor niet-vijandige pionnen</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Schieten tijdens het kruipen toestaan voor vijandige pionnen</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen standaard toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Vloeiende richtovergangen</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Overmeesteren</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Aanvallen zijn uitgeschakeld.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Schadeoverdracht</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Draagt ontvangen schade over aan de vastgehouden pawn. Als dit uitstaat, wordt de pawn losgelaten bij ontwijken of het aangaan van een gevecht van dichtbij.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Glijden</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Afschudden</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Kans op glijden</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Kans op afschudden</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Genkans</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Heeft een kans</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Geen kans</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Alles herstellen</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Gefilterde resultaten herstellen</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Wankelaar</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

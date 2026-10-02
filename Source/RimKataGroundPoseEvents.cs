@@ -6,7 +6,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Receive resolved combat events. No pawn, projectile or battle-log polling.
     internal static class RimKataGroundPoseEvents
     {
         internal static void ProjectileImpact(Projectile projectile, ref Thing hitThing, bool blockedByShield)
@@ -28,8 +27,6 @@ namespace KRWF.RimKata
             if ((!alreadyAvoided || victim != intended)
                 && TryProneDirectMiss(victim, attacker))
             {
-                // Let the original impact produce its normal ground-hit effects
-                // and miss log; this is not an ordinary dodge or its cooldown.
                 hitThing = null;
                 return;
             }
@@ -66,8 +63,7 @@ namespace KRWF.RimKata
             if (__result == null || defender == null || maneuver == null)
                 return;
 
-            // A false TryCastShot can mean no attack happened. These rule packs
-            // are selected only once the real hit/dodge rolls have resolved.
+            // TryCastShot can return false without attacking; these rule packs follow the actual hit/dodge rolls.
             if (__result.RuleDef == maneuver.combatLogRulesMiss)
                 RimKataGroundPoseUtility.NotifyMiss(defender, __instance.CasterPawn, true);
             else if (__result.RuleDef == maneuver.combatLogRulesDodge)
@@ -93,8 +89,6 @@ namespace KRWF.RimKata
         private static float GetHuntingStealth(Thing thing, StatDef stat, bool applyPostProcess, int cacheStaleAfterTicks)
         {
             float value = thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
-            // Only the animal revenge calculation uses this wrapper. Read the
-            // live prone set after the vanilla stat, outside its cached value.
             if (stat != StatDefOf.HuntingStealth || !(thing is Pawn pawn)
                 || !RimKataGroundPoseUtility.IsProne(pawn)) return value;
             float bonus = RimKataTargetAccess.SettingsFor(pawn)?.GetProneHuntingStealthBonus(pawn) ?? 0f;

@@ -54,6 +54,7 @@ namespace KRWF.RimKata
             closeOnCancel = false;
             absorbInputAroundWindow = true;
             resizeable = false;
+            draggable = true;
         }
 
         public override Vector2 InitialSize
@@ -204,7 +205,7 @@ namespace KRWF.RimKata
 
         private static void DrawCheckbox(Rect inRect, ref float y, string key, ref bool value)
         {
-            Widgets.CheckboxLabeled(new Rect(inRect.x, y, inRect.width, RowHeight), key.Translate(), ref value, paintable: true);
+            RimKataFeatureWindowUtility.DrawCheckbox(new Rect(inRect.x, y, inRect.width, RowHeight), key.Translate(), ref value);
             y += RowHeight;
         }
 

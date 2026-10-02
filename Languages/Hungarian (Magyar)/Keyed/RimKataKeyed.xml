@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profilbeállítások</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Harci funkciók</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modfunkciók</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Vizuális effektek</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktiválási funkciók</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Alkalmazott érték</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Vadászati lopakodási bónusz fekve</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Várakozási idő az újbóli lefekvés előtt</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Elesés utáni földön fekvés ideje</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Baráti tűz elkerülése elesés után</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Mozgás időtartama áttörés közben</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Várakozási idő az áttörés célpontjának elérése után</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Alapértékek</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Kúszás közbeni tüzelés engedélyezése a nem ellenséges karaktereknek</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Kúszás közbeni tüzelés engedélyezése az ellenséges karaktereknek</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés alapértelmezett engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sima célzási átmenetek</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Lefogás</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>A támadások le vannak tiltva.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Sebzésátadás</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>A kapott sebzést a lefogott szereplőre hárítja. Kikapcsolva a kitérés vagy a közelharc megkezdése elengedi a lefogott szereplőt.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Csúszás</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Lerázás</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Csúszás esélye</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Lerázás esélye</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Gének esélye</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Van esély</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Nincs esély</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Összes visszaállítása</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Szűrt eredmények visszaállítása</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Tántorgó</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

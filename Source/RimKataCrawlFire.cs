@@ -9,8 +9,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // Only a retained-gun pawn's path-start event creates an entry. Native VerbTick
-    // owns every burst; this scheduler starts the next native aiming cycle only.
     internal sealed class RimKataCrawlFireEntry : IAttackTargetSearcher
     {
         internal RimKataDownedWeaponState record;
@@ -40,7 +38,6 @@ namespace KRWF.RimKata
 
         public override void MapComponentTick()
         {
-            // Empty maps do not query a pawn, a setting or a combat condition.
             for (int i = moving.Count - 1; i >= 0; i--)
             {
                 RimKataCrawlFireEntry entry = moving[i];
@@ -117,7 +114,8 @@ namespace KRWF.RimKata
             Verbs.Count != 0 && verb != null && Verbs.ContainsKey(verb);
 
         internal static bool CanStartCast(Verb verb) =>
-            Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry) && entry.starting;
+            Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry)
+            && entry.starting && CanContinue(entry);
 
         internal static bool IsCrawlWeapon(ThingWithComps weapon) =>
             Weapons.Count != 0 && weapon != null && Weapons.Contains(weapon);
@@ -153,8 +151,6 @@ namespace KRWF.RimKata
         {
             if (!RimKataDownedWeaponUtility.TryGet(pawn, out RimKataDownedWeaponState record)) return;
             NotifyReleased(pawn);
-            // Finish the upright controller's ownership before binding the same
-            // native Verb here. Its ordinary downed rejection remains unchanged.
             if (RimKataCombatStatePresenceCache.TryGetOwner(pawn, out RimKataMapComponent owner))
             {
                 RimKataPawnCombatState state = owner.GetState(pawn, false);
@@ -164,7 +160,7 @@ namespace KRWF.RimKata
             Verb verb = record.weapon.TryGetComp<CompEquippable>()?.PrimaryVerb;
             if (verb != null)
             {
-                // A saved native burst cannot resume without its movement gate.
+                // A loaded native burst can resume before its movement gate has been restored.
                 if (verb.state == VerbState.Bursting)
                     record.nextFireTick = Math.Max(record.nextFireTick,
                         Find.TickManager.TicksGame + NativeCooldown(pawn, verb));
@@ -193,7 +189,6 @@ namespace KRWF.RimKata
 
         internal static void NotifySettingsChanged()
         {
-            // Settings/profile edits are events, not a reason to watch every pawn.
             foreach (Pawn pawn in new List<Pawn>(Retained.Keys))
             {
                 if (Retained.TryGetValue(pawn, out var record)) TrackFireOverride(record);
@@ -208,6 +203,7 @@ namespace KRWF.RimKata
                 || !Retained.TryGetValue(pawn, out RimKataDownedWeaponState record)
                 || !record.activeDowned || !record.fireAllowed || !pawn.Spawned || !pawn.Downed
                 || pawn.pather?.Moving != true || !pawn.Crawling
+                || RimKataTemporaryInactivity.IsInactive(pawn)
                 || RimKataTargetAccess.SettingsFor(pawn)?.crawlFireEnabled != true
                 || !RimKataGroundPoseHead.Supports(pawn))
                 return;
@@ -238,7 +234,8 @@ namespace KRWF.RimKata
             pawn.Spawned && !pawn.Dead && pawn.Downed && pawn.Crawling
             && pawn.pather?.MovingNow == true
             && pawn.pather.LastMovedTick >= Find.TickManager.TicksGame - (firing ? 0 : 1)
-            && pawn.stances?.stunner.Stunned != true;
+            && pawn.stances?.stunner.Stunned != true
+            && !RimKataTemporaryInactivity.IsInactive(pawn);
 
         internal static bool CanContinue(Verb verb) =>
             Verbs.Count != 0 && verb != null && Verbs.TryGetValue(verb, out var entry) && CanContinue(entry);
@@ -276,7 +273,7 @@ namespace KRWF.RimKata
                 else if (entry.verb.state == VerbState.Bursting
                     || pawn.stances.curStance is Stance_RimKataCrawlWarmup)
                     return;
-                else FinishBurst(entry); // A native warmup was interrupted.
+                else FinishBurst(entry);
             }
             int now = Find.TickManager.TicksGame;
             if (now < entry.record.nextFireTick || now < entry.nextSearchTick) return;
@@ -331,8 +328,6 @@ namespace KRWF.RimKata
             float cooldown = verb.verbProps.AdjustedCooldownTicks(verb, pawn);
             if (!RimKataPreparedWeaponData.TryGetPrepared(verb, out var prepared))
                 return Mathf.Max(1, Mathf.RoundToInt(cooldown));
-            // Only the stored single-shot conversion is applied. Armor, response,
-            // moving accuracy and other RimKata combat multipliers are absent.
             float warmup = (ResolveOriginalWarmup?.Invoke(verb, prepared) ?? prepared.OriginalWarmupSeconds)
                 * pawn.GetStatValue(StatDefOf.AimingDelayFactor) * 60f;
             return ConvertedCooldown(cooldown, warmup, prepared.TotalBurstSpacingTicks,
@@ -350,7 +345,6 @@ namespace KRWF.RimKata
         {
             if (verb == null || Verbs.Count == 0 || !Verbs.TryGetValue(verb, out var entry)) return;
             entry.fired = true;
-            // Preserve earned cooldown even if the crawl stops during a burst.
             entry.record.nextFireTick = Math.Max(entry.record.nextFireTick,
                 Find.TickManager.TicksGame + Math.Max(1, entry.cooldownTicks));
         }
@@ -366,8 +360,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyBurstStep(RimKataCrawlFireEntry entry)
         {
-            // Reuse the participant captured for this burst step; the native call
-            // may have stopped its path and removed the entry in the meantime.
+            // The native burst call may stop the path and remove this entry synchronously.
             if (entry != null && !entry.removed && entry.verb.state != VerbState.Bursting) FinishBurst(entry);
         }
 
@@ -443,12 +436,25 @@ namespace KRWF.RimKata
             };
         }
 
+        internal static void NotifyFactionChanged(Pawn pawn)
+        {
+            if (Retained.Count != 0 && pawn != null && Retained.TryGetValue(pawn, out var record))
+                TrackFireOverride(record);
+        }
+
+        internal static void NotifyFactionRelationsChanged(Faction faction)
+        {
+            if (Retained.Count == 0 || faction == null) return;
+            foreach (RimKataDownedWeaponState record in Retained.Values)
+                if (record.pawn.Faction == faction) TrackFireOverride(record);
+        }
+
         private static void TrackFireOverride(RimKataDownedWeaponState record)
         {
             Map map = record.pawn.Map;
             if (map == null) return;
             bool overridden = record.fireAllowed != (RimKataTargetAccess.SettingsFor(record.pawn)
-                ?.crawlFireDefaultAllowed ?? RimKataSettings.DefaultCrawlFireDefaultAllowed);
+                ?.GetCrawlFireDefaultAllowed(record.pawn) ?? RimKataSettings.DefaultCrawlFireDefaultAllowed);
             if (!FireOverrides.TryGetValue(map, out HashSet<Pawn> pawns))
             {
                 if (!overridden) return;
@@ -465,7 +471,7 @@ namespace KRWF.RimKata
             foreach (Pawn pawn in pawns)
                 if (Retained.TryGetValue(pawn, out var record))
                 {
-                    record.fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.crawlFireDefaultAllowed
+                    record.fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.GetCrawlFireDefaultAllowed(pawn)
                         ?? RimKataSettings.DefaultCrawlFireDefaultAllowed;
                     if (record.fireAllowed) NotifyPathStarted(pawn);
                     else NotifyPathStopped(pawn);

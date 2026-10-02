@@ -5,8 +5,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // Only an actual attack order creates this job. The native carry container
-    // remains the owner of the held pawn; ordinary movement/waiting needs no job.
     internal static class RimKataSubdueJobs
     {
         internal static bool IsAttackJob(Job job)
@@ -15,9 +13,7 @@ namespace KRWF.RimKata
                 || job.def == RimKataDefOf.RimKata_Attack
                 || job.def == RimKataDefOf.RimKata_SubdueCombat);
 
-        // False rejects an attack request without ending the current carry job.
-        // The caller owns disposing a rejected incoming job, as with its other
-        // StartJob cancellation paths.
+        // On rejection, the caller still owns disposal of the incoming job.
         internal static bool PrepareJob(Pawn pawn, Job newJob,
             ref bool? keepCarryingThingOverride)
         {
@@ -43,8 +39,7 @@ namespace KRWF.RimKata
             state.externalOrderJobId = newJob.loadID;
             newJob.killIncappedTarget = false;
             newJob.canUseRangedWeapon = false;
-            // Cleanup evaluates the previous job too. Keep only this verified
-            // attack transition from dropping the existing held pawn.
+            // Native cleanup also evaluates the previous job when deciding to drop the held pawn.
             keepCarryingThingOverride = true;
             return true;
         }
@@ -119,8 +114,6 @@ namespace KRWF.RimKata
                     }
                 };
             }
-            // Registry.Tick is the sole owner of the weapon cycle. In
-            // particular this job must never call native melee attack toils.
             yield return combat;
         }
     }

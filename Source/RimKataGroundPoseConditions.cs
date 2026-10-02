@@ -19,8 +19,6 @@ namespace KRWF.RimKata
         {
             target = LocalTargetInfo.Invalid;
             if (pawn?.Spawned != true || state?.pawn != pawn) return false;
-            // Reuse known combat targets only. A visual pose must not start a
-            // second map search or alter the combat controller's candidates.
             if (TryGetAttackableCycleTarget(pawn, state.primaryWeaponCycle, out target)
                 || TryGetAttackableCycleTarget(pawn, state.secondaryWeaponCycle, out target)) return true;
             if (pawn.stances?.curStance is Stance_Busy busy
@@ -75,13 +73,19 @@ namespace KRWF.RimKata
                 && RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(pawn, target);
         }
 
-        internal static float HeadAimAngle(Pawn pawn)
+        internal static float HeadAimAngle(Pawn pawn, RimKataPawnCombatState state = null)
         {
             LocalTargetInfo target = LocalTargetInfo.Invalid;
             if (pawn.stances?.curStance is Stance_Busy busy && !busy.neverAimWeapon)
                 target = busy.focusTarg;
-            if (!target.IsValid && RimKataDualWeaponController.TryGetNextAim(pawn, out _, out var next))
-                target = next;
+            if (!target.IsValid)
+            {
+                LocalTargetInfo next;
+                bool hasAim = state != null
+                    ? RimKataDualWeaponController.TryGetNextAim(pawn, state, out _, out next)
+                    : RimKataDualWeaponController.TryGetNextAim(pawn, out _, out next);
+                if (hasAim) target = next;
+            }
             if (!target.IsValid && (pawn.CurJobDef == RimKataDefOf.RimKata_Attack
                 || pawn.CurJobDef == JobDefOf.AttackStatic || pawn.jobs?.curDriver is JobDriver_Hunt))
                 target = pawn.CurJob.targetA;
@@ -93,8 +97,6 @@ namespace KRWF.RimKata
 
         internal static bool CanEnterProne(Pawn pawn, Verb verb, LocalTargetInfo target)
         {
-            // The combat event already chose the verb and target. Do not poll
-            // stances or weapon cycles to rediscover an aiming intent here.
             if (pawn?.Spawned != true
                 || pawn.Dead
                 || pawn.Downed
@@ -119,8 +121,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Sample only the adjacent cell toward the existing aim. The angle
-            // selects the nearest of eight directions, not every nearby cover.
             Vector3 direction = (target.Cell - pawn.Position).ToVector3();
             int octant = Mathf.RoundToInt(Mathf.Atan2(direction.x, direction.z)
                 * Mathf.Rad2Deg / 45f);
@@ -193,7 +193,6 @@ namespace KRWF.RimKata
             }
 
             // Fixed-target cycles can operate without a random-candidate list.
-            // Conflicting retained targets are not treated as a single opponent.
             if (!allowFixedTarget
                 || (cycle.plannedTarget != null && cycle.focusedTarget != null
                     && cycle.plannedTarget != cycle.focusedTarget))

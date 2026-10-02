@@ -10,8 +10,6 @@ namespace KRWF.RimKata
 {
     internal static class RimKataDoorCacheEnvironment
     {
-        // Capture only when a game's store is first needed. Use already loaded
-        // metadata/assemblies; do not crawl mod folders or read their DLL files.
         internal static XmlDocument Capture()
         {
             XmlDocument document = RimKataDoorCacheStore.Document("RimKataDoorEnvironment");

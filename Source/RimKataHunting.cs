@@ -9,9 +9,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // The Hunt driver still owns movement, its selected gun, execution and hauling.
-    // Only its stationary CastVerb toil drives the other gun; ordinary pawns and
-    // other jobs never enter this scheduler.
     internal sealed class RimKataHuntingSession
     {
         private readonly JobDriver_Hunt driver;
@@ -35,8 +32,6 @@ namespace KRWF.RimKata
             ThingWithComps secondary = RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn);
             Verb first = UsableHuntingVerb(pawn, primary);
             Verb second = UsableHuntingVerb(pawn, secondary);
-            // Do not require the prey to be in range before vanilla has chosen
-            // a shooting position. Strictly greater leaves ties to the primary.
             if (first == null) return second;
             if (second == null) return first;
             return RimKataRangeUtility.ResolveEffectiveRange(pawn, secondary, second)
@@ -84,7 +79,6 @@ namespace KRWF.RimKata
 
             state = pawn.Map.GetComponent<RimKataMapComponent>()?.GetState(pawn, true);
             if (state == null) return;
-            // Keep recovery already owed by either weapon when entering Hunt.
             ThingWithComps oldPrimary = state.primaryWeaponCycle.weapon;
             ThingWithComps oldSecondary = state.secondaryWeaponCycle.weapon;
             int primaryCooldown = RecoveryBeforeCancel(state.primaryWeaponCycle, pawn);
@@ -110,8 +104,7 @@ namespace KRWF.RimKata
                 cycle.warmupTicksRemaining = savedWarmup;
                 cycle.warmupTotalTicks = savedWarmupTotal;
             }
-            // Binding both slots must not leave prepared companion properties on
-            // the gun whose warmup and burst are owned by the native Hunt toil.
+            // The native Hunt toil owns the lead gun's warmup and burst properties.
             RimKataPreparedWeaponData.Restore(leadVerb);
             state.huntingSession = this;
         }
@@ -132,8 +125,6 @@ namespace KRWF.RimKata
                 && weaponCycle.boundVerb?.IsMeleeAttack == false;
         }
 
-        // Also checked at each native burst shot, so movement, prey death or a
-        // change to another job cannot leave a queued shot running behind it.
         internal bool CanContinue()
         {
             Pawn pawn = driver.pawn;
@@ -150,7 +141,6 @@ namespace KRWF.RimKata
                 && cycle.boundVerb == companionVerb && cycle.weapon != null
                 && pawn.equipment.AllEquipmentListForReading.Contains(cycle.weapon)
                 && prey?.Spawned == true && !prey.Dead && prey.Map == pawn.Map
-                // Hunt keeps shooting only dangerous-to-execute downed animals.
                 && (!prey.Downed || prey.RaceProps.DeathActionWorker.DangerousInMelee)
                 && (!(pawn.stances.curStance is Stance_Busy busy)
                     || busy.verb == leadVerb || busy.verb == companionVerb)
@@ -159,7 +149,6 @@ namespace KRWF.RimKata
 
         internal void Tick()
         {
-            // Recreate only the currently running hunting toil after loading.
             EnterCast();
             if (state?.huntingSession != this) return;
             state.primaryWeaponCycle.TickTimers();
@@ -205,16 +194,13 @@ namespace KRWF.RimKata
             attack.closeMeleeResolution = false;
             attack.closeMeleeHit = false;
             attack.closeDefensePrecheck = RimKataCloseDefensePrecheck.None;
-            // The native owner ticks this verb, including optional CE/Muzzle
-            // hooks. A failed queue can start a native reload job; do nothing
-            // further to the pawn or hunting state on this stack.
+            // A failed Queue can start a reload Job and invalidate this hunting session.
             if (!attack.Queue()) attack.ClearCompletedReferences();
         }
 
         internal void Complete(RimKataNativeAttack attack, bool acted)
         {
-            // A native shot can end Hunt from inside its damage/reload callback.
-            // Its own cycle still owes recovery even after Pause detached us.
+            // Damage/reload callbacks can end Hunt before this shot's recovery is recorded.
             RimKataWeaponCycleState firedCycle = attack.cycle;
             if (firedCycle.weapon != attack.weapon) return;
             if (acted)
@@ -242,9 +228,6 @@ namespace KRWF.RimKata
             cycle.visualAimTicksRemaining = 0;
         }
 
-        // Keep warmup across successive shots, but stop native execution while
-        // vanilla transitions between toils. Do not depend on toil indices:
-        // another mod can insert its own hunting steps.
         internal void LeaveCast() => casting = false;
 
         internal void Pause()
@@ -273,8 +256,6 @@ namespace KRWF.RimKata
 
         private static IEnumerable<Toil> Decorate(JobDriver_Hunt driver, IEnumerable<Toil> source)
         {
-            // Admission happens once when the job builds its toils. Single-gun
-            // hunters and pawns without slot access receive no per-tick hook.
             Pawn pawn = driver.pawn;
             if (!RimKataEligibility.HasActiveRimKataAccess(pawn)
                 || !RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn)
@@ -313,8 +294,7 @@ namespace KRWF.RimKata
                 }
                 else if (toil.defaultCompleteMode != ToilCompleteMode.Instant)
                 {
-                    // Capture the eventual session too: the movement toil occurs
-                    // before CastVerb in the iterator, but runs again on pursuit.
+                    // The iterator yields movement before CastVerb, then reuses it during pursuit.
                     toil.AddPreInitAction(() => session?.Pause());
                 }
                 yield return toil;

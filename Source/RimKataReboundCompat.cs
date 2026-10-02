@@ -8,7 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Keep Rebound's own chance, trait and projectile rules; only select its weapon.
     internal static class RimKataReboundCompat
     {
         private struct WeaponScope
@@ -130,7 +129,6 @@ namespace KRWF.RimKata
                 }
             }
             if (!current.overridden) return tracker.Primary;
-            // A dropped weapon ends this selection; never switch hands within one rebound.
             return current.weapon != null && !current.weapon.Destroyed
                 && tracker.AllEquipmentListForReading.Contains(current.weapon) ? current.weapon : null;
         }

@@ -13,9 +13,6 @@ using Pose = KRWF.RimKata.RimKataMeleeAnimationCompat.Pose;
 
 namespace KRWF.RimKata
 {
-    // RimKata owns only the secondary clock and pose buffers. Installed MA data
-    // and its part evaluator supply the motion; no source animator is advanced,
-    // registered, drawn again, or asked to emit sound/damage/animation events.
     internal static class RimKataMeleeAnimationReplay
     {
         private static readonly ConditionalWeakTable<Pawn, Playback> playback = new ConditionalWeakTable<Pawn, Playback>();
@@ -45,7 +42,6 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            // Called only after the optional MA renderer API has been bound.
             try
             {
                 Type renderer = AccessTools.TypeByName("AM.AnimRenderer");
@@ -132,8 +128,7 @@ namespace KRWF.RimKata
             Expression create = Expression.Assign(element, Expression.New(snapshot.GetConstructor(new[] { part, renderer, typeof(float) }),
                 Expression.MakeIndex(parts, parts.Type.GetProperty("Item"), new[] { i }), self, t));
             var updated = Expression.Variable(snapshot, "updated");
-            // Explicitly store evaluated structs back into the snapshot array;
-            // both the submitter and child parts must see the updated matrices.
+            // MA snapshots are structs; child parts require the updated matrix written back to the array.
             Expression update = Expression.Block(Expression.Assign(updated, element),
                 Expression.Call(updated, AccessTools.Method(snapshot, "UpdateWorldMatrix"), mx, my),
                 Expression.Assign(element, updated));
@@ -215,7 +210,6 @@ namespace KRWF.RimKata
             {
                 Playback state = StateFor(frame);
                 ExpireAttack(state);
-                // Outside combat, retain the already-working live duplication.
                 if (state.AttackDef != null) return state;
                 return IsAttack(definition(frame.Renderer)) && state.GetSample(RestDef(frame)) != null ? state : null;
             }
@@ -261,11 +255,9 @@ namespace KRWF.RimKata
 
         internal static bool TryDrawStandalone(Pawn pawn, ThingWithComps weapon, Vector3 drawRoot)
         {
-            // Attack playback belongs to the slot, not to the external-renderer
-            // probe. Vanilla weapons need no discovered renderer to animate.
             if (!enabled || weapon?.def.IsMeleeWeapon != true || pawn == null
                 || !playback.TryGetValue(pawn, out Playback state) || state.AttackDef == null
-                || RimKataBreachWeaponRender.Owns(pawn)) return false;
+                || RimKataBreachWeaponRender.Owns(pawn) || RimKataReactiveRender.Owns(pawn)) return false;
             try
             {
                 if (!TryGetCombatState(pawn, weapon, out state) || TryGetFrame(pawn, weapon, out _)) return false;
@@ -290,8 +282,6 @@ namespace KRWF.RimKata
 
         internal static bool UsesNativeRangedCombat(Frame frame)
         {
-            // Idle still follows the primary animator. During an attack the gun
-            // uses its own aim, never the primary's melee swing or replay clock.
             return frame.Secondary.def.IsRangedWeapon
                 && ((enabled && IsAttack(definition(frame.Renderer)))
                     || RimKataDualWeaponController.TryGetVisualData(frame.Pawn, frame.Secondary, out _));
@@ -321,7 +311,6 @@ namespace KRWF.RimKata
                     if (next != null) state.AttackDef = next;
                     state.AttackFacing = facing;
                 }
-                // While only the primary attacks, hold the secondary's idle pose.
                 object def = attacking ? state.AttackDef : RestDef(frame);
                 Sample sample = state.GetSample(def);
                 if (sample == null) return false;
@@ -375,8 +364,7 @@ namespace KRWF.RimKata
 
         private static Matrix4x4 BodyMatrix(Frame frame, object def, LocalTargetInfo target, float time, bool attack, bool mirrored)
         {
-            // Use the actual MA draw root, not a pawn-render scratch buffer that
-            // may already belong to a different cached draw. Remove only its aim.
+            // Pawn-render scratch state may belong to another cached draw; use MA's actual draw root.
             object source = frame.Standalone ? null : frame.Renderer;
             object original = source == null ? null : definition(source);
             Matrix4x4 basis = frame.Standalone
@@ -429,7 +417,6 @@ namespace KRWF.RimKata
                     if (tweak == null || (pass == 1 && tweak == Tweak)) continue;
                     IList candidates = attacks(tweak, facing);
                     if (candidates == null || candidates.Count == 0) continue;
-                    // Visual selection has its own sequence; never consume gameplay RNG.
                     int start = Sequence % candidates.Count;
                     for (int i = 0; i < candidates.Count; i++)
                     {

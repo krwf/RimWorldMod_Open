@@ -7,13 +7,12 @@ namespace KRWF.RimKata
 {
     internal enum RimKataFallPhase { None, Falling, Fallen, Rising, Lowering }
 
-    // Visual state only. Neither a job, posture, map position nor a hitbox is changed.
     public sealed class RimKataGroundPoseState : IExposable
     {
         internal const int TransitionDuration = 6;
         internal RimKataFallPhase phase;
         internal bool prone;
-        // Legacy saves can carry a deadline here; Rebuild moves it out of combat state.
+        // Legacy saves store this deadline here; Rebuild migrates it out of combat state.
         internal long resumeProneTick = -1;
         internal bool risingFromProne;
         internal float riseStartProgress = 1f;
@@ -55,13 +54,10 @@ namespace KRWF.RimKata
             get
             {
                 if (!VisualActive) return Rot4.Invalid;
-                // A roll keeps its initial frame of reference even if aim changes.
                 if (rolling)
                     return new Rot4((originalFacing.AsInt + rollStep % 4 + 4) % 4);
                 if (phase == RimKataFallPhase.Rising && riseRollFacing.IsValid) return riseRollFacing;
                 float aim = Mathf.FloorToInt((Mathf.Repeat(headAimAngle, 360f) + 22.5f) / 45f) % 8 * 45f;
-                // Select a shared body/head picture relative to the lying tilt.
-                // The target changes the picture, never the established fall angle.
                 return Rot4.FromAngleFlat(Mathf.Repeat(aim - DrawAngle, 360f));
             }
         }
@@ -101,7 +97,7 @@ namespace KRWF.RimKata
                 riseWeaponOffset = offset;
             else if (version == 1 && phase == RimKataFallPhase.Rising)
             {
-                // Preserve the saved eight-tick pose, then finish in six ticks.
+                // Older saves can contain an eight-tick transition.
                 float remaining = Mathf.Clamp01(transitionTicks / 8f);
                 riseStartProgress *= remaining;
                 offset *= remaining;
@@ -198,8 +194,6 @@ namespace KRWF.RimKata
 
     internal static class RimKataGroundPoseUtility
     {
-        // Only currently prone pawns enter this set. Projectile hooks can return
-        // before a pawn/state/settings lookup when no prone participant exists.
         private static readonly Dictionary<Pawn, RimKataPawnCombatState> Prone =
             new Dictionary<Pawn, RimKataPawnCombatState>();
         private static readonly Dictionary<Pawn, RimKataPawnCombatState> Active =
@@ -211,13 +205,21 @@ namespace KRWF.RimKata
             => Prone.Count != 0 && pawn != null && Prone.TryGetValue(pawn, out var state)
                 && state.groundPose?.prone == true && pawn.Spawned && !pawn.Dead && !pawn.Downed;
 
+        internal static bool IsFallen(Pawn pawn)
+        {
+            if (Active.Count == 0 || pawn == null || !Active.TryGetValue(pawn, out var state))
+                return false;
+            RimKataGroundPoseState pose = state.groundPose;
+            return pose != null && (pose.phase == RimKataFallPhase.Falling
+                || pose.phase == RimKataFallPhase.Fallen
+                || (pose.phase == RimKataFallPhase.Rising && !pose.risingFromProne));
+        }
+
         internal static bool TryProneMiss(Pawn pawn)
             => IsProne(pawn) && Rand.Chance(RimKataTargetAccess.SettingsFor(pawn)?.GetProneMissChance(pawn) ?? 0f);
 
         internal static void NotifyAttackJob(Pawn pawn)
         {
-            // A stopped, explicitly ordered out-of-range shot has no warmup yet.
-            // This is a Job-start event, never a standing-pawn polling request.
             if (pawn?.CurJobDef != JobDefOf.AttackStatic
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)) return;
             NotifyAimStarted(pawn, pawn.CurJob.verbToUse
@@ -225,11 +227,13 @@ namespace KRWF.RimKata
         }
 
         internal static void NotifyAimStarted(Pawn pawn, Verb verb, LocalTargetInfo target,
-            bool knownInsideCandidateRange = false)
+            bool knownInsideCandidateRange = false, RimKataPawnCombatState knownState = null)
         {
             if (pawn?.Spawned != true || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || RimKataBreachUtility.Get(pawn) != null) return;
-            Active.TryGetValue(pawn, out var state);
+            if (RimKataReactiveMotion.Participant(pawn) != null) return;
+            RimKataPawnCombatState state = knownState;
+            if (state == null) Active.TryGetValue(pawn, out state);
             if (state?.groundPose?.phase == RimKataFallPhase.Rising) return;
             if (state?.groundPose != null && !state.groundPose.PronePose) return;
             bool allowed = !knownInsideCandidateRange
@@ -239,7 +243,7 @@ namespace KRWF.RimKata
                 if (state?.groundPose?.PronePose == true) BeginRise(state);
                 return;
             }
-            RimKataMapComponent owner = pawn.Map.GetComponent<RimKataMapComponent>();
+            RimKataMapComponent owner = state?.ownerComponent ?? pawn.Map.GetComponent<RimKataMapComponent>();
             if (owner == null) return;
             if (owner.groundPoseResumeTicks.TryGetValue(pawn, out long deadline))
             {
@@ -264,13 +268,12 @@ namespace KRWF.RimKata
             pose.aimWeapon = verb.EquipmentSource;
             pose.aimVerb = verb;
             SetFocus(pawn, pose, target);
-            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn);
+            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state);
             if (starting) RimKataResponseVisualParticipantCache.RefreshBodyVisual(state);
         }
 
         internal static void NotifyMovement(Pawn pawn)
         {
-            // Movement callbacks for ordinary pawns stop before any state lookup.
             if (Active.Count == 0 || pawn == null || !Active.TryGetValue(pawn, out var state)
                 || state.groundPose == null
                 || !RimKataGroundPoseConditions.HasMovementJob(pawn)) return;
@@ -330,7 +333,6 @@ namespace KRWF.RimKata
 
         internal static void NotifyTargetMoved(Pawn target)
         {
-            // Reuse the existing cell-change event; only a pose watching this target is visited.
             if (TargetWatchers.Count == 0 || target == null
                 || !TargetWatchers.TryGetValue(target, out var watchers)) return;
             for (int i = watchers.Count - 1; i >= 0; i--)
@@ -340,7 +342,7 @@ namespace KRWF.RimKata
                 RimKataGroundPoseState pose = state.groundPose;
                 if (pose?.PronePose == true)
                     NotifyAimStarted(pawn, pose.aimVerb
-                        ?? RimKataWeaponSlotUtility.PrimaryVerb(pose.aimWeapon), pose.focus);
+                        ?? RimKataWeaponSlotUtility.PrimaryVerb(pose.aimWeapon), pose.focus, knownState: state);
                 else if (pose != null && pose.phase != RimKataFallPhase.Rising
                     && !RimKataGroundPoseConditions.HasAttackableOpponent(pawn, state)) BeginRise(state);
             }
@@ -357,7 +359,6 @@ namespace KRWF.RimKata
                 Clear(state);
                 return;
             }
-            // Active visuals only: liveness is cheap; range/cover/admission belongs to combat events.
             if (pose.phase != RimKataFallPhase.Rising && pose.focus.HasThing
                 && (pose.focus.Thing.Destroyed || !pose.focus.Thing.Spawned
                     || (pose.focus.Thing is Pawn victim
@@ -369,11 +370,11 @@ namespace KRWF.RimKata
                 {
                     SetFocus(pawn, pose, next);
                     if (pose.PronePose) NotifyAimStarted(pawn, pose.aimVerb
-                        ?? RimKataWeaponSlotUtility.PrimaryVerb(pose.aimWeapon), next);
+                        ?? RimKataWeaponSlotUtility.PrimaryVerb(pose.aimWeapon), next, knownState: state);
                 }
                 else BeginRise(state);
             }
-            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn);
+            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state);
             if (pose.PronePose) pose.angle = pose.headAimAngle;
             pose.TickFall();
             if (pose.prone) Prone[pawn] = state;
@@ -388,6 +389,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyAvoidance(Pawn defender, Thing attacker, bool melee)
         {
+            if (RimKataReactiveMotion.Participant(defender) != null) return;
             RimKataSubdueDefense.ReleaseForDefense(defender);
             RimKataPawnCombatState state = StateFor(defender);
             if (state == null) return;
@@ -401,6 +403,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyMiss(Pawn defender, Thing attacker, bool melee)
         {
+            if (RimKataReactiveMotion.Participant(defender) != null) return;
             if (!melee) return;
             RimKataPawnCombatState state = StateFor(defender);
             if (state != null) TryFallOrRoll(state, attacker, melee);
@@ -425,7 +428,6 @@ namespace KRWF.RimKata
                 return;
             }
             if (pose?.VisualActive == true || state.DodgeMovementActive) return;
-            // A single opponent gates entering the fall, not subsequent rolls.
             if (!RimKataGroundPoseConditions.HasSingleCloseOpponent(pawn, state, attacker)) return;
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
             if (!Rand.Chance(settings?.MeleeFallChance ?? 0f)) return;
@@ -437,7 +439,7 @@ namespace KRWF.RimKata
             away.Normalize();
             pose.phase = RimKataFallPhase.Falling;
             pose.angle = LieAngle(away, pawn.Rotation);
-            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn);
+            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state);
             pose.originalFacing = pawn.Rotation;
             pose.rollAxis = new Vector3(away.z, 0f, -away.x);
             pose.transitionTicks = RimKataGroundPoseState.TransitionDuration;
@@ -454,20 +456,18 @@ namespace KRWF.RimKata
         {
             if (direction.x * direction.x + direction.z * direction.z < 0.0001f)
                 direction = facing.FacingCell.ToVector3();
-            // The sprite's head points north before rotation. Keep the complete
-            // direction, including diagonals, rather than selecting a side.
+            // The unrotated sprite points its head north.
             return Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
         }
 
         internal static bool TryGetShotCenter(Verb verb, out Vector3 center, bool headCentered = false)
         {
+            if (RimKataSlidingAttackOrigin.TryGet(verb, out center)) return true;
             center = Vector3.zero;
             if (!TryGetShotState(verb, out var state)) return false;
             Vector3 aimOrigin = headCentered
                 ? RimKataGroundPoseGeometry.AimOrigin(state.pawn, state.groundPose) : state.pawn.DrawPos;
             center = RimKataGroundPoseGeometry.StandingCenter(verb, aimOrigin);
-            // Vanilla, CE and Muzzle Flash share the finalized head-pivot
-            // placement; each adapter retains its own trajectory and effects.
             center += RimKataGroundPoseGeometry.Displacement(state.pawn, center, state.groundPose, headCentered);
             return true;
         }
@@ -481,8 +481,6 @@ namespace KRWF.RimKata
                 || !Active.TryGetValue(pawn, out var state) || state.groundPose?.VisualActive != true
                 || !pawn.Spawned || pawn.Dead || pawn.Downed
                 || !RimKataGroundPoseGeometry.HasUsableAnchor(pawn, weapon)) return false;
-            // Match the response renderer's target angle, not the weapon's
-            // unrelated firing target or a previous world-space render frame.
             Vector3 target = focus.HasThing && focus.Thing.Spawned
                 ? focus.Thing.DrawPos : focus.Cell.ToVector3Shifted();
             Vector3 direction = target - RimKataGroundPoseGeometry.AimOrigin(pawn, state.groundPose);

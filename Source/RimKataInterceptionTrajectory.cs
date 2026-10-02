@@ -5,8 +5,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Event-only prediction. No solution is cached across aiming ticks and no
-    // projectile is steered after launch. Vanilla saves the rewritten flight.
     internal static class RimKataInterceptionTrajectory
     {
         private static readonly AccessTools.FieldRef<Projectile, Vector3> Origin =
@@ -20,7 +18,6 @@ namespace KRWF.RimKata
         private static readonly AccessTools.FieldRef<Thing, int> PendingTicks =
             AccessTools.FieldRefAccess<Thing, int>("tickDelta");
 
-        // Floating-point tolerance only, not an added target size/range bonus.
         private const float PositionToleranceSquared = 0.0001f;
 
         internal readonly struct Flight
@@ -70,8 +67,6 @@ namespace KRWF.RimKata
             }
 
             Vector3 origin = Origin(shot);
-            // Reject an already displaced launch sample. Later custom trajectory
-            // changes are not predicted; the actual contact check still applies.
             if ((shot.ExactPosition.Yto0() - origin.Yto0()).sqrMagnitude > PositionToleranceSquared
                 || !TryPredict(origin, shot.def.projectile.SpeedTilesPerTick, flight, 0,
                     out Vector3 point, out int ticks)
@@ -89,8 +84,6 @@ namespace KRWF.RimKata
 
         internal static void ReleaseUnreachableHit(Projectile shot)
         {
-            // Ammo is already spent. Keep the original flight and ground impact,
-            // but remove the remote Thing hit; do not reroll accuracy or delete it.
             shot.usedTarget = new LocalTargetInfo(Destination(shot).ToIntVec3());
         }
 
@@ -105,8 +98,7 @@ namespace KRWF.RimKata
 
             if (remaining > 0)
             {
-                // The engine stopped scanning at this target's registered cell.
-                // Do not jump to a later contact past as-yet unchecked blockers.
+                // The engine stopped at this cell; later contacts could bypass unchecked blockers.
                 return TryGetEarlyContact(shot, flight, out point)
                     && point.ToIntVec3().Equals(target.Position);
             }
@@ -122,10 +114,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // TickInterval can advance 15 ticks offscreen. Negative remaining is
-            // the overshoot past arrival, not extra target radius. Sample back to
-            // arrival, then cover the one-tick rounding / Thing tick-order window.
-            // Both endpoints are on the target's actual, currently verified path.
+            // Offscreen TickInterval may overshoot arrival by 15 ticks; negative remaining samples back to arrival.
             Vector3 before = flight.PositionAfter(remaining - 1d);
             Vector3 after = flight.PositionAfter(remaining + 1d);
             return PointOnSegment(point.Yto0(), before, after);
@@ -133,9 +122,6 @@ namespace KRWF.RimKata
 
         private static bool TryGetEarlyContact(Projectile shot, Flight target, out Vector3 point)
         {
-            // Vanilla can hit a projectile in a traversed cell before arrival.
-            // Confirm both trajectories cross there during the same tick window,
-            // not merely that two long path segments cross at unrelated times.
             point = default(Vector3);
             Vector3 origin = Origin(shot);
             Vector3 destination = Destination(shot);
@@ -190,8 +176,6 @@ namespace KRWF.RimKata
 
         internal static void PlaceAtContact(Projectile shot, Vector3 point)
         {
-            // This runs only after a real collision was validated, never in flight.
-            // Align the interceptor's own explosion/fuse with the target effect.
             shot.Position = point.ToIntVec3();
             Destination(shot) = point.Yto0();
             RemainingTicks(shot) = 0;
@@ -226,7 +210,6 @@ namespace KRWF.RimKata
                 float range = RimKataRangeUtility.ResolveEffectiveRange(pawn, verb.EquipmentSource, verb);
                 rangeSquared = range * range;
             }
-            // Interception uses exact weapon range; candidate padding does not apply.
             return pawn.Position.DistanceToSquared(point.ToIntVec3()) <= rangeSquared;
         }
 
@@ -251,8 +234,6 @@ namespace KRWF.RimKata
             }
 
             Flight rawFlight = new Flight(origin, destination, duration, rawRemaining);
-            // Verify the sampled position instead of assuming every modded
-            // Projectile follows vanilla's linear horizontal flight.
             if ((target.ExactPosition.Yto0() - rawFlight.PositionAfter(0)).sqrMagnitude > PositionToleranceSquared)
             {
                 return false;
@@ -274,8 +255,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Vanilla clamps position at the launch origin during the fractional
-            // first tick introduced by CeilToInt(StartingTicksToImpact).
+            // Vanilla clamps position at the origin during the fractional first tick from CeilToInt.
             double hold = Math.Max(0d, available - target.duration);
             double stationaryTime = (target.origin - origin).magnitude / (double)speed;
             double time;
@@ -309,7 +289,6 @@ namespace KRWF.RimKata
             }
 
             flightTicks = Math.Max(1, (int)Math.Ceiling(duration));
-            // Landing in the same tick is not a reliably earlier interception.
             return flightTicks < available;
         }
 

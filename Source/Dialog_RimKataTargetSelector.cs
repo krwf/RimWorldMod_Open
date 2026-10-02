@@ -155,7 +155,6 @@ namespace KRWF.RimKata
 
         protected override void LateWindowOnGUI(Rect inRect)
         {
-            // Profile and checkbox painting must not start a window drag.
             GUI.DragWindow(new Rect(0f, 0f, Mathf.Max(0f, windowRect.width - 36f), inRect.y + 36f));
         }
 
@@ -213,7 +212,6 @@ namespace KRWF.RimKata
             {
                 return;
             }
-            // Keep rules for definitions supplied by temporarily disabled mods.
             settings.targetAccessRules = rules.Values.OrderBy(rule => rule.key, StringComparer.Ordinal)
                 .Select(rule => rule.Copy()).ToList();
             RimKataMod.CommitListSettings();

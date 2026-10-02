@@ -48,8 +48,7 @@ namespace KRWF.RimKata
                 if (scanActive)
                 {
                     sessionActive = true;
-                    // Buffered rings are transient. Revisit the geometry after
-                    // loading; registered pawn IDs still suppress duplicates.
+                    // Ring buffers are transient; loading restarts geometry but retains candidate IDs.
                     completedRing = 0;
                 }
             }
@@ -88,8 +87,6 @@ namespace KRWF.RimKata
                 || neutralGlobalRevision != RimKataNeutralTargetInvalidation.GlobalRevision)
             {
                 neutralPawnIds.Clear();
-                // A formerly neutral pawn must not remain hidden by this scan's
-                // seen-ID set. Candidates, pending draws and geometry stay intact.
                 ringRuntime?.discoveredIds.Clear();
                 neutralMapRevision = neutralVersion.revision;
                 neutralGlobalRevision = RimKataNeutralTargetInvalidation.GlobalRevision;
@@ -233,7 +230,7 @@ namespace KRWF.RimKata
         private const float CandidateCellRadiusPadding =
             RimKataRangeUtility.CandidateCellRadiusPadding;
         private const float RadiusEpsilon = 0.001f;
-        // Deliberately covers the center cell and all eight adjacent cells.
+        // Includes the center cell and all eight adjacent cells.
         private const float CloseCombatRangedCandidateCellRadius = 1.7f;
 
         private static readonly List<Thing> EligibleCandidates =
@@ -294,8 +291,6 @@ namespace KRWF.RimKata
                 Pawn pawn,
                 RimKataPawnCombatState combatState)
             {
-                // A failed new-admission gate must not replace the configured
-                // shootability radius used by an already registered candidate.
                 return CanAdmitNew(pawn, combatState)
                     ? ResolveConfiguredRadius(pawn, combatState)
                     : 0f;
@@ -344,8 +339,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // A real aim may start while a dormant movement batch is waiting.
-            // Keep those identities and only restart the geometry here.
             search.ringRuntime?.ClearRing();
             search.ringRuntime?.discoveredIds.Clear();
             search.sessionActive = true;
@@ -486,8 +479,6 @@ namespace KRWF.RimKata
                 }
             }
 
-            // Every completed ring has its own draw. Earlier rings can keep
-            // validating while a later ring is being collected over several ticks.
             bool? dormantMovementAllowed = null;
             for (int i = 0; i < runtime.batches.Count;)
             {
@@ -751,8 +742,6 @@ namespace KRWF.RimKata
                     return true;
                 }
 
-                // With no usable retained/order target, an empty moving slot can
-                // consume a replacement from the existing bounded search.
                 if (!movingSearch)
                     return false;
             }
@@ -1048,7 +1037,6 @@ namespace KRWF.RimKata
                     continue;
                 }
 
-                // Every in-map cell consumes the same geometry quota.
                 checkedCells++;
                 int cellIndex = map.cellIndices.CellToIndex(x, z);
                 CollectAutomaticTargetsInCell(
@@ -1150,8 +1138,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // Only a completed nonhostile verdict enters this temporary list.
-            // Some native hostility rules change without a target-cache event.
             if (CanRememberNonhostile(pawn, target))
             {
                 search.neutralPawnIds.Add(target.thingIDNumber);
@@ -1163,16 +1149,14 @@ namespace KRWF.RimKata
         {
             RaceProperties pawnRace = pawn.RaceProps;
             RaceProperties targetRace = target.RaceProps;
-            // Predator distance and a colony roamer's recent-combat timeout
-            // can change hostility while the same jobs/relations remain active.
+            // Predator distance and roamer combat timeouts change hostility without cache events.
             if (pawnRace.predator || targetRace.predator
                 || (pawnRace.roamMtbDays.HasValue && pawn.Faction == Faction.OfPlayer)
                 || (targetRace.roamMtbDays.HasValue && target.Faction == Faction.OfPlayer))
             {
                 return false;
             }
-            // Releasing a herd animal changes shambler hostility without a
-            // target-cache notification. Ordinary pawn pairs skip this getter.
+            // Releasing a herd animal changes shambler hostility without a target-cache event.
             return !(pawnRace.Animal && pawnRace.herdAnimal
                     && pawn.Faction != null && target.IsShambler)
                 && !(targetRace.Animal && targetRace.herdAnimal
@@ -1295,8 +1279,6 @@ namespace KRWF.RimKata
             bool limited = UsesRangedCandidateLimit(cycle);
             if (limited)
             {
-                // All concurrent rings consult the same current slot population.
-                // No batch owns a stale copy of a vacant-slot count.
                 int capacityRing = Mathf.Max(batch.ring, runtime.incomingMaximumRing);
                 if (combatState.sharedTargetSearch.scanActive)
                 {
@@ -1313,7 +1295,6 @@ namespace KRWF.RimKata
                 }
             }
 
-            // Each slot owns its lottery. A rejection consumes this tick's single draw.
             Pawn target = batch.targets[draw.Draw()];
             pendingIds.Remove(target.thingIDNumber);
             if (batch.dormantMovement && target.pather?.Moving != true)
@@ -1343,7 +1324,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Admission uses live positions; the scan origin only defines ring membership.
             float candidateCellRadius = slot.ResolveConfiguredRadius(pawn, combatState);
             if (candidateCellRadius <= 0f
                 || pawn.Position.DistanceToSquared(target.Position) > slot.configuredRadiusSquared)
@@ -1357,8 +1337,6 @@ namespace KRWF.RimKata
             }
             if (!newTargetValid.HasValue)
             {
-                // Hostility was shared at ingress. Delayed admission only needs
-                // the remaining current target state and per-weapon shootability.
                 newTargetValid = !target.Position.Fogged(pawn.Map)
                     && RimKataTargeting.IsPawnTargetStateValid(target);
             }
@@ -1396,7 +1374,6 @@ namespace KRWF.RimKata
 
             if (cycle.ContainsAutomaticCandidate(target))
             {
-                // Registered candidates are checked when selected or maintained.
                 return true;
             }
 
@@ -1459,7 +1436,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Membership carries admission; only current shooting conditions remain.
             float candidateCellRadius = ResolveCandidateCellRadiusForCycle(
                 pawn, combatState, cycle, verb);
             if (candidateCellRadius <= 0f
@@ -1559,7 +1535,6 @@ namespace KRWF.RimKata
 
             if (combatState.sharedTargetSearch?.scanActive == true)
             {
-                // Reallow cap scheduling without restarting the in-progress rings.
                 combatState.ResetCandidateSaturationExpansion(false);
                 return;
             }
@@ -1702,8 +1677,6 @@ namespace KRWF.RimKata
                 && !combatState.candidateSaturationExpansionUsed
                 && (primarySaturated || secondarySaturated))
             {
-                // A falling cap closes the slot before the regular ring-end
-                // saturation check. Preserve its next-band reservation here.
                 if (primarySaturated)
                 {
                     TryScheduleNextCandidateLimit(
@@ -1953,8 +1926,6 @@ namespace KRWF.RimKata
             for (int ring = saturatedRing + 1; ring <= maximumRing; ring++)
             {
                 int ringLimit = CandidateLimitForRing(pawn, ring);
-                // Editable bands may decrease before growing again. Reserve
-                // the next larger capacity instead of stopping at a decrease.
                 if (ringLimit <= currentLimit)
                 {
                     continue;
@@ -1978,7 +1949,6 @@ namespace KRWF.RimKata
             RimKataWeaponCycleState cycle,
             int ring)
         {
-            // Non-random moving fire only needs one replacement per empty slot.
             if (!RandomAttackEnabled(pawn))
                 return 1;
             return Mathf.Max(
@@ -2143,8 +2113,6 @@ namespace KRWF.RimKata
         {
             if (combatState == null)
             {
-                // Before the first combat state exists, only signal a possible
-                // vacancy. Binding and search admission validate the actual Verb.
                 ThingWithComps primary = pawn?.equipment?.Primary;
                 ThingWithComps secondary =
                     RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
@@ -2166,8 +2134,6 @@ namespace KRWF.RimKata
         private static bool NeedsNonRandomMovingCandidate(
             Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)
         {
-            // Target invalidation owns range/LOS checks and clears retained work.
-            // A healthy target must not cause a new search or a mid-attack switch.
             return cycle?.weapon?.def?.IsRangedWeapon == true
                 && verb?.IsMeleeAttack == false
                 && !cycle.HasAutomaticCandidates
@@ -2328,8 +2294,6 @@ namespace KRWF.RimKata
                 pawn, combatState, ref secondarySlot);
             if (removedCandidate)
             {
-                // Notify while the scan is still active: preserve the next-band
-                // reservation and do not turn maintenance into another search.
                 NotifyAutomaticCandidateCountChanged(pawn, combatState, false);
             }
             Finish(combatState);

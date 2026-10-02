@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profileinstellungen</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Kampffunktionen</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Mod-Funktionen</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuelle Effekte</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktivierungsfunktionen</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Angewandter Wert</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus auf Jagdtarnung im Liegen</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Wartezeit vor erneutem Hinlegen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Liegedauer nach einem Sturz</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Eigenbeschuss im Liegen nach einem Sturz vermeiden</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Bewegungsdauer beim Durchbruch</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wartezeit nach Erreichen des Durchbruchziels</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Standardwerte</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Schießen beim Kriechen für nicht feindselige Figuren erlauben</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Schießen beim Kriechen für feindselige Figuren erlauben</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen standardmäßig erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sanfte Zielwechsel</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Überwältigen</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Angriffe sind deaktiviert.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Schadensübertragung</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Überträgt erlittenen Schaden auf die festgehaltene Figur. Bei deaktivierter Option wird sie beim Ausweichen oder beim Eintritt in den Nahkampf losgelassen.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Rutschen</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Abschütteln</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Wahrscheinlichkeit für Rutschen</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Wahrscheinlichkeit für Abschütteln</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Genwahrscheinlichkeit</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Wahrscheinlichkeit vorhanden</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Keine Wahrscheinlichkeit</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Alle zurücksetzen</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Gefilterte Ergebnisse zurücksetzen</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Schlurfer</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

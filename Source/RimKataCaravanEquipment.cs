@@ -7,7 +7,6 @@ namespace KRWF.RimKata
 {
     internal static class RimKataCaravanEquipment
     {
-        // UI reads must never promote, unregister, or move equipment.
         internal static ThingWithComps HeldSecondary(Pawn pawn)
         {
             ThingWithComps secondary = RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
@@ -51,8 +50,6 @@ namespace KRWF.RimKata
             Caravan caravan = pawn.GetCaravan();
             if (FindDirectOwner(caravan, weapon.holdingOwner) == null)
                 return false;
-            // Keep vanilla's existing bond restrictions; any confirmation still
-            // belongs to the gear UI before this transaction.
             if (!EquipmentUtility.CanEquip(weapon, pawn, out string vanillaReason, checkBonded: true))
             {
                 reason = "MessageCantEquipCustom".Translate(vanillaReason);
@@ -136,8 +133,7 @@ namespace KRWF.RimKata
                         && primary.holdingOwner == destination && !primary.Destroyed
                         && movedPrimary.holdingOwner == destination)
                         primary.TryAbsorbStack(movedPrimary, true);
-                    // A count-one transfer can split a stack. On rollback reunite
-                    // that piece with its original, still-owned stack when possible.
+            // A count-one transfer can split the original stack.
                     if (restoredIncoming && movedIncoming != null && movedIncoming != weapon
                         && weapon.holdingOwner == source && !weapon.Destroyed
                         && movedIncoming.holdingOwner == source)

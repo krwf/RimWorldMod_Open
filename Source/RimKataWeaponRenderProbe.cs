@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // A probe substitutes only reads made by discovered render methods. Equipment,
-    // jobs and combat state remain owned by the live pawn throughout the draw.
     internal static class RimKataWeaponRenderProbe
     {
         internal enum SecondaryDrawResult
@@ -81,8 +79,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Definitions are shared by named profiles. Register every weapon's
-            // possible routes here; the existing loadout gate decides permission.
             foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
             {
                 if (def.IsWeapon)
@@ -111,7 +107,7 @@ namespace KRWF.RimKata
         internal static int BeginFrame(Pawn pawn, Vector3 root, Rot4 facing, PawnRenderFlags flags)
         {
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
-            // A nested draw still needs an empty frame to mask its parent's probe.
+            // Nested draws need an empty frame to mask their parent's probe.
             if (!context.active && frameDepth == 0)
             {
                 return 0;
@@ -140,8 +136,6 @@ namespace KRWF.RimKata
                 return token;
             }
 
-            // Hidden vanilla equipment may still have an external idle renderer.
-            // Its visibility belongs to each weapon, not to the primary slot.
             frame.pawn = pawn;
             frame.primary = context.primary;
             frame.secondary = context.secondary;
@@ -166,8 +160,6 @@ namespace KRWF.RimKata
                 {
                     if (frame.independentIdle)
                     {
-                        // Probe the secondary even when the primary was hidden.
-                        // No draw from its own renderer means no idle fallback.
                         if (DrawSpecialSecondary(frame.pawn, frame.secondary, 0f, true,
                             out Vector3 drawLoc, out float aimAngle) == SecondaryDrawResult.Native)
                         {
@@ -177,7 +169,7 @@ namespace KRWF.RimKata
                     }
                     else if (frame.primaryDrawn)
                     {
-                        // An external primary renderer may never enter DrawEquipmentAiming.
+                        // External primary renderers may never call DrawEquipmentAiming.
                         RimKataDualWeaponRenderUtility.DrawSecondaryAfterExternalPrimary(
                             frame.pawn, frame.primary, frame.secondary, frame.root);
                     }
@@ -325,12 +317,7 @@ namespace KRWF.RimKata
                             continue;
                         }
 
-                        // Replay during the capture lifetime. Never cache instance
-                        // materials or world-space poses across pawns or frames.
-                        // Native aiming is suppressed during the probe. Custom
-                        // weapon paths mark their sheath submissions separately,
-                        // so MA can retain just those additions, even when the
-                        // renderer lets another mod draw the blade afterwards.
+                        // Captured materials and world-space poses are valid only within this capture scope.
                         if (capturedCount > 0 && !capture.ReplayMirrored(
                             frame.root, frame.facing.AsAngle,
                             nativeWeapon || accessoriesOnly ? 0f : visualAngleOffset,
@@ -340,13 +327,9 @@ namespace KRWF.RimKata
                         {
                             continue;
                         }
-                        // An accessory pass never claims the blade. MA or the
-                        // normal secondary weapon renderer still owns that draw.
                         if (accessoriesOnly) continue;
                         if (nativeWeapon)
                         {
-                            // Preserve an actual native draw request separately
-                            // from an empty renderer, including native-only routes.
                             nativeLoc = nativeDrawLoc;
                             nativeAngle = nativeAimAngle;
                             return SecondaryDrawResult.Native;
@@ -375,8 +358,6 @@ namespace KRWF.RimKata
             return SecondaryDrawResult.None;
         }
 
-        // The subdue participant owns one primary weapon. Reuse discovered
-        // renderers without substituting live equipment or mirroring a slot.
         internal static bool DrawSpecialHeldPrimary(Pawn pawn, ThingWithComps weapon,
             Vector3 root, Rot4 facing, PawnRenderFlags flags, Vector3 position, float rotation,
             float maximumAltitude = float.PositiveInfinity)
@@ -398,9 +379,6 @@ namespace KRWF.RimKata
                     using (var capture = RimKataWeaponDrawCapture.Begin())
                     {
                         bool replaced = renderer.ReplacesOriginal(pawn, root, facing, flags);
-                        // Native requests use the independent one-hand fallback.
-                        // Keep custom geometry and multipart offsets, but give the
-                        // entire weapon the same held-target aim/thrust pose.
                         if (replaced && !nativeDrawSeen
                             && capture.ReplayHeldWeapon(position, rotation, maximumAltitude)) return true;
                     }
@@ -453,7 +431,6 @@ namespace KRWF.RimKata
             }
         }
 
-        // Signatures intentionally match the original calls for IL substitution.
         internal static ThingWithComps Primary(Pawn_EquipmentTracker tracker)
         {
             return Probing && tracker == probePawn?.equipment ? probeWeapon : tracker.Primary;

@@ -72,7 +72,6 @@ namespace KRWF.RimKata
                 AddSpecificApparel(result, apparel, kind.specificApparelRequirements, category);
             }
 
-            // Boss waves can equip apparel which is not assigned by the pawn kind itself.
             List<BossgroupDef> bossgroups = DefDatabase<BossgroupDef>.AllDefsListForReading;
             for (int i = 0; i < bossgroups.Count; i++)
             {
@@ -87,9 +86,7 @@ namespace KRWF.RimKata
             for (int i = 0; i < equipment.Count; i++)
             {
                 ThingDef def = equipment[i];
-                // PlayerAcquirable also depends on factions in the current world. Only its
-                // permanent destroy-on-drop exclusion is suitable for this definition cache.
-                // Known humanlike-only equipment is retained in result but never exposed here.
+                // PlayerAcquirable depends on the current world, so it cannot be cached per Def.
                 if (def.destroyOnDrop && !result.ContainsKey(def))
                     Add(result, def, RimKataTargetCategory.Other);
             }
@@ -104,7 +101,6 @@ namespace KRWF.RimKata
             if (race == null)
                 return false;
 
-            // Keep the same priority as the target catalog for races with overlapping flags.
             if (race.IsMechanoid)
                 category = RimKataTargetCategory.Mechanoid;
             else if (race.Insect)
@@ -197,7 +193,6 @@ namespace KRWF.RimKata
                         || (layer != null && properties.layers?.Contains(layer) != true))
                         continue;
 
-                    // Match the native requirement's body/layer/definition and tag rules.
                     bool matches = string.IsNullOrEmpty(requiredTag) || properties.tags?.Contains(requiredTag) == true;
                     if (!matches && alternatives != null)
                     {

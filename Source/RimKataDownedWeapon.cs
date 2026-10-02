@@ -74,8 +74,7 @@ namespace KRWF.RimKata
             Scribe_Collections.Look(ref saved, "rimKataDownedWeapons", LookMode.Deep);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
-                // Build before map respawns: vanilla drops downed equipment again
-                // in Notify_PawnSpawned, including while loading a save.
+                // Notify_PawnSpawned drops downed equipment again during save loading.
                 states.Clear();
                 if (saved == null) return;
                 foreach (RimKataDownedWeaponState state in saved)
@@ -195,7 +194,7 @@ namespace KRWF.RimKata
                 pawn = pawn,
                 weapon = context.retained,
                 activeDowned = true,
-                fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.crawlFireDefaultAllowed
+                fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.GetCrawlFireDefaultAllowed(pawn)
                     ?? RimKataSettings.DefaultCrawlFireDefaultAllowed,
                 promotedSecondary = promoted,
                 originalPrimary = promoted && pawn.mindState?.droppedWeapon == context.primary
@@ -277,8 +276,6 @@ namespace KRWF.RimKata
                 || pawn.MapHeld == null || !pawn.PositionHeld.IsValid)
                 return;
 
-            // The carry has succeeded: use the holder's map and position after
-            // despawning, so failed pickup attempts never disarm the pawn.
             pawn.equipment.TryDropEquipment(state.weapon, out _, pawn.PositionHeld, true);
         }
 
@@ -469,8 +466,7 @@ namespace KRWF.RimKata
     {
         public static void Prefix(Pawn __instance, out ThingWithComps __state)
         {
-            // Capture before removal clears the retained record and stripping
-            // apparel can change eligibility or faction relations.
+            // Removal clears the retained record; stripping apparel can also change eligibility or faction relations.
             __state = RimKataDownedWeaponUtility.TryGet(__instance, out RimKataDownedWeaponState state)
                 && RimKataDownedWeaponUtility.StillHeld(state)
                 && __instance.Faction?.HostileTo(Faction.OfPlayer) == true ? state.weapon : null;

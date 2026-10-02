@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profilindstillinger</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Kampfunktioner</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modfunktioner</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuelle effekter</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktiveringsfunktioner</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Anvendt værdi</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus til snigen under jagt i liggende stilling</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Ventetid før man lægger sig ned igen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tid på jorden efter et fald</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Undgå beskydning fra egne efter et fald</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Bevægelsestid under gennembrud</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Ventetid efter ankomst til gennembruddets mål</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Standardværdier</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Tillad skydning under kravlen for ikke-fjendtlige figurer</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Tillad skydning under kravlen for fjendtlige figurer</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillad skydning under kravlen som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Glidende sigteovergange</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Overmand</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Angreb er deaktiveret.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Skadesoverførsel</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Overfører modtaget skade til den fastholdte figur. Når dette er slået fra, slippes figuren ved undvigelse eller nærkamp.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Glidning</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Afrystning</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Chance for glidning</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Chance for afrystning</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Gensandsynlighed</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Har en chance</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Ingen chance</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Nulstil alle</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Nulstil filtrerede resultater</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Vakler</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

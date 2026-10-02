@@ -8,8 +8,7 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Metadata is separate from the native properties object so the actual
-    // VerbProperties subclass and all of its private fields remain intact.
+    // Separate metadata preserves custom VerbProperties subclasses and private fields.
     internal sealed class RimKataPreparedWeaponValues
     {
         internal readonly VerbProperties OriginalProperties;
@@ -67,14 +66,10 @@ namespace KRWF.RimKata
             new Dictionary<VerbProperties, RimKataPreparedWeaponValues>(RimKataReferenceComparer<VerbProperties>.Instance);
         private static readonly Dictionary<VerbProperties, List<RimKataPreparedWeaponValues>> PreparedVariants =
             new Dictionary<VerbProperties, List<RimKataPreparedWeaponValues>>(RimKataReferenceComparer<VerbProperties>.Instance);
-        // Old bindings remain recognizable until restored. Weak keys let obsolete
-        // revisions disappear without retaining every old definition copy.
         private static readonly ConditionalWeakTable<VerbProperties, RimKataPreparedWeaponValues> BoundProperties =
             new ConditionalWeakTable<VerbProperties, RimKataPreparedWeaponValues>();
         private static int preparedRevision = int.MinValue;
 
-        // Only startup and settings changes perform definition preparation/disk
-        // access. Bind never loads files or refreshes the definition collection.
         internal static void RefreshDefinitions()
         {
             PreparedDefinitions.Clear();
@@ -147,8 +142,6 @@ namespace KRWF.RimKata
                 Restore(verb);
             }
 
-            // OFF and definitions which were already single-shot use exactly the
-            // original object and native getter caches. Never prepare on demand.
             if (!enabled || preparedRevision != revision
                 || !PreparedDefinitions.TryGetValue(verb.verbProps, out RimKataPreparedWeaponValues prepared))
             {
@@ -162,8 +155,7 @@ namespace KRWF.RimKata
             int burstSpacing = Mathf.Max(0, verb.TicksBetweenBurstShots);
             prepared = GetRuntimeVariant(prepared, burstCount, burstSpacing);
             verb.verbProps = prepared.Properties;
-            // Retain native unique-weapon inputs in metadata, then prevent the
-            // getters from applying the same traits to the prepared copy again.
+            // Native getters would otherwise apply unique-weapon traits to the converted copy again.
             CachedBurstShotCount(verb) = 1;
             CachedTicksBetweenBurstShots(verb) = prepared.OriginalBurstSpacing;
             return prepared;
@@ -175,8 +167,6 @@ namespace KRWF.RimKata
             return verb?.verbProps != null && BoundProperties.TryGetValue(verb.verbProps, out prepared);
         }
 
-        // Planning also queries timing before a verb is bound. Consult the same
-        // prepared collection without performing conversion or definition I/O.
         internal static bool CanPrepareSingleShot(Verb verb)
         {
             if (verb?.verbProps == null || !ConversionEnabled(verb))
@@ -204,9 +194,6 @@ namespace KRWF.RimKata
                 return enabled
                     && prepared.ConfigurationRevision == RimKataEquipmentUtility.WeaponConfigurationRevision;
             }
-            // An original with no prepared conversion remains a valid native
-            // attack, including while a new settings revision is not prepared.
-            // Only an installed, obsolete conversion must be restored/rebound.
             return !enabled || preparedRevision != RimKataEquipmentUtility.WeaponConfigurationRevision
                 || !PreparedDefinitions.ContainsKey(verb.verbProps)
                 || verb.BurstShotCount <= 1;
@@ -287,8 +274,7 @@ namespace KRWF.RimKata
                 }
             }
 
-            // Instance traits are unavailable during XML load. Compute each
-            // actual count/spacing combination once per definition revision.
+            // Weapon-instance traits are unavailable during XML load.
             RimKataStoredVerbTiming timing = RimKataStoredVerbTiming.Create(
                 prepared.OriginalProperties, prepared.VerbIndex, burstCount, burstSpacing);
             VerbProperties properties = CloneProperties(prepared.OriginalProperties, timing);

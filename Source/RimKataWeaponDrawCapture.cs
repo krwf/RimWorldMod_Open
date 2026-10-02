@@ -6,8 +6,6 @@ using UnityEngine.Rendering;
 
 namespace KRWF.RimKata
 {
-    // External render call sites use these wrappers. Ordinary rendering forwards
-    // unchanged; only an explicitly active, thread-local probe records commands.
     internal static class RimKataWeaponDrawCapture
     {
         [ThreadStatic] private static CaptureScope active;
@@ -65,33 +63,23 @@ namespace KRWF.RimKata
                 float weaponAngleOffset = 0f, bool lowerSecondaryDepth = false, bool accessory = false,
                 bool finalPose = false)
             {
-                // Final Unity submission boundary for native and captured secondary
-                // draws. East and west use the same per-draw depth reflection;
-                // the special east-facing slot swap affects only screen height.
                 if (mirrorSecondaryDepth)
                 {
-                    // Fallen weapons share the front layer before the pose lift;
-                    // reflecting that source layer would put one behind the body.
+                    // Reflecting the fallen weapon layer would put one weapon behind the body.
                     matrix.m13 = RimKataGroundPoseRender.WeaponsAboveBody()
                         ? Matrix.m13 - 0.001f
                         : 2f * RimKataDualWeaponRenderUtility.PawnRenderAltitude - Matrix.m13;
                 }
                 else if (lowerSecondaryDepth)
                 {
-                    // North/south keep the source depth order, with the secondary
-                    // just below its original primary-slot draw at submission.
                     matrix.m13 = Matrix.m13 - 0.001f;
                 }
-                // Keep the captured horizontal position. Only the screen-height
-                // difference is halved, with the existing special east-facing swap.
                 if (adjustSecondaryHeight && !keepSecondaryHeight)
                 {
                     matrix.m23 = pawnPivot.z + (matrix.m23 - pawnPivot.z) * 0.5f;
                 }
                 if (weaponAngleOffset != 0f)
                 {
-                    // Tilt the combat weapon around its own draw origin, after
-                    // recoil and response poses. Do not orbit it around the pawn.
                     Vector4 position = matrix.GetColumn(3);
                     matrix = Matrix4x4.Rotate(Quaternion.AngleAxis(weaponAngleOffset, Vector3.up))
                         * matrix;
@@ -105,8 +93,7 @@ namespace KRWF.RimKata
             }
         }
 
-        // Commands belong to the scope and must be consumed before Dispose.
-        // Pooling keeps repeated probes free of scope/list allocations.
+        // Captured commands become invalid when Dispose returns their storage to the pool.
         internal sealed class CaptureScope : IDisposable
         {
             private readonly List<DrawCommand> commands = new List<DrawCommand>(4);
@@ -171,14 +158,9 @@ namespace KRWF.RimKata
                 Vector3 origin = reference.GetColumn(3);
                 float weaponBottom = position.y;
                 float layerScale = 1f;
-                // North/south keep all custom weapon parts between the carrier
-                // and the held pawn. Compress only depth gaps when necessary;
-                // geometry, facing and the part order remain unchanged.
                 if (top > bottom && weaponBottom + top - bottom > maximumAltitude)
                     layerScale = Mathf.Clamp01((maximumAltitude - weaponBottom) / (top - bottom));
-                // The requested altitude is the bottom of the held weapon, not
-                // merely its first part. Keep multipart layer gaps while placing
-                // even rear layers inside the requested weapon band.
+                // Requested altitude is the multipart weapon bottom, not the first part origin.
                 position.y += origin.y - bottom;
                 // Ignore the planar mesh's zero Y scale when reading its angle.
                 float sourceAngle = Mathf.Atan2(reference.m02, reference.m22) * Mathf.Rad2Deg;
@@ -204,9 +186,7 @@ namespace KRWF.RimKata
                 List<DrawCommand> selected = accessoriesOnly ? accessories : commands;
                 if (disposed || selected.Count == 0) return false;
                 replayMeshes.Clear();
-                // Validate the entire batch before drawing any part. Property
-                // blocks have no general snapshot API and may already be reused
-                // by the probed renderer, so those draws need its original path.
+                // MaterialPropertyBlock has no snapshot API; reused blocks cannot be replayed safely.
                 for (int i = 0; i < selected.Count; i++)
                 {
                     DrawCommand command = selected[i];
@@ -222,8 +202,6 @@ namespace KRWF.RimKata
                     : WorldReflection(pivot, facingAngle);
                 if (visualAngleOffset != 0f)
                 {
-                    // Apply the response pose after placement, around the same
-                    // pawn pivot. A Y-axis rotation keeps each draw's height.
                     Matrix4x4 rotation = Matrix4x4.Rotate(
                         Quaternion.AngleAxis(visualAngleOffset, Vector3.up));
                     rotation.m03 = pivot.x - rotation.m00 * pivot.x - rotation.m02 * pivot.z;
@@ -236,15 +214,12 @@ namespace KRWF.RimKata
                     Matrix4x4 matrix = reflection * command.Matrix;
                     if (!sideFacingSecondary)
                     {
-                        // The mirrored mesh already contains a local X reflection.
-                        // Cancel it in the matrix so the net geometry is world-mirrored,
-                        // while retaining the original matrix's winding parity.
+                        // Cancel the mesh's local X reflection in the matrix to preserve winding parity.
                         matrix.m00 = -matrix.m00;
                         matrix.m10 = -matrix.m10;
                         matrix.m20 = -matrix.m20;
                         matrix.m30 = -matrix.m30;
                     }
-                    // Final submission applies the common per-draw depth rule.
                     command.Submit(replayMeshes[i], matrix, sideFacingSecondary,
                         adjustSecondaryHeight: sideFacingSecondary, pawnPivot: pivot,
                         keepSecondaryHeight: keepSecondaryHeight,
@@ -290,8 +265,6 @@ namespace KRWF.RimKata
                 BindingFlags.Public | BindingFlags.Static, null, types, null);
         }
 
-        // SYS submits its sheath separately from its custom weapon mesh. Keep
-        // that distinction when MA owns the blade, including SYS's idle path.
         public static void DrawAccessoryMesh(Mesh mesh, Vector3 position, Quaternion rotation,
             Material material, int layer)
         {
@@ -397,7 +370,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer));
             else
             {
@@ -410,7 +383,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer, Camera camera)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null) active.Record(new DrawCommand(mesh, matrix, material, layer, camera));
             else
             {
@@ -423,7 +396,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer));
             else
@@ -437,7 +410,7 @@ namespace KRWF.RimKata
 
         public static void DrawMesh(Mesh mesh, Vector3 position, Quaternion rotation, Material material, int layer, Camera camera)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material, layer, camera));
             else
@@ -453,7 +426,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));
@@ -471,7 +444,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, LightProbeUsage lightProbeUsage)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage));
@@ -489,7 +462,7 @@ namespace KRWF.RimKata
             Camera camera, int submeshIndex, MaterialPropertyBlock properties, ShadowCastingMode castShadows,
             bool receiveShadows, Transform probeAnchor, bool useLightProbes)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, Matrix4x4.TRS(position, rotation, Vector3.one), material,
                     layer, camera, submeshIndex, properties, castShadows, receiveShadows, probeAnchor,
@@ -509,7 +482,7 @@ namespace KRWF.RimKata
             ShadowCastingMode castShadows, bool receiveShadows, Transform probeAnchor,
             LightProbeUsage lightProbeUsage, LightProbeProxyVolume lightProbeProxyVolume)
         {
-            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active)) return;
+            if (active == null && (RimKataBreachWeaponRender.Active || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)) return;
             if (active != null)
                 active.Record(new DrawCommand(mesh, matrix, material, layer, camera, submeshIndex,
                     properties, castShadows, receiveShadows, probeAnchor, lightProbeUsage, lightProbeProxyVolume));

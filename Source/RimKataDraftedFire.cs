@@ -142,7 +142,6 @@ namespace KRWF.RimKata
                 && RimKataEligibility.CanBeginGunKataAttack(pawn);
         }
 
-        // !!! Debug HUD !!!
         public static string DebugCombatDemandReasons(Pawn pawn)
         {
             if (pawn == null)
@@ -211,9 +210,41 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.JobTrackerTick))]
     public static class Patch_PawnJobTracker_DraftedRimKataFire
     {
-        public static void Postfix(Pawn ___pawn)
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            RimKataDraftedFireController.ProcessJobTrackerTick(___pawn);
+            var codes = new List<CodeInstruction>(instructions);
+            Label completed = generator.DefineLabel();
+            Label absent = generator.DefineLabel();
+            bool hasReturn = false;
+            foreach (CodeInstruction code in codes)
+            {
+                if (code.opcode != OpCodes.Ret) continue;
+                code.opcode = OpCodes.Br;
+                code.operand = completed;
+                hasReturn = true;
+            }
+            if (!hasReturn)
+                throw new System.InvalidOperationException("[RimKata] JobTrackerTick has no normal return.");
+
+            var entryPoint = new CodeInstruction(OpCodes.Nop);
+            entryPoint.labels.Add(completed);
+            codes.Add(entryPoint);
+            var pawnField = AccessTools.Field(typeof(Pawn_JobTracker), "pawn");
+            codes.AddRange(RimKataRegisteredPawnGate.Branch(generator, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, pawnField)
+            }, absent, true, out _));
+            codes.Add(new CodeInstruction(OpCodes.Ldarg_0));
+            codes.Add(new CodeInstruction(OpCodes.Ldfld, pawnField));
+            codes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                typeof(RimKataDraftedFireController),
+                nameof(RimKataDraftedFireController.ProcessJobTrackerTick))));
+            var returnInstruction = new CodeInstruction(OpCodes.Ret);
+            returnInstruction.labels.Add(absent);
+            codes.Add(returnInstruction);
+            return codes;
         }
     }
 
@@ -255,8 +286,6 @@ namespace KRWF.RimKata
                 code.opcode = OpCodes.Call;
                 code.operand = AccessTools.Method(typeof(RimKataSubdueAutomaticFire), replacement);
             }
-            // Extend only the existing ranged gate. Nearby melee and fire beating
-            // still run, and the Job's saved canUseRangedWeapon flag stays intact.
             codes.InsertRange(index + 1, new[]
             {
                 new CodeInstruction(OpCodes.Ldarg_0),
@@ -498,8 +527,6 @@ namespace KRWF.RimKata
                     return;
                 }
 
-                // Forced-speed release owns normal combat's end even if a weapon
-                // cooldown remains. Without that signal, the actual-combat fall does.
                 entry.awaitingCombatEnd = false;
                 AcquireHostileCacheAfterCombat(map, entry);
             }
@@ -573,8 +600,6 @@ namespace KRWF.RimKata
             ByMap.TryGetValue(map, out MapEntry existing);
             if (IsLiveReceiverMember(pawn, map))
             {
-                // Membership follows path events even during combat; watching
-                // hostile movement still waits for the combat-end transition.
                 existing ??= ByMap.GetValue(map, CreateEntry);
                 existing.receivers.Add(pawn);
                 return;
@@ -612,8 +637,6 @@ namespace KRWF.RimKata
             BuildLiveReceiverSnapshot(map, entry);
             if (entry.receiverSnapshot.Count == 0)
             {
-                // This marker can only originate from completed combat or a
-                // saved watch. A peaceful movement event cannot create it.
                 SuspendHostileWatch(entry);
                 return;
             }

@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Configuració del perfil</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Funcions de combat</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funcions del mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Efectes visuals</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Funcions d'activació</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Valor aplicat</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonificació de sigil de caça estant cos a terra</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Temps d'espera abans de tornar a posar-se cos a terra</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Temps a terra després de caure</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Evitar el foc amic mentre s’està a terra</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Temps de moviment durant la irrupció</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Temps d’espera en arribar al destí de la irrupció</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Valors per defecte</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permetre disparar mentre s&apos;arrosseguen als personatges no hostils</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permetre disparar mentre s&apos;arrosseguen als personatges hostils</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s'arrossega per defecte</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transicions suaus de punteria</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Sotmetre</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Els atacs estan desactivats.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferència de dany</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfereix el dany rebut al peó sotmès. Si es desactiva, el peó l’allibera en esquivar o entrar en combat cos a cos.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Lliscament</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Sacsejada</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Probabilitat de lliscament</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Probabilitat de sacsejada</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Probabilitat dels gens</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Amb probabilitat</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Sense probabilitat</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Restableix-ho tot</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Restableix els resultats filtrats</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Titubejant</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Visitant inquietant</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

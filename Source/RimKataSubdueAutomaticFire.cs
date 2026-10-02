@@ -5,8 +5,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Reuse Wait's native target acquisition. The scope exists only while that
-    // call runs; neither the hold registry nor a new scanner searches for foes.
     internal static class RimKataSubdueAutomaticFire
     {
         [ThreadStatic] private static RimKataSubdueState acquiring;
@@ -58,8 +56,7 @@ namespace KRWF.RimKata
             if (!IsAcquiring(verb, verb?.CasterPawn)) return false;
             var state = acquiring;
             result = RimKataSubdueCombat.TrySetExternalTarget(state, state.weapon, target, true);
-            // Take ownership at the same TryStartCastOn boundary as the main
-            // opening hook. Do not run a native zero-warmup shot as well.
+            // Returning to the native cast here would also fire a zero-warmup shot.
             return true;
         }
 

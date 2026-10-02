@@ -12,8 +12,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Only pawns already considered for a ground pose enter this cache. A new
-    // render tree is inspected once; drawing never changes the pawn's posture.
     internal static class RimKataGroundPoseHead
     {
         private sealed class Graph
@@ -73,7 +71,7 @@ namespace KRWF.RimKata
             Entry entry = Entries.GetValue(pawn, CreateEntry);
             Graph graph = Volatile.Read(ref entry.graph);
             if (graph?.root == tree.rootNode) return graph.head != null;
-            // Resource initialization is kept out of parallel rendering.
+            // Unity resources must be initialized outside parallel rendering.
             if (!UnityData.IsInMainThread) return false;
             tree.EnsureInitialized(PawnRenderFlags.Headgear | PawnRenderFlags.Clothes);
             graph = new Graph { root = tree.rootNode };
@@ -127,31 +125,23 @@ namespace KRWF.RimKata
             for (int i = 0; i < requests.Count; i++)
             {
                 if (requests[i].node != graph.head) continue;
-                // Prepare has already applied the body pose to these requests.
                 originalHead = requests[i].preDrawnComputedMatrix;
                 foundHead = true;
                 break;
             }
-            // A removed/hidden head must not be reconstructed as a side effect.
             if (!foundHead) return null;
 
-            // The body and head share the facing already chosen for this pose,
-            // including the initial facing plus the current step during a roll.
             PawnDrawParms headParms = parms;
             headParms.flipHead = false;
             if (!graph.head.tree.TryGetMatrix(graph.head, headParms, out Matrix4x4 aimedHead)) return null;
 
             Replacement replacement = entry.replacement ??= new Replacement { pawn = parms.pawn };
             replacement.aimed.Clear();
-            // Re-run only this subtree's normal visibility/material/mesh rules,
-            // including attachments that were hidden for the body's facing.
             graph.head.AppendRequests(headParms, replacement.aimed);
             if (replacement.aimed.Count == 0) return null;
 
             Vector3 bodyForward = bodyTransform.MultiplyVector(Vector3.forward);
             float bodyAngle = Mathf.Atan2(bodyForward.x, bodyForward.z) * Mathf.Rad2Deg;
-            // Keep the head attached at the body's tilt. Diagonal aim selects
-            // a facing picture instead of rotating the head away from the body.
             Vector3 neckPosition = Position(originalHead);
             Matrix4x4 headTransform = Matrix4x4.Translate(neckPosition)
                 * Matrix4x4.Rotate(Quaternion.AngleAxis(bodyAngle, Vector3.up))
@@ -181,7 +171,6 @@ namespace KRWF.RimKata
                 requests.RemoveAt(i);
             }
             requests.InsertRange(insertAt, replacement.aimed);
-            // Rolling moves the body only; keep the weapon at the roll origin.
             return neckPosition + weaponPivotOffset;
         }
 
@@ -200,8 +189,7 @@ namespace KRWF.RimKata
             if (Volatile.Read(ref pendingCount) == 0 || requests == null
                 || !Pending.TryRemove(requests, out Replacement replacement)) return;
             Interlocked.Decrement(ref pendingCount);
-            // Vanilla caches this list across frames. Restore before its normal
-            // recache/matrix pass so the last aimed head cannot leak into idle.
+            // Vanilla caches this request list across frames, including after the pose ends.
             requests.Clear();
             requests.AddRange(replacement.originals);
             replacement.originals.Clear();
@@ -216,8 +204,6 @@ namespace KRWF.RimKata
                 || !Entries.TryGetValue(parms.pawn, out Entry entry)) return default;
             Replacement replacement = entry.replacement;
             if (replacement?.destination == null || replacement.destination != requests) return default;
-            // Capture once for this Draw invocation. Method-local storage also
-            // isolates nested draws, portraits, exceptions, and render threads.
             return new DrawContext(replacement.graph.headNodes, replacement.headParms);
         }
 
@@ -225,9 +211,7 @@ namespace KRWF.RimKata
             in DrawContext context, out PawnDrawParms headParms)
         {
             headParms = parms;
-            // Body/apparel pictures already use the pose facing in PreDraw.
-            // Keep all other Draw callbacks in their original context: Carried
-            // uses these parms to derive weapon placement and facing anew.
+            // Carried derives weapon placement from these parms; only head nodes receive the substituted facing.
             if (context.headNodes == null || !context.headNodes.Contains(node)) return false;
             headParms = context.headParms;
             return true;
@@ -244,8 +228,7 @@ namespace KRWF.RimKata
             if (replacement?.destination == null
                 || !Pending.TryRemove(replacement.destination, out _)) return;
             Interlocked.Decrement(ref pendingCount);
-            // The simulation can end a pose between render passes. Do not edit
-            // the renderer's list here; request its ordinary rebuild instead.
+            // A pose can end between render passes while the renderer still owns this list.
             replacement.graph.root.requestRecache = true;
             replacement.destination = null;
             replacement.originals.Clear();
@@ -262,14 +245,27 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(PawnRenderTree), nameof(PawnRenderTree.Draw))]
     internal static class Patch_PawnRenderTree_RimKataHeadDraw
     {
-        [HarmonyPriority(Priority.First)]
-        private static void Prefix(PawnDrawParms parms, out RimKataWorldRenderContext.Scope __state)
-            => __state = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
-
-        private static void Finalizer(RimKataWorldRenderContext.Scope __state)
-            => RimKataWorldRenderContext.End(__state);
-
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,
+            MethodBase original, ILGenerator generator)
+        {
+            LocalBuilder scope = generator.DeclareLocal(typeof(RimKataWorldRenderContext.Scope));
+            return RimKataRenderHookIL.LivingOnly(WithHeadDraw(instructions, original, generator), generator, 1,
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_1), new CodeInstruction(OpCodes.Ldloca, scope),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_PawnRenderTree_RimKataHeadDraw), nameof(Begin)))
+                }, new[] {
+                    new CodeInstruction(OpCodes.Ldarg_1),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataBreachRender), nameof(RimKataBreachRender.DrawDoor)))
+                }, new[] {
+                    new CodeInstruction(OpCodes.Ldloc, scope),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataWorldRenderContext), nameof(RimKataWorldRenderContext.End)))
+                });
+        }
+
+        private static void Begin(PawnDrawParms parms, ref RimKataWorldRenderContext.Scope scope)
+            => scope = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
+
+        private static IEnumerable<CodeInstruction> WithHeadDraw(IEnumerable<CodeInstruction> instructions,
             MethodBase original, ILGenerator generator)
         {
             int requestLocal = -1;
@@ -304,6 +300,11 @@ namespace KRWF.RimKata
             }
             Label headDraw = generator.DefineLabel();
             headCodes[0].labels.Add(headDraw);
+            Label originalDraw = generator.DefineLabel();
+            originalCodes[0].labels.Add(originalDraw);
+            yield return new CodeInstruction(OpCodes.Ldarga_S, (byte)1);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.dead)));
+            yield return new CodeInstruction(OpCodes.Brtrue, originalDraw);
             yield return new CodeInstruction(OpCodes.Ldarg_1);
             yield return new CodeInstruction(OpCodes.Ldarg_0);
             yield return new CodeInstruction(OpCodes.Ldfld, requests);
@@ -312,8 +313,6 @@ namespace KRWF.RimKata
             yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
             yield return new CodeInstruction(OpCodes.Ldfld, headNodes);
             yield return new CodeInstruction(OpCodes.Brtrue, headDraw);
-            // Ordinary draws retain the original loop, including other transpilers
-            // and its exception blocks. They never execute a per-node pose helper.
             foreach (CodeInstruction code in originalCodes) yield return code;
             bool insideDraw = false;
             foreach (CodeInstruction code in headCodes)

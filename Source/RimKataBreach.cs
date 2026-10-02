@@ -17,12 +17,20 @@ namespace KRWF.RimKata
         internal bool poseActive, protectedPose, carryDoor, holdWeapons;
         internal Vector3 doorOrigin;
         internal RimKataBreachDoorSnapshot door;
+
+        internal bool Matches(in RimKataBreachVisual other)
+            => facing == other.facing && angle == other.angle && progress == other.progress
+                && poseActive == other.poseActive && protectedPose == other.protectedPose
+                && carryDoor == other.carryDoor && holdWeapons == other.holdWeapons
+                && doorOrigin.Equals(other.doorOrigin) && ReferenceEquals(door, other.door);
     }
 
     public sealed class RimKataBreachState : IExposable
     {
         internal Pawn pawn;
         internal Building_Door target;
+        internal Thing blockingTarget;
+        internal IntVec3 blockingCell = IntVec3.Invalid;
         internal IntVec3 runup, doorCell, direction, endpoint;
         internal Vector3 doorOrigin;
         internal Rot4 facing;
@@ -42,6 +50,8 @@ namespace KRWF.RimKata
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_References.Look(ref target, "target");
+            Scribe_References.Look(ref blockingTarget, "blockingTarget");
+            Scribe_Values.Look(ref blockingCell, "blockingCell", IntVec3.Invalid);
             Scribe_Values.Look(ref runup, "runup");
             Scribe_Values.Look(ref doorCell, "doorCell");
             Scribe_Values.Look(ref doorOrigin, "doorOrigin");
@@ -78,8 +88,7 @@ namespace KRWF.RimKata
 
         internal void DetachWaitToil(bool removeFinish = true)
         {
-            // The Job itself is saved by the pawn. Resolve by ID after loading,
-            // and never restore a pooled Job that has since been reused.
+            // Jobs are pawn-owned and pooled; restore by ID, not by a saved object reference.
             Job rangedJob = waitRangedJob ?? pawn?.CurJob;
             if (waitRangedJobId >= 0 && rangedJob?.loadID == waitRangedJobId)
                 rangedJob.canUseRangedWeapon = waitRangedAllowed;
@@ -125,8 +134,6 @@ namespace KRWF.RimKata
             RimKataBreachUtility.SetRegistry(this);
             foreach (RimKataBreachState state in new List<RimKataBreachState>(states.Values))
             {
-                // Restore a saved temporary Job flag before deciding whether the
-                // remaining breach wait should be attached again or discarded.
                 state.DetachWaitToil();
                 if (state.pawn.Dead || state.pawn.Downed || !state.pawn.Spawned
                     || !RimKataEligibilityCache.IsCachedQualifiedPawn(state.pawn)
@@ -146,7 +153,11 @@ namespace KRWF.RimKata
                             if (!IsCurrent || RimKataBreachUtility.Get(state.pawn) != state) return;
                             if (state.pawn.jobs?.curDriver is JobDriver_RimKataBreach driver)
                                 driver.ResumeNaturalWait();
-                            else RimKataBreachUtility.RestoreWaitToil(state.pawn);
+                            else
+                            {
+                                RimKataBreachUtility.RestoreWaitToil(state.pawn);
+                                RimKataBreachMovement.TryAttackBlocker(state);
+                            }
                         });
                     }
                     else if (state.phase == BreachPhase.Run || state.phase == BreachPhase.Slide)
@@ -208,7 +219,6 @@ namespace KRWF.RimKata
             if (state.attackResumeTick < 0)
                 state.attackResumeTick = (int)Math.Min(int.MaxValue,
                     (long)now + Math.Max(0, state.waitTicks - state.elapsed));
-            // Native job control may change without ending protection or fixed facing.
             if (state.attackResumeTick <= now || !state.pawn.Drafted
                 || state.pawn.CurJob?.loadID != state.ownerJobId
                     && !IsNaturalWait(state.pawn, state.pawn.CurJob)) ReleaseWait(state);
@@ -239,9 +249,7 @@ namespace KRWF.RimKata
             Job waitJob = pawn.CurJob;
             if (waitJob.def == JobDefOf.Wait_Combat)
             {
-                // DecorateWaitToil runs before initAction. Stop ranged scanning
-                // at its existing Job gate, while leaving fire beating and the
-                // pawn's natural wait/job control intact.
+                // DecorateWaitToil runs before initAction, including native target acquisition.
                 state.waitRangedJob = waitJob;
                 state.waitRangedJobId = waitJob.loadID;
                 state.waitRangedAllowed = waitJob.canUseRangedWeapon;
@@ -249,17 +257,20 @@ namespace KRWF.RimKata
             }
             state.waitTickAction = () =>
             {
-                // Only this participant's existing native wait owns the delay.
                 if (state.waitToil != toil) return;
                 if (pawn.Dead || pawn.Downed || !pawn.Spawned
                     || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                     || RimKataTemporaryInactivity.IsInactive(pawn)) Remove(pawn);
                 else if (!pawn.Drafted
-                    || Find.TickManager.TicksGame >= state.attackResumeTick) ReleaseWait(state);
+                    || Find.TickManager.TicksGame >= state.attackResumeTick)
+                {
+                    ReleaseWait(state);
+                    RimKataBreachMovement.TryAttackBlocker(state);
+                }
             };
             state.waitFinishAction = () =>
             {
-                // Cleanup iterates finishActions; do not remove this entry mid-loop.
+                // Cleanup is iterating finishActions here.
                 if (state.waitToil == toil) state.DetachWaitToil(false);
             };
             toil.tickAction += state.waitTickAction;
@@ -279,8 +290,7 @@ namespace KRWF.RimKata
         {
             if (state == null || Get(state.pawn) != state) return;
             float progress = state.Progress;
-            // Fall away from the door while keeping the original travel facing.
-            // The sprite's head starts north, as in the ordinary backward fall.
+            // The unrotated sprite points its head north.
             float angle = Mathf.DeltaAngle(0f, state.facing.AsAngle + 180f) * progress;
             var visual = new RimKataBreachVisual
             {
@@ -314,8 +324,6 @@ namespace KRWF.RimKata
                 || RimKataTargetAccess.SettingsFor(pawn)?.breachEnabled != true
                 || door?.Spawned != true || door.Open || !door.def.destroyable || door.Map != pawn.Map)
                 return false;
-            // Prefer the approach on the pawn's current side. A run-up must be
-            // reachable without crossing the very door being breached.
             IntVec3 chosen = IntVec3.Invalid, direction = IntVec3.Invalid, entry = IntVec3.Invalid;
             CellRect occupied = door.OccupiedRect();
             int best = int.MaxValue;
@@ -461,8 +469,6 @@ namespace KRWF.RimKata
             if (!state.broken && (state.target?.Spawned != true || state.target.Open)) { Cancel(); return; }
             if (state.phase == BreachPhase.Approach && pawn.pather.Moving
                 && pawn.pather.nextCell.GetEdifice(pawn.Map) == state.target) { Cancel(); return; }
-            // Only the actual breach Job inspects its next movement cell. No
-            // ordinary pawn tick is patched to poll for a breach or obstruction.
             if ((state.phase == BreachPhase.Run || state.phase == BreachPhase.Slide)
                 && pawn.pather.Moving && pawn.pather.nextCell != pawn.Position
                 && !RimKataBreachUtility.CanEnter(pawn, pawn.pather.nextCell, state.target))
@@ -499,8 +505,8 @@ namespace KRWF.RimKata
             var state = State;
             if (state == null || state.ownerJobId != job.loadID) return;
             if (state.phase != BreachPhase.Released) RimKataBreachUtility.BeginNaturalWait(state);
-            // Preserve the queue; ordinary AI and drafted Wait_Combat resume.
             EndJobWith(JobCondition.Succeeded);
+            RimKataBreachMovement.TryAttackBlocker(state);
         }
 
         internal void BreakDoor()
@@ -510,8 +516,7 @@ namespace KRWF.RimKata
                 || state.target.Open || !state.target.def.destroyable) { Cancel(); return; }
             Building_Door door = state.target;
             door.Destroy(DestroyMode.KillFinalize);
-            // Destruction callbacks may cancel or replace this job. Never publish
-            // success into a stale state or treat a refused destruction as a breach.
+            // Destruction callbacks can cancel or replace this job.
             if (State != state || pawn.jobs?.curDriver != this) return;
             if (!door.Destroyed || door.Spawned) { Cancel(); return; }
             state.broken = true;
@@ -528,6 +533,7 @@ namespace KRWF.RimKata
             var state = State;
             if (state == null || state.phase == BreachPhase.Rise || state.phase == BreachPhase.Wait) return;
             if (!state.broken) { Cancel(); return; }
+            if (state.phase == BreachPhase.Slide) RimKataBreachMovement.RememberBlocker(state);
             state.riseFrom = state.Progress;
             state.phase = BreachPhase.Rise;
             state.elapsed = 0;

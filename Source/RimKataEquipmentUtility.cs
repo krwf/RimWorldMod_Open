@@ -203,8 +203,6 @@ namespace KRWF.RimKata
                 return RimKataGripType.OneHand;
             }
 
-            // Non-human equipment starts at two hands, including modded weapons.
-            // Explicit one-hand selections still take priority in GripTypeFor.
             if (RimKataNonHumanEquipmentCatalog.IsCandidate(weaponDef, RimKataDefSelectionKind.Weapon))
             {
                 return RimKataGripType.TwoHand;

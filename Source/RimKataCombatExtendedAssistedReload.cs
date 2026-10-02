@@ -10,8 +10,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Optional sleeve-assisted reloads leave the combat Job and the other weapon alone.
-    // All hooks, including the active-request ticker and serialization, require CE.
     internal static class RimKataCombatExtendedAssistedReload
     {
         private delegate bool FindAmmo(ThingComp comp, out Thing ammo);
@@ -158,7 +156,7 @@ namespace KRWF.RimKata
             if (Weapons.TryGetValue(weapon, out ReloadState running) && running.active)
             {
                 if (CanAssist(pawn, weapon) && !AmmoChanged(__instance)) return false;
-                // A manual change of ammunition must keep CE's normal unloading path.
+                // Changing ammunition requires CE's normal unloading path.
                 running.active = false;
                 running.progressBar?.Cleanup();
                 running.progressBar = null;
@@ -244,7 +242,6 @@ namespace KRWF.RimKata
                 loadAmmo(state.ammo, ammo, true);
                 if (!state.singleRound)
                 {
-                    // CE fills a magazine from more than one inventory stack.
                     while (!fullMagazine(state.ammo) && useAmmo(state.ammo) && findAmmo(state.ammo, out ammo))
                     {
                         int before = magazineCount(state.ammo);
@@ -264,8 +261,6 @@ namespace KRWF.RimKata
 
         private static void UpdateProgressBar(ReloadState state)
         {
-            // Match CE's normal Toil bar; the visual follows this slot's timer,
-            // without replacing the combat Job or blocking the other weapon.
             if (state.pawn.Faction != Faction.OfPlayer)
             {
                 state.progressBar?.Cleanup();

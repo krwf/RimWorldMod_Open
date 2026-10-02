@@ -8,8 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Only projectiles launched by the crawling shot context receive a tag.
-    // Neither table owns a projectile, and cleanup happens on launch/save events.
     internal static class RimKataCrawlFireHits
     {
         private static ConditionalWeakTable<Thing, RimKataDownedWeaponState> Shots =
@@ -93,8 +91,7 @@ namespace KRWF.RimKata
                 record.crawlProjectiles = null;
         }
 
-        // CE's projectiles are Things rather than Verse.Projectiles. Install
-        // these launch and impact bridges only when the CE adapter is installed.
+        // CE projectiles derive from Thing, not Verse.Projectile.
         internal static void ApplyCombatExtended(Harmony harmony)
         {
             Type projectile = AccessTools.TypeByName("CombatExtended.ProjectileCE");

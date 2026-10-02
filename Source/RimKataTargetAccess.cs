@@ -58,7 +58,6 @@ namespace KRWF.RimKata
             return RimKataMod.Settings;
         }
 
-        // Called on startup and settings events only. Combat reads use Def-keyed lookup and cached values.
         internal static void Rebuild()
         {
             RimKataSettings settings = RimKataMod.Settings;

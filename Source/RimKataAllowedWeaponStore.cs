@@ -13,8 +13,7 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // This is a storage Def, never a ThingDef. The nested source XML is deliberately
-    // opaque to the game loader, including when its originating mod was removed.
+    // Source XML stays opaque to the Def loader when its originating mod is absent.
     public sealed class RimKataAllowedWeaponDef : Def
     {
         public int schemaVersion;
@@ -191,8 +190,6 @@ namespace KRWF.RimKata
                 XmlNode resolved = XmlInheritance.GetResolvedNodeFor(node);
                 if (resolved != null)
                 {
-                    // Serialize the resolved node immediately; no parent document,
-                    // inheritance cache, or original XML asset remains referenced.
                     CapturedXml[definition.defName] = resolved.OuterXml;
                 }
             }
@@ -229,14 +226,11 @@ namespace KRWF.RimKata
 
                 try
                 {
-                    // FileStem is also used by Write: only this weapon's flat
-                    // storage file under Defs/AllowedWeapons is removed.
                     File.Delete(Path.Combine(directory, FileStem(name) + ".xml"));
                     removedNames.Add(name);
                 }
                 catch (Exception exception)
                 {
-                    // Keep its record so a later settings refresh can retry.
                     WarnOnce("delete:" + name,
                         "Could not remove the prepared weapon file for " + name + ". " + exception.Message);
                 }
@@ -275,8 +269,6 @@ namespace KRWF.RimKata
 
         internal static RimKataAllowedWeaponDef LoadOrCreate(ThingDef definition)
         {
-            // Filter before consulting either storage cache or disk. Weapons
-            // without a ranged burst need neither a copy nor a timing file.
             if (!RequiresSingleShotConversion(definition))
             {
                 return null;
@@ -290,9 +282,6 @@ namespace KRWF.RimKata
             }
 
             string path = directory == null ? null : Path.Combine(directory, FileStem(definition.defName) + ".xml");
-            // The game's Def loader has already read existing storage wrappers.
-            // Reuse that object first; only newly created or stale records need
-            // direct file loading during a later settings refresh.
             RimKataAllowedWeaponDef result = DefDatabase<RimKataAllowedWeaponDef>.GetNamedSilentFail(
                 "RimKata_AllowedWeapon_" + FileStem(definition.defName));
             if (result != null && !IsCurrent(result, definition, sourceXml, fingerprint))
@@ -321,8 +310,7 @@ namespace KRWF.RimKata
             {
                 result = Create(definition, sourceXml, fingerprint);
             }
-            // A wrapper loaded at startup can outlive its deleted file. Reusing
-            // it after the weapon is allowed again must recreate that file.
+            // A wrapper loaded at startup can outlive its deleted file.
             if (path != null && (createFile || !File.Exists(path)))
             {
                 try

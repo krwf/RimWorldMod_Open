@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Nastavení profilu</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Bojové funkce</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funkce modu</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Vizuální efekty</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktivační funkce</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Použitá hodnota</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus ke skrytí při lovu vleže</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Prodleva před opětovným ulehnutím</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Doba ležení po pádu</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Zamezení přátelské palbě po pádu</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Doba pohybu během průlomu</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Doba čekání po dosažení cíle průlomu</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Výchozí hodnoty</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Povolit střelbu při plazení postavám, které nejsou nepřátelské</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Povolit střelbu při plazení nepřátelským postavám</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Ve výchozím nastavení povolit střelbu při plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Plynulé přechody zamíření</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Zpacifikovat</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Útoky jsou zakázány.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Přenos poškození</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Přenáší utrpěné poškození na drženou postavu. Po vypnutí se při úhybu nebo zahájení boje zblízka držená postava uvolní.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Skluz</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Setřesení</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Šance na skluz</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Šance na setřesení</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Pravděpodobnost genů</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Nenulová pravděpodobnost</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Nulová pravděpodobnost</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Obnovit vše</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Obnovit filtrované výsledky</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Vrávoravec</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

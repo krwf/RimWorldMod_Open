@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Налаштування профілю</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Бойові функції</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Функції мода</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Візуальні ефекти</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Функції активації</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Застосоване значення</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Бонус до непомітності на полюванні в положенні лежачи</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Затримка перед повторним переходом у положення лежачи</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Час перебування лежачи після падіння</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Уникнення дружнього вогню після падіння</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Час руху під час прориву</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Час очікування після досягнення точки прориву</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Типові значення</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Дозволяти неворожим пішакам стріляти під час повзання</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Дозволяти ворожим пішакам стріляти під час повзання</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Типово дозволяти стрільбу під час повзання</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Плавна зміна напрямку прицілювання</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Схопити</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Атаки вимкнено.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Перенесення шкоди</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Переносить отриману шкоду на утримуваного персонажа. Якщо вимкнено, ухилення або вступ у ближній бій звільняє його.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Підкат</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Струшування</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Шанс підкату</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Шанс струшування</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Імовірність генів</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Є ймовірність</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Немає ймовірності</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Скинути все</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Скинути результати фільтра</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Шкандиба</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Таємничий новоприбулий</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

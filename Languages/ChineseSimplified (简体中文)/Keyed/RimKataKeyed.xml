@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>配置设置</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>战斗功能</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>模组功能</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>视觉效果</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>启用功能</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>应用值</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>卧倒时的狩猎隐蔽加成</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>再次卧倒前的等待时间</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>摔倒后的躺卧时间</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>倒地时避免友军误伤</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>破门后的移动时间</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>到达突入终点后的等待时间</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>默认值</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>允许非敌对角色爬行射击</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>允许敌对角色爬行射击</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>默认允许爬行时射击</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>平滑瞄准过渡</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>压制</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>攻击已禁用。</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>伤害转移</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>将受到的伤害转移给被制服的角色。关闭后，闪避或进入近战时会释放该角色。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>滑铲</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>挥退</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>滑铲概率</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>挥退概率</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>基因概率</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>有概率</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>无概率</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>全部重置</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>重置筛选结果</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>蹒跚者</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>诡异加入者</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

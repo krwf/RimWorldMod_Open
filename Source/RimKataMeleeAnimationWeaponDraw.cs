@@ -7,8 +7,6 @@ using static KRWF.RimKata.RimKataMeleeAnimationCompat;
 
 namespace KRWF.RimKata
 {
-    // Optional MA-only submission. Use its cutout evaluator with a separate
-    // weapon override and property block; the primary's objects are read-only.
     internal static class RimKataMeleeAnimationWeaponDraw
     {
         private delegate void Split(object renderer, int index, ref Matrix4x4 matrix,

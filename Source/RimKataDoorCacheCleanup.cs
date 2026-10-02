@@ -5,7 +5,6 @@ using System.Xml;
 
 namespace KRWF.RimKata
 {
-    // Runs only after save/load. Read cache identities, never deserialize maps or pawns.
     internal static class RimKataDoorCacheCleanup
     {
         private sealed class SaveReference
@@ -29,7 +28,6 @@ namespace KRWF.RimKata
         {
             cacheRoot = Path.GetFullPath(cacheRoot);
             if (!Directory.Exists(cacheRoot) || IsLink(cacheRoot)) return 0;
-            // An unavailable save directory must never be mistaken for an empty one.
             string[] saves = Directory.GetFiles(savesDirectory, "*.rws", SearchOption.TopDirectoryOnly);
             var keepAll = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var keepPairs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -52,7 +50,7 @@ namespace KRWF.RimKata
                 foreach (SaveReference reference in snapshot.References)
                     Keep(reference.GameId, reference.EnvironmentKey, keepAll, keepPairs);
             }
-            // Finish ALL reads before deleting anything. Unreadable saves abort this pass.
+            // An unreadable save must abort cleanup rather than make its cache appear orphaned.
             Keep(activeGameId, activeEnvironmentKey, keepAll, keepPairs);
             snapshots = next;
             int removed = 0;
@@ -140,7 +138,7 @@ namespace KRWF.RimKata
                 reader.Skip();
             }
             reader.ReadEndElement();
-            // Components precede map contents. Stop here instead of reading large maps.
+            // Components precede map contents in the save XML.
             return references;
         }
 

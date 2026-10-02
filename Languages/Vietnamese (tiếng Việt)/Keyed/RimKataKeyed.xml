@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Cài đặt hồ sơ</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Tính năng chiến đấu</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Tính năng mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Hiệu ứng hình ảnh</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Tính năng kích hoạt</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Giá trị áp dụng</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Thưởng ẩn mình khi săn ở tư thế nằm sấp</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Thời gian chờ trước khi nằm sấp lại</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Thời gian nằm sau khi ngã</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Tránh đạn đồng minh khi ngã</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Thời gian di chuyển khi phá cửa</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Thời gian chờ sau khi đến đích đột phá</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Mặc định</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Cho phép nhân vật không thù địch bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Cho phép nhân vật thù địch bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Mặc định cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Chuyển hướng ngắm mượt mà</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Khống chế</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Tấn công đã bị vô hiệu hóa.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Chuyển sát thương</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Chuyển sát thương nhận vào sang nhân vật đang bị khống chế. Khi tắt, né tránh hoặc bước vào cận chiến sẽ thả nhân vật đó ra.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Trượt</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Rũ bỏ</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Xác suất trượt</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Xác suất rũ bỏ</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Xác suất gen</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Có xác suất</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Không có xác suất</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Đặt lại tất cả</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Đặt lại kết quả đã lọc</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Kẻ lảo đảo</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Kẻ gia nhập bí ẩn</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

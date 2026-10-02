@@ -5,8 +5,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Optional Ratkin integration reads RimKata's attack cycle without exposing
-    // that cycle through vanilla stances or Verb state.
     internal static class RimKataRatkinCompat
     {
         internal static void Apply(Harmony harmony)
@@ -53,7 +51,7 @@ namespace KRWF.RimKata
 
         private static void IsPawnFiringPostfix(Pawn __0, ThingWithComps __1, ref bool __result)
         {
-            // Ratkin treats aiming, burst firing and post-shot cooldown as firing.
+            // Ratkin counts aiming, burst firing and post-shot cooldown as firing.
             if (!__result && RimKataRangedAttackStatus.TryGetState(__0, __1, out _))
                 __result = true;
         }
@@ -69,8 +67,7 @@ namespace KRWF.RimKata
         private static void GetCurrentAimingTargetPostfix(
             Pawn __0, ThingWithComps __1, ref LocalTargetInfo? __result)
         {
-            // Ratkin compares this target to reset aiming stacks, but skips that
-            // comparison during cooldown through IsPawnReloading.
+            // Ratkin skips target comparisons during cooldown through IsPawnReloading.
             if (!__result.HasValue
                 && RimKataRangedAttackStatus.TryGetState(__0, __1, out RimKataRangedAttackState state)
                 && state.Phase != RimKataRangedAttackPhase.Cooldown && state.Target.IsValid)

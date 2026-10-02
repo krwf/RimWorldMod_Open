@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Replace only native warmup construction. Keeping the original cast and
-    // WarmupComplete methods lets weapon mods retain their own aim setup.
     [HarmonyPatch]
     internal static class Patch_Verb_RimKataCrawlWarmup
     {
@@ -79,8 +77,7 @@ namespace KRWF.RimKata
             {
                 if (code.opcode == OpCodes.Newobj && Equals(code.operand, WarmupConstructor))
                 {
-                    // The factory consumes the same three arguments and returns
-                    // Stance_Warmup, preserving labels, exception blocks and callers.
+                    // The replacement preserves the native three-argument stack signature and Stance_Warmup return type.
                     code.opcode = OpCodes.Call;
                     code.operand = WarmupFactory;
                 }

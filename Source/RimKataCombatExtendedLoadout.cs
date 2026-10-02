@@ -69,8 +69,6 @@ namespace KRWF.RimKata
 
             try
             {
-                // This postfix adds only the registered secondary. Refuse a CE
-                // version which already enumerates all equipped weapons.
                 MethodInfo primary = AccessTools.PropertyGetter(typeof(Pawn_EquipmentTracker), "Primary");
                 MethodInfo all = AccessTools.PropertyGetter(typeof(Pawn_EquipmentTracker), "AllEquipmentListForReading");
                 List<CodeInstruction> codes = PatchProcessor.GetOriginalInstructions(update);
@@ -167,8 +165,6 @@ namespace KRWF.RimKata
                             extension = extensions[i];
                             break;
                         }
-                // CE's default extension fills the gun but requests no reserve
-                // magazines. Existing pawn-kind ammunition and capacity rules win.
                 if (extension == null)
                     extension = Activator.CreateInstance(loadoutType);
                 loadMagazine(extension, weapon);
@@ -214,8 +210,7 @@ namespace KRWF.RimKata
             ThingWithComps secondary = RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
             if (!RimKataCombatExtendedCompat.IsHeldSecondary(pawn, secondary))
                 return;
-            // CE's equipment stats already include its StatPart_LoadedAmmo.
-            // UpdateInventory resets both totals before this postfix each time.
+            // CE equipment stats include loaded ammo; UpdateInventory resets these totals before the postfix.
             equipmentStats(secondary, out float weight, out float bulk);
             ___currentWeightCached += weight;
             ___currentBulkCached += bulk;

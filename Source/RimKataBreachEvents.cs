@@ -10,8 +10,6 @@ namespace KRWF.RimKata
     {
         internal static bool PreserveAIDoorAttack(Pawn pawn, Job job)
         {
-            // Keep the ordinary approach and AI decision until a real swing at
-            // this door. Neutral pawns and animals use the same event entry.
             return job?.def == JobDefOf.AttackMelee
                 && job.targetA.Thing is Building_Door door && door.Spawned && !door.Open
                 && pawn?.IsPlayerControlled == false
@@ -39,8 +37,6 @@ namespace KRWF.RimKata
             if (!__runOriginal || newJob == null) return;
             RimKataBreachUtility.NotifyJobStarting(___pawn, newJob);
 
-            // Queued orders stay ordinary Jobs until they are actually started.
-            // Merely shift-clicking a door must not stop the current combat cycle.
             if (newJob.def != JobDefOf.AttackMelee || ___pawn?.IsPlayerControlled != true) return;
             if (newJob.playerForced && ___pawn.Drafted
                 && newJob.targetA.Thing is Building_Door door
@@ -82,8 +78,6 @@ namespace KRWF.RimKata
             if (verb?.IsMeleeAttack != true || !verb.IsStillUsableBy(___pawn)
                 || !verb.CanHitTarget(target)) return true;
 
-            // Also upgrades an already-running ordinary melee Job loaded from
-            // a save. A failed door snapshot falls back to two melee cycles.
             bool player = ___pawn.IsPlayerControlled;
             Job replacement = null;
             int originalStartTick = current.startTick;
@@ -93,7 +87,7 @@ namespace KRWF.RimKata
             if (replacement == null)
             {
                 replacement = current.Clone();
-                // Clone preserves loadID; a different active Job needs its own ID.
+                // Clone preserves loadID, so a distinct active Job needs a new ID.
                 replacement.loadID = Find.UniqueIDsManager.GetNextJobID();
                 if (___pawn.jobs.curDriver is JobDriver_AttackMelee meleeDriver)
                     replacement.maxNumMeleeAttacks = Math.Max(1,
@@ -105,8 +99,6 @@ namespace KRWF.RimKata
 
             try
             {
-                // Only the active door attack is replaced. Never ClearQueuedJobs
-                // or resume the obsolete door target after destroying that door.
                 ___pawn.jobs.StartJob(replacement, JobCondition.InterruptForced,
                     current.jobGiver, resumeCurJobAfterwards: false,
                     thinkTree: current.jobGiverThinkTree);
@@ -140,16 +132,14 @@ namespace KRWF.RimKata
 
             try
             {
-                // Animals and sappers may mine a door instead of using AttackMelee.
-                // Keep their approach and hit timer; intercept only this actual hit.
+                // Animals and sappers can attack doors through mining.
                 actor.jobs.StartJob(replacement, JobCondition.InterruptForced,
                     current.jobGiver, resumeCurJobAfterwards: false,
                     thinkTree: current.jobGiverThinkTree);
             }
             finally { RimKataBreachEvents.DiscardUnstarted(actor, replacement); }
 
-            // The door stays intact during the run-up. The old mining callback
-            // only resets its own hit timer after this skipped damage call.
+            // After this skipped damage call, the native mining callback only resets its hit timer.
             return false;
         }
     }

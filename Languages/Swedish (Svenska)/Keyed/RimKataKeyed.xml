@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profilinställningar</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Stridsfunktioner</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modfunktioner</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuella effekter</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktiveringsfunktioner</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Tillämpat värde</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Smygbonus vid jakt i liggande ställning</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Väntetid innan man lägger sig ner igen</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tid på marken efter ett fall</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Undvik egen eld efter ett fall</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Rörelsetid under genombrott</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Väntetid efter ankomst till genombrottets mål</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Standardvärden</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Tillåt skjutning under krypning för icke-fientliga figurer</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Tillåt skjutning under krypning för fientliga figurer</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Tillåt skjutning under krypning som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Mjuka siktövergångar</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Övermanna</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Attacker är inaktiverade.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Skadeöverföring</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Överför mottagen skada till den fasthållna figuren. När detta är avstängt släpps figuren vid undanmanöver eller närstrid.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Glidning</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Avskakning</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Chans för glidning</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Chans för avskakning</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Gensannolikhet</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Har en chans</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Ingen chans</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Återställ alla</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Återställ filtrerade resultat</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Stapplare</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

@@ -8,8 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // CE owns the shot cycle and samples its own spread, recoil and locked burst
-    // angles. Move only the resulting shot, preserving that sampled trajectory.
     internal static class RimKataCombatExtendedGroundPose
     {
         internal sealed class ShotScope
@@ -116,8 +114,6 @@ namespace KRWF.RimKata
                 Expression.Call(Expression.Convert(worker, workerType), projection, from, flightTick, trueTick, altitude),
                 worker, from, flightTick, trueTick, altitude).Compile();
 
-            // A separate owner lets API/patch failure remove only this optional
-            // adapter, leaving all established CE compatibility intact.
             var adapter = new Harmony(harmony.Id + ".groundPoseCE");
             try
             {
@@ -155,8 +151,7 @@ namespace KRWF.RimKata
             ProjectileProperties props = projectileDef(__instance)?.projectile;
             if (props == null || !TryPhysicalOrigin(center, shotSource.y, props, propertiesWorker(props),
                 isInstant(props), out Vector2 origin)) return;
-            // The submitted gun position already includes its current aiming
-            // placement. A second CE lean source would not match that muzzle.
+            // The rendered gun position already includes aiming; applying CE lean again shifts the muzzle twice.
             shotSource.x = origin.x;
             shotSource.z = origin.y;
         }
@@ -221,9 +216,7 @@ namespace KRWF.RimKata
         {
             origin = new Vector2(center.x, center.z);
             if (!Finite(center.x) || !Finite(center.z) || !Finite(height)) return false;
-            // RayCast beams use physical x/z directly; their own barrel length
-            // remains intact. Flying projectiles use their actual worker's
-            // projection, including optional height-to-z and its tick ramp.
+            // Raycasts use physical x/z; flying projectiles use the worker's height projection and tick ramp.
             if (instant) return true;
             if (worker == null) return false;
             int ticks = ticksToTruePosition(props);
@@ -240,9 +233,6 @@ namespace KRWF.RimKata
             return true;
         }
 
-        // Keep the endpoint of CE's already sampled trajectory at its target
-        // distance. This also preserves locked mid-burst aim and pellet spread;
-        // neither ShiftTarget nor its random draws are replayed or overwritten.
         internal static bool TryMoveTrajectory(Vector2 origin, Vector3 offset, float height,
             float speed, float gravity, float length, float angle, float rotation, bool instant,
             out Vector2 movedOrigin, out Vector3 preservedPoint, out float movedLength)

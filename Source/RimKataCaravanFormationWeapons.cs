@@ -40,9 +40,7 @@ namespace KRWF.RimKata
                 callIndex = i;
             }
 
-            // The existing call is inside drawEquippedWeapon's visibility gate.
-            // Its following cursor subtraction reserves the native 30px column.
-            // Identify that cursor instead of assuming a particular local number.
+                // The cursor subtraction after this call reserves vanilla's 30px column.
             if (drawWeapon == null || callIndex < 0 || callIndex + 4 >= original.Count
                 || original[callIndex].blocks.Count != 0
                 || !TryGetLocalIndex(original[callIndex + 1], false, out int cursorIndex)
@@ -75,9 +73,7 @@ namespace KRWF.RimKata
             if (replacement == null)
                 return KeepOriginal(original);
 
-            // The original instance and three arguments are already on the stack.
-            // Add the cursor reference for this static replacement, leaving the
-            // original subtraction and the remaining row layout unchanged.
+                // The original instance and three arguments are already on the IL stack.
             CodeInstruction loadCursor = cursorIndex <= byte.MaxValue
                 ? new CodeInstruction(OpCodes.Ldloca_S, (byte)cursorIndex)
                 : new CodeInstruction(OpCodes.Ldloca, (short)cursorIndex);
@@ -102,8 +98,6 @@ namespace KRWF.RimKata
             TransferableOneWayWidget widget, Rect columnRect, Rect iconRect,
             TransferableOneWay transferable, ref float remainingWidth)
         {
-            // Reserve the same two columns on every row, including pawns with
-            // only a primary weapon. The right-hand column is secondary-only.
             Rect primaryColumnRect = columnRect;
             Rect primaryIconRect = iconRect;
             primaryColumnRect.x -= WeaponColumnWidth;

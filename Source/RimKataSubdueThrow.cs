@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Only a thrown pawn owns this short-lived map object. Its container keeps
-    // the actual pawn out of jobs/combat and saves it exactly once during flight.
     public sealed class RimKataThrownPawn : Thing, IThingHolderTickable
     {
         internal const int TicksPerCell = 8;
@@ -49,8 +47,6 @@ namespace KRWF.RimKata
             GenSpawn.Spawn(flight, flight.origin, carrier.Map, state.facing);
             if (!carrier.carryTracker.innerContainer.TryTransferToContainer(target, flight.contents))
             { flight.Destroy(); return; }
-            // The carry container event also clears the relationship. This is
-            // idempotent and ends protection/attacks at release, not at landing.
             RimKataSubdueUtility.Remove(state);
             RimKataSubdueJobs.StopAttackJob(carrier);
             target.Rotation = state.facing.Opposite;
@@ -80,7 +76,6 @@ namespace KRWF.RimKata
         {
             if (Victim == null) { Destroy(); return; }
             elapsed = Math.Min(TicksPerCell * 2, elapsed + delta);
-            // No structure/pathing queries between the two arrival events.
             while (crossedCells < 2 && elapsed >= (crossedCells + 1) * TicksPerCell)
             {
                 int step = crossedCells + 1;
@@ -120,15 +115,11 @@ namespace KRWF.RimKata
             float progress = Mathf.Clamp01(elapsed / (TicksPerCell * 2f));
             visualPosition = origin.ToVector3Shifted() + Rotation.FacingCell.ToVector3() * (progress * 2f)
                 + launchOffset * (1f - progress);
-            // Move directly from the raised hold position to the landing cell.
-            // The launch offset fades linearly; there is no upward arc.
             visualPosition.y = AltitudeLayer.Pawn.AltitudeFor() + 0.04f;
         }
 
         public override void DynamicDrawPhaseAt(DrawPhase phase, Vector3 drawLoc, bool flip = false)
         {
-            // Native carried/flying drawing uses the actual pawn's renderer,
-            // preserving race, apparel and custom graphics without a new scan.
             Victim?.DynamicDrawPhaseAt(phase, visualPosition, flip);
         }
 
@@ -158,8 +149,7 @@ namespace KRWF.RimKata
             }
             finally
             {
-                // A foreign landing callback can throw before ownership has
-                // transferred. Do not destroy a holder that still owns a pawn.
+                // Foreign landing callbacks may throw before transferring the held pawn.
                 if (Victim != null) PreserveContents();
                 Destroy();
                 resolving = false;
@@ -176,8 +166,7 @@ namespace KRWF.RimKata
 
         public override void Notify_MyMapRemoved()
         {
-            // MapDeiniter has already passed nested pawns to WorldPawns. Only
-            // detach this obsolete map holder; never register the pawn twice.
+            // MapDeiniter has already registered nested pawns with WorldPawns.
             Pawn victim = Victim;
             if (victim != null && Find.WorldPawns.Contains(victim)) contents.Remove(victim);
             base.Notify_MyMapRemoved();
@@ -187,7 +176,6 @@ namespace KRWF.RimKata
         {
             if (!resolving && Victim != null)
             {
-                // External deletion/map teardown must never orphan the pawn.
                 Pawn victim = Victim;
                 if (Map == null || !contents.TryDrop(victim, Position, Map, ThingPlaceMode.Near,
                     out _, nearPlaceValidator: c => c.WalkableBy(Map, victim))) PreserveContents();

@@ -10,8 +10,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Keep CE's native shot, modes and ballistic calculation. Only bridge the
-    // state/timing inputs owned by a qualified RimKata weapon cycle.
     internal static class RimKataCombatExtendedFire
     {
         private static Type launchType;
@@ -125,7 +123,7 @@ namespace KRWF.RimKata
                 foreach (Type type in types)
                 {
                     if (type == null || !launcher.IsAssignableFrom(type)) continue;
-                    // The common patch discovers only non-public overrides.
+                    // Common TryCastShot discovery covers only non-public overrides.
                     MethodInfo method = type.GetMethod("TryCastShot",
                         BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
                         null, Type.EmptyTypes, null);
@@ -158,8 +156,6 @@ namespace KRWF.RimKata
         {
             if (RimKataFireContext.ActiveVerb != verb || !RimKataFireContext.CloseShot)
                 return verb.OutOfRange(root, target, occupiedRect);
-            // NativeAttack already approved Touch before entering this shot scope.
-            // Remove only the standing-enemy adjacent floor; retain weapon range and CE line of sight.
             float minRange = verb.verbProps.EffectiveMinRange(true);
             float distanceSquared = occupiedRect.ClosestDistSquaredTo(root);
             return distanceSquared > verb.EffectiveRange * verb.EffectiveRange
@@ -187,8 +183,7 @@ namespace KRWF.RimKata
                 BurstSelection selection = BurstSelections.GetOrCreateValue(verb);
                 if (selection.properties != verb.verbProps || selection.mode != mode)
                 {
-                    // CE may roll a weapon trait inside this getter. Sample only
-                    // when preparing a weapon/mode, never during validity checks.
+                    // CE can roll weapon traits in this getter, so its result is sampled only when preparing a mode.
                     selection.count = Math.Max(1, shotsPerBurst(verb));
                     selection.properties = verb.verbProps;
                     selection.mode = mode;
@@ -232,8 +227,7 @@ namespace KRWF.RimKata
                 || !(verb.CasterPawn?.stances?.curStance is Stance_Warmup warmup)
                 || warmup.verb != verb) return false;
             ticks = Math.Max(1, warmup.ticksLeft);
-            // CE otherwise cancels this aim because the pawn uses RimKata's
-            // shared body stance. The weapon request now owns this exact delay.
+            // CE otherwise cancels aiming on RimKata's shared body stance; the weapon request owns this delay.
             setAiming(verb, false);
             return true;
         }
@@ -253,8 +247,7 @@ namespace KRWF.RimKata
             if (__result == null || RimKataFireContext.ActiveVerb != __instance) return;
             if (RimKataFireContext.CloseMeleeResolution)
             {
-                // The close attack has already rolled RimKata melee accuracy.
-                // Its miss target is selected before CE starts the native shot.
+                // Close attacks already rolled melee accuracy before entering the CE shot.
                 aimingAccuracy.Set(__result, 1.5f);
                 accuracyFactor.Set(__result, 0f);
                 sway.Set(__result, 0f);
@@ -269,9 +262,7 @@ namespace KRWF.RimKata
                 * RimKataFireContext.InterceptionAccuracyBonusMultiplier
                 * RimKataFireContext.SerumInterceptionMultiplier);
             if (Mathf.Approximately(multiplier, 1f)) return;
-            // CE models dispersion, not a vanilla hit-percentage roll. Apply
-            // the modifier to aiming skill/sway; retain native weapon spread,
-            // cover, recoil and physical projectile collision.
+            // CE uses dispersion rather than vanilla hit-percentage rolls.
             aimingAccuracy.Set(__result, Mathf.Clamp(aimingAccuracy.Get(__result) * multiplier, 0f, 1.5f));
             accuracyFactor.Set(__result, -1f);
             sway.Set(__result, Mathf.Min(180f, sway.Get(__result) / Mathf.Max(0.01f, multiplier)));

@@ -100,8 +100,7 @@ namespace KRWF.RimKata
             }
         }
 
-        // Called only before a qualified pawn begins a native weapon attack. CE
-        // can replace the current job here, so the caller must stop on false.
+        // CE can replace the current job here; false means the caller must stop the old attack.
         internal static bool EnsureReady(Pawn pawn, Verb verb)
         {
             if (ammoType == null || verb == null || verb.IsMeleeAttack
@@ -138,9 +137,6 @@ namespace KRWF.RimKata
             ThingWithComps weapon = slotVerb.EquipmentSource;
             if (weapon == null || weapon.holdingOwner != pawn.equipment.GetDirectlyHeldThings()) return;
             WeaponAmmo ammo = Weapons.GetValue(weapon, CreateAmmo);
-            // Exhaustion changes the existing close-action rule, so planning,
-            // physical Verb selection and aim all agree. Empty but reloadable
-            // magazines keep their normal CE/assisted reload path.
             __result = ammo.comp != null && useAmmo(ammo.comp) && !canFire(ammo.comp)
                 && !hasAmmo(ammo.comp) && !RimKataCombatExtendedAssistedReload.IsReloading(weapon);
         }
@@ -172,8 +168,6 @@ namespace KRWF.RimKata
                     : Equals(code.operand, switchWeapon) ? nameof(SwitchReplacementWeapon) : null;
                 if (replacement != null)
                 {
-                    // Pass this ammunition component in addition to CE's existing
-                    // call arguments. Its mote and TryPickupAmmo path stay intact.
                     var loadAmmo = new CodeInstruction(OpCodes.Ldarg_0);
                     loadAmmo.labels.AddRange(code.labels);
                     code.labels.Clear();

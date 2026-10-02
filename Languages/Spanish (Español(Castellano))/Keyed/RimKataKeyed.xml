@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Ajustes del perfil</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Funciones de combate</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funciones del mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Efectos visuales</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Funciones de activación</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Valor aplicado</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonificación de sigilo de caza al estar cuerpo a tierra</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Espera antes de volver a ponerse cuerpo a tierra</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tiempo en el suelo tras una caída</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Evitar fuego amigo tras una caída</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Tiempo de movimiento durante la irrupción</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Tiempo de espera al llegar al destino de la irrupción</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Valores por defecto</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permitir disparar al arrastrarse a peones no hostiles</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permitir disparar al arrastrarse a peones hostiles</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar al arrastrarse por defecto</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transiciones de apuntado suaves</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Someter</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Los ataques están desactivados.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferencia de daño</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfiere el daño recibido al personaje sometido. Al desactivarlo, esquivar o entrar en combate cuerpo a cuerpo libera al personaje.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Deslizamiento</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Sacudida</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Probabilidad de deslizamiento</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Probabilidad de sacudida</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Probabilidad de genes</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Probabilidad mayor que cero</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Sin probabilidad</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Restablecer todo</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Restablecer resultados filtrados</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Tambaleante</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Forastero inquietante</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

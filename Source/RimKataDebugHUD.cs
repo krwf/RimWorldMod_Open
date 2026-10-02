@@ -28,7 +28,6 @@ namespace KRWF.RimKata
             internal readonly Material CellMaterial;
             internal readonly Mesh Mesh;
 
-            // Created by the enabled map-update renderer, never by the loading thread.
             internal SearchGraphics()
             {
                 CellMaterial = SolidColorMaterials.SimpleSolidColorMaterial(
@@ -231,7 +230,6 @@ namespace KRWF.RimKata
             int index = game.components.FindIndex(component => component is RimKataDebugHUD);
             if (index >= 0)
             {
-                // Loading replaces the list, so prefer its newly deserialized instance.
                 registration.component = (RimKataDebugHUD)game.components[index];
                 registration.index = index;
                 if (!Prefs.DevMode || !Enabled)
@@ -348,7 +346,6 @@ namespace KRWF.RimKata
 
         public override void GameComponentOnGUI()
         {
-            // Registration changes occur at events, not while this list is being dispatched.
             if (!Prefs.DevMode || !Enabled)
             {
                 return;
@@ -735,7 +732,7 @@ namespace KRWF.RimKata
         }
     }
 
-    // Keep the GameComponent type for old saves, but register it only while the text HUD is on.
+    // This GameComponent type is referenced by old saves.
     [HarmonyPatch(typeof(Game), "FillComponents")]
     public static class Patch_Game_RimKataDebugHUDRegistration
     {
@@ -767,7 +764,6 @@ namespace KRWF.RimKata
     {
         public static void Postfix(bool value)
         {
-            // The options GUI also assigns the unchanged value on every GUI event.
             if (!value && (RimKataDebugHUD.Enabled || RimKataDebugHUD.SearchRangeEnabled))
             {
                 RimKataDebugHUD.DisableForDeveloperMode();

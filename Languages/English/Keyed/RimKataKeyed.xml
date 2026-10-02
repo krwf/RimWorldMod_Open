@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profile settings</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Combat features</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Mod features</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visual effects</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Activation features</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Applied value</KRWF_RimKata_AppliedValue>
@@ -170,8 +171,12 @@
   <KRWF_RimKata_ProneResumeDelay>Delay before going prone again</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallChance>Fall chance</KRWF_RimKata_MeleeFallChance>
   <KRWF_RimKata_MeleeFallDuration>Time spent fallen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Avoid friendly fire while fallen</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Movement duration during breach</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wait time after reaching the breach destination</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Defaults</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Allow crawl fire for friendlies</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Allow crawl fire for hostiles</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Allow firing while crawling by default</KRWF_RimKata_CrawlFireDefaultAllowed>
 
   <KRWF_RimKata_InspectSlotPrimary>Primary</KRWF_RimKata_InspectSlotPrimary>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Attacks are disabled.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Damage transfer</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfer incoming damage to the subdued pawn. When disabled, dodging or entering close combat releases the subdued pawn.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Sliding</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Shake-off</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Sliding chance</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Shake-off chance</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Gene probability</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Has a chance</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>No chance</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Reset all</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Reset filtered results</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Shambler</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

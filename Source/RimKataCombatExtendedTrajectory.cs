@@ -79,8 +79,7 @@ namespace KRWF.RimKata
                 launch, intendedTargetField, equipmentField, extraDamagesField, instantField })
                 if (member == null) return false;
             foreach (FieldInfo field in retainedFields) if (field == null) return false;
-            // Critical grenade interception must bypass its fuse override, while
-            // still using CE's real base explosion/fragment implementation.
+            // Immediate grenade impact must bypass the fuse override and call CE's base explosion.
             var method = new DynamicMethod("RimKataCEImmediateImpact", typeof(void),
                 new[] { typeof(Thing), typeof(Thing) }, typeof(RimKataCombatExtendedTrajectory), true);
             ILGenerator il = method.GetILGenerator();
@@ -119,8 +118,7 @@ namespace KRWF.RimKata
                 var positions = (IEnumerable<Vector3>)predict.Invoke(worker, new object[] { target, PredictionTicks });
                 foreach (Vector3 point in positions)
                 {
-                    // Lerped CE predictions include their current position;
-                    // ballistic CE predictions start at the following tick.
+                    // CE lerped predictions include the current position; ballistic predictions start next tick.
                     if (result.Count == 1 && (point - position).sqrMagnitude <= ContactToleranceSquared) continue;
                     if (point.y < 0f || !point.InBounds(target.Map)) break;
                     result.Add(point);
@@ -170,8 +168,6 @@ namespace KRWF.RimKata
             ThingDef projectile = ProjectileFor(verb);
             bool ce = RimKataCombatExtendedProjectiles.IsProjectileVerb(verb);
             float range = knownRangeSquared ?? Mathf.Pow(RimKataRangeUtility.ResolveEffectiveRange(pawn, verb.EquipmentSource, verb), 2f);
-            // Hitscan CE weapons have no future flight. Eligibility uses the
-            // current target; the actual native ray segment decides contact.
             if (ce && projectile?.projectile != null && (bool)instantField.GetValue(projectile.projectile))
                 return pawn.Position.DistanceToSquared(target.Position) <= range;
             float speed = ce ? projectile?.projectile?.speed ?? 0f : projectile?.projectile?.SpeedTilesPerTick ?? 0f;
@@ -192,7 +188,6 @@ namespace KRWF.RimKata
                 ? RimKataCombatExtendedProjectiles.Position(target) : target.DrawPos;
             if (!TryAngles(worker, shot.def.projectile, origin, contact, speed, out float angle, out float rotation)
                 || !TryAngles(worker, shot.def.projectile, origin, previousTarget, speed, out float oldAngle, out float oldRotation)) return;
-            // Retain CE's sampled spread/sway; prediction changes only its aim point.
             angleField.SetValue(shot, angle + (float)angleField.GetValue(shot) - oldAngle);
             rotationField.SetValue(shot, rotation + Mathf.DeltaAngle(oldRotation, (float)rotationField.GetValue(shot)));
         }
@@ -267,13 +262,11 @@ namespace KRWF.RimKata
                 Vector3 velocity = (VanillaDestination(vanilla) - VanillaOrigin(vanilla)).normalized
                     * vanilla.def.projectile.SpeedTilesPerTick;
                 targetStart = targetEnd - velocity;
-                // Verse projectiles collide in their horizontal game plane.
+                // Verse projectiles collide in the horizontal game plane.
                 targetEnd.y = end.y;
                 targetStart.y = start.y;
             }
             else return false;
-            // Cover either Thing tick order, but require simultaneous trajectories
-            // during this one tick, not an arbitrary crossing of flight lines.
             Vector3 targetStep = targetEnd - targetStart;
             for (int offset = 0; offset <= 1; offset++)
             {

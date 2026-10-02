@@ -121,8 +121,6 @@ namespace KRWF.RimKata
 
         internal static IEnumerable<Gizmo> ForPawn(IEnumerable<Gizmo> original, RimKataSubdueState state)
         {
-            // Replace the drafted firing toggle for this hold only. Its saved
-            // FireAtWill value belongs to ordinary combat and is never changed.
             bool inserted = false;
             foreach (Gizmo gizmo in original)
             {

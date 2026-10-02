@@ -16,8 +16,6 @@ namespace KRWF.RimKata
         {
             LongEventHandler.ExecuteWhenFinished(() =>
             {
-                // Profile initialization refreshes prepared weapons after all
-                // mods have finished initializing their runtime definitions.
                 if (!RimKataMod.EnsureProfilesInitialized())
                 {
                     RimKataPreparedWeaponData.RefreshDefinitions();
@@ -112,8 +110,6 @@ namespace KRWF.RimKata
             private readonly RimKataSettingsProfile scalarSettings;
             private readonly bool enableFriendlyPawnEffects;
             private readonly bool enableHostilePawnEffects;
-            private readonly float creepJoinerDependencyGeneChancePercent;
-            private readonly float creepJoinerRimKataGeneChancePercent;
             private readonly bool enableRimKataA;
             private readonly bool enableRimKataP;
             private readonly bool enableRimKataI;
@@ -131,8 +127,6 @@ namespace KRWF.RimKata
                 scalarSettings = RimKataSettingsProfile.Capture(settings);
                 enableFriendlyPawnEffects = settings?.enableFriendlyPawnEffects ?? true;
                 enableHostilePawnEffects = settings?.enableHostilePawnEffects ?? true;
-                creepJoinerDependencyGeneChancePercent = settings?.creepJoinerDependencyGeneChancePercent ?? 0f;
-                creepJoinerRimKataGeneChancePercent = settings?.creepJoinerRimKataGeneChancePercent ?? 0f;
                 enableRimKataA = settings?.enableRimKataA ?? true;
                 enableRimKataP = settings?.enableRimKataP ?? true;
                 enableRimKataI = settings?.enableRimKataI ?? true;
@@ -157,8 +151,6 @@ namespace KRWF.RimKata
                     && scalarSettings.Matches(settings)
                     && enableFriendlyPawnEffects == settings.enableFriendlyPawnEffects
                     && enableHostilePawnEffects == settings.enableHostilePawnEffects
-                    && creepJoinerDependencyGeneChancePercent == settings.creepJoinerDependencyGeneChancePercent
-                    && creepJoinerRimKataGeneChancePercent == settings.creepJoinerRimKataGeneChancePercent
                     && enableRimKataA == settings.enableRimKataA
                     && enableRimKataP == settings.enableRimKataP
                     && enableRimKataI == settings.enableRimKataI
@@ -174,13 +166,9 @@ namespace KRWF.RimKata
 
             public void RestoreValues(RimKataSettings settings)
             {
-                // List dialogs commit independently and refresh this snapshot.
-                // Only scalar controls can still be pending in the main window.
                 scalarSettings.ApplyTo(settings);
                 settings.enableFriendlyPawnEffects = enableFriendlyPawnEffects;
                 settings.enableHostilePawnEffects = enableHostilePawnEffects;
-                settings.creepJoinerDependencyGeneChancePercent = creepJoinerDependencyGeneChancePercent;
-                settings.creepJoinerRimKataGeneChancePercent = creepJoinerRimKataGeneChancePercent;
                 settings.aiSecondaryWeaponChancePercent = aiSecondaryWeaponChancePercent;
             }
 
@@ -268,7 +256,6 @@ namespace KRWF.RimKata
                 bool hostileBefore = Settings.enableHostilePawnEffects;
                 RuntimeSettingsSnapshot discardedValues = RuntimeSettingsSnapshot.Capture(Settings);
                 settingsBeforeEdit.RestoreValues(Settings);
-                // WriteSettings must also invalidate caches affected by a reverted edit.
                 settingsBeforeEdit = discardedValues;
                 uiBuffers.SyncFrom(Settings);
                 if (friendlyBefore != Settings.enableFriendlyPawnEffects
@@ -308,7 +295,7 @@ namespace KRWF.RimKata
 
         private void PersistSettings()
         {
-            Settings.SanitizeCreepJoinerGeneChances();
+            Settings.SanitizeGeneProbabilityRules();
             if (Profiles?.IsInitialized == true)
             {
                 try
@@ -387,6 +374,12 @@ namespace KRWF.RimKata
             instance?.PersistSettings();
         }
 
+        internal static void CommitGeneProbabilitySettings()
+        {
+            instance?.PersistSettings();
+            RefreshSettingsSnapshot();
+        }
+
         internal static void ApplyEligibilitySettingsChange()
         {
             RimKataTargetAccess.Rebuild();
@@ -430,7 +423,6 @@ namespace KRWF.RimKata
             if (___mod is RimKataMod rimKataMod)
             {
                 rimKataMod.DrawSettingsWindowButtons(inRect, __instance);
-                // Checkbox painting owns the content area; move the window by its title.
                 GUI.DragWindow(new Rect(0f, 0f, __instance.windowRect.width, 35f));
             }
         }

@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Installed only after CE has been detected. Without CE the native request
-    // contains no compatibility calls, including no per-shot availability check.
     internal static class RimKataCombatExtendedNativeAttack
     {
         private struct OpeningState
@@ -51,7 +49,7 @@ namespace KRWF.RimKata
 
         private static void CommitOrDeferOpening(Pawn pawn, Verb verb, RimKataVanillaOpeningAttempt attempt)
         {
-            // CE still needs its WarmupStance after base.TryStartCastOn returns.
+            // CE still needs WarmupStance after base.TryStartCastOn returns.
             if (activeOpening.verb == verb)
                 activeOpening.attempt = attempt;
             else
@@ -72,7 +70,7 @@ namespace KRWF.RimKata
         private static void OpeningPostfix(Verb __instance, bool __result)
         {
             OpeningState opening = activeOpening;
-            // Consume before the handoff: changing stance/jobs may start another cast.
+            // Changing stance/jobs may reenter casting, so consume the opening before handoff.
             activeOpening = default;
             if (!__result || opening.verb != __instance) return;
             if (opening.notifyAim)
@@ -101,6 +99,11 @@ namespace KRWF.RimKata
 
         private static bool PrepareAmmo(RimKataNativeAttack request)
         {
+            if (request.reactiveMotion != null)
+            {
+                request.extraAimTicks = -1;
+                return true;
+            }
             if (!RimKataCombatExtendedCompat.EnsureAmmoReady(request.pawn, request.verb)) return false;
             request.extraAimTicks = -1;
             return true;
@@ -108,6 +111,7 @@ namespace KRWF.RimKata
 
         private static bool PrepareOrContinueAim(RimKataNativeAttack request)
         {
+            if (request.reactiveMotion != null) return request.PrepareShot();
             Verb verb = request.verb;
             if (request.extraAimTicks >= 0)
             {
@@ -123,7 +127,7 @@ namespace KRWF.RimKata
 
         private static bool DeferAim(RimKataNativeAttack request, Exception exception)
         {
-            if (request.Cancelled || exception != null || request.HasFired
+            if (request.reactiveMotion != null || request.Cancelled || exception != null || request.HasFired
                 || request.verb.state == VerbState.Bursting
                 || !RimKataCombatExtendedFire.SuspendExtraAim(request.verb, out request.extraAimTicks))
                 return false;

@@ -8,7 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Registry/equipment/access events prepare the pair. GUI code only reads it.
     internal static class RimKataColonistBarWeaponCache
     {
         private sealed class WeaponPair
@@ -80,7 +79,6 @@ namespace KRWF.RimKata
             Hide(pair);
             ThingWithComps primary = heldPairPrimary ?? pawn.equipment?.Primary;
             ThingWithComps secondary = pair.secondary;
-            // Reuse only facts verified by this event, never store validation flags.
             if (primary == null || secondary == null
                 || (heldPairPrimary == null && (secondary.Destroyed
                     || secondary == primary
@@ -131,6 +129,7 @@ namespace KRWF.RimKata
             RimKataNeutralTargetInvalidation.Invalidate(__instance.Map);
             RimKataEligibilityCache.NotifyPawnSpawned(__instance);
             RimKataColonistBarWeaponCache.Refresh(__instance);
+            RimKataCrawlFireUtility.NotifyFactionChanged(__instance);
         }
     }
 
@@ -144,6 +143,7 @@ namespace KRWF.RimKata
             {
                 RimKataEligibilityCache.RefreshFaction(__instance);
                 RimKataColonistBarWeaponCache.RefreshFaction(__instance);
+                RimKataCrawlFireUtility.NotifyFactionRelationsChanged(__instance);
             }
         }
     }

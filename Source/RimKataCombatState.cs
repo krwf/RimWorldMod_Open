@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -172,7 +173,6 @@ namespace KRWF.RimKata
 
             RimKataMapComponent owner = marker.owner;
             Map ownerMap = owner?.map;
-            // Most rendered pawns have no state. Read their map only after a hit.
             if (ownerMap == null || pawn.Map != ownerMap)
             {
                 return false;
@@ -221,38 +221,144 @@ namespace KRWF.RimKata
             ByWeapon = new ConcurrentDictionary<ThingWithComps, Pawn>();
         internal sealed class BodyVisualEntry
         {
+            internal Pawn pawn;
             internal Map map;
-            internal bool body, groundPose;
+            internal bool body, groundPose, response, qualified, registeredQualified;
+            internal RimKataPawnCombatState snapshotState;
+            internal RimKataMapComponent snapshotOwner;
             internal RimKataBreachVisual? breach;
             internal RimKataSubdueVisual? subdue;
+            internal RimKataReactiveVisual? reactive;
             internal ThingWithComps crawlWeapon;
             internal LocalTargetInfo crawlTarget;
+            internal bool HasSnapshot => snapshotOwner != null && (qualified || response);
         }
 
         private static readonly ConcurrentDictionary<Pawn, BodyVisualEntry>
             BodyVisualByPawn = new ConcurrentDictionary<Pawn, BodyVisualEntry>();
+        private const int BodyPageShift = 8;
+        private const int BodyPageSize = 1 << BodyPageShift;
+        private static BodyVisualEntry[][] bodyVisualPages = new BodyVisualEntry[0][];
 
         internal static BodyVisualEntry BodyVisualFor(Pawn pawn)
-            => pawn != null && BodyVisualByPawn.TryGetValue(pawn, out var entry) ? entry : null;
-
-        // Publish immutable replacements at existing participant events. Render
-        // consumers share this record instead of querying each pose registry.
-        private static BodyVisualEntry CopyBodyVisual(Pawn pawn)
         {
-            BodyVisualEntry old = BodyVisualFor(pawn);
-            // Cleanup can run after Current.Game has changed but before its
-            // maps exist. An old pawn's map index belongs to the previous game.
-            // Copy the published map; only live publication resolves pawn.Map.
-            return new BodyVisualEntry { map = old?.map, body = old?.body == true,
-                groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue,
+            if (pawn == null) return null;
+            int id = pawn.thingIDNumber;
+            if (id <= 0)
+                return BodyVisualByPawn.TryGetValue(pawn, out var pending) ? pending : null;
+            BodyVisualEntry[][] pages = Volatile.Read(ref bodyVisualPages);
+            int index = id >> BodyPageShift;
+            if (index >= pages.Length) return null;
+            BodyVisualEntry[] page = Volatile.Read(ref pages[index]);
+            if (page == null) return null;
+            BodyVisualEntry entry = Volatile.Read(ref page[id & (BodyPageSize - 1)]);
+            return ReferenceEquals(entry?.pawn, pawn) ? entry : null;
+        }
+
+        private static void PublishBodySlot(Pawn pawn, BodyVisualEntry entry)
+        {
+            int id = pawn.thingIDNumber;
+            if (id <= 0) return;
+            int index = id >> BodyPageShift;
+            BodyVisualEntry[][] pages = bodyVisualPages;
+            if (index >= pages.Length)
+            {
+                if (entry == null) return;
+                var expanded = new BodyVisualEntry[System.Math.Max(index + 1, pages.Length * 2)][];
+                System.Array.Copy(pages, expanded, pages.Length);
+                pages = expanded;
+                Volatile.Write(ref bodyVisualPages, pages);
+            }
+            BodyVisualEntry[] page = pages[index];
+            if (page == null)
+            {
+                if (entry == null) return;
+                page = new BodyVisualEntry[BodyPageSize];
+                Volatile.Write(ref pages[index], page);
+            }
+            int slot = id & (BodyPageSize - 1);
+            if (entry != null || ReferenceEquals(page[slot]?.pawn, pawn))
+                Volatile.Write(ref page[slot], entry);
+        }
+
+        private static BodyVisualEntry CopyBodyVisual(Pawn pawn)
+            => CopyBodyVisual(BodyVisualFor(pawn));
+
+        private static BodyVisualEntry CopyBodyVisual(BodyVisualEntry old)
+        {
+            // During game replacement, an old pawn's map index refers to the previous game.
+            return new BodyVisualEntry { pawn = old?.pawn, map = old?.map, body = old?.body == true,
+                response = old?.response == true, qualified = old?.qualified == true,
+                registeredQualified = old?.registeredQualified == true,
+                snapshotState = old?.snapshotState, snapshotOwner = old?.snapshotOwner,
+                groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue, reactive = old?.reactive,
                 crawlWeapon = old?.crawlWeapon, crawlTarget = old?.crawlTarget ?? LocalTargetInfo.Invalid };
         }
 
         private static void StoreBodyVisual(Pawn pawn, BodyVisualEntry entry)
         {
-            if (entry.body || entry.breach.HasValue || entry.subdue.HasValue || entry.crawlWeapon != null)
+            if (!entry.body && !entry.response)
+            {
+                entry.snapshotState = null;
+                entry.snapshotOwner = null;
+                entry.qualified = false;
+            }
+            if (entry.registeredQualified || entry.body || entry.response || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue || entry.crawlWeapon != null)
+            {
+                entry.pawn = pawn;
                 BodyVisualByPawn[pawn] = entry;
-            else BodyVisualByPawn.TryRemove(pawn, out _);
+                PublishBodySlot(pawn, entry);
+            }
+            else
+            {
+                BodyVisualByPawn.TryRemove(pawn, out _);
+                PublishBodySlot(pawn, null);
+            }
+        }
+
+        internal static bool TryReadSnapshot(BodyVisualEntry entry, out RimKataVisualSnapshot snapshot)
+        {
+            snapshot = default;
+            if (entry?.snapshotOwner == null || (!entry.qualified && !entry.response)
+                || !entry.snapshotOwner.TryGetRegisteredVisualSnapshot(entry.snapshotState, out snapshot))
+                return false;
+            if (!entry.qualified)
+            {
+                snapshot.visualActive = false;
+                snapshot.additionalTumbleActive = false;
+                snapshot.dodgeMovementActive = false;
+                snapshot.closeDodgeActive = false;
+                snapshot.groundPoseActive = false;
+            }
+            return true;
+        }
+
+        internal static void NotifyQualificationChanged(Pawn pawn, bool qualified)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null && !qualified) return;
+                if (old != null && old.registeredQualified == qualified
+                    && (old.snapshotState == null || old.qualified == qualified)) return;
+                BodyVisualEntry entry = CopyBodyVisual(old);
+                entry.registeredQualified = qualified;
+                if (qualified) entry.map = pawn.Map;
+                if (entry.snapshotState != null) entry.qualified = qualified;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void ResetGame()
+        {
+            lock (UpdateLock)
+            {
+                ByPawn.Clear();
+                ByWeapon.Clear();
+                BodyVisualByPawn.Clear();
+                Volatile.Write(ref bodyVisualPages, new BodyVisualEntry[0][]);
+            }
         }
 
         internal static void PublishBreach(Pawn pawn, RimKataBreachVisual? visual)
@@ -260,10 +366,26 @@ namespace KRWF.RimKata
             if (pawn == null) return;
             lock (UpdateLock)
             {
-                if (!visual.HasValue && BodyVisualFor(pawn)?.breach.HasValue != true) return;
-                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                BodyVisualEntry previous = BodyVisualFor(pawn);
+                if (!visual.HasValue && previous?.breach.HasValue != true) return;
+                if (visual.HasValue && previous?.breach.HasValue == true
+                    && previous.map == pawn.Map && visual.Value.Matches(previous.breach.Value)) return;
+                BodyVisualEntry entry = CopyBodyVisual(previous);
                 if (visual.HasValue) entry.map = pawn.Map;
                 entry.breach = visual;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void PublishReactive(Pawn pawn, RimKataReactiveVisual? visual)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                if (!visual.HasValue && BodyVisualFor(pawn)?.reactive.HasValue != true) return;
+                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                if (visual.HasValue) entry.map = pawn.Map;
+                entry.reactive = visual;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -293,7 +415,7 @@ namespace KRWF.RimKata
             {
                 if (!visual.HasValue && BodyVisualFor(pawn)?.subdue.HasValue != true) return;
                 BodyVisualEntry entry = CopyBodyVisual(pawn);
-                // A held pawn is despawned. Its participant belongs to the carrier's map.
+                // A held pawn is despawned; its map comes from the carrier.
                 if (visual.HasValue) entry.map = map;
                 entry.subdue = visual;
                 StoreBodyVisual(pawn, entry);
@@ -307,7 +429,8 @@ namespace KRWF.RimKata
 
         public static bool IsBodyVisualParticipant(Pawn pawn)
         {
-            return BodyVisualFor(pawn)?.body == true;
+            BodyVisualEntry entry = BodyVisualFor(pawn);
+            return entry?.body == true || entry?.reactive.HasValue == true;
         }
 
         public static bool TryGetParticipantWeapons(
@@ -350,6 +473,7 @@ namespace KRWF.RimKata
 
             lock (UpdateLock)
             {
+                RefreshBodyVisual(state);
                 RemoveEntry(pawn);
                 if (!state.DeflectionActive && !state.DeflectionSpinActive && !state.ResponsePoseActive)
                 {
@@ -391,13 +515,21 @@ namespace KRWF.RimKata
                 Map map = pawn.Map;
                 bool ground = map != null && state.groundPose?.VisualActive == true;
                 bool body = map != null && (state.VisualActive || state.CloseDodgeActive || ground);
+                bool response = map != null && (state.DeflectionActive || state.DeflectionSpinActive || state.ResponsePoseActive);
                 BodyVisualEntry old = BodyVisualFor(pawn);
-                if (old == null && !body || old != null && old.body == body
-                    && old.groundPose == ground && old.map == map) return;
-                BodyVisualEntry entry = CopyBodyVisual(pawn);
+                if (old == null && !body && !response) return;
+                bool qualified = (body || response) && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
+                if (old != null && old.body == body && old.response == response
+                    && old.groundPose == ground && old.map == map && old.qualified == qualified
+                    && (!(body || response) || old.snapshotState == state && old.snapshotOwner == state.ownerComponent)) return;
+                BodyVisualEntry entry = CopyBodyVisual(old);
                 entry.map = map;
                 entry.groundPose = ground;
                 entry.body = body;
+                entry.response = response;
+                entry.qualified = qualified;
+                entry.snapshotState = state;
+                entry.snapshotOwner = state.ownerComponent;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -414,14 +546,12 @@ namespace KRWF.RimKata
                 RemoveEntry(pawn);
             }
 
-            // A combat-state reset must not remove an independently owned
-            // breach/crawl pose. Their own completion events clear those fields.
             lock (UpdateLock)
             {
                 BodyVisualEntry old = BodyVisualFor(pawn);
-                if (old == null || !old.body && !old.groundPose) return;
-                BodyVisualEntry entry = CopyBodyVisual(pawn);
-                entry.body = entry.groundPose = false;
+                if (old == null || !old.body && !old.groundPose && !old.response && old.snapshotState == null) return;
+                BodyVisualEntry entry = CopyBodyVisual(old);
+                entry.body = entry.groundPose = entry.response = false;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -442,14 +572,17 @@ namespace KRWF.RimKata
                         RemoveEntry(pair.Key);
                     }
                 }
-            }
-
-            foreach (KeyValuePair<Pawn, BodyVisualEntry> pair in BodyVisualByPawn)
-            {
-                if (pair.Value.map == map)
+                foreach (KeyValuePair<Pawn, BodyVisualEntry> pair in BodyVisualByPawn)
                 {
-                    if (allVisuals) BodyVisualByPawn.TryRemove(pair.Key, out _);
-                    else Clear(pair.Key);
+                    if (pair.Value.map == map)
+                    {
+                        if (allVisuals)
+                        {
+                            BodyVisualByPawn.TryRemove(pair.Key, out _);
+                            PublishBodySlot(pair.Key, null);
+                        }
+                        else Clear(pair.Key);
+                    }
                 }
             }
         }
@@ -516,6 +649,7 @@ namespace KRWF.RimKata
         public LocalTargetInfo dodgeResumeDestination = LocalTargetInfo.Invalid;
         public PathEndMode dodgeResumePathEndMode = PathEndMode.OnCell;
         public Job dodgeMovementJob;
+        internal Job motionControlJob;
         public int dodgeFailureStaggerTicks;
         public float dodgeFailureStaggerSpeedFactor = StaggerHandler.DefaultStaggerMoveSpeedFactor;
         public int tumbleSign = 1;
@@ -538,10 +672,9 @@ namespace KRWF.RimKata
         public int closeDodgeTotalTicks;
         public float closeDodgeStartAngle;
         public Thing closeCombatTrigger;
-        // Retained for old saves; live combat does not maintain a drafted-only latch.
+        // Legacy save field; live combat does not maintain this latch.
         public bool draftedFireActive;
         public IntVec3 draftedMovementSearchCell = IntVec3.Invalid;
-        // Transient edge: newly allowed movement can search before the next cell change.
         public bool draftedMovementSearchAllowed;
         public bool draftedMovementSearchTriggerPending;
         public int draftedWarmupTicksRemaining = -1;
@@ -583,6 +716,8 @@ namespace KRWF.RimKata
         public int dedicatedContinuityUntilTick = -1;
         public int movementFireContinuityUntilTick = -1;
         public int staggerSearchLastCheckTick = -1;
+        internal bool shakeOffPending;
+        internal RimKataReactiveMotionState reactiveMotion;
         public Pawn incomingThreatSource;
         public int incomingThreatTicksRemaining;
         public int pendingMeleeThreatClearTick = -1;
@@ -591,8 +726,7 @@ namespace KRWF.RimKata
         internal bool temporaryInactive;
         internal bool temporaryInactivityCleanupPending;
         public RimKataGroundPoseState groundPose;
-        // Rebuilt by the active Hunt toil after loading; the weapon timers below
-        // are already serialized with their usual slot state.
+        // The active Hunt toil rebuilds this transient session after loading.
         internal RimKataHuntingSession huntingSession;
 
         public bool VisualActive => pawn != null
@@ -619,10 +753,9 @@ namespace KRWF.RimKata
         public bool DeflectionSpinActive => pawn != null && deflectionSpin && deflectionSpinTicksRemaining > 0;
         public bool ResponsePoseActive => pawn != null && responsePoseTicksRemaining > 0;
         public bool CloseDodgeActive => pawn != null && closeDodgeTicksRemaining > 0;
-        // Close combat is live state, not timed memory.
         public bool CloseCombatActive => TryGetLiveCloseCombatTrigger(out Thing _);
         public bool DraftedFireActive => pawn != null && draftedFireActive;
-        // Keep serialized names, but movement search belongs to every combat entry.
+        // The Drafted prefix is retained for save compatibility.
         public bool DraftedMovementSearchTracking => pawn != null
             && draftedMovementSearchCell.IsValid;
         public bool DraftedMovementSearchTriggerPending => pawn != null
@@ -648,7 +781,7 @@ namespace KRWF.RimKata
         public bool DebugIncomingThreatStored => incomingThreatSource != null;
         public bool DebugCloseAttackRequestStored =>
             closeAttackRequestTarget != null;
-        public bool Active => VisualActive
+        public bool Active => reactiveMotion != null || VisualActive
             || RangedDodgeDelayActive
             || DeflectionActive
             || DeflectionSpinActive
@@ -674,8 +807,6 @@ namespace KRWF.RimKata
             || sharedTargetSearch?.KeepsCombatAlive == true
             || dedicatedFollowupJobPending
             || weaponSwapPending
-            // Only decide whether a finished combat state still owns a pose.
-            // Active ordinary combat returns above without reading pose state.
             || groundPose != null;
         public float VisualProgress => totalTicks <= 0 ? 1f : 1f - ticksRemaining / (float)totalTicks;
         public float AdditionalTumbleProgress =>
@@ -750,6 +881,7 @@ namespace KRWF.RimKata
             Scribe_TargetInfo.Look(ref dodgeResumeDestination, "dodgeResumeDestination");
             Scribe_Values.Look(ref dodgeResumePathEndMode, "dodgeResumePathEndMode", PathEndMode.OnCell);
             Scribe_References.Look(ref dodgeMovementJob, "dodgeMovementJob");
+            Scribe_Values.Look(ref shakeOffPending, "shakeOffPending");
             Scribe_Values.Look(ref dodgeFailureStaggerTicks, "dodgeFailureStaggerTicks");
             Scribe_Values.Look(ref dodgeFailureStaggerSpeedFactor, "dodgeFailureStaggerSpeedFactor", StaggerHandler.DefaultStaggerMoveSpeedFactor);
             Scribe_Values.Look(ref tumbleSign, "tumbleSign", 1);
@@ -818,7 +950,7 @@ namespace KRWF.RimKata
             {
                 if (deflectionSpin && deflectionSpinTotalTicks <= 0 && deflectionTicksRemaining > 0)
                 {
-                    // Older saves shared the weapon-deflection timer; retain the displayed angle.
+                    // Older saves shared the weapon-deflection timer.
                     deflectionSpinStartProgress = Mathf.Lerp(deflectionSpinStartProgress, 1f, DeflectionProgress);
                     deflectionSpinTicksRemaining = Mathf.Clamp(deflectionTicksRemaining, 8, 24);
                     deflectionSpinTotalTicks = deflectionSpinTicksRemaining;
@@ -883,6 +1015,8 @@ namespace KRWF.RimKata
 
         public void Tick()
         {
+            if (shakeOffPending && pawn?.stances?.stagger?.Staggered != true)
+                shakeOffPending = false;
             UpdateDraftedCooldown();
             TickDraftedMeleeThreatClear();
             if (rangedDodgeDelayTicksRemaining > 0)
@@ -1043,8 +1177,6 @@ namespace KRWF.RimKata
 
             pendingMeleeThreatClearTick = -1;
 
-            // The queued safety cleanup survives temporary inactivity and
-            // weapon loss; neither condition makes a friendly threat hostile.
             if (pawn?.Drafted == true
                 && RimKataEligibility.HasRimKataAccess(pawn)
                 && pawn.mindState?.meleeThreat != null)
@@ -1183,6 +1315,7 @@ namespace KRWF.RimKata
         private void ClearDodgeMovementCoreFields()
         {
             dodgeMovementActive = false;
+            if (motionControlJob != null) RimKataMotionJobGate.Refresh(this);
             dodgeMovementStartedInCloseCombat = false;
             dodgeMovementTumbling = false;
             dodgeMovementOrigin = IntVec3.Invalid;
@@ -1688,9 +1821,6 @@ namespace KRWF.RimKata
             CancelDraftedFire();
             CancelWeaponCycles();
 
-            // A completed defense result keeps its remaining visual pose.  Fire
-            // blocks new RimKata work, but does not retroactively cancel an
-            // already-started parry or dodge presentation.
             if (pawn?.stances?.curStance is Stance_RimKataAim)
             {
                 pawn.stances.SetStance(new Stance_Mobile());
@@ -1724,7 +1854,6 @@ namespace KRWF.RimKata
         private List<RimKataPawnCombatState> states = new List<RimKataPawnCombatState>();
         private readonly List<RimKataPawnCombatState> groundPoseParticipants =
             new List<RimKataPawnCombatState>();
-        // A re-prone deadline must not keep an otherwise idle combat state ticking.
         internal Dictionary<Pawn, long> groundPoseResumeTicks = new Dictionary<Pawn, long>();
         private List<Pawn> groundPoseResumeKeys;
         private List<long> groundPoseResumeValues;
@@ -1833,7 +1962,11 @@ namespace KRWF.RimKata
                     RimKataCombatStatePresenceCache.Clear(
                         states[i]?.pawn,
                         map);
-                    if (states[i] != null) states[i].ownerComponent = null;
+                    if (states[i] != null)
+                    {
+                        RimKataMotionJobGate.Clear(states[i]);
+                        states[i].ownerComponent = null;
+                    }
                 }
             }
             UnsubscribeProjectileEvents();
@@ -1857,7 +1990,6 @@ namespace KRWF.RimKata
             {
                 if (Scribe.mode == LoadSaveMode.Saving && groundPoseResumeTicks.Count != 0)
                 {
-                    // Lazy cleanup at saving, never a per-tick pawn traversal.
                     var expired = new List<Pawn>();
                     foreach (var pair in groundPoseResumeTicks)
                         if (pair.Key.Destroyed || pair.Key.Dead || pair.Key.Map != map
@@ -2024,8 +2156,6 @@ namespace KRWF.RimKata
                             state.pawn, state.pawn.CurJobDef, state);
                     }
                 }
-                // Only event-registered poses are visited. Ordinary combat states
-                // never enter the pose scheduler, even to test an active flag.
                 for (int i = groundPoseParticipants.Count - 1; i >= 0; i--)
                     RimKataGroundPoseUtility.Tick(groundPoseParticipants[i]);
             }
@@ -2157,7 +2287,6 @@ namespace KRWF.RimKata
             {
                 Projectile current =
                     RimKataProjectileImpactContext.CurrentProjectile;
-                // Additional dodge covers rounds already in this queue, not later launches.
                 foreach (var pair in pendingProjectileValidations)
                 {
                     if (pair.Value?.dodgeTarget == target
@@ -2265,7 +2394,6 @@ namespace KRWF.RimKata
                         projectile,
                         out RimKataTrackedRangedProjectile tracked))
                 {
-                    // A successful early dodge deferred Impact and resumed flight.
                     if (tracked.preventDirectHit && projectile.Spawned && !projectile.Destroyed)
                     {
                         return;
@@ -2620,8 +2748,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // An earlier wall, shield, interception, or bystander collision
-            // belongs to the original impact; never turn it into a new flight.
             if (blockedByShield
                 || (hitThing != pending.dodgeTarget
                     && (hitThing != null || !RimKataProjectileMissUtility.IsAtDestination(projectile))))
@@ -2630,8 +2756,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Short flights can impact before the map's next tick. Keep the same
-            // projectile alive until the scheduled roll, without absorbing damage.
+            // Short flights can impact before the map tick that schedules their dodge roll.
             if ((Find.TickManager?.TicksGame ?? 0) < pending.dueTick)
             {
                 return true;
@@ -2655,7 +2780,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Dodge validation is independent of the interception feature toggle.
             ValidatePendingProjectiles(currentTick);
             if (!RimKataTargetAccess.AnyExplosiveInterceptionEnabled)
             {
@@ -3132,6 +3256,7 @@ namespace KRWF.RimKata
             RimKataGroundPoseUtility.ClearMap(map);
             foreach (Pawn indexedPawn in statesByPawn.Keys)
             {
+                RimKataMotionJobGate.Clear(statesByPawn[indexedPawn]);
                 RimKataCombatStatePresenceCache.Clear(indexedPawn, map);
             }
             statesByPawn.Clear();
@@ -3148,6 +3273,8 @@ namespace KRWF.RimKata
                     state.ownerComponent = this;
                     RimKataCombatStatePresenceCache.Mark(state.pawn, this);
                     statesByPawn[state.pawn] = state;
+                    if (RimKataEligibilityCache.IsCachedQualifiedPawn(state.pawn))
+                        RimKataMotionJobGate.Refresh(state);
                     RimKataGroundPoseUtility.Rebuild(state);
                     RimKataResponseVisualParticipantCache.Refresh(state);
                     RimKataResponseVisualParticipantCache
@@ -3159,7 +3286,9 @@ namespace KRWF.RimKata
         private void RemoveStateAt(int index)
         {
             RimKataPawnCombatState state = states[index];
+            RimKataReactiveMotion.Remove(state?.pawn);
             RimKataGroundPoseUtility.Clear(state);
+            RimKataMotionJobGate.Clear(state);
             if (state != null) state.ownerComponent = null;
             states.RemoveAt(index);
             RimKataResponseVisualParticipantCache.Clear(state?.pawn);
@@ -3252,6 +3381,7 @@ namespace KRWF.RimKata
                 {
                     state.tumbleSign = Rand.Bool ? 1 : -1;
                 }
+                RimKataMotionJobGate.Refresh(state);
                 RimKataResponseVisualParticipantCache
                     .RefreshBodyVisual(state);
             }
@@ -3387,27 +3517,6 @@ namespace KRWF.RimKata
             }
         }
 
-        internal void GetDodgeMovementStatus(
-            Pawn pawn,
-            out bool blocksJob,
-            out bool isActive)
-        {
-            lock (statesLock)
-            {
-                RimKataPawnCombatState state = null;
-                if (pawn != null)
-                {
-                    statesByPawn.TryGetValue(pawn, out state);
-                }
-
-                blocksJob = state?.DodgeMotionBlocksJob == true;
-                isActive = blocksJob
-                    && RimKataDodgeMovementUtility.CalculateIsActive(
-                        pawn,
-                        state);
-            }
-        }
-
         public bool IsDodgeMotionBlocking(Pawn pawn)
         {
             lock (statesLock)
@@ -3522,6 +3631,22 @@ namespace KRWF.RimKata
             }
         }
 
+        internal bool TryGetRegisteredVisualSnapshot(
+            RimKataPawnCombatState state,
+            out RimKataVisualSnapshot snapshot)
+        {
+            snapshot = default;
+            lock (statesLock)
+            {
+                if (state?.ownerComponent != this || state.pawn?.Map != map
+                    || (!state.VisualActive && !state.DeflectionActive && !state.DeflectionSpinActive
+                        && !state.ResponsePoseActive && !state.CloseDodgeActive
+                        && state.groundPose?.VisualActive != true)) return false;
+                snapshot = state.VisualSnapshot();
+                return true;
+            }
+        }
+
         public bool TryGetGunReadyTarget(Pawn pawn, out LocalTargetInfo target)
         {
             target = LocalTargetInfo.Invalid;
@@ -3536,8 +3661,6 @@ namespace KRWF.RimKata
                     return false;
                 }
 
-                // A newly assigned Job/follow-up can exist while paused. Only
-                // an aim already accepted by a weapon cycle makes it gun-ready.
                 bool ready = (combatJob || state.dedicatedFollowupJobPending)
                     && RimKataDualWeaponController.TryGetNextAim(
                         pawn, state, out RimKataWeaponCycleState _, out target);
@@ -3686,8 +3809,6 @@ namespace KRWF.RimKata
                 RimKataPawnCombatState state = GetState(pawn, true);
                 if (state.DeflectionSpinActive)
                 {
-                    // A renewed deflection keeps the current angle and only
-                    // stretches the remaining part of the same full turn.
                     state.deflectionSpinStartProgress = state.DeflectionSpinProgress;
                     state.deflectionSpinTicksRemaining = Mathf.Clamp(spinDurationTicks, 8, 24);
                     state.deflectionSpinTotalTicks = state.deflectionSpinTicksRemaining;

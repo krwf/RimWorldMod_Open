@@ -95,8 +95,6 @@ namespace KRWF.RimKata
                 }
             }
 
-            // Notify after RemoveWhere and outside the tracking lock.  The map
-            // records a request; it does not reset combat from this callback.
             for (int i = 0; i < recoveredPawns.Count; i++)
             {
                 NotifyMap(recoveredPawns[i], false);
@@ -156,8 +154,14 @@ namespace KRWF.RimKata
         {
             if (inactive)
             {
+                RimKataCrawlFireUtility.NotifyPathStopped(pawn);
                 RimKataBreachUtility.NotifyEligibilityLost(pawn);
                 RimKataSubdueUtility.NotifyEligibilityLost(pawn);
+                RimKataReactiveMotion.Remove(pawn);
+            }
+            else
+            {
+                RimKataCrawlFireUtility.NotifyPathStarted(pawn);
             }
             pawn?.Map?.GetComponent<RimKataMapComponent>()?
                 .RequestTemporaryInactivityUpdate(pawn, inactive);

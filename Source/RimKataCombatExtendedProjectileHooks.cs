@@ -8,8 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Installed only after the CE API has been resolved. The unpatched common
-    // methods contain no CE calls, delegates or availability checks.
     internal static class RimKataCombatExtendedProjectileHooks
     {
         internal static void Apply(Harmony harmony)
@@ -47,8 +45,7 @@ namespace KRWF.RimKata
 
         private static void RegisterMapComponents()
         {
-            // CustomMapComponent is excluded by Map.FillComponents' normal
-            // discovery. Registration happens once, only for a CE-enabled game.
+            // CustomMapComponent is excluded from Map.FillComponents discovery and needs explicit registration.
             foreach (MapGeneratorDef generator in DefDatabase<MapGeneratorDef>.AllDefsListForReading)
             {
                 generator.customMapComponents ??= new List<Type>();
@@ -133,8 +130,7 @@ namespace KRWF.RimKata
         {
             if (!RimKataCombatExtendedProjectiles.HasImpactScope) return true;
             Thing projectile = RimKataCombatExtendedProjectiles.CurrentProjectile;
-            // Base Impact owns area damage, which cannot borrow a direct-hit
-            // decision even when it damages the same pawn in a nested scope.
+            // Base Impact handles area damage, which cannot reuse a direct-hit defense decision.
             __result = projectile != null && RimKataCombatExtendedProjectiles.CurrentVictim == defender
                 && RimKataDefenseUtility.TryAbsorbProjectileDamage(defender, dinfo, projectile,
                     RimKataCombatExtendedProjectiles.CurrentCloseShot,

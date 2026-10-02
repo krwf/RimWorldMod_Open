@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Ustawienia profilu</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Funkcje walki</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funkcje moda</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Efekty wizualne</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Funkcje aktywacji</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Zastosowana wartość</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Premia do skrytości podczas polowania w pozycji leżącej</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Opóźnienie przed ponownym położeniem się</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Czas leżenia po upadku</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Unikanie ognia sojuszników po upadku</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Czas ruchu podczas wyważania drzwi</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Czas oczekiwania po dotarciu do celu wyważenia</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Wartości domyślne</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Zezwalaj niewrogim postaciom na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Zezwalaj wrogim postaciom na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Domyślnie zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Płynne przejścia celowania</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Obezwładnij</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Ataki są wyłączone.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Przenoszenie obrażeń</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Przenosi otrzymywane obrażenia na obezwładnioną postać. Po wyłączeniu unik lub rozpoczęcie walki w zwarciu uwalnia tę postać.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Ślizg</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Otrząśnięcie</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Szansa na ślizg</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Szansa na otrząśnięcie</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Szansa na geny</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Niezerowa szansa</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Brak szansy</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Resetuj wszystko</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Resetuj przefiltrowane wyniki</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Kuśtykacz</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Upiorny przybysz</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

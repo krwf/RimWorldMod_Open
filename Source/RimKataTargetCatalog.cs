@@ -34,7 +34,6 @@ namespace KRWF.RimKata
             RaceDef = raceDef;
             XenotypeDef = xenotypeDef;
             Def definition = (Def)mutantDef ?? (Def)xenotypeDef ?? raceDef;
-            // Synthetic entries have a rule key, not a concrete xenotype definition.
             string definitionName = mutantDef?.defName ?? xenotypeDef?.defName
                 ?? (key.StartsWith("race:", StringComparison.Ordinal) ? raceDef?.defName : key);
             DisplayLabel = label + " [" + definitionName + "]";
@@ -70,8 +69,6 @@ namespace KRWF.RimKata
                 return null;
 
             EnsureInitialized();
-            // A shambler keeps its original race/xenotype, but its restriction
-            // rule and profile are selected independently, even when disabled.
             if (shamblerEntry != null && pawn.IsShambler)
                 return shamblerEntry;
             if (pawn.def != humanDef)
@@ -139,7 +136,7 @@ namespace KRWF.RimKata
 
             if (baselinerEntry == null)
             {
-                // Baseliner itself is a Biotech def; keep the same saved key without that DLC.
+                // Baseliner is a Biotech def; saves use the same key without that DLC.
                 baselinerEntry = new RimKataTargetEntry("xenotype:Baseliner",
                     "KRWF_RimKata_TargetBaseliner".Translate(), RimKataTargetCategory.Humanlike, humanDef);
                 Add(result, baselinerEntry);

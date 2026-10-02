@@ -4,11 +4,9 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Only relative geometry is retained. A shot never uses an old world-space
-    // render frame or calls a weapon renderer to refresh it.
     internal static class RimKataGroundPoseGeometry
     {
-        private sealed class Body
+        private struct Body
         {
             internal PawnRenderNode root;
             internal Vector3 foot;
@@ -17,15 +15,20 @@ namespace KRWF.RimKata
             internal float northReach;
         }
 
-        private sealed class Weapon
+        private struct Weapon
         {
             internal Pawn owner;
             internal Rot4 facing;
             internal Vector3 aimLocalCenter;
         }
 
-        private static readonly ConditionalWeakTable<Pawn, Body> Bodies = new ConditionalWeakTable<Pawn, Body>();
-        private static readonly ConditionalWeakTable<ThingWithComps, Weapon> Weapons = new ConditionalWeakTable<ThingWithComps, Weapon>();
+        private sealed class Sample<T> where T : struct
+        {
+            internal T value;
+        }
+
+        private static readonly ConditionalWeakTable<Pawn, Sample<Body>> Bodies = new ConditionalWeakTable<Pawn, Sample<Body>>();
+        private static readonly ConditionalWeakTable<ThingWithComps, Sample<Weapon>> Weapons = new ConditionalWeakTable<ThingWithComps, Sample<Weapon>>();
         private static readonly object sync = new object();
 
         internal struct WeaponPlacement
@@ -80,8 +83,7 @@ namespace KRWF.RimKata
             };
             lock (sync)
             {
-                Bodies.Remove(parms.pawn);
-                Bodies.Add(parms.pawn, body);
+                Bodies.GetValue(parms.pawn, CreateBodySample).value = body;
             }
         }
 
@@ -97,10 +99,13 @@ namespace KRWF.RimKata
             };
             lock (sync)
             {
-                Weapons.Remove(weapon);
-                Weapons.Add(weapon, sample);
+                Weapons.GetValue(weapon, CreateWeaponSample).value = sample;
             }
         }
+
+        private static Sample<Body> CreateBodySample(Pawn pawn) => new Sample<Body>();
+
+        private static Sample<Weapon> CreateWeaponSample(ThingWithComps weapon) => new Sample<Weapon>();
 
         internal static Vector3 StandingCenter(Verb verb, Vector3 aimOrigin)
         {
@@ -120,12 +125,13 @@ namespace KRWF.RimKata
             Vector3 anchor = StandingAnchor(pawn);
             lock (sync)
             {
-                if (Weapons.TryGetValue(weapon, out Weapon sample)
-                    && sample.owner == pawn && sample.facing == pawn.Rotation)
-                    return anchor + sample.aimLocalCenter.RotatedBy(aim);
+                if (Weapons.TryGetValue(weapon, out var cached))
+                {
+                    Weapon sample = cached.value;
+                    if (sample.owner == pawn && sample.facing == pawn.Rotation)
+                        return anchor + sample.aimLocalCenter.RotatedBy(aim);
+                }
             }
-            // Before a weapon has ever been drawn, use its native aiming anchor.
-            // Unknown custom render offsets are never guessed from a sheath.
             float distance = (0.4f + weapon.def.equippedDistanceOffset)
                 * (pawn.ageTracker?.CurLifeStage?.equipmentDrawDistanceFactor ?? 1f);
             return anchor + new Vector3(0f, 0f, distance).RotatedBy(aim);
@@ -134,9 +140,9 @@ namespace KRWF.RimKata
         private static Vector3 StandingAnchor(Pawn pawn)
         {
             lock (sync)
-                return Bodies.TryGetValue(pawn, out Body body)
-                    && body.root == pawn.Drawer.renderer.renderTree.rootNode
-                    ? pawn.DrawPos + body.anchor : pawn.DrawPos;
+                return Bodies.TryGetValue(pawn, out var cached)
+                    && cached.value.root == pawn.Drawer.renderer.renderTree.rootNode
+                    ? pawn.DrawPos + cached.value.anchor : pawn.DrawPos;
         }
 
         internal static Vector3 AimOrigin(Pawn pawn, RimKataGroundPoseState pose)
@@ -166,19 +172,18 @@ namespace KRWF.RimKata
         internal static bool HasUsableAnchor(Pawn pawn, ThingWithComps weapon)
         {
             if (!RimKataWeaponRenderProbe.HasSpecialRenderer(weapon.def)) return true;
-            lock (sync) return Weapons.TryGetValue(weapon, out Weapon sample)
-                && sample.owner == pawn && sample.facing == pawn.Rotation;
+            lock (sync) return Weapons.TryGetValue(weapon, out var cached)
+                && cached.value.owner == pawn && cached.value.facing == pawn.Rotation;
         }
 
         internal static Vector3 Displacement(Pawn pawn, Vector3 center, RimKataGroundPoseState pose,
             bool headCentered = false)
         {
             Body body;
-            lock (sync) Bodies.TryGetValue(pawn, out body);
-            if (body == null || body.root != pawn.Drawer.renderer.renderTree.rootNode)
+            lock (sync) body = Bodies.TryGetValue(pawn, out var cached) ? cached.value : default;
+            if (body.root == null || body.root != pawn.Drawer.renderer.renderTree.rootNode)
             {
-                // Rendering may not have run since loading. Read the initialized
-                // head transform, without executing a draw or mutating combat.
+                // A loaded pawn may not have rendered yet, but its initialized head transform is available.
                 PawnDrawParms parms = PawnDrawParms.DefaultFor(pawn);
                 if (headCentered && pose.DrawFacing.IsValid) parms.facing = pose.DrawFacing;
                 parms.matrix = Matrix4x4.Translate(pawn.DrawPos);

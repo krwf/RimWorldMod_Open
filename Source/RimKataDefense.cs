@@ -348,9 +348,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // CE reaches this only after its hit roll and immobile/surprise gates.
-            // RimKata gets its own first defense roll; failure leaves CE's separate
-            // dodge, parry, armor and riposte calculations unchanged.
+            // CE calls this after its hit roll and immobile/surprise gates, before defense rolls.
             if (RimKataEligibility.CanRollMeleeDodge(defender)
                 && Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
             {
@@ -365,12 +363,16 @@ namespace KRWF.RimKata
         internal static bool TryResolveDirectMeleeDefense(
             Pawn defender, Pawn attacker, Verb attackingVerb, out bool parried)
         {
+            if (RimKataReactiveDefense.TryDefense(defender, out parried))
+            {
+                RimKataReactiveDefense.NotifyDefense(defender, parried);
+                return true;
+            }
             parried = false;
             if (defender == null || attacker == null || !RimKataEligibility.CanUseDefense(defender))
                 return false;
 
             // Direct counterblows do not set the selected Verb's CurrentTarget.
-            // Use their explicit participants and roll only once.
             if (Rand.Chance(RimKataCombatMath.CloseMeleeDodgeChanceVerified(defender)))
             {
                 RimKataGroundPoseUtility.NotifyAvoidance(defender, attacker, true);
@@ -455,7 +457,6 @@ namespace KRWF.RimKata
         internal static bool IsDirectHitBullet(Projectile projectile)
         {
             // Mod bullets can use an explosive DamageDef without detonating.
-            // Their actual victim must still receive the ordinary impact roll.
             return projectile is Bullet
                 && projectile.def?.projectile != null
                 && projectile.def.projectile.explosionRadius <= 0f;
@@ -516,11 +517,10 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // The same projectile still detonates normally at its missed destination.
             RimKataProjectileMissUtility.ApplyMiss(projectile, flight);
             if (projectile.def.projectile.alwaysFreeIntercept)
             {
-                // This flag makes native HitFlags ignore the removed IntendedTarget bit.
+                // alwaysFreeIntercept makes native HitFlags ignore the removed IntendedTarget bit.
                 defender.Map?.GetComponent<RimKataMapComponent>()
                     ?.RegisterLaunchedRangedProjectile(projectile, defender, preventDirectHit: true);
             }
@@ -529,14 +529,11 @@ namespace KRWF.RimKata
 
         public static bool TryRangedDodge(Pawn defender, Thing attacker, Projectile projectile)
         {
-            // Only using the held pawn as a shield disables ranged evasion.
             if (RimKataSubdueDefense.HoldsLivingTarget(defender)) return false;
 
             RimKataMapComponent component = defender.Map?.GetComponent<RimKataMapComponent>();
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(defender);
 
-            // This gate is independent of the normal dodge roll, delay and
-            // additional-dodge allowance, including while a tumble is playing.
             float immediateTumbleChance = settings?.ImmediateTumbleChance ?? 0f;
             if (component != null
                 && settings?.tumbleEnabled != false
@@ -704,6 +701,25 @@ namespace KRWF.RimKata
                     dinfo,
                     suppressJobNotification);
                 return true;
+            }
+
+            if (!dinfo.Def.isExplosive && !explosiveProjectile
+                && attacker != null && attacker != defender
+                && RimKataGroundPoseUtility.IsFallen(defender)
+                && !attacker.HostileTo(defender))
+            {
+                bool avoided;
+                if (!closeAttack || !TryGetCloseAttackResolution(defender, out avoided))
+                {
+                    float chance = RimKataTargetAccess.SettingsFor(defender)?.FallenFriendlyFireAvoidChance ?? 0.5f;
+                    avoided = chance > 0f
+                        && RimKataEligibility.TryGetDefenseEligibility(defender, out _)
+                        && Rand.Chance(chance);
+                    if (closeAttack) RecordCloseAttackResolution(defender, avoided);
+                }
+                RecordProjectileDefense(defender, avoided);
+                if (avoided) MarkProjectileAvoided(defender);
+                return avoided;
             }
 
             if (closeAttack
@@ -921,8 +937,6 @@ namespace KRWF.RimKata
             ThingWithComps weapon = SelectResponseWeapon(defender);
             if (weapon == null)
             {
-                // Facing is a response of the pawn, even when there is no weapon
-                // to animate. Keep its current attack job and cooldown untouched.
                 Verb unarmedVerb = (defender.stances?.curStance as Stance_Busy)?.verb;
                 if (unarmedVerb?.IsMeleeAttack != true || unarmedVerb.EquipmentSource != null)
                 {
@@ -1140,8 +1154,7 @@ namespace KRWF.RimKata
                 remaining = Mathf.Max(remaining, cooldown.ticksLeft);
             }
 
-            // A synchronous hit is resolved before its caller installs the new
-            // cooldown. Projectiles already in flight use only the time left.
+            // Synchronous hits resolve before the caller installs their cooldown.
             if (remaining == 0 && attackingVerb != null
                 && (attackingVerb.IsMeleeAttack
                     || RimKataFireContext.ActiveVerb == attackingVerb))
@@ -1395,6 +1408,11 @@ namespace KRWF.RimKata
 
             RimKataBreachCombat.NotifyMeleeAttempt(__instance);
             RimKataSubdueCombat.NotifyIncomingMeleeAttempt(__instance);
+            if (RimKataReactiveDefense.TryMelee(__instance))
+            {
+                __result = false;
+                return false;
+            }
             return true;
         }
 
@@ -1508,7 +1526,6 @@ namespace KRWF.RimKata
         public static void Postfix(Verb_MeleeAttack __instance)
         {
             Pawn defender = __instance?.CurrentTarget.Pawn;
-            // This attack may already have stunned or disarmed the defender.
             if (defender == null
                 || defender.Drafted != true
                 || !RimKataEligibility.HasRimKataAccess(defender)
@@ -1555,8 +1572,6 @@ namespace KRWF.RimKata
                     continue;
                 }
 
-                // Preserve every other native early return (surprise attacks,
-                // immobile targets, etc.) and change only the ranged-stance gate.
                 CodeInstruction loadDodgeTarget = new CodeInstruction(OpCodes.Ldarg_1);
                 loadDodgeTarget.labels.AddRange(codes[i].labels);
                 loadDodgeTarget.blocks.AddRange(codes[i].blocks);
@@ -1607,7 +1622,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Native weapon warmup/cooldown can run without a RimKata weapon cycle.
             ThingWithComps aimingWeapon = (pawn.stances?.curStance as Stance_Busy)
                 ?.verb?.EquipmentSource as ThingWithComps;
             return (aimingWeapon?.def?.IsRangedWeapon == true
@@ -1627,6 +1641,7 @@ namespace KRWF.RimKata
         {
             if (__result)
             {
+                RimKataReactiveMotion.StaggerApplied(__instance.parent);
                 RimKataDefenseUtility.NotifyAppliedDamageStagger(__instance.parent);
             }
         }

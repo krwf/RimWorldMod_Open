@@ -76,9 +76,6 @@ namespace KRWF.RimKata
                 throw new InvalidOperationException("CE reload equipment comparison does not match the supported shape.");
             }
 
-            // Extend only the equipped-weapon equality check. CE still verifies that the
-            // primary exists and has not changed, that inventory weapons remain held,
-            // and that ammunition is available; its reload toils remain untouched.
             CodeInstruction branch = codes[comparisonIndex];
             CodeInstruction loadDriver = new CodeInstruction(OpCodes.Ldarg_0);
             loadDriver.labels.AddRange(branch.labels);
@@ -97,8 +94,7 @@ namespace KRWF.RimKata
 
         private static int FindEquipmentComparison(List<CodeInstruction> codes)
         {
-            // The first primary read is CE's null guard; the second compares target B;
-            // the third compares the starting primary and must never be redirected.
+            // CE Primary reads: null guard, target-B comparison, then starting-primary guard.
             if (CountCalls(codes, PrimaryGetter) != 3)
             {
                 return -1;

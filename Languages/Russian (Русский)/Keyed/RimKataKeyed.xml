@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Настройки профиля</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Боевые функции</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Функции мода</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Визуальные эффекты</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Функции активации</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Применённое значение</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Бонус к скрытности на охоте в положении лёжа</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Задержка перед повторным переходом в положение лёжа</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Время в лежачем положении после падения</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Избегание дружественного огня после падения</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Время движения при прорыве</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Время ожидания после достижения точки прорыва</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Значения по умолчанию</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Разрешить невраждебным пешкам стрелять при ползании</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Разрешить враждебным пешкам стрелять при ползании</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>По умолчанию разрешать стрельбу при ползании</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Плавная смена направления прицеливания</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Схватить</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Атаки отключены.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Перенос урона</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Переносит получаемый урон на удерживаемого персонажа. При отключении уклонение или вступление в ближний бой освобождает его.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Подкат</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Стряхивание</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Шанс подката</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Шанс стряхивания</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Вероятность генов</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Вероятность есть</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Вероятности нет</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Сбросить всё</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Сбросить результаты фильтра</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Шаркун</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Таинственный присоединившийся</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

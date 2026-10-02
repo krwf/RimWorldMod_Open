@@ -32,6 +32,8 @@ namespace KRWF.RimKata
         private bool tumbleEnabled;
         private bool proneFireEnabled;
         private bool crawlFireEnabled;
+        private bool slidingEnabled;
+        private bool shakeOffEnabled;
 
         private static readonly string[] LabelKeys =
         {
@@ -49,7 +51,9 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureRangedDodge",
             "KRWF_RimKata_FeatureTumble",
             "KRWF_RimKata_FeatureProneFire",
-            "KRWF_RimKata_FeatureCrawlFire"
+            "KRWF_RimKata_FeatureCrawlFire",
+            "KRWF_RimKata_FeatureSliding",
+            "KRWF_RimKata_FeatureShakeOff"
         };
 
         public Dialog_RimKataCombatFeatures(RimKataSettings settings)
@@ -74,6 +78,8 @@ namespace KRWF.RimKata
                 tumbleEnabled = settings.tumbleEnabled;
                 proneFireEnabled = settings.proneFireEnabled;
                 crawlFireEnabled = settings.crawlFireEnabled;
+                slidingEnabled = settings.slidingEnabled;
+                shakeOffEnabled = settings.shakeOffEnabled;
             }
 
             doCloseX = false;
@@ -83,6 +89,7 @@ namespace KRWF.RimKata
             closeOnCancel = false;
             absorbInputAroundWindow = true;
             resizeable = false;
+            draggable = true;
         }
 
         public override Vector2 InitialSize
@@ -153,6 +160,8 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[12], ref tumbleEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[13], ref proneFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[14], ref crawlFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[15], ref slidingEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[16], ref shakeOffEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -228,7 +237,9 @@ namespace KRWF.RimKata
                 || settings.rangedDodgeEnabled != rangedDodgeEnabled
                 || settings.tumbleEnabled != tumbleEnabled
                 || settings.proneFireEnabled != proneFireEnabled
-                || settings.crawlFireEnabled != crawlFireEnabled;
+                || settings.crawlFireEnabled != crawlFireEnabled
+                || settings.slidingEnabled != slidingEnabled
+                || settings.shakeOffEnabled != shakeOffEnabled;
 
             settings.secondaryWeaponEnabled = secondaryWeaponEnabled;
             settings.singleShotConversionEnabled =
@@ -247,6 +258,8 @@ namespace KRWF.RimKata
             settings.tumbleEnabled = tumbleEnabled;
             settings.proneFireEnabled = proneFireEnabled;
             settings.crawlFireEnabled = crawlFireEnabled;
+            settings.slidingEnabled = slidingEnabled;
+            settings.shakeOffEnabled = shakeOffEnabled;
 
             if (changed)
             {
@@ -258,7 +271,7 @@ namespace KRWF.RimKata
             string descriptionKey = null)
         {
             Rect rowRect = new Rect(inRect.x, y, inRect.width, RowHeight);
-            Widgets.CheckboxLabeled(rowRect, key.Translate(), ref value, paintable: true);
+            RimKataFeatureWindowUtility.DrawCheckbox(rowRect, key.Translate(), ref value);
             if (descriptionKey != null)
             {
                 TooltipHandler.TipRegion(rowRect, descriptionKey.Translate());

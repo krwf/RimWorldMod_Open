@@ -10,7 +10,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Preparation only. No draw, attack, movement or door-opening patches belong here.
     public sealed class RimKataDoorCache : GameComponent
     {
         private static string modRoot;
@@ -52,8 +51,7 @@ namespace KRWF.RimKata
             }
             Scribe_Values.Look(ref gameId, "gameId");
             Scribe_Values.Look(ref environmentKey, "environmentKey");
-            // Old saves without this component receive an ID when first loaded.
-            // It becomes persistent on their next save, independent of filenames.
+            // Older saves acquire this persistent ID on their first load/save.
             if (!Guid.TryParseExact(gameId, "N", out _)) gameId = Guid.NewGuid().ToString("N");
         }
 
@@ -106,15 +104,13 @@ namespace KRWF.RimKata
             pending.Add(door);
             if (scheduled) return;
             scheduled = true;
-            // Map generation/loading may run off the Unity thread. No Graphic/Material
-            // access until the long event has finished; ordinary construction runs once.
+            // Map generation/loading can run off the Unity thread; Graphic/Material access waits for the long event.
             LongEventHandler.ExecuteWhenFinished(Flush);
         }
 
         private void Flush()
         {
-            // Spawned/Map use the CURRENT game's map indices. Reject a stale
-            // callback before touching any door that belongs to a previous game.
+            // Spawned/Map use the current game's map indices, even in a stale callback.
             if (!ReferenceEquals(game, Verse.Current.Game))
             {
                 pending.Clear();
@@ -130,8 +126,6 @@ namespace KRWF.RimKata
                     TryPrepare(door, out _);
         }
 
-        // Explicit, selected-door refresh entry for the later skill. No instance position
-        // or facing is persisted in the shared recipe; snapshot those at skill acceptance.
         internal bool TryPrepare(Building_Door door, out RimKataDoorCacheRecord record)
         {
             record = null;
@@ -189,8 +183,6 @@ namespace KRWF.RimKata
 
         private static string UnsupportedReason(Graphic graphic)
         {
-            // Building_Door subclasses and directional graphics use their actual
-            // panel materials. A rendering patch is not a reason to reject a door.
             if (graphic == null || string.IsNullOrEmpty(graphic.path))
                 return "Door graphic has no persistent texture path.";
             if (graphic.data?.shaderParameters?.Count > 0)
@@ -203,8 +195,7 @@ namespace KRWF.RimKata
             string reason = UnsupportedReason(graphic);
             if (reason != null) throw new InvalidOperationException(reason);
             XmlElement layer = render.CreateElement("layer");
-            // Closed MultiTileDoor panels are half-width and separated by a
-            // quarter of the full door width. Single-cell panels overlap.
+            // Closed MultiTileDoor panels are half-width, separated by a quarter of the full width.
             layer.SetAttribute("scale", Number(door.def.size.x * (split ? 0.5f : 1f)) + ",1," + Number(door.def.size.z));
             layer.SetAttribute("offset", Number(split ? door.def.size.x * 0.25f : 0f));
             layer.SetAttribute("altitude", Number(altitude));
@@ -250,8 +241,6 @@ namespace KRWF.RimKata
                 root + "_south" + suffix, root + "_west" + suffix };
             foreach (string path in candidates)
             {
-                // Compare the actual assets, so Graphic_Multi's independent
-                // texture/mask fallbacks survive destruction and save/load.
                 if (ContentFinder<Texture2D>.Get(path, false) != texture) continue;
                 paths[texture] = path;
                 return path;
@@ -285,8 +274,7 @@ namespace KRWF.RimKata
         private static void Postfix(Building_Door __instance) => RimKataDoorCache.Current?.NotifySpawned(__instance);
     }
 
-    // SafeSaver rethrows failures; GameDataSaveLoader.SaveGame catches them. Only
-    // this normal-return boundary proves the final save file was installed.
+    // SafeSaver rethrows failures; SaveGame catches them, so only SafeSaver's normal return confirms success.
     [HarmonyPatch(typeof(SafeSaver), nameof(SafeSaver.Save),
         new[] { typeof(string), typeof(string), typeof(Action), typeof(bool) })]
     internal static class Patch_SaveGame_RimKataDoorCacheCleanup

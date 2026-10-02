@@ -394,8 +394,7 @@ namespace KRWF.RimKata
 
         internal void NotifyStructureMeleeAttack()
         {
-            // End on the next Job tick, after the native Verb's completion has
-            // unwound. Other queued weapons observe the limit before executing.
+            // Job completion waits until the native Verb call has unwound.
             structureMeleeAttacksMade++;
         }
 
@@ -406,8 +405,7 @@ namespace KRWF.RimKata
                 || target?.def.autoTargetNearbyIdenticalThings != true
                 || pawn.jobs.jobQueue.Count != 0 || pawn.Map == null) return;
 
-            // Match AttackMelee's finish action, including destroyed targets whose
-            // last position anchors the next identical structure search.
+            // AttackMelee searches from the destroyed target's last position.
             foreach (IntVec3 cell in GenRadial.RadialCellsAround(target.Position, 4f, false).InRandomOrder())
             {
                 if (!cell.InBounds(pawn.Map)) continue;
@@ -418,8 +416,6 @@ namespace KRWF.RimKata
                     Job followup = job.Clone();
                     followup.def = JobDefOf.AttackMelee;
                     followup.targetA = nearby;
-                    // This Verb marked the converted structure job. Let the next
-                    // native order re-evaluate its current loadout and target.
                     followup.verbToUse = null;
                     pawn.jobs.jobQueue.EnqueueFirst(followup);
                     return;
@@ -436,7 +432,6 @@ namespace KRWF.RimKata
         {
             state = postTickCombatState;
             postTickCombatState = null;
-            // A finish callback or state removal must not revive the old state.
             return !endingJob
                 && state?.ownerComponent != null
                 && state.ownerComponent.map == pawn.Map;
@@ -569,8 +564,6 @@ namespace KRWF.RimKata
                     && pawn.pather?.Moving == true
                     && pawn.pather.Destination.Thing == assignedTarget)
                 {
-                    // A policy change revokes an existing chase even while
-                    // the target remains within the weapon's firing range.
                     pawn.pather.StopDead();
                 }
                 if (!canRush && !CanAttackWithoutRushing(assignedTarget))
@@ -974,16 +967,14 @@ namespace KRWF.RimKata
     {
         public static bool Prefix(Pawn ___pawn, ref Job job)
         {
-            // The hold-specific StartJob hook converts this request before
-            // native cleanup, without adding it to the ordinary weapon cycles.
+            // The hold-specific StartJob hook must run before native carry cleanup.
             if (RimKataSubdueUtility.IsHolding(___pawn)) return true;
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
             {
                 return true;
             }
 
-            // StartJob's breach hook gets first refusal. In particular, a gun's
-            // explicit melee order must not become a ranged close-fire order.
+            // StartJob handles breach and explicit structure melee before ranged conversion.
             if (job?.def == JobDefOf.AttackMelee && job.targetA.Thing is Building)
                 return true;
 
@@ -1031,9 +1022,7 @@ namespace KRWF.RimKata
                 job.killIncappedTarget = true;
             }
 
-            // Right-click orders reach this prefix before vanilla sets
-            // playerForced. A downed target needs the same dedicated request
-            // context as a direct weapon gizmo, not automatic target selection.
+            // Vanilla sets playerForced after this right-click prefix.
             bool playerIncapacitatedRangedOrder = orderedAttack
                 && ___pawn?.Drafted == true
                 && ___pawn.IsPlayerControlled
@@ -1208,8 +1197,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // Enemy attacks must enter the controller even before it has any
-            // ongoing work. A forced attack is still an attack order for an NPC.
             if (ShouldConvertEnemyAttack(___pawn, newJob, out Verb enemyVerb))
             {
                 newJob.def = RimKataDefOf.RimKata_Attack;
@@ -1399,8 +1386,6 @@ namespace KRWF.RimKata
 
         internal static bool CanStartEnemyIdleCombat(Pawn pawn, Job job)
         {
-            // Idle Job transitions are the trigger; ordinary pawn ticks do not
-            // acquire targets. Player policies and explicit orders do not use this entry.
             return (job?.def == JobDefOf.Wait_Wander
                     || job?.def == JobDefOf.GotoWander)
                 && !job.playerForced
@@ -1451,7 +1436,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // A fresh combat Job must not inherit the wandering Job's expiry.
             combatJob = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, target);
             combatJob.verbToUse = RimKataWeaponSlotUtility.BestRangedCombatVerb(pawn, target)
                 ?? RimKataWeaponSlotUtility.CombatVerb(
@@ -1463,8 +1447,7 @@ namespace KRWF.RimKata
             Pawn pawn, Job sourceJob, ThinkNode jobGiver, out Job combatJob)
         {
             combatJob = null;
-            // Ranged AI (including lancers) waits at its firing position. Its
-            // combat target lives in mindState, not Wait_Combat.targetA.
+            // Ranged AI stores its target in mindState, not Wait_Combat.targetA.
             if (sourceJob?.def != JobDefOf.Wait_Combat
                 || sourceJob.playerForced
                 || sourceJob.forceSleep
@@ -1481,7 +1464,6 @@ namespace KRWF.RimKata
                 ?? RimKataWeaponSlotUtility.CombatVerb(pawn, RimKataWeaponSlotUtility.PrimaryWeapon(pawn));
             if (verb == null) return false;
 
-            // Do not carry the stationary wait's expiry into the attack cycle.
             combatJob = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, target);
             combatJob.verbToUse = verb;
             return true;
@@ -1536,8 +1518,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Recovery is checked once per existing Job, after the normal state
-            // admission gate. New attacks use StartJob's conversion above.
             state.lastEnemyAttackRecoveryJobId = currentJob.loadID;
             if (!ShouldConvertEnemyAttack(pawn, currentJob, out Verb verb))
             {
@@ -1555,7 +1535,6 @@ namespace KRWF.RimKata
                 replacement.jobGiver = jobGiver;
                 replacement.jobGiverThinkTree = thinkTree;
             }
-            // The old driver/state must not be driven again after StartJob.
             return true;
         }
 
@@ -1647,8 +1626,6 @@ namespace KRWF.RimKata
             ref Action __result,
             ref string failStr)
         {
-            // Supplement only a single pawn's missing right-click option.
-            // Group right-click orders and squad gizmos keep the primary's role.
             if (__result != null
                 || !failStr.NullOrEmpty()
                 || RimKataAttackGizmoTargetContext.Active
@@ -2052,8 +2029,6 @@ namespace KRWF.RimKata
             Pawn pawn,
             ref Job job)
         {
-            // Nonhostile threat cleanup is a safety boundary, not permission
-            // to start RimKata combat. Keep it active while stunned or unarmed.
             if (pawn == null
                 || job?.def != JobDefOf.AttackMelee
                 || job.playerForced
@@ -2098,7 +2073,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Match the stable-access boundary used by the companion filter.
             if (!RimKataEligibility.HasRimKataAccess(pawn))
             {
                 return;

@@ -5,8 +5,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // One launch-time decision changes the existing projectile's saved flight.
-    // No replacement projectile, repeated steering, or explosion suppression.
     internal static class RimKataProjectileMissUtility
     {
         private static readonly AccessTools.FieldRef<Projectile, Vector3> Origin =
@@ -80,8 +78,7 @@ namespace KRWF.RimKata
             Vector3 previousDestination = Destination(projectile);
             Vector3 current = projectile.ExactPosition.Yto0();
             float speed = projectile.def.projectile.SpeedTilesPerTick;
-            // Vanilla uses the full 3D distance for flight duration, even though
-            // ExactPosition interpolates the flight on the ground plane.
+            // Vanilla uses 3D distance for duration but interpolates ExactPosition on the ground plane.
             float previousDuration = (previousDestination - previousOrigin).magnitude / speed;
             if (!FinitePositive(speed) || !FinitePositive(previousDuration)
                 || !current.InBounds(projectile.Map))
@@ -89,8 +86,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // A custom position implementation may not consume these native
-            // flight fields. Do not spend a dodge on a rewrite it would ignore.
+            // Custom ExactPosition implementations may ignore the native flight fields.
             previousOrigin = previousOrigin.Yto0();
             previousDestination = previousDestination.Yto0();
             Vector3 expected = previousOrigin + (previousDestination - previousOrigin)
@@ -133,9 +129,7 @@ namespace KRWF.RimKata
             Lifetime(projectile) = flight.lifetime;
             projectile.usedTarget = new LocalTargetInfo(flight.destination.ToIntVec3());
             DesiredHitFlags(projectile) = flight.hitFlags;
-            // Keep intendedTarget: vanilla CanHit then excludes this pawn while
-            // preserving the shot's existing non-target collision permissions.
-            // The projectile subclass retains its damage, effects, and fuse.
+            // intendedTarget must remain set for vanilla CanHit to exclude the dodging pawn.
         }
 
         private static bool TryFindMissCell(Projectile projectile, Pawn defender,
@@ -169,8 +163,6 @@ namespace KRWF.RimKata
                 }
             }
 
-            // At a map edge, prefer any nearby forward/sideways cell over
-            // sending the projectile out of bounds or back towards its launcher.
             for (int i = 0; i < GenAdj.AdjacentCells.Length; i++)
             {
                 IntVec3 cell = anchor.ToIntVec3() + GenAdj.AdjacentCells[i];

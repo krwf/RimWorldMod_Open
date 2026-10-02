@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profil ayarları</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Çatışma özellikleri</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Mod özellikleri</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Görsel efektler</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Etkinleştirme özellikleri</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Uygulanan değer</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Yüzüstü yatarken av gizliliği bonusu</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Tekrar yüzüstü yatmadan önceki bekleme süresi</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Düştükten sonra yerde kalma süresi</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Yerdeyken dost ateşinden kaçınma</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Kapıyı kırarak girerken hareket süresi</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Kapıyı kırıp hedefe ulaştıktan sonra bekleme süresi</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Varsayılanlar</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Düşman olmayan piyonların sürünürken ateş etmesine izin ver</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Düşman piyonların sürünürken ateş etmesine izin ver</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye varsayılan olarak izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Yumuşak nişan geçişleri</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Etkisizleştir</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Saldırılar devre dışı.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Hasar aktarımı</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Alınan hasarı etkisiz hâle getirilen kişiye aktarır. Devre dışıyken kaçınma veya yakın dövüşe girme, tutulan kişiyi serbest bırakır.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Kayma</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Silkinme</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Kayma olasılığı</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Silkinme olasılığı</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Gen olasılığı</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Olasılık var</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Olasılık yok</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Tümünü sıfırla</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Filtrelenen sonuçları sıfırla</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Sendeleyen</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

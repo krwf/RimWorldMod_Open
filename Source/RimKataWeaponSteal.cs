@@ -53,8 +53,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // An unarmed parry must not drop a weapon the defender cannot equip,
-            // even when stealing is disabled or its chance roll would fail.
             allowDisarm = CanWield(defender, weapon);
             if (!allowDisarm)
             {
@@ -85,8 +83,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Keep the real item on the map until the attacking verb has returned.
-            // Re-equipping here would change that verb's caster and reset it mid-cast.
+            // Re-equipping before the cast returns would change its caster and reset the Verb.
             component.pending.Add(new PendingWeaponSteal
             {
                 defender = defender,
@@ -205,7 +202,6 @@ namespace KRWF.RimKata
             }
             finally
             {
-                // A rejected equip must leave the same item available on the map.
                 if (!weapon.Destroyed && !weapon.Spawned && weapon.ParentHolder == null
                     && !GenPlace.TryPlaceThing(weapon, entry.dropPosition, map, ThingPlaceMode.Near))
                 {

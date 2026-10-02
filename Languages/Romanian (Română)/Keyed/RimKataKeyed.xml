@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Setările profilului</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Funcții de luptă</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funcțiile modului</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Efecte vizuale</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Funcții de activare</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Valoare aplicată</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discreție la vânătoare din poziția culcat</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Întârziere înainte de a reveni în poziția culcat</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Timp petrecut la pământ după cădere</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Evitarea focului aliat după cădere</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Durata deplasării în timpul spargerii ușii</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Timp de așteptare la destinație după spargerea ușii</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Valori implicite</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permite personajelor neostile să tragă în timp ce se târăsc</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permite personajelor ostile să tragă în timp ce se târăsc</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permite implicit tragerea în timpul târârii</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Tranziții line de ochire</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Imobilizează</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Atacurile sunt dezactivate.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferul daunelor</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transferă daunele primite către personajul imobilizat. Când opțiunea este dezactivată, eschivarea sau intrarea în lupta corp la corp eliberează personajul.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Alunecare</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Scuturare</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Șansă de alunecare</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Șansă de scuturare</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Probabilitatea genelor</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Probabilitate nenulă</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Probabilitate nulă</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Resetează tot</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Resetează rezultatele filtrate</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Șovăitor</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

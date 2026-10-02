@@ -63,7 +63,6 @@ namespace KRWF.RimKata
         private static HediffDef psychicBondDef;
         private static bool anomalyDefsResolved;
 
-        // Read-only cache probe. A miss must not resolve a previously unseen Pawn.
         public static bool TryGetCachedAccess(
             Pawn pawn,
             out bool cachedAccess)
@@ -138,6 +137,7 @@ namespace KRWF.RimKata
                 {
                     entry.publishedMap = null;
                     entry.qualified = false;
+                    RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);
                 }
             }
             mapUsers.Remove(map);
@@ -145,6 +145,8 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
+            RimKataMotionJobGate.ResetGame();
+            RimKataResponseVisualParticipantCache.ResetGame();
             mapUsers = new ConditionalWeakTable<Map, MapUsers>();
             entries = new ConditionalWeakTable<Pawn, Entry>();
             registeredUsers = new ConditionalWeakTable<Pawn, RegisteredUser>();
@@ -197,7 +199,6 @@ namespace KRWF.RimKata
             List<Map> maps = Find.Maps;
             for (int i = 0; i < maps.Count; i++)
             {
-                // An override can qualify a previously negative Pawn; only this event needs all Pawns.
                 IReadOnlyList<Pawn> pawns = maps[i].mapPawns.AllPawnsSpawned;
                 for (int j = 0; j < pawns.Count; j++)
                 {
@@ -225,6 +226,7 @@ namespace KRWF.RimKata
         {
             if (entry.qualified == qualified) return;
             entry.qualified = qualified;
+            RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, qualified);
             if (qualified)
             {
                 users.qualifiedIndices.Add(pawn, users.qualified.Count);
@@ -243,6 +245,8 @@ namespace KRWF.RimKata
             {
                 RimKataBreachUtility.NotifyEligibilityLost(pawn);
                 RimKataSubdueUtility.NotifyEligibilityLost(pawn);
+                RimKataReactiveMotion.Remove(pawn);
+                RimKataMotionJobGate.Clear(pawn);
             }
             RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
             RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, qualified);
@@ -257,6 +261,7 @@ namespace KRWF.RimKata
             }
             entry.qualified = false;
             entry.publishedMap = null;
+            RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);
         }
 
         public static bool HasAnyAccessSource(Pawn pawn)
@@ -812,8 +817,7 @@ namespace KRWF.RimKata
 
         private static void Postfix(Pawn_MutantTracker __instance, Pawn ___pawn)
         {
-            // Revert clears pawn.mutant before it finishes; the original tracker
-            // still identifies the changed state. Refresh once at these events.
+            // Revert clears pawn.mutant before this postfix; __instance still identifies the mutation.
             if (__instance.Def == MutantDefOf.Shambler)
                 RimKataEligibilityCache.NotifyTargetChanged(___pawn);
         }

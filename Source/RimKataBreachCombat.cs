@@ -7,10 +7,15 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Breach protection and attack suspension have their own lifetime. They do
-    // not borrow prone probabilities, fall conditions, or projectile tracking.
     internal static class RimKataBreachCombat
     {
+        internal struct SubdueAccess
+        {
+            internal bool resolved;
+            internal int version;
+            internal RimKataSubdueState state;
+        }
+
         internal struct AttackScope
         {
             internal bool pushed;
@@ -18,21 +23,28 @@ namespace KRWF.RimKata
             internal Pawn previousPawn;
             internal int previousVersion;
             internal bool previousAllowed;
+            internal int previousReactiveVersion;
+            internal bool previousReactiveChecked;
+            internal bool previousReactiveAllowed;
+            internal SubdueAccess previousSubdue;
         }
 
         [ThreadStatic] private static Verb attackVerb;
         [ThreadStatic] private static Pawn attackPawn;
         [ThreadStatic] private static int attackVersion;
         [ThreadStatic] private static bool attackAllowed;
+        [ThreadStatic] private static int attackReactiveVersion;
+        [ThreadStatic] private static bool attackReactiveChecked;
+        [ThreadStatic] private static bool attackReactiveAllowed;
+        [ThreadStatic] private static SubdueAccess attackSubdue;
 
         internal static bool TryDirectMiss(ref Thing hitThing)
         {
-            if (!(hitThing is Pawn victim) || !RimKataBreachUtility.IsProtected(victim))
+            if (!(hitThing is Pawn victim) || (!RimKataReactiveMotion.Protected(victim)
+                && !RimKataBreachUtility.IsProtected(victim)))
                 return false;
 
-            // Keep the original Impact call, including any explosion it creates.
-            // Do not mark its whole damage scope avoided: that would also absorb
-            // an explosion hitting this pawn in the same nested impact scope.
+            // Avoiding the entire damage scope would also suppress nested explosion damage.
             hitThing = null;
             return true;
         }
@@ -47,8 +59,7 @@ namespace KRWF.RimKata
             if (attacker?.Spawned != true || attacker == victim
                 || attacker.stances.FullBodyBusy || !verb.CanHitTarget(victim)) return;
 
-            // This runs before the hit, dodge and parry rolls. A failed cast from
-            // an invalid position is not an attack, but a valid miss still is.
+            // A failed cast can mean no attack occurred; a resolved miss still counts.
             if (version != RimKataBreachUtility.AttackStateVersion)
                 state = RimKataBreachUtility.Get(victim);
             RimKataBreachUtility.NotifyMeleeAttempt(victim, state);
@@ -58,16 +69,51 @@ namespace KRWF.RimKata
         {
             if (verb is Verb_BeatFire) return true;
             Pawn pawn = verb?.CasterPawn;
-            return pawn == null || AllowsAttack(verb, pawn, RimKataBreachUtility.AttackStateVersion);
+            return pawn == null || AllowsAttack(verb, pawn, RimKataBreachUtility.AttackStateVersion,
+                out _, out _, out _, out _);
         }
 
-        private static bool AllowsAttack(Verb verb, Pawn pawn, int version)
+        private static bool AllowsAttack(Verb verb, Pawn pawn, int version,
+            out int reactiveVersion, out bool reactiveChecked, out bool reactiveAllowed,
+            out SubdueAccess subdue)
         {
-            if (!RimKataSubdueCombat.AllowsAttack(verb, pawn)) return false;
-            if (attackVerb == verb && attackPawn == pawn && attackVersion == version)
+            subdue = default;
+            bool sameAttack = attackVerb == verb && attackPawn == pawn;
+            reactiveVersion = RimKataReactiveMotion.AttackStateVersion;
+            reactiveChecked = RimKataReactiveMotion.Any && !RimKataReactiveAttack.OwnsVerb(verb);
+            reactiveAllowed = true;
+            if (reactiveChecked)
+            {
+                if (sameAttack && attackReactiveChecked && attackReactiveVersion == reactiveVersion)
+                    reactiveAllowed = attackReactiveAllowed;
+                else
+                {
+                    RimKataReactiveMotionState motion = RimKataReactiveMotion.Participant(pawn);
+                    reactiveAllowed = motion == null || !motion.BlocksCombat && !motion.HasPendingAttack;
+                }
+            }
+            reactiveVersion = RimKataReactiveMotion.AttackStateVersion;
+            if (sameAttack)
+            {
+                attackReactiveVersion = reactiveVersion;
+                attackReactiveChecked = reactiveChecked;
+                attackReactiveAllowed = reactiveAllowed;
+            }
+            if (!reactiveAllowed) return false;
+            int relationVersion = RimKataSubdueUtility.RelationVersion;
+            subdue = sameAttack && attackSubdue.resolved && attackSubdue.version == relationVersion
+                ? attackSubdue
+                : new SubdueAccess
+                {
+                    resolved = true, version = relationVersion,
+                    state = RimKataSubdueUtility.Get(pawn)
+                };
+            if (sameAttack) attackSubdue = subdue;
+            if (!RimKataSubdueCombat.AllowsAttack(verb, pawn, subdue.state)) return false;
+            if (sameAttack && attackVersion == version)
                 return attackAllowed;
             bool allowed = !RimKataBreachUtility.BlocksAttacks(pawn);
-            if (attackVerb == verb && attackPawn == pawn)
+            if (sameAttack)
             {
                 attackVersion = version;
                 attackAllowed = allowed;
@@ -80,24 +126,32 @@ namespace KRWF.RimKata
             scope = default;
             if (verb is Verb_BeatFire) return true;
             var registry = RimKataBreachUtility.Registry;
-            if ((registry == null || registry.states.Count == 0) && !RimKataSubdueUtility.Any) return true;
+            if ((registry == null || registry.states.Count == 0)
+                && !RimKataSubdueUtility.Any && !RimKataReactiveMotion.Any) return true;
             Pawn pawn = verb?.CasterPawn;
             if (pawn == null) return true;
             int version = RimKataBreachUtility.AttackStateVersion;
-            bool allowed = AllowsAttack(verb, pawn, version);
+            bool allowed = AllowsAttack(verb, pawn, version,
+                out int reactiveVersion, out bool reactiveChecked, out bool reactiveAllowed,
+                out SubdueAccess subdue);
             scope = new AttackScope
             {
                 pushed = true, previousVerb = attackVerb, previousPawn = attackPawn,
-                previousVersion = attackVersion, previousAllowed = attackAllowed
+                previousVersion = attackVersion, previousAllowed = attackAllowed,
+                previousReactiveVersion = attackReactiveVersion,
+                previousReactiveChecked = attackReactiveChecked,
+                previousReactiveAllowed = attackReactiveAllowed,
+                previousSubdue = attackSubdue
             };
-            // A synchronous cast may visit WarmupComplete, burst and override/base
-            // shot methods. Share its decision, including a nonparticipant miss.
-            // A later tick starts a new scope; participant events invalidate even
-            // an in-flight decision before the next nested attack boundary.
+            // WarmupComplete and nested shot overrides share this synchronous cast scope.
             attackVerb = verb;
             attackPawn = pawn;
             attackVersion = version;
             attackAllowed = allowed;
+            attackReactiveVersion = reactiveVersion;
+            attackReactiveChecked = reactiveChecked;
+            attackReactiveAllowed = reactiveAllowed;
+            attackSubdue = subdue;
             return allowed;
         }
 
@@ -108,10 +162,13 @@ namespace KRWF.RimKata
             attackPawn = scope.previousPawn;
             attackVersion = scope.previousVersion;
             attackAllowed = scope.previousAllowed;
+            attackReactiveVersion = scope.previousReactiveVersion;
+            attackReactiveChecked = scope.previousReactiveChecked;
+            attackReactiveAllowed = scope.previousReactiveAllowed;
+            attackSubdue = scope.previousSubdue;
         }
 
-        // Discover overrides once at patch installation. CE and other mods may
-        // bypass the base method; ordinary play performs no type/assembly scan.
+        // Mod overrides can bypass the base attack method.
         internal static IEnumerable<MethodBase> VerbMethods(string name, Type returnType, Type[] signature)
         {
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())

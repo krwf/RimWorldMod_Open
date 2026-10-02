@@ -26,7 +26,6 @@ namespace KRWF.RimKata
     {
         public ThingWithComps weapon;
         public int cooldownTicksRemaining;
-        // Observational metadata: distinguish shooting from melee/response recovery.
         internal bool rangedCooldown;
         public int warmupTicksRemaining = -1;
         public int warmupTotalTicks;
@@ -57,7 +56,6 @@ namespace KRWF.RimKata
         public int visualAimTicksRemaining;
         internal Thing cooldownTurnTarget;
         internal float cooldownTurnStartAngle;
-        // Remaining cooldown at turn start; keep this origin for elapsed time.
         internal int cooldownTurnTicks;
         internal float CooldownTurnProgress => cooldownTurnTicks > 0
             ? Mathf.Clamp01((float)(cooldownTurnTicks - cooldownTicksRemaining)
@@ -137,8 +135,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(
                 ref cooldownFromVanillaOpening,
                 "cooldownFromVanillaOpening");
-            // Old saves may contain manual burst counters. Finish those partial
-            // attacks on the first binding, before any new plan can be queued.
+            // Old saves use manual burst counters; partial bursts owe recovery after loading.
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
                 int legacyBurstShots = 0;
@@ -380,7 +377,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Keep the next surviving entry in turn when earlier entries shift left.
             if (index < nextAutomaticCandidateValidationIndex)
             {
                 nextAutomaticCandidateValidationIndex--;
@@ -466,7 +462,6 @@ namespace KRWF.RimKata
             ClearPlan();
         }
 
-        // !!! Debug HUD !!!
         public char DebugState
         {
             get
@@ -568,7 +563,6 @@ namespace KRWF.RimKata
 
         private static bool HasCombatTickWork(RimKataPawnCombatState state)
         {
-            // Presence only; the shared weapon pass owns target validity.
             return state != null
                 && (state.dualEngagementActive
                     || state.dualCloseCombatActive
@@ -594,7 +588,6 @@ namespace KRWF.RimKata
                 && pawn.jobs?.curDriver is JobDriver_RimKataAttack tickedJob
                 && tickedJob.TryTakePostTickCombatState(out RimKataPawnCombatState tickedState))
             {
-                // Keep handoffs in the original post-tick phase, using the Job's state.
                 if (!tickedJob.IsStructureMelee)
                     TryConsumePendingDedicatedFollowupJob(pawn, tickedState);
                 return;
@@ -608,8 +601,6 @@ namespace KRWF.RimKata
             bool movementSearchAdmitted = false;
             if (!hasOwner && combatJob == null)
             {
-                // Untracked ordinary pawns stop before Job or mental-state work.
-                // Drafting is only the prerequisite for a new movement search.
                 if (!pawn.Drafted || !CanRequestMovementSearch(pawn, null))
                 {
                     return;
@@ -624,8 +615,7 @@ namespace KRWF.RimKata
             }
 
             RimKataPawnCombatState state = component?.GetState(pawn, false);
-            // A breach's native drafted wait keeps firefighting and job choice,
-            // while this participant alone delays automatic weapon cycles.
+            if (RimKataReactiveMotion.BlocksCombat(state)) return;
             if (RimKataBreachUtility.IsWaiting(pawn)) return;
             Job currentJob = pawn.CurJob;
             if (fromJobTracker)
@@ -638,7 +628,6 @@ namespace KRWF.RimKata
                     currentJob = pawn.CurJob;
                 }
 
-                // The Job owns its tick timing, even if a pending handoff changed it.
                 if (wasDedicatedJob
                     || currentJob?.def == RimKataDefOf.RimKata_Attack)
                 {
@@ -662,8 +651,6 @@ namespace KRWF.RimKata
             {
                 if (combatJob == null && !movementSearchAdmitted)
                 {
-                    // Only the combat-condition trigger may create idle search work.
-                    // Ordinary movement does not need a map or state lookup.
                     if (!pawn.Drafted || !CanRequestMovementSearch(pawn, null))
                     {
                         return;
@@ -683,8 +670,6 @@ namespace KRWF.RimKata
 
             if (!permissions.allowCurrentJob)
             {
-                // Hunt's CastVerb toil owns its companion cycle. It never joins
-                // the ordinary automatic-target controller or job handoff.
                 if (state?.huntingSession != null && state.huntingSession.Job == currentJob)
                     return;
                 if (fromJobTracker
@@ -890,6 +875,7 @@ namespace KRWF.RimKata
             bool closeTargetResolutionKnown,
             bool allowAutomaticRangedFire)
         {
+            if (RimKataReactiveMotion.BlocksCombat(state)) return;
             int currentTick = Find.TickManager.TicksGame;
             if (state.dualLastDrivenTick == currentTick)
             {
@@ -1071,7 +1057,6 @@ namespace KRWF.RimKata
                 primaryAvailability = default;
                 secondaryAvailability = default;
             }
-            // Slot ownership can change when bindings are refreshed.
             RimKataWeaponCycleState secondCycle = state.primaryWeaponCycle != firstCycle
                 && state.primaryWeaponCycle.weapon != null
                     ? state.primaryWeaponCycle
@@ -1161,7 +1146,6 @@ namespace KRWF.RimKata
                     job?.killIncappedTarget == true)
                 != null;
         }
-        // !!! Debug HUD !!!
         public static bool TryGetDebugState(
             Pawn pawn,
             out char primaryState,
@@ -1283,8 +1267,6 @@ namespace KRWF.RimKata
             cycle.focusedTarget = target;
             cycle.focusedTargetFromAttackGizmo = fromAttackGizmo;
 
-            // This is an order, not an aim step. The weapon cycle accepts the
-            // focus and updates its aim when combat advances on the next tick.
             state.engagementOwnerWeapon = weapon;
             RefreshDualEngagementState(pawn, state);
             state.dualLastDrivenTick = -1;
@@ -1491,8 +1473,6 @@ namespace KRWF.RimKata
             }
 
             Job job = pawn.CurJob;
-            // A forced move still permits automatic fire; an explicit attack
-            // keeps its ordered target instead of collecting replacements.
             return (RimKataDraftedFireController.IsAutomaticFireJob(job?.def)
                     && (job?.def != JobDefOf.AttackMelee
                         || job.playerForced != true))
@@ -1601,8 +1581,6 @@ namespace KRWF.RimKata
                 accepted |= RimKataSharedTargetSearch.EnqueueDormantMovingTarget(
                     pawn, state, target, primaryInRange, secondaryInRange);
             }
-            // Pending validation schedules the existing state. It neither
-            // starts a geometric scan nor declares a weapon action/combat icon.
             return accepted;
         }
 
@@ -1634,8 +1612,6 @@ namespace KRWF.RimKata
                 state.RefreshMovementFireContinuity();
             }
 
-            // Preserve movement continuity above even when new search is not allowed.
-            // Common preparation has already admitted the Pawn and supplied its state.
             bool movementSearchAllowed = CanRequestMovementSearch(pawn, state, true);
             bool movementSearchRequested = movementSearchAllowed
                 && (!state.draftedMovementSearchAllowed
@@ -1686,7 +1662,6 @@ namespace KRWF.RimKata
 
         private static bool HasMovementSearchCandidates(RimKataPawnCombatState state)
         {
-            // Candidate presence is sufficient; admission already owns validation.
             return state?.primaryWeaponCycle?.HasAutomaticCandidates == true
                 || state?.secondaryWeaponCycle?.HasAutomaticCandidates == true;
         }
@@ -1730,7 +1705,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // Use the AI's issued combat/pursuit work, not a new detection radius.
             ThinkNode jobGiver = pawn.CurJob?.jobGiver;
             if (jobGiver is JobGiver_AIFightEnemy
                 || jobGiver is JobGiver_AIGotoTarget
@@ -1740,7 +1714,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // Sapper/breacher escorts have a different duty during the same assault.
             LordToil assault = pawn.GetLord()?.CurLordToil;
             return assault is LordToil_AssaultColonySappers
                 || assault is LordToil_AssaultColonyBreaching;
@@ -1801,9 +1774,6 @@ namespace KRWF.RimKata
             ThingWithComps weapon,
             Verb verb)
         {
-            // The allowed-equipment list limits ordinary RimKata attacks, not
-            // explosive-projectile interception.  Keep that established
-            // boundary here as well as in the exact candidate selection path.
             if (weapon == null
                 || !(RimKataTargeting.IsProjectileVerb(verb))
                 || !VerbUsable(pawn, verb, false))
@@ -2028,8 +1998,6 @@ namespace KRWF.RimKata
                 Thing closeTarget = ResolveCloseTarget(
                     pawn, state, pawn.CurJob?.targetA.Thing, false, false);
 
-                // Drafted pawns have no automatic rush authority. End the old
-                // attack Job instead of retaining a target with no ranged plan.
                 if (pawn.jobs?.curDriver is JobDriver_RimKataAttack driver)
                 {
                     driver.EndRimKataJobWith(JobCondition.InterruptForced);
@@ -2038,8 +2006,6 @@ namespace KRWF.RimKata
                 {
                     state.RequestCloseAttack(closeTarget);
                     HandleCloseCombatTransition(pawn, state, true, closeTarget);
-                    // An unchanged close context must refill the cleared gun
-                    // slot too, so it can start a physical melee action.
                     RimKataSharedTargetSearch.TryAddKnownAutomaticTarget(
                         pawn, state, closeTarget);
                 }
@@ -2047,7 +2013,6 @@ namespace KRWF.RimKata
             else if (combatJobAllowed && !pawn.IsBurning()
                 && RimKataEligibility.CanBeginGunKataAttack(pawn))
             {
-                // Permission changes must also wake stationary, empty slots.
                 RimKataSharedTargetSearch.Begin(pawn, state, pawn.Position);
                 if (state.ownerComponent?.HasActiveExplosiveProjectiles == true)
                 {
@@ -2098,7 +2063,6 @@ namespace KRWF.RimKata
 
         internal static bool CounterattackControlEnabled(Pawn pawn)
         {
-            // Entry uses combat access; individual features gate their own work.
             return RimKataEligibility.CanBeginGunKataAttack(pawn);
         }
 
@@ -2140,8 +2104,7 @@ namespace KRWF.RimKata
 
         internal static bool ShouldSuppressVanillaTargetSearch(Pawn pawn)
         {
-            // Native completion can restore Stance_Mobile inside our attack.
-            // Its Wait callback must not select another target in that scope.
+            // Native completion can restore Stance_Mobile and reenter Wait target selection.
             if (RimKataAutomaticCastSuppression.ActiveFor(pawn)) return true;
             if (!RimKataCombatStatePresenceCache.TryGetOwner(pawn, out var owner))
                 return false;
@@ -2152,8 +2115,6 @@ namespace KRWF.RimKata
                 || !CombatTickPermissions.AllowsCurrentJob(pawn.CurJob)
                 || !CanContinueWeaponCycles(pawn, state)) return false;
 
-            // Reuse the live ownership rules, including pending opening handoff
-            // and shared search. A stored state alone must not block native fire.
             if (HasCombatContinuity(pawn, state)) return true;
             return CycleForWeapon(state, pawn.CurrentEffectiveVerb?.EquipmentSource as ThingWithComps)
                 ?.cooldownTicksRemaining > 0;
@@ -2206,8 +2167,6 @@ namespace KRWF.RimKata
                 && !CanConsumePendingDedicatedFollowupRequest(
                     pawn, state, Find.TickManager?.TicksGame ?? -1))
             {
-                // Stored candidates cannot suppress vanilla fire unless a
-                // controller tick or a valid handoff will actually run them.
                 return false;
             }
             RimKataWeaponCycleState cycle = CycleForWeapon(state, weapon);
@@ -2447,8 +2406,6 @@ namespace KRWF.RimKata
                         verb,
                         castTarget)))
             {
-                // Excluded native attacks must not retain a former conversion.
-                // Eligible attacks keep their already prepared data below.
                 RimKataPreparedWeaponData.Restore(verb);
                 return;
             }
@@ -2569,8 +2526,6 @@ namespace KRWF.RimKata
 
         internal static void NotifyFireBeating(Pawn pawn)
         {
-            // Vanilla can beat a fire inside Wait_Combat without changing jobs.
-            // Only the successful action visits an existing RimKata participant.
             if (pawn == null || !RimKataCombatStatePresenceCache.TryGetOwner(pawn, out var owner)) return;
             RimKataPawnCombatState state = owner.GetState(pawn, false);
             if (state == null) return;
@@ -2578,14 +2533,11 @@ namespace KRWF.RimKata
             InterruptCycleForFireBeating(pawn, state.primaryWeaponCycle);
             InterruptCycleForFireBeating(pawn, state.secondaryWeaponCycle);
             RimKataGroundPoseUtility.NotifyAimCancelled(pawn);
-            // The original cast installs its fire-beating cooldown next.
-            // Do not insert Mobile and retrigger Wait's automatic actions here.
+            // The original cast installs cooldown next; Mobile would reenter Wait actions.
         }
 
         internal static void NotifyNativeAimStarted(Verb verb, LocalTargetInfo target)
         {
-            // The controller already reported its own warmup. Native casts,
-            // including hunting, only publish a visual event without a handoff.
             if (verb == null || verb.IsMeleeAttack || RimKataFireContext.ActiveVerb != null)
                 return;
             RimKataGroundPoseUtility.NotifyAimStarted(verb.CasterPawn, verb, target);
@@ -2997,7 +2949,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Live shared work requests continuation regardless of entry mode.
             QueueDedicatedFollowupJob(pawn, attacker);
         }
 
@@ -3060,8 +3011,6 @@ namespace KRWF.RimKata
         private static bool IsWeaponCycleRunningForPortrait(
             RimKataWeaponCycleState cycle)
         {
-            // Search, stored candidates and visual retention do not mean that
-            // a weapon has begun its aim/fire/cooldown sequence.
             return cycle?.weapon != null
                 && (cycle.warmupTicksRemaining > 0
                     || cycle.NativeAttackPending
@@ -3118,7 +3067,6 @@ namespace KRWF.RimKata
             if (allowMovementSearch
                 && state.primaryWeaponCycle.ordinaryWeaponEnabled)
             {
-                // Movement feeds the shared search after common admission.
                 PrepareMovementSearch(pawn, state);
             }
 
@@ -3130,7 +3078,6 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state)
         {
             RimKataWeaponCycleState cycle = state?.primaryWeaponCycle;
-            // Unlisted guns may keep an actual interception, never ordinary combat.
             return cycle?.weapon != null
                 && cycle.weapon == RimKataWeaponSlotUtility.PrimaryWeapon(pawn)
                 && HasActiveInterceptionWork(pawn, cycle)
@@ -3180,9 +3127,6 @@ namespace KRWF.RimKata
             bool? randomAttackEnabled,
             ref CycleVerbAvailability availability)
         {
-            // DedicatedActive is the cheap structural prerequisite for every
-            // target-bearing branch below.  Cooldown/visual-only retained
-            // cycles must not resolve a Verb on every pawn tick.
             if (pawn?.Map == null || cycle?.DedicatedActive != true)
             {
                 return false;
@@ -3440,8 +3384,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Existing work can establish continuity without rechecking a
-            // close target's hostility, live state and Touch reachability.
             return state.sharedTargetSearch?.KeepsCombatAlive == true
                 || (state.dualEngagementActive && state.MovementFireContinuityActive)
                 || state.DodgeMovementActive
@@ -3956,8 +3898,7 @@ namespace KRWF.RimKata
                     if (pawn.CurJob == job
                         && counterattackJobGiver != null)
                     {
-                        // StartJob overwrites provenance. Publish it after setup,
-                        // retaining both fields so automatic rush survives loading.
+                        // StartJob overwrites provenance; automatic rush needs these fields after loading.
                         job.jobGiver = counterattackJobGiver;
                         job.jobGiverThinkTree = counterattackJobGiverThinkTree;
                     }
@@ -3983,8 +3924,6 @@ namespace KRWF.RimKata
         private static bool AllowsDedicatedFollowupSource(
             Pawn pawn, Job job, RimKataPawnCombatState state)
         {
-            // Continue supported combat work and hostile idle openings, or the
-            // explicit interception handoff that restores its source Job afterward.
             return CombatTickPermissions.AllowsCurrentJob(job)
                 || job?.def == JobDefOf.AttackStatic
                 || Patch_PawnJobTracker_StartJob_EnemyRimKata
@@ -4040,8 +3979,6 @@ namespace KRWF.RimKata
                             state,
                             target);
                     }
-                    // A melee reaction is not random candidate collection.
-                    // Publish it without replacing the existing Job target.
                     if (immediateMeleeThreat)
                     {
                         state.RequestCloseAttack(target);
@@ -4254,8 +4191,6 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // Undrafted status and the explicit player request were handled
-            // above. Automatic pursuit requires the current Attack policy.
             return pawn.playerSettings?.UsesConfigurableHostilityResponse == true
                 && pawn.playerSettings.hostilityResponse == HostilityResponseMode.Attack
                 && RimKataTargetAccess.SettingsFor(pawn)?.targetRushEnabled != false
@@ -4271,8 +4206,6 @@ namespace KRWF.RimKata
 
         internal static bool CanRushEnemyAttackTarget(Pawn pawn, Thing target)
         {
-            // Called only for an existing RimKata attack or an incoming vanilla
-            // attack Job. NPC attacks have no player counterattack JobGiver.
             return pawn?.Map != null
                 && !pawn.IsPlayerControlled
                 && pawn.Faction != null
@@ -4528,8 +4461,7 @@ namespace KRWF.RimKata
             Verb verb,
             LocalTargetInfo focus)
         {
-            // The held-pawn cycle already owns this cooldown. Do not register
-            // another ordinary slot cycle or start a shared target search.
+            if (RimKataReactiveAttack.OwnsVerb(verb)) return true;
             if (RimKataSubdueCombat.OwnsAttack(pawn, verb)) return true;
             if (pawn?.Map == null
                 || pawn.InMentalState
@@ -4552,8 +4484,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // A vanilla structure Job does not wait for our per-slot timer.
-            // Keep its native recovery unless the dedicated cycle owns the hit.
+            // Native AttackMelee does not wait for the per-slot recovery timer.
             if (focus.Thing is Building && pawn.CurJobDef == JobDefOf.AttackMelee)
                 return false;
 
@@ -4601,39 +4532,71 @@ namespace KRWF.RimKata
                 || !RimKataEligibility.CanBeginGunKataAttack(pawn)) return false;
 
             ThingWithComps primary = RimKataWeaponSlotUtility.PrimaryWeapon(pawn);
-            Verb verb = ResolveStructureMeleeVerb(pawn, primary, target);
+            Verb verb = ResolveWeaponMeleeVerb(pawn, primary, target);
             if (verb == null && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, primary, true))
-                verb = ResolveStructureMeleeVerb(pawn,
+                verb = ResolveWeaponMeleeVerb(pawn,
                     RimKataWeaponSlotUtility.SecondaryWeapon(pawn), target);
             if (verb == null) return false;
-            // The saved melee Verb distinguishes this order from ranged attacks
-            // on a building. No new persistent pawn flag or automatic search.
             job.def = RimKataDefOf.RimKata_Attack;
             job.verbToUse = verb;
             return true;
         }
 
-        private static Verb ResolveStructureMeleeVerb(Pawn pawn, ThingWithComps weapon, Thing target)
+        private sealed class MeleeSelectionBuffer
+        {
+            internal readonly List<Verb> usable = new List<Verb>();
+            internal readonly Func<Verb, float> weight;
+            internal Pawn pawn;
+            internal Thing target;
+            internal float highestWeight;
+            internal MeleeSelectionBuffer next;
+
+            internal MeleeSelectionBuffer() => weight = SelectionWeight;
+
+            private float SelectionWeight(Verb verb)
+                => new VerbEntry(verb, pawn, usable, highestWeight).GetSelectionWeight(target);
+        }
+
+        [ThreadStatic] private static MeleeSelectionBuffer meleeSelectionBuffers;
+
+        internal static Verb ResolveWeaponMeleeVerb(
+            Pawn pawn, ThingWithComps weapon, Thing target, bool damageOnly = false)
         {
             if (pawn == null || target == null || weapon == null
                 || !RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)) return null;
             List<Verb> verbs = weapon.TryGetComp<CompEquippable>()?.AllVerbs;
             if (verbs == null) return null;
-            var usable = new List<Verb>(verbs.Count);
-            float highestWeight = 0f;
-            for (int i = 0; i < verbs.Count; i++)
+            MeleeSelectionBuffer buffer = meleeSelectionBuffers;
+            if (buffer == null) buffer = new MeleeSelectionBuffer();
+            else meleeSelectionBuffers = buffer.next;
+            buffer.next = null;
+            buffer.pawn = pawn;
+            buffer.target = target;
+            List<Verb> usable = buffer.usable;
+            try
             {
-                Verb verb = verbs[i];
-                if (verb?.IsMeleeAttack != true || !verb.IsStillUsableBy(pawn)
-                    || !verb.Available()) continue;
-                usable.Add(verb);
-                highestWeight = Mathf.Max(highestWeight, VerbUtility.InitialVerbWeight(verb, pawn));
+                if (usable.Capacity < verbs.Count) usable.Capacity = verbs.Count;
+                for (int i = 0; i < verbs.Count; i++)
+                {
+                    Verb verb = verbs[i];
+                    if (verb?.IsMeleeAttack != true
+                        || (damageOnly && !(verb is Verb_MeleeAttackDamage))
+                        || !verb.IsStillUsableBy(pawn)
+                        || !verb.Available()) continue;
+                    usable.Add(verb);
+                    buffer.highestWeight = Mathf.Max(buffer.highestWeight, VerbUtility.InitialVerbWeight(verb, pawn));
+                }
+                return usable.TryRandomElementByWeight(buffer.weight, out Verb selected) ? selected : null;
             }
-            // Preserve native melee weighting and target/edifice suitability,
-            // while keeping each hand restricted to its own weapon's attacks.
-            return usable.TryRandomElementByWeight(
-                verb => new VerbEntry(verb, pawn, usable, highestWeight).GetSelectionWeight(target),
-                out Verb selected) ? selected : null;
+            finally
+            {
+                usable.Clear();
+                buffer.pawn = null;
+                buffer.target = null;
+                buffer.highestWeight = 0f;
+                buffer.next = meleeSelectionBuffers;
+                meleeSelectionBuffers = buffer;
+            }
         }
 
         internal static void TickStructureMelee(Pawn pawn, JobDriver_RimKataAttack driver)
@@ -4694,15 +4657,13 @@ namespace KRWF.RimKata
                 || !melee.IsStillUsableBy(pawn) || !melee.IsUsableOn(target) || !melee.Available())
             {
                 if (cycle.plannedActionVerb != null) cycle.ClearPlan();
-                melee = ResolveStructureMeleeVerb(pawn, cycle.weapon, target);
+                melee = ResolveWeaponMeleeVerb(pawn, cycle.weapon, target);
             }
             if (melee == null) return;
             CycleVerbAvailability availability = new CycleVerbAvailability
             {
                 verb = melee, evaluated = true, closeContext = true, usable = true
             };
-            // Reuse native execution and completion, but keep this explicit Job
-            // fixed on its structure. Guns use their own bash/poke Verb here.
             TickWeaponCycle(pawn, state, cycle, target, true, false, true,
                 StanceBlocksRimKata(pawn), out Thing _, false, false, tick, null,
                 ref availability);
@@ -4908,8 +4869,6 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state = StateFor(pawn, false);
             if (state == null) return;
             BindCurrentWeapons(pawn, state);
-            // Seed the actual new Job after the previous Job's cleanup. A job
-            // target alone is not an automatic ranged candidate in random mode.
             RimKataSharedTargetSearch.TryAddKnownAutomaticTarget(pawn, state, target);
             RimKataSharedTargetSearch.Begin(pawn, state, pawn.Position);
         }
@@ -5315,7 +5274,6 @@ namespace KRWF.RimKata
 
             if (state.DeflectionSpinActive)
             {
-                // The other hand can change without ending this weapon's response.
                 RimKataResponseVisualParticipantCache.Refresh(state);
             }
         }
@@ -5707,9 +5665,6 @@ namespace KRWF.RimKata
             bool assignedTargetValidated = false,
             bool assignedTargetInTouchRange = false)
         {
-            // The immediate-target test below is the authoritative validation.
-            // Reading CloseAttackRequestActive first would perform the same
-            // target and reachability checks twice on this hot path.
             Thing requested = state?.closeAttackRequestTarget;
             if (requested != assignedTarget && IsImmediateCloseTarget(
                 pawn,
@@ -5838,8 +5793,6 @@ namespace KRWF.RimKata
             }
             if (!AutomaticRangedFireAllowed(pawn))
             {
-                // Close combat admitted adjacent targets for physical attacks.
-                // They stop being ranged candidates when that context ends.
                 ClearRangedTargetingForHoldFire(pawn, state.primaryWeaponCycle, true);
                 ClearRangedTargetingForHoldFire(pawn, state.secondaryWeaponCycle, true);
             }
@@ -5876,8 +5829,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Unselected stored candidates keep their admission until selection.
-            // Check each distinct active reference once using the prepared slot.
             Thing cachedTarget = cycle.cachedCandidateTarget;
             bool cachedValid = cachedTarget == null
                 || IsValidCloseCycleTarget(pawn, state, cycle, verb, cachedTarget);
@@ -5991,8 +5942,6 @@ namespace KRWF.RimKata
                         : RimKataWeaponSlotUtility.SecondaryWeapon(pawn)
                     : null;
 
-            // Keep timer/candidate ownership attached to the weapon during a
-            // slot swap or automatic promotion of the surviving secondary.
             bool slotsMoved = (primary != state.primaryWeaponCycle.weapon
                     && primary != null
                     && primary == state.secondaryWeaponCycle.weapon)
@@ -6105,9 +6054,7 @@ namespace KRWF.RimKata
                     RimKataNativeAttack.ConsumeInterruptedBurstAfterLoad(cycle.boundVerb);
                 if (interruptedAfterLoad || cycle.completeInterruptedAttackAfterLoad)
                 {
-                    // The saved target may have disappeared (notably an
-                    // intercepted projectile). Consume recovery before planning
-                    // so the next newly selected target is never skipped.
+                    // A saved burst target may be gone; its recovery still precedes a new plan.
                     cycle.completeInterruptedAttackAfterLoad = false;
                     cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining,
                         RimKataCombatMath.CooldownTicksForSingleShot(cycle.boundVerb, pawn, false));
@@ -6123,8 +6070,6 @@ namespace KRWF.RimKata
 
         private static Verb BoundCombatVerb(Pawn pawn, RimKataWeaponCycleState cycle)
         {
-            // A missing Verb can become available after a transient equipment
-            // update. Keep the existing per-tick null retry in CombatVerb.
             return cycle.boundVerb
                 ?? (cycle.boundVerb = RimKataWeaponSlotUtility.CombatVerb(
                     pawn, cycle.weapon));
@@ -6308,8 +6253,6 @@ namespace KRWF.RimKata
             }
             if (cycle.ResponseCooldownAppliedThisTick)
             {
-                // A response retains its target reference, but offensive preparation
-                // starts no earlier than this slot's next game tick.
                 return;
             }
             if (IsVanillaAutomaticWeaponBusy(pawn, state, cycle))
@@ -6357,10 +6300,7 @@ namespace KRWF.RimKata
             bool dedicatedAssignedTarget = ordinaryWeaponEnabled && assignedTarget != null
                 && pawn?.CurJobDef == RimKataDefOf.RimKata_Attack
                 && pawn.CurJob.targetA.Thing == assignedTarget;
-            // Target ownership invariant: weapon cycles may change targets independently,
-            // including in close combat. Keep job.targetA while it remains alive and within
-            // the unified attack range; only the invalid-target or range-exit paths may
-            // replace it. closeCombatContext must never force the Job target back into a cycle.
+            // Each weapon cycle owns its target independently of job.targetA.
             bool directAssignedTarget = ordinaryWeaponEnabled
                 && assignedTarget != null && playerForced;
             if (focusedTargetControlsCycle && !cycle.HasPlan)
@@ -6406,17 +6346,12 @@ namespace KRWF.RimKata
                     != UsesPhysicalMeleeAction(
                         pawn, verb, closeCombatContext && cycle.plannedCloseAttack))
             {
-                // A close-range transition or hold-fire toggle can change the
-                // action after aiming started. Keep its elapsed timers only.
                 cycle.plannedActionVerb = null;
             }
             Thing checkedTarget = null;
             bool explicitPlan = cycle.plannedTarget != null
                 && (cycle.plannedTarget == cycle.focusedTarget
                     || (playerForced && cycle.plannedTarget == assignedTarget));
-            // A reserved automatic target waits for the last cooldown tick.
-            // Active aiming still cancels/reselects here in the same tick.
-            // Keep this result through the immediate shot of the same slot.
             bool checkPreparedTarget = cycle.plannedInterception
                 || explicitPlan
                 || cycle.cooldownTicksRemaining <= 1;
@@ -6540,7 +6475,6 @@ namespace KRWF.RimKata
                 }
             }
 
-            // Reuse the unchanged plan within this slot pass.
             if (!focusedTargetControlsCycle
                 && cycle.plannedTarget != rangeCheckedTarget
                 && InterruptMovingFireOutsideAutomaticRange(
@@ -6556,8 +6490,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // Promotion can supply a new reservation after the earlier check.
-            // Check it at cooldown 1 / aim start, without rechecking an unchanged plan.
             if (cycle.HasPlan
                 && !cycle.plannedInterception
                 && cycle.plannedTarget != cycle.focusedTarget
@@ -6613,7 +6545,6 @@ namespace KRWF.RimKata
                     cycle);
 
                 int totalWarmup = normalWarmup + openingBonus;
-                // Predict once when aiming starts, not from per-tick ValidPlan.
                 if (cycle.plannedInterception
                     && !RimKataInterceptionTrajectory.CanIntercept(
                         pawn, cycle.plannedActionVerb,
@@ -6626,12 +6557,10 @@ namespace KRWF.RimKata
                 cycle.warmupTicksRemaining = totalWarmup;
                 if (!cycle.plannedInterception && !cycle.plannedActionVerb.IsMeleeAttack)
                 {
-                    // Reuse only this pass's completed candidate admission.
-                    // Stored membership does not prove that a target is still inside.
                     RimKataGroundPoseUtility.NotifyAimStarted(
                         pawn, cycle.plannedActionVerb, TargetInfo(cycle),
                         rangeAdmittedAimTarget != null
-                            && cycle.plannedTarget == rangeAdmittedAimTarget);
+                            && cycle.plannedTarget == rangeAdmittedAimTarget, state);
                 }
                 if (cycle.warmupTicksRemaining > 0)
                 {
@@ -6644,8 +6573,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // A newly assigned explicit plan may not have passed the earlier
-            // automatic-plan check. Every other unchanged plan was checked above.
             if (cycle.plannedTarget != checkedTarget
                 && !ValidPlan(
                     pawn, cycle, verb, assignedTarget, playerForced,
@@ -6718,8 +6645,6 @@ namespace KRWF.RimKata
             attack.closeMeleeHit = false;
             attack.closeDefensePrecheck = RimKataCloseDefensePrecheck.None;
 
-            // The actual Verb is executed by its native equipment/body owner.
-            // A busy shared physical Verb is retried without discarding this plan.
             if (cycle.weapon != attack.weapon || !attack.Queue())
                 attack.ClearCompletedReferences();
             return;
@@ -6727,6 +6652,7 @@ namespace KRWF.RimKata
 
         internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)
         {
+            if (RimKataReactiveMotion.BlocksCombat(attack.state)) return false;
             if (attack.huntingSession != null) return attack.huntingSession.CanContinue();
             if (attack.pawn.jobs?.curDriver is JobDriver_RimKataAttack driver
                 && driver.IsStructureMelee && driver.StructureMeleeLimitReached) return false;
@@ -6738,6 +6664,7 @@ namespace KRWF.RimKata
 
         internal static void CompleteNativeAttack(RimKataNativeAttack attack, bool acted, bool cancelled)
         {
+            if (RimKataReactiveMotion.BlocksCombat(attack.state)) return;
             if (attack.huntingSession != null)
             {
                 attack.huntingSession.Complete(attack, acted);
@@ -6782,7 +6709,6 @@ namespace KRWF.RimKata
             bool requestAutomaticRefill = allowAutomaticRangedFire && !closeCombatContext
                 && (randomAttackEnabled || AllowsNonRandomMovingSearch(pawn));
             if (cycle.weapon != firedWeapon) return;
-            // A shot or defense response can change targets, equipment and availability.
             availability = default;
             if (state.weaponBindingsDirty
                 || state.weaponConfigurationRevision
@@ -6824,8 +6750,6 @@ namespace KRWF.RimKata
             cycle.lastFiredTarget = firedTarget;
             cycle.visualTarget = firedTarget;
             cycle.visualAimTicksRemaining = cooldown;
-            // Capture before pruning a killed target. Only the weapon presentation
-            // uses this angle; the plan, stance and attack timing keep their targets.
             cycle.cooldownTurnTarget = null;
             cycle.cooldownTurnTicks = 0;
             if (RimKataTargetAccess.SettingsFor(pawn)?.smoothAimTransition != false)
@@ -6856,8 +6780,6 @@ namespace KRWF.RimKata
                         || verb.IsMeleeAttack);
                 if (allowAutomaticReselection)
                 {
-                    // Prune a target disabled by this shot; selection checks the
-                    // next candidate's shootability without repeating admission.
                     if (!(RimKataTargeting.IsProjectile(firedTarget))
                         && !RimKataSharedTargetSearch.IsLiveRegisteredCandidate(
                             pawn,
@@ -6911,8 +6833,6 @@ namespace KRWF.RimKata
             out Thing promotedTarget)
         {
             promotedTarget = null;
-            // Do not add close-combat exceptions here; the common validity and range
-            // transitions own Job-target replacement for every combat context.
             if (pawn?.Map == null
                 || state == null
                 || playerForced
@@ -7009,15 +6929,12 @@ namespace KRWF.RimKata
             }
             else if (automaticRangeRequired)
             {
-                // Selection already checked this slot's registered candidate.
-                // Reservation handoff must not run admission or shootability again.
                 bool closeAttack = verb.IsMeleeAttack || closeCombatContext;
                 SetCandidate(pawn, cycle, cachedTarget, false, closeAttack, closeAttack, false);
                 promoted = true;
             }
             else
             {
-                // Random-fire OFF can supply a preferred target without candidate admission.
                 promoted = TrySetKnownTarget(
                     pawn,
                     cycle,
@@ -7508,8 +7425,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Automatic plans retain their admitted target identity. Only current
-            // shot feasibility belongs here; candidate admission owns hostility/fog.
             return CanHitTargetForCombatContext(
                 pawn,
                 verb,
@@ -7591,9 +7506,6 @@ namespace KRWF.RimKata
         internal static bool IsRangedCycleAction(
             Pawn pawn, RimKataWeaponCycleState cycle, bool closeCombatContext)
         {
-            // Loading or a plan transition can clear the selected Verb while
-            // preserving warmup. Observe the existing binding without resolving
-            // a new Verb, using the same physical-melee rule as execution.
             if (cycle.plannedActionVerb != null)
                 return !cycle.plannedActionVerb.IsMeleeAttack;
             return cycle.boundVerb?.IsMeleeAttack == false
@@ -7607,6 +7519,15 @@ namespace KRWF.RimKata
             Verb slotVerb,
             bool closeCombatContext)
         {
+            if (slotVerb?.IsMeleeAttack == true)
+            {
+                // Structure melee has already selected this weapon's attack.
+                if (pawn?.jobs?.curDriver is JobDriver_RimKataAttack driver
+                    && driver.IsStructureMelee)
+                    return slotVerb;
+                return ResolveWeaponMeleeVerb(pawn, cycle?.weapon, cycle?.plannedTarget);
+            }
+
             if (!UsesPhysicalMeleeAction(
                     pawn, slotVerb, closeCombatContext && cycle?.plannedCloseAttack == true))
             {
@@ -7682,8 +7603,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Native warmup and final cooldown keep the Verb idle. The stance
-            // still owns this weapon, even after its non-Pawn target is destroyed.
+            // Native warmup/cooldown keep the Verb idle while the stance still owns the weapon.
             if (pawn.stances?.curStance is Stance_Busy busy
                 && !(busy is Stance_RimKataAim)
                 && busy.verb?.EquipmentSource == cycle.weapon
@@ -7804,8 +7724,6 @@ namespace KRWF.RimKata
             cycle.ClearPlan();
             cycle.visualTarget = null;
             cycle.visualAimTicksRemaining = 0;
-            // Retain cooldowns, explicit targets and candidates for resuming
-            // once vanilla's fire-beating stance releases the pawn.
         }
 
         private static void InterruptCycleForMovement(
@@ -7926,7 +7844,6 @@ namespace KRWF.RimKata
 
         internal static void NotifyBodyAimEnded(Pawn pawn, RimKataPawnCombatState state = null)
         {
-            // Called only when our aim actually returns to an idle stance.
             if (pawn?.Map == null || !(pawn.stances?.curStance is Stance_Mobile)) return;
             state ??= StateFor(pawn, false);
             if (state == null
@@ -7967,8 +7884,6 @@ namespace KRWF.RimKata
         private static void ClearIdleOrdinaryCandidates(
             RimKataPawnCombatState state, RimKataWeaponCycleState cycle)
         {
-            // Release only the old ordinary identities. Pending ring admission,
-            // moving-hostile wakeups and projectile interception stay intact.
             HashSet<int> discoveredIds = state.sharedTargetSearch?.ringRuntime?.discoveredIds;
             if (discoveredIds != null && cycle.automaticCandidates != null)
             {
@@ -8043,8 +7958,6 @@ namespace KRWF.RimKata
                 ? CombatVerbForAim(pawn, state, secondary) : null;
             bool shareAimingFactor = primaryPendingVerb?.CasterPawn == pawn
                 && secondaryPendingVerb?.CasterPawn == pawn;
-            // Both estimates belong to this one pose decision. Read the live
-            // pawn stat once; actual aim start still resolves its current timing.
             float aimingFactor = shareAimingFactor
                 ? pawn.GetStatValue(StatDefOf.AimingDelayFactor) : 1f;
             if (primary.warmupTicksRemaining < 0)
@@ -8071,7 +7984,6 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state,
             RimKataWeaponCycleState cycle)
         {
-            // Aim readers reuse resolved bindings without mutating slot ownership.
             if (!state.weaponBindingsDirty
                 && state.weaponConfigurationRevision
                     == RimKataEquipmentUtility.WeaponConfigurationRevision

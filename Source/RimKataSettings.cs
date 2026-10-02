@@ -18,12 +18,6 @@ namespace KRWF.RimKata
         Custom
     }
 
-    public enum RimKataCreepJoinerGeneChoice
-    {
-        MindNumbSerumDependency,
-        RimKata
-    }
-
     public sealed class RimKataSettingsProfile : IExposable
     {
         private static readonly FieldInfo[] ProfileFields = typeof(RimKataSettings)
@@ -66,20 +60,23 @@ namespace KRWF.RimKata
                     throw new FormatException("Duplicate profile setting: " + name);
                 }
 
-                if (!ProfileFieldsByName.TryGetValue(name, out FieldInfo field))
+                bool legacyCrawlDefault = name == "crawlFireDefaultAllowed";
+                if (!ProfileFieldsByName.TryGetValue(name, out FieldInfo field) && !legacyCrawlDefault)
                 {
                     continue;
                 }
 
-                if (!TryDeserialize(entry.Substring(separator + 1).Trim(), field.FieldType, out object value)
+                Type valueType = legacyCrawlDefault ? typeof(bool) : field.FieldType;
+                if (!TryDeserialize(entry.Substring(separator + 1).Trim(), valueType, out object value)
                     || (value is float number && (float.IsNaN(number) || float.IsInfinity(number))))
                 {
                     throw new FormatException("Invalid value for profile setting: " + name);
                 }
 
-                profile.entries.Add(name + "=" + Serialize(value, field.FieldType));
+                profile.entries.Add(name + "=" + Serialize(value, valueType));
             }
 
+            profile.MigrateCrawlFireDefaults();
             profile.entries.Sort(StringComparer.Ordinal);
             return profile;
         }
@@ -185,12 +182,39 @@ namespace KRWF.RimKata
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 entries ??= new List<string>();
+                MigrateCrawlFireDefaults();
                 entries.RemoveAll(entry =>
                 {
                     int separator = entry?.IndexOf('=') ?? -1;
                     return separator <= 0 || !ProfileFieldsByName.ContainsKey(entry.Substring(0, separator));
                 });
             }
+        }
+
+        private void MigrateCrawlFireDefaults()
+        {
+            bool? legacy = null;
+            bool hasFriendly = false, hasHostile = false;
+            for (int i = entries.Count - 1; i >= 0; i--)
+            {
+                string entry = entries[i];
+                int separator = entry?.IndexOf('=') ?? -1;
+                if (separator <= 0) continue;
+                string name = entry.Substring(0, separator);
+                if (name == "crawlFireDefaultAllowed")
+                {
+                    if (TryDeserialize(entry.Substring(separator + 1), typeof(bool), out object value))
+                        legacy = (bool)value;
+                    entries.RemoveAt(i);
+                }
+                else if (name == nameof(RimKataSettings.crawlFireDefaultAllowedFriendly)) hasFriendly = true;
+                else if (name == nameof(RimKataSettings.crawlFireDefaultAllowedHostile)) hasHostile = true;
+            }
+            if (!legacy.HasValue) return;
+            string serialized = Serialize(legacy.Value, typeof(bool));
+            if (!hasFriendly) entries.Add(nameof(RimKataSettings.crawlFireDefaultAllowedFriendly) + "=" + serialized);
+            if (!hasHostile) entries.Add(nameof(RimKataSettings.crawlFireDefaultAllowedHostile) + "=" + serialized);
+            entries.Sort(StringComparer.Ordinal);
         }
 
         private static bool IsSupportedType(Type type)
@@ -205,8 +229,6 @@ namespace KRWF.RimKata
         {
             return name == nameof(RimKataSettings.enableFriendlyPawnEffects)
                 || name == nameof(RimKataSettings.enableHostilePawnEffects)
-                || name == nameof(RimKataSettings.creepJoinerDependencyGeneChancePercent)
-                || name == nameof(RimKataSettings.creepJoinerRimKataGeneChancePercent)
                 || name == nameof(RimKataSettings.enableRimKataA)
                 || name == nameof(RimKataSettings.enableRimKataP)
                 || name == nameof(RimKataSettings.enableRimKataI)
@@ -364,8 +386,11 @@ namespace KRWF.RimKata
         public const int DefaultProneResumeDelayTicks = 50;
         public const float DefaultMeleeFallChancePercent = 1f;
         public const int DefaultMeleeFallDurationTicks = 50;
+        public const float DefaultFallenFriendlyFireAvoidChancePercent = 50f;
         public const int DefaultBreachSlideDurationTicks = 120;
         public const int DefaultBreachWaitDurationTicks = 60;
+        public const float DefaultSlidingChancePercent = 20f;
+        public const float DefaultShakeOffChancePercent = 20f;
         public const int DefaultSubdueImpactStunTicks = 180;
         public const int MinimumGroundPoseDurationTicks = 0;
         public const int MaximumGroundPoseDurationTicks = int.MaxValue;
@@ -373,8 +398,6 @@ namespace KRWF.RimKata
         public const int DefaultResponseWeaponDurabilityLossAmount = 1;
         public const int MinimumResponseWeaponDurabilityLossAmount = 1;
         public const int MaximumResponseWeaponDurabilityLossAmount = 999;
-        public const float DefaultCreepJoinerDependencyGeneChancePercent = 0f;
-        public const RimKataCreepJoinerGeneChoice DefaultCreepJoinerGeneChoice = RimKataCreepJoinerGeneChoice.RimKata;
         public const float DefaultAiSecondaryWeaponChancePercent = 0f;
 
         public const float DefaultResponseDisarmChancePercent = 3f;
@@ -418,13 +441,14 @@ namespace KRWF.RimKata
         public const bool DefaultTumbleEnabled = true;
         public const bool DefaultProneFireEnabled = true;
         public const bool DefaultCrawlFireEnabled = true;
+        public const bool DefaultSlidingEnabled = false;
+        public const bool DefaultShakeOffEnabled = true;
         public const bool DefaultCrawlFireDefaultAllowed = true;
         public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
 
         public static readonly string[] DefaultEnabledWeaponDefNames =
         {
-            // Vanilla and official DLC equipment; explosive weapons stay opt-in.
             "AlphaThrumboHorn",
             "Beer",
             "Bow_Great",
@@ -560,19 +584,20 @@ namespace KRWF.RimKata
         public int proneResumeDelayTicks = DefaultProneResumeDelayTicks;
         public float meleeFallChancePercent = DefaultMeleeFallChancePercent;
         public int meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
+        public float fallenFriendlyFireAvoidChancePercent = DefaultFallenFriendlyFireAvoidChancePercent;
         public int breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
         public int breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
+        public float slidingChancePercent = DefaultSlidingChancePercent;
+        public float shakeOffChancePercent = DefaultShakeOffChancePercent;
         public int subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
         public float responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
         public int responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
-        public float creepJoinerDependencyGeneChancePercent = DefaultCreepJoinerDependencyGeneChancePercent;
-        public float creepJoinerRimKataGeneChancePercent = 0f;
+        public List<RimKataGeneProbabilityRule> geneProbabilityRules = new List<RimKataGeneProbabilityRule>();
         public bool enableRimKataA = true;
         public bool enableRimKataP = true;
         public bool enableRimKataI = true;
         public bool enableRimKataG = true;
         public bool enableSerumDependency = true;
-        private int creepJoinerGeneProbabilityVersion = 1;
         public float aiSecondaryWeaponChancePercent = DefaultAiSecondaryWeaponChancePercent;
 
         public float responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -617,7 +642,10 @@ namespace KRWF.RimKata
         public bool tumbleEnabled = DefaultTumbleEnabled;
         public bool proneFireEnabled = DefaultProneFireEnabled;
         public bool crawlFireEnabled = DefaultCrawlFireEnabled;
-        public bool crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+        public bool slidingEnabled = DefaultSlidingEnabled;
+        public bool shakeOffEnabled = DefaultShakeOffEnabled;
+        public bool crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
+        public bool crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
         public bool smoothAimTransition = DefaultSmoothAimTransition;
         // Legacy blanket override is only read to migrate into the shared target list.
         internal bool accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
@@ -643,6 +671,10 @@ namespace KRWF.RimKata
         public float SerumDodgeMultiplier => MultiplierFromPercent(serumDodgeMultiplierPercent);
         public float SerumResponseMultiplier => MultiplierFromPercent(serumResponseMultiplierPercent);
         public float SerumInterceptionMultiplier => MultiplierFromPercent(serumInterceptionMultiplierPercent);
+
+        public bool GetCrawlFireDefaultAllowed(Pawn pawn) =>
+            RimKataEligibility.IsHostileToPlayerFaction(pawn)
+                ? crawlFireDefaultAllowedHostile : crawlFireDefaultAllowedFriendly;
 
         public int GetRangedDodgeDurationTicks(Pawn pawn)
         {
@@ -717,6 +749,9 @@ namespace KRWF.RimKata
             pawn, proneHuntingStealthBonusFixed, proneHuntingStealthBonusPercent,
             proneHuntingStealthBonusMinimumPercent, proneHuntingStealthBonusGrowthPerLevelPercent, SkillDefOf.Shooting));
         public float MeleeFallChance => ChanceFromPercent(meleeFallChancePercent);
+        public float FallenFriendlyFireAvoidChance => ChanceFromPercent(fallenFriendlyFireAvoidChancePercent);
+        public float SlidingChance => ChanceFromPercent(slidingChancePercent);
+        public float ShakeOffChance => ChanceFromPercent(shakeOffChancePercent);
         public float AiSecondaryWeaponChance => ChanceFromPercent(aiSecondaryWeaponChancePercent);
         internal string ActiveProfileId
         {
@@ -810,32 +845,22 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref proneResumeDelayTicks, "proneResumeDelayTicks", DefaultProneResumeDelayTicks);
             Scribe_Values.Look(ref meleeFallChancePercent, "meleeFallChancePercent", DefaultMeleeFallChancePercent);
             Scribe_Values.Look(ref meleeFallDurationTicks, "meleeFallDurationTicks", DefaultMeleeFallDurationTicks);
+            Scribe_Values.Look(ref fallenFriendlyFireAvoidChancePercent, "fallenFriendlyFireAvoidChancePercent", DefaultFallenFriendlyFireAvoidChancePercent);
             Scribe_Values.Look(ref breachSlideDurationTicks, "breachSlideDurationTicks", DefaultBreachSlideDurationTicks);
             Scribe_Values.Look(ref breachWaitDurationTicks, "breachWaitDurationTicks", DefaultBreachWaitDurationTicks);
+            Scribe_Values.Look(ref slidingChancePercent, "slidingChancePercent", DefaultSlidingChancePercent);
+            Scribe_Values.Look(ref shakeOffChancePercent, "shakeOffChancePercent", DefaultShakeOffChancePercent);
             Scribe_Values.Look(ref subdueImpactStunTicks, "subdueImpactStunTicks", DefaultSubdueImpactStunTicks);
             if (preservePreviousCombatDefaults)
                 combatDefaultsVersion = CurrentCombatDefaultsVersion;
             Scribe_Values.Look(ref responseWeaponDurabilityLossChancePercent, "responseWeaponDurabilityLossChancePercent", DefaultResponseWeaponDurabilityLossChancePercent);
             Scribe_Values.Look(ref responseWeaponDurabilityLossAmount, "responseWeaponDurabilityLossAmount", DefaultResponseWeaponDurabilityLossAmount);
-            Scribe_Values.Look(ref creepJoinerDependencyGeneChancePercent, "creepJoinerDependencyGeneChancePercent", DefaultCreepJoinerDependencyGeneChancePercent);
-            Scribe_Values.Look(ref creepJoinerRimKataGeneChancePercent, "creepJoinerRimKataGeneChancePercent", 0f);
-            Scribe_Values.Look(ref creepJoinerGeneProbabilityVersion, "creepJoinerGeneProbabilityVersion", 0);
+            Scribe_Collections.Look(ref geneProbabilityRules, "geneProbabilityRules", LookMode.Deep);
             Scribe_Values.Look(ref enableRimKataA, "enableRimKataA", true);
             Scribe_Values.Look(ref enableRimKataP, "enableRimKataP", true);
             Scribe_Values.Look(ref enableRimKataI, "enableRimKataI", true);
             Scribe_Values.Look(ref enableRimKataG, "enableRimKataG", true);
             Scribe_Values.Look(ref enableSerumDependency, "enableSerumDependency", true);
-            if (Scribe.mode == LoadSaveMode.LoadingVars && creepJoinerGeneProbabilityVersion < 1)
-            {
-                RimKataCreepJoinerGeneChoice legacyChoice = DefaultCreepJoinerGeneChoice;
-                Scribe_Values.Look(ref legacyChoice, "creepJoinerGeneChoice", DefaultCreepJoinerGeneChoice);
-                if (legacyChoice != RimKataCreepJoinerGeneChoice.MindNumbSerumDependency)
-                {
-                    creepJoinerRimKataGeneChancePercent = creepJoinerDependencyGeneChancePercent;
-                    creepJoinerDependencyGeneChancePercent = 0f;
-                }
-                creepJoinerGeneProbabilityVersion = 1;
-            }
             Scribe_Values.Look(ref aiSecondaryWeaponChancePercent, "aiSecondaryWeaponChancePercent", DefaultAiSecondaryWeaponChancePercent);
             Scribe_Values.Look(ref responseDisarmChancePercent, "responseDisarmChancePercent", DefaultResponseDisarmChancePercent);
             Scribe_Values.Look(ref responseDisarmChanceGrowthPerLevelPercent, "responseDisarmChanceGrowthPerLevelPercent", DefaultResponseDisarmChanceGrowthPerLevelPercent);
@@ -876,7 +901,13 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref tumbleEnabled, "tumbleEnabled", DefaultTumbleEnabled);
             Scribe_Values.Look(ref proneFireEnabled, "proneFireEnabled", DefaultProneFireEnabled);
             Scribe_Values.Look(ref crawlFireEnabled, "crawlFireEnabled", DefaultCrawlFireEnabled);
-            Scribe_Values.Look(ref crawlFireDefaultAllowed, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
+            Scribe_Values.Look(ref slidingEnabled, "slidingEnabled", DefaultSlidingEnabled);
+            Scribe_Values.Look(ref shakeOffEnabled, "shakeOffEnabled", DefaultShakeOffEnabled);
+            bool legacyCrawlDefault = DefaultCrawlFireDefaultAllowed;
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+                Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
+            Scribe_Values.Look(ref crawlFireDefaultAllowedFriendly, "crawlFireDefaultAllowedFriendly", legacyCrawlDefault);
+            Scribe_Values.Look(ref crawlFireDefaultAllowedHostile, "crawlFireDefaultAllowedHostile", legacyCrawlDefault);
             Scribe_Values.Look(ref smoothAimTransition, "smoothAimTransition", DefaultSmoothAimTransition);
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
@@ -936,7 +967,7 @@ namespace KRWF.RimKata
                     responseWeaponDurabilityLossAmount,
                     MinimumResponseWeaponDurabilityLossAmount,
                     MaximumResponseWeaponDurabilityLossAmount);
-                SanitizeCreepJoinerGeneChances();
+                SanitizeGeneProbabilityRules();
                 aiSecondaryWeaponChancePercent = SanitizePercent(
                     aiSecondaryWeaponChancePercent,
                     DefaultAiSecondaryWeaponChancePercent);
@@ -1004,8 +1035,11 @@ namespace KRWF.RimKata
             proneResumeDelayTicks = Mathf.Clamp(proneResumeDelayTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             meleeFallChancePercent = SanitizePercent(meleeFallChancePercent, DefaultMeleeFallChancePercent);
             meleeFallDurationTicks = Mathf.Clamp(meleeFallDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            fallenFriendlyFireAvoidChancePercent = SanitizePercent(fallenFriendlyFireAvoidChancePercent, DefaultFallenFriendlyFireAvoidChancePercent);
             breachSlideDurationTicks = Mathf.Clamp(breachSlideDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             breachWaitDurationTicks = Mathf.Clamp(breachWaitDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            slidingChancePercent = SanitizePercent(slidingChancePercent, DefaultSlidingChancePercent);
+            shakeOffChancePercent = SanitizePercent(shakeOffChancePercent, DefaultShakeOffChancePercent);
             subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             subdueMassMultiplierPercent = SanitizeNonNegative(subdueMassMultiplierPercent, DefaultSubdueMassMultiplierPercent);
             subdueMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(subdueMassMultiplierGrowthPerLevelPercent, DefaultSubdueMassMultiplierGrowthPerLevelPercent);
@@ -1014,28 +1048,21 @@ namespace KRWF.RimKata
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
         }
 
-        internal void SanitizeCreepJoinerGeneChances()
+        internal void SanitizeGeneProbabilityRules()
         {
-            creepJoinerRimKataGeneChancePercent = enableRimKataG
-                ? SanitizePercent(creepJoinerRimKataGeneChancePercent, 0f)
-                : 0f;
-            creepJoinerDependencyGeneChancePercent = enableSerumDependency
-                ? Mathf.Min(SanitizePercent(creepJoinerDependencyGeneChancePercent, 0f),
-                    100f - creepJoinerRimKataGeneChancePercent)
-                : 0f;
-        }
-
-        internal RimKataCreepJoinerGeneChoice? CreepJoinerGeneChoiceForRoll(float rollPercent)
-        {
-            if (enableRimKataG && creepJoinerRimKataGeneChancePercent > 0f
-                && (creepJoinerRimKataGeneChancePercent >= 100f
-                    || rollPercent < creepJoinerRimKataGeneChancePercent))
-                return RimKataCreepJoinerGeneChoice.RimKata;
-            float combinedChance = creepJoinerRimKataGeneChancePercent + creepJoinerDependencyGeneChancePercent;
-            if (enableSerumDependency && creepJoinerDependencyGeneChancePercent > 0f
-                && (combinedChance >= 100f || rollPercent < combinedChance))
-                return RimKataCreepJoinerGeneChoice.MindNumbSerumDependency;
-            return null;
+            geneProbabilityRules ??= new List<RimKataGeneProbabilityRule>();
+            var keys = new HashSet<string>(StringComparer.Ordinal);
+            for (int i = 0; i < geneProbabilityRules.Count; i++)
+            {
+                RimKataGeneProbabilityRule rule = geneProbabilityRules[i];
+                if (string.IsNullOrEmpty(rule?.key) || !keys.Add(rule.key))
+                {
+                    geneProbabilityRules.RemoveAt(i--);
+                    continue;
+                }
+                rule.Sanitize(enableRimKataG, enableSerumDependency);
+            }
+            RimKataGeneProbability.InvalidateSettings();
         }
 
         public void ResetNumericDefaults()
@@ -1100,8 +1127,11 @@ namespace KRWF.RimKata
             proneResumeDelayTicks = DefaultProneResumeDelayTicks;
             meleeFallChancePercent = DefaultMeleeFallChancePercent;
             meleeFallDurationTicks = DefaultMeleeFallDurationTicks;
+            fallenFriendlyFireAvoidChancePercent = DefaultFallenFriendlyFireAvoidChancePercent;
             breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
             breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
+            slidingChancePercent = DefaultSlidingChancePercent;
+            shakeOffChancePercent = DefaultShakeOffChancePercent;
             subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
@@ -1137,7 +1167,10 @@ namespace KRWF.RimKata
             subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
             proneFireEnabled = DefaultProneFireEnabled;
             crawlFireEnabled = DefaultCrawlFireEnabled;
-            crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+            slidingEnabled = DefaultSlidingEnabled;
+            shakeOffEnabled = DefaultShakeOffEnabled;
+            crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
+            crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
             smoothAimTransition = DefaultSmoothAimTransition;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }
@@ -1206,8 +1239,6 @@ namespace KRWF.RimKata
             customCandidateRange = 0f;
             responseWeaponDurabilityLossChancePercent = 0f;
             responseWeaponDurabilityLossAmount = 0;
-            creepJoinerDependencyGeneChancePercent = 0f;
-            creepJoinerRimKataGeneChancePercent = 0f;
             aiSecondaryWeaponChancePercent = 0f;
             responseAccidentalFireChancePercent = 80f;
             responseCooldownReductionFixed = true;

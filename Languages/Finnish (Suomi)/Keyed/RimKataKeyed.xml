@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profiiliasetukset</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Taisteluominaisuudet</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modin ominaisuudet</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuaaliset tehosteet</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktivointiominaisuudet</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Käytetty arvo</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Metsästyksen hiiviskelybonus makuulla</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Odotusaika ennen uudelleen makuulle menoa</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Maassaoloaika kaatumisen jälkeen</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Oman tulen välttäminen kaatuneena</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Liikkumisaika läpimurron aikana</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Odotusaika läpimurron määränpäähän saavuttua</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Oletusarvot</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Salli ampuminen ryömiessä ei-vihamielisille hahmoille</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Salli ampuminen ryömiessä vihamielisille hahmoille</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä oletusarvoisesti</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sulavat tähtäyssiirtymät</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Taltuta</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Hyökkäykset on estetty.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Vahingon siirto</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Siirtää saadun vahingon kiinni pidettyyn hahmoon. Kun toiminto on pois käytöstä, hahmo päästetään irti väistettäessä tai lähitaistelun alkaessa.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Liuku</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Ravistelu</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Liu’un todennäköisyys</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Ravistelun todennäköisyys</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Geenien todennäköisyys</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Mahdollinen</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Ei mahdollisuutta</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Palauta kaikki</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Palauta suodatetut tulokset</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Hoipertelija</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

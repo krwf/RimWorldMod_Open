@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Installed only by the optional MA integration. These callbacks observe the
-    // existing attack result and never drive verbs, jobs, stances, or cooldowns.
     internal static class RimKataMeleeAnimationAttackBridge
     {
         private static bool enabled;
@@ -37,7 +35,6 @@ namespace KRWF.RimKata
                 consumeHitNotification = Expression.Lambda<Action>(Expression.Assign(
                     Expression.Field(null, hitTarget), Expression.Constant(null, typeof(Thing)))).Compile();
 
-                // Both callbacks stay inert if registration only partially succeeds.
                 harmony.Patch(completion, postfix: Hook(nameof(CompleteAttack)));
                 harmony.Patch(notification, prefix: Hook(nameof(BeforeMeleeNotification)));
                 harmony.Patch(AccessTools.Method(typeof(Pawn_DrawTracker), nameof(Pawn_DrawTracker.Notify_MeleeAttackOn)),
@@ -78,14 +75,9 @@ namespace KRWF.RimKata
                     || secondary == null || verb.EquipmentSource != secondary)
                     return true;
 
-                // MA owns the primary animator. Only a secondary action handled
-                // by our independent visual sampler may skip its notification.
                 if (!RimKataMeleeAnimationReplay.CanHandle(pawn, secondary)) return true;
-                // Observe the actual offhand hit notification before any shared
-                // primary animator handles it. Completion supplies its RK cooldown.
                 RimKataMeleeAnimationReplay.NotifyAttack(pawn, secondary, verb.CurrentTarget, int.MaxValue);
-                // Consume the same per-hit marker MA normally clears here, so
-                // this secondary hit cannot make a later primary miss look like a hit.
+                // MA's per-hit marker must be consumed or this hit can mark a later primary miss as a hit.
                 consumeHitNotification();
                 return false;
             }
@@ -105,8 +97,7 @@ namespace KRWF.RimKata
                 || !RimKataNativeAttack.OwnsActiveMelee(verb)
                 || !RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(pawn, out ThingWithComps secondary)
                 || secondary?.def.IsMeleeWeapon != true || verb.EquipmentSource != secondary) return true;
-            // This vanilla method only lunges the entire pawn (and both weapons).
-            // The offhand MA swing supplies that motion for its own slot instead.
+            // The vanilla notification lunges the whole pawn; MA animates the offhand slot independently.
             return !RimKataMeleeAnimationReplay.CanHandle(pawn, secondary);
         }
 
@@ -126,9 +117,7 @@ namespace KRWF.RimKata
                     || secondary != weapon || !RimKataMeleeAnimationReplay.CanHandle(pawn, weapon))
                     return;
 
-                // acted includes a resolved miss. Read the cooldown assigned by
-                // FinishCycleAction; damage success and the next chosen target do
-                // not determine whether this completed swing is animated.
+                // acted includes resolved misses, which still need their completed swing animation.
                 RimKataMeleeAnimationReplay.NotifyAttack(pawn, weapon, attack.target,
                     cycle.cooldownTicksRemaining);
             }

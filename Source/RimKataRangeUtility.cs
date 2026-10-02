@@ -29,8 +29,6 @@ namespace KRWF.RimKata
 
     public static class RimKataRangeUtility
     {
-        // Settings resolve to a logical limit capped by effective weapon range.
-        // Radial cell queries use this extra envelope around that limit.
         internal const float CandidateCellRadiusPadding = 0.7f;
 
         private sealed class CachedWeaponRange

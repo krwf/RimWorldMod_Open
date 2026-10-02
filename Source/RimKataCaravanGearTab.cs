@@ -21,8 +21,6 @@ namespace KRWF.RimKata
         public static bool Prefix(WITab_Caravan_Gear __instance, Pawn __0)
         {
             Pawn pawn = __0;
-            // Let vanilla choose the pawn from its entire row, then route that
-            // equip request through the available secondary slot.
             if (!(DraggedItem(__instance) is ThingWithComps weapon)
                 || weapon.def?.IsWeapon != true
                 || !RimKataCaravanEquipment.CanUseSlot(pawn))
@@ -38,8 +36,7 @@ namespace KRWF.RimKata
 
             Action equip = () =>
             {
-                // The caravan or source owner can change while a persona-weapon
-                // confirmation is open. Validate again before moving anything.
+            // The owner may have changed while the persona-weapon confirmation was open.
                 if (!RimKataCaravanEquipment.CanEquip(pawn, weapon, out string currentReason))
                     Messages.Message(currentReason, MessageTypeDefOf.RejectInput, false);
                 else if (!RimKataCaravanEquipment.TryEquip(pawn, weapon))
@@ -68,7 +65,6 @@ namespace KRWF.RimKata
                 || RimKataCaravanEquipment.HeldSecondary(pawn) != null)
                 return;
 
-            // An empty-slot indicator, not a separate drop target.
             Rect slot = new Rect(x, 4f, IconSize, IconSize);
             TextAnchor oldAnchor = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleCenter;

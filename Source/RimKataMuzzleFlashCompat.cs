@@ -6,8 +6,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Muzzle Flash owns its visuals; only the root of an actual weapon flash
-    // follows RimKata's ground pose. No render cache or firing cycle is changed.
     internal static class RimKataMuzzleFlashCompat
     {
         private struct FlashScope
@@ -81,9 +79,6 @@ namespace KRWF.RimKata
                 current.centerResolved = true;
                 current.hasCenter = RimKataGroundPoseUtility.TryGetShotCenter(current.verb, out current.center, headCentered: true);
             }
-            // A single discharge can draw several muzzles. Each receives the
-            // same final weapon center, independent of cache or center-root
-            // options. Muzzle Flash retains its altitude and muzzle offsets.
             if (current.hasCenter)
             {
                 __2.x = current.center.x;
@@ -97,8 +92,7 @@ namespace KRWF.RimKata
                 || !RimKataPreparedWeaponData.TryGetPrepared(__0, out RimKataPreparedWeaponValues prepared))
                 return;
 
-            // RimKata binds a copied single-shot VerbProperties to the same
-            // native verb. Muzzle Flash compares this object by identity.
+            // Muzzle Flash compares VerbProperties by identity; RimKata binds a single-shot copy.
             var definitions = __0.EquipmentSource?.def?.Verbs;
             if (definitions != null && definitions.Count != 0
                 && ReferenceEquals(definitions[0], prepared.OriginalProperties))
@@ -107,9 +101,7 @@ namespace KRWF.RimKata
 
         private static void FlashAvailablePostfix(Verb __0, ref bool __result)
         {
-            // Muzzle Flash's burst postfix also runs when the native shot was
-            // cancelled. Reset clears that target; a successful final shot does
-            // not, even though its crawler cycle has already finished.
+            // Muzzle Flash's burst postfix also runs for cancelled shots; Reset clears their target.
             if (__result && RimKataCrawlFireUtility.IsCrawlVerb(__0)
                 && !__0.CurrentTarget.IsValid)
                 __result = false;

@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Paramètres du profil</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Fonctions de combat</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Fonctions du mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Effets visuels</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Fonctions d'activation</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Valeur appliquée</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bonus de discrétion à la chasse en position couchée</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Délai avant de se coucher à nouveau</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Durée au sol après une chute</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Éviter les tirs alliés après une chute</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Durée de déplacement lors de l’effraction</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Temps d’attente à l’arrivée après l’effraction</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Valeurs par défaut</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Autoriser le tir en rampant pour les pions non hostiles</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Autoriser le tir en rampant pour les pions hostiles</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant par défaut</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transitions de visée fluides</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Maîtriser</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Les attaques sont désactivées.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Transfert des dégâts</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfère les dégâts reçus au pion maîtrisé. Si cette option est désactivée, une esquive ou l’entrée en combat rapproché libère le pion.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Glissade</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Dégagement</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Probabilité de glissade</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Probabilité de dégagement</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Probabilité des gènes</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Probabilité non nulle</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Probabilité nulle</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Tout réinitialiser</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Réinitialiser les résultats filtrés</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Titubant</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Recrue inquiétante</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

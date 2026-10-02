@@ -11,7 +11,6 @@ using static Verse.DamageWorker;
 
 namespace KRWF.RimKata
 {
-    // Register only when DAC is loaded. No shared damage hook or tick polling.
     internal static class RimKataDynamicAnimeCombatCompat
     {
         private struct MeleeFrame
@@ -89,7 +88,6 @@ namespace KRWF.RimKata
                     transpiler: Patch(nameof(MeleeTranspiler)), finalizer: Patch(nameof(MeleeFinalizer), Priority.Last));
                 harmony.Patch(AccessTools.Method(typeof(RimKataDefenseUtility), nameof(RimKataDefenseUtility.TryResolveMeleeParry),
                     new[] { typeof(Verb_MeleeAttack) }), postfix: Patch(nameof(ParryPostfix)));
-                // CE overrides the whole attack; keep the same outcome scope when both mods are installed.
                 Type ce = AccessTools.TypeByName("CombatExtended.Verb_MeleeAttackCE");
                 MethodInfo ceAttack = ce == null ? null : AccessTools.DeclaredMethod(ce, "TryCastShot");
                 if (ceAttack != null)
@@ -174,7 +172,6 @@ namespace KRWF.RimKata
                 startIndex = codes.FindIndex(code => code.Calls(hitChance));
                 if (startIndex < 0) throw new InvalidOperationException("Melee attack start hook was not found.");
             }
-            // FullBodyBusy and other early returns are not completed attack attempts.
             codes.InsertRange(startIndex, new[] { new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataDynamicAnimeCombatCompat), nameof(MarkStarted))) });
             return codes;
@@ -218,7 +215,6 @@ namespace KRWF.RimKata
             if (attacker == null || victim == null || verb == null || !attacker.Spawned || !victim.Spawned
                 || attacker.Dead || victim.Dead || attacker.Destroyed || victim.Destroyed) return true;
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(victim)) return true;
-            // A skipped/replaced attack must not turn into DAC damage.
             if (MatchesMelee(attacker, victim, verb) && !currentMelee.started) return false;
             DamageScope scope = CreateScope(attacker, victim, verb);
             __state.scope = scope;
@@ -256,8 +252,7 @@ namespace KRWF.RimKata
 
         private static void ValidateDamageCalls(List<CodeInstruction> codes, int damageCount)
         {
-            // Older DAC only notifies partial parries; newer DAC also notifies
-            // the counterblow victim. Keep the exact direct-damage call count.
+            // DAC versions differ in counterblow notifications, while the direct-damage count is fixed.
             int spiritCount = codes.FindAll(code => code.Calls(notifyDamageTaken)).Count;
             if (codes.FindAll(code => code.Calls(TakeDamage)).Count != damageCount
                 || spiritCount < 1 || spiritCount > damageCount)
@@ -286,8 +281,7 @@ namespace KRWF.RimKata
                 if (replacement == null) continue;
                 if (replacement == nameof(ApplyParryDamage))
                 {
-                    // TryParry's defender is the actual counterblow attacker.
-                    // Pass it at the damage boundary, including nested parries.
+                    // TryParry's defender is the counterblow attacker, including nested parries.
                     var pawn = new CodeInstruction(OpCodes.Ldarg_0);
                     pawn.labels.AddRange(code.labels);
                     code.labels.Clear();
@@ -311,12 +305,10 @@ namespace KRWF.RimKata
         {
             if (!(target is Pawn defender) || !(info.Instigator is Pawn)
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(defender)) return target.TakeDamage(info);
-            // New DAC reuses the incoming DamageInfo for counterblows. Correct
-            // only that self-attributed copy; preserve CE damage and armor data.
+            // DAC reuses incoming DamageInfo for counterblows, leaving the victim as instigator.
             if (parryingPawn != null && defender != parryingPawn && info.Instigator == defender)
                 damageInstigator(ref info) = parryingPawn;
             Pawn attacker = (Pawn)info.Instigator;
-            // The partial block nested inside a glancing blow shares that blow's decision and log.
             if (currentDamage != null && currentDamage.attacker == attacker && currentDamage.defender == defender
                 && currentDamage.meleeSequence == currentMelee.sequence)
                 return ApplyScopedDamage(currentDamage, target, info);
@@ -354,7 +346,6 @@ namespace KRWF.RimKata
         {
             if (!(target is Pawn defender) || !RimKataEligibilityCache.IsCachedQualifiedPawn(defender))
                 return target.TakeDamage(info);
-            // The normal projectile/shield hooks own this roll, including CE projectile context.
             DamageResult result = target.TakeDamage(info);
             bool avoided = RimKataDefenseUtility.TryGetResolvedProjectileDefense(defender, out bool resolvedAvoided)
                 && resolvedAvoided;

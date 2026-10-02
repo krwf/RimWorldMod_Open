@@ -108,8 +108,7 @@ namespace KRWF.RimKata
                 || !RimKataTargeting.IsInterceptionTargetActive(target)
                 || !RimKataInterceptionTrajectory.TryGetContact(shot, target, out Vector3 contact))
             {
-                // Vanilla accepts a usedTarget Thing at any distance. Keep the
-                // shot's normal ground impact, not damage to that remote Thing.
+                // Vanilla accepts usedTarget at any distance, even without projectile contact.
                 hitThing = null;
                 return false;
             }
@@ -122,8 +121,7 @@ namespace KRWF.RimKata
 
             if (!(shot.def?.projectile?.explosionRadius > 0f))
             {
-                // A successful ordinary interceptor skips Bullet.Impact below.
-                // Preserve its hit log, with the intercepted projectile as target.
+                // Successful interception skips Bullet.Impact, so its hit log is recorded here.
                 Find.BattleLog?.Add(new BattleLogEntry_RangedImpact(
                     shooter, target, target, shot.EquipmentDef, shot.def, null));
             }
@@ -312,10 +310,7 @@ namespace KRWF.RimKata
                 RimKataDefenseUtility.ExitProjectileImpact();
             }
 
-            // Projectile.Impact can be entered once by an override and again
-            // by its base implementation.  Keep the tracked result until the
-            // outermost scope for that projectile has completed; the
-            // projectile may already be despawned before damage is applied.
+            // Impact overrides can reenter through base.Impact after despawning the projectile.
             if (exitingProjectile != null
                 && exitingProjectile != CurrentProjectile)
             {
@@ -919,8 +914,6 @@ namespace KRWF.RimKata
                     && intendedTarget.HasThing
                     && intendedTarget.Thing == interceptionTarget)
                 {
-                    // Only the vanilla hit branch reaches here. Use the actual
-                    // spawned ammo/speed, and never reroll a miss or home in flight.
                     if (RimKataInterceptionTrajectory.TryRedirectHit(
                         __instance, interceptionTarget,
                         RimKataFireContext.Shooter, RimKataFireContext.ActiveVerb))
@@ -986,8 +979,6 @@ namespace KRWF.RimKata
         {
             Pawn defender = intendedTarget.Pawn;
             Pawn attacker = launcher as Pawn;
-            // Classify Touch once, before flight. Ordinary distant shots never
-            // enter the close-defense eligibility or reachability checks.
             if (component == null
                 || RimKataFireContext.SuppressCloseLaunch
                 || defender == null
@@ -1206,8 +1197,6 @@ namespace KRWF.RimKata
             {
                 if (!__instance.Destroyed)
                 {
-                    // Keep the interceptor's own impact/fuse independent of
-                    // the target projectile's interception result.
                     if (__instance.def?.projectile?.explosionRadius > 0f)
                     {
                         return __instance.Spawned && __instance.Map != null;

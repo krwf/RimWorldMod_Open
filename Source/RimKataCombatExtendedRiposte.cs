@@ -71,9 +71,7 @@ namespace KRWF.RimKata
                 }
                 else if (code.Calls(TakeDamage))
                 {
-                    // The direct TakeDamage in DoParry is the shield riposte.
-                    // Its attacker and shield are explicit; the original Verb
-                    // belongs to the pawn receiving the counterblow.
+                    // DoParry's Verb belongs to the counterblow victim; its attacker and shield are separate arguments.
                     var attacker = new CodeInstruction(OpCodes.Ldarg_1);
                     attacker.labels.AddRange(code.labels);
                     attacker.blocks.AddRange(code.blocks);
@@ -120,8 +118,7 @@ namespace KRWF.RimKata
             try
             {
                 DamageResult result = applyMeleeDamage(verb, target);
-                // CE returns only its last DamageInfo result. Collect the parts
-                // and injuries from every direct hit, then format one full entry.
+                // CE returns only the last DamageInfo result; the combined result includes all injuries.
                 (scope.combined ?? result).AssociateWithLog(entry);
                 return result;
             }

@@ -9,8 +9,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // One reusable request per weapon cycle. The equipment/body VerbTracker owns
-    // execution; the controller only supplies the ready target and consumes the result.
     internal sealed class RimKataNativeAttack
     {
         private sealed class VerbBinding
@@ -23,6 +21,7 @@ namespace KRWF.RimKata
 
         private static readonly ConditionalWeakTable<Verb, VerbBinding> bindings =
             new ConditionalWeakTable<Verb, VerbBinding>();
+        private static int reactiveRequestCount;
         private static readonly AccessTools.FieldRef<Verb, LocalTargetInfo> currentTarget =
             AccessTools.FieldRefAccess<Verb, LocalTargetInfo>("currentTarget");
         private static readonly AccessTools.FieldRef<Verb, LocalTargetInfo> currentDestination =
@@ -35,11 +34,19 @@ namespace KRWF.RimKata
             AccessTools.FieldRefAccess<Verb, bool>("preventFriendlyFire");
         private static readonly AccessTools.FieldRef<Verb, bool> nonInterruptingSelfCast =
             AccessTools.FieldRefAccess<Verb, bool>("nonInterruptingSelfCast");
+        private static readonly AccessTools.FieldRef<Verb, int?> cachedBurstShotCount =
+            AccessTools.FieldRefAccess<Verb, int?>("cachedBurstShotCount");
+        private static readonly AccessTools.FieldRef<Verb, int> burstShotsLeft =
+            AccessTools.FieldRefAccess<Verb, int>("burstShotsLeft");
 
         internal Pawn pawn;
         internal RimKataPawnCombatState state;
         internal RimKataWeaponCycleState cycle;
         internal RimKataHuntingSession huntingSession;
+        internal RimKataReactiveMotionState reactiveMotion;
+        internal RimKataSubdueState subdueState;
+        internal bool reactiveOpeningAttack;
+        internal int notBeforeTick;
         internal ThingWithComps weapon;
         internal Verb verb;
         internal Verb cycleVerb;
@@ -70,10 +77,14 @@ namespace KRWF.RimKata
         private Verb bindingVerb;
         private VerbBinding nativeBinding;
         private RimKataFireContext.ScopeState previousContext;
+        private RimKataSlidingAttackOrigin.Scope previousSlidingOrigin;
         private Stance_RimKataAim previousAim;
-        private Stance previousHuntingStance;
-        // Used only by the optional CE patches; the common firing path never reads it.
+        private Stance previousSpecialStance;
+        private RimKataSubdueCombat.ExecutionScope previousSubdueExecution;
+        private Rot4 previousSubdueRotation;
         internal int extraAimTicks;
+        private int? previousBurstShotCount;
+        private bool singleShotOverride;
 
         internal static void Bind(Verb verb)
         {
@@ -84,8 +95,7 @@ namespace KRWF.RimKata
                     && !RimKataPreparedWeaponData.IsCurrent(verb))
                 {
                     binding.request.Cancel();
-                    // A native callback can invalidate settings while the shot is
-                    // still reading its properties. Rebind after it unwinds.
+                    // A native callback can invalidate settings while the shot still reads its properties.
                     if (binding.request?.Executing == true) return;
                 }
                 RimKataPreparedWeaponData.Bind(verb);
@@ -114,8 +124,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // Initialize native cast state once. Nothing executes on this stack,
-            // and no original target/flag snapshot has to be restored after firing.
             verb.Reset();
             currentTarget(verb) = target;
             currentDestination(verb) = LocalTargetInfo.Invalid;
@@ -128,8 +136,33 @@ namespace KRWF.RimKata
             HasFired = false;
             Pending = true;
             nativeBinding.request = this;
+            if (reactiveMotion != null || subdueState != null) LimitToSingleShot();
             return true;
         }
+
+        internal void BeginReactiveAttack(RimKataReactiveMotionState motion)
+        {
+            reactiveMotion = motion;
+            reactiveOpeningAttack = true;
+            HasFired = false;
+            LimitToSingleShot();
+            if (verb.state == VerbState.Bursting) burstShotsLeft(verb) = 1;
+        }
+
+        private void LimitToSingleShot()
+        {
+            if (singleShotOverride) return;
+            previousBurstShotCount = cachedBurstShotCount(verb);
+            cachedBurstShotCount(verb) = 1;
+            singleShotOverride = true;
+            if (reactiveMotion != null) reactiveRequestCount++;
+        }
+
+        internal static RimKataNativeAttack ReactiveRequest(Verb verb)
+            => reactiveRequestCount != 0 && verb != null
+                && bindings.TryGetValue(verb, out VerbBinding binding)
+                && binding.request?.Pending == true && binding.request.reactiveMotion != null
+                    ? binding.request : null;
 
         internal static bool WaitingForNativeTick(Verb verb)
             => verb != null && bindings.TryGetValue(verb, out VerbBinding binding)
@@ -137,10 +170,11 @@ namespace KRWF.RimKata
 
         internal static bool CanBeginNativeTick(Verb verb)
         {
-            // Registration is event-driven. Ordinary verbs never inspect Pawn state.
             if (!bindings.TryGetValue(verb, out VerbBinding binding)
                 || binding.request is not RimKataNativeAttack request
                 || !request.Pending || request.Executing || request.Started) return false;
+            if (request.reactiveMotion != null && Find.TickManager.TicksGame < request.notBeforeTick)
+                return false;
             if (!request.CanContinue() || verb.state != VerbState.Idle)
             {
                 request.Cancel();
@@ -151,6 +185,8 @@ namespace KRWF.RimKata
 
         private bool CanContinue()
         {
+            if (reactiveMotion != null) return RimKataReactiveAttack.CanContinue(this);
+            if (subdueState != null) return RimKataSubdueCombat.CanContinueAttack(this);
             if (pawn?.Spawned != true || pawn.Dead || pawn.Downed || pawn.InMentalState
                 || pawn.stances.stunner.Stunned || pawn.CurJob != job
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
@@ -175,6 +211,22 @@ namespace KRWF.RimKata
 
         internal bool PrepareShot()
         {
+            if (subdueState != null)
+            {
+                try
+                {
+                    if (!RimKataSubdueCombat.AttackStarting(this))
+                    {
+                        Cancel();
+                        return false;
+                    }
+                }
+                catch
+                {
+                    Cancel();
+                    throw;
+                }
+            }
             if (closeShot)
             {
                 currentTarget(verb) = target;
@@ -211,7 +263,8 @@ namespace KRWF.RimKata
                     if (cell.IsValid) currentTarget(verb) = new LocalTargetInfo(cell);
                 }
             }
-            return true;
+            RimKataReactiveMotion.AttackStarting(this);
+            return Pending && !cancelled;
         }
 
         internal static RimKataNativeAttack BeginNativeCast(Verb verb)
@@ -234,7 +287,7 @@ namespace KRWF.RimKata
                 || binding.request is not RimKataNativeAttack request
                 || !request.Pending || request.Executing)
             {
-                // The first shot is already inside its full WarmupComplete scope.
+                // The first shot is already inside its WarmupComplete scope.
                 return true;
             }
 
@@ -259,7 +312,10 @@ namespace KRWF.RimKata
         {
             Executing = true;
             previousAim = pawn.stances?.curStance as Stance_RimKataAim;
-            previousHuntingStance = huntingSession != null ? pawn.stances?.curStance : null;
+            previousSpecialStance = huntingSession != null || reactiveMotion != null || subdueState != null
+                ? pawn.stances?.curStance : null;
+            if (subdueState != null)
+                previousSubdueRotation = pawn.Rotation;
             pawn.rotationTracker.FaceCell(verb.CurrentTarget.Cell);
             movingShot = !verb.IsMeleeAttack && !closeShot && pawn.pather?.MovingNow == true;
             previousContext = RimKataFireContext.Begin(
@@ -267,6 +323,9 @@ namespace KRWF.RimKata
                 movingShot, closeShot, interceptionShot,
                 interceptionTarget, closeMeleeResolution,
                 closeMeleeHit, closeDefensePrecheck);
+            previousSlidingOrigin = RimKataSlidingAttackOrigin.Begin(this);
+            if (subdueState != null)
+                previousSubdueExecution = RimKataSubdueCombat.BeginNativeExecution(subdueState);
         }
 
         internal static bool OwnsActiveMelee(Verb verb)
@@ -277,8 +336,13 @@ namespace KRWF.RimKata
         {
             HasFired |= RimKataFireContext.ShotFired;
             RimKataFireContext.End(verb, previousContext);
+            RimKataSlidingAttackOrigin.End(previousSlidingOrigin);
+            previousSlidingOrigin = default;
             Executing = false;
             previousContext = default;
+            if (subdueState != null)
+                RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution);
+            previousSubdueExecution = default;
             RestoreAimAfterShot();
             if (exception != null)
             {
@@ -292,12 +356,15 @@ namespace KRWF.RimKata
 
         internal void RestoreAimAfterShot()
         {
+            bool restoreSubdue = subdueState != null
+                && RimKataSubdueUtility.Get(pawn) == subdueState && pawn.CurJob == job;
             if (pawn.stances?.curStance is Stance_Busy busy && busy.verb == verb)
             {
-                if (huntingSession != null)
+                if (huntingSession != null || reactiveMotion != null || subdueState != null)
                 {
-                    if (pawn.CurJob == job && previousHuntingStance != null)
-                        pawn.stances.curStance = previousHuntingStance;
+                    if (pawn.CurJob == job && previousSpecialStance != null
+                        && (subdueState == null || restoreSubdue))
+                        pawn.stances.curStance = previousSpecialStance;
                 }
                 else if (previousAim != null)
                 {
@@ -310,24 +377,26 @@ namespace KRWF.RimKata
                     finally { RimKataAutomaticCastSuppression.Pop(suppression); }
                 }
             }
+            if (restoreSubdue) pawn.Rotation = previousSubdueRotation;
             previousAim = null;
-            previousHuntingStance = null;
+            previousSpecialStance = null;
         }
 
         private void CompleteRequest(bool resetNative)
         {
             Detach();
-            // Finish only after the outer native call returns: its effecters and
-            // subclass code may still read CurrentTarget and derived verbProps.
+            // Native effecters/subclasses may read CurrentTarget and verbProps until the call returns.
             if (resetNative) verb.Reset();
             nonInterruptingSelfCast(verb) = false;
             try
             {
-                RimKataDualWeaponController.CompleteNativeAttack(this, HasFired, cancelled);
+                if (reactiveMotion != null) RimKataReactiveMotion.AttackCompleted(this);
+                else if (subdueState != null) RimKataSubdueCombat.AttackCompleted(this);
+                else RimKataDualWeaponController.CompleteNativeAttack(this, HasFired, cancelled);
             }
             finally
             {
-                if (cancelled || cycle.boundVerb != verb)
+                if (cancelled || (subdueState != null ? subdueState.weaponVerb != verb : cycle.boundVerb != verb))
                 {
                     RimKataPreparedWeaponData.Restore(verb);
                     bindingVerb = null;
@@ -341,8 +410,7 @@ namespace KRWF.RimKata
         {
             if (!Pending) return;
             cancelled = true;
-            // Damage may reset a cycle while its native attack is still unwinding.
-            // Let that cast finish; never reset a live native call from its callback.
+            // Damage callbacks can cancel the cycle while its native cast is still unwinding.
             if (Executing) return;
             Verb pendingVerb = verb;
             Detach();
@@ -428,14 +496,25 @@ namespace KRWF.RimKata
                 && binding.request == this) binding.request = null;
             Pending = false;
             Executing = false;
+            if (singleShotOverride)
+            {
+                cachedBurstShotCount(verb) = previousBurstShotCount;
+                singleShotOverride = false;
+                if (reactiveMotion != null) reactiveRequestCount--;
+            }
         }
 
         private void ReleaseReferences()
         {
+            if (reactiveMotion != null) RimKataReactiveMotion.ReleaseAttack(this);
             pawn = null;
             state = null;
             cycle = null;
             huntingSession = null;
+            reactiveMotion = null;
+            subdueState = null;
+            reactiveOpeningAttack = false;
+            notBeforeTick = 0;
             weapon = null;
             verb = null;
             cycleVerb = null;
@@ -446,7 +525,9 @@ namespace KRWF.RimKata
             interceptionTarget = null;
             previousContext = default;
             previousAim = null;
-            previousHuntingStance = null;
+            previousSlidingOrigin = default;
+            previousSpecialStance = null;
+            previousSubdueExecution = default;
             Started = false;
             HasFired = false;
         }
@@ -484,9 +565,7 @@ namespace KRWF.RimKata
                 yield break;
             }
 
-            // The request lookup is the only added work for unregistered verbs.
-            // A newly started burst must not advance again on its first tick;
-            // continue at vanilla effecter maintenance instead.
+            // A new burst already fired this tick; resume at native effecter maintenance.
             yield return new CodeInstruction(OpCodes.Ldarg_0);
             yield return new CodeInstruction(OpCodes.Call, ready);
             yield return new CodeInstruction(OpCodes.Brfalse, regular);
@@ -524,8 +603,7 @@ namespace KRWF.RimKata
     {
         private static void Postfix(Verb __instance)
         {
-            // Cast context is transient. Retry unstarted plans after load, but
-            // finish partially fired bursts without repeating their earlier shots.
+            // Cast context is transient; loading must not repeat a partially fired burst.
             RimKataNativeAttack.ExposeData(__instance);
         }
     }

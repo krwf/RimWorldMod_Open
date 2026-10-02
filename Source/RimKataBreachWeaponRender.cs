@@ -5,8 +5,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Breach owns its carried pose. It never feeds an idle angle back through
-    // DrawCarriedWeapon, DrawEquipmentAiming, or the normal dual-weapon renderer.
     internal static class RimKataBreachWeaponRender
     {
         internal struct Scope
@@ -33,16 +31,13 @@ namespace KRWF.RimKata
 
         private static bool UsesCarriedPose(Pawn pawn, RimKataBreachVisual visual)
         {
-            // Only published breach participants reach loadout or target checks.
             if ((!visual.poseActive && !visual.protectedPose)
                 || pawn.Dead || pawn.Downed) return false;
             if (visual.holdWeapons) return true;
 
-            // After control is released, actual attacks keep their existing
-            // per-weapon animations. Only the fixed-facing idle pose stays here.
             if (pawn.stances?.curStance is Stance_Busy busy
                 && !busy.neverAimWeapon && busy.focusTarg.IsValid) return false;
-            return !RimKataDualWeaponController.TryGetNextAim(pawn, out _, out _);
+            return !RimKataWorldRenderContext.HasNextAim(pawn);
         }
 
         internal static Scope Begin(Pawn pawn, Vector3 root, PawnRenderFlags flags,
@@ -76,7 +71,6 @@ namespace KRWF.RimKata
             DrawWeapon(current.primary, false);
             if (current.secondary == null) return;
             DrawWeapon(current.secondary, true);
-            // Weapons belong to this renderer; SYS/Miho sheaths remain separate.
             RimKataWeaponRenderProbe.DrawSecondaryExtras(current.pawn, current.primary, current.secondary,
                 current.root, current.visual.facing, current.flags);
         }
@@ -92,8 +86,6 @@ namespace KRWF.RimKata
                 : new Vector3(0f, 0f, -0.22f);
             Vector3 position = current.root + offset * factor;
 
-            // East swaps the screen heights; west retains the ordinary slot
-            // order. North/south put the second weapon just below the first.
             if (side && secondary == (facing == Rot4.West))
                 position.z = current.root.z + (position.z - current.root.z) * 0.5f;
             if (secondary)
@@ -101,8 +93,6 @@ namespace KRWF.RimKata
                     ? 2f * Altitudes.AltitudeFor(AltitudeLayer.Pawn) - position.y
                     : position.y - 0.001f;
 
-            // Choose west once, directly. 217 degrees must never be turned
-            // back into the east-facing 143-degree pose by a later adjustment.
             bool west = facing == Rot4.West;
             float angle = west ? -53f - weapon.def.equippedAngleOffset
                 : 53f + weapon.def.equippedAngleOffset;
@@ -118,7 +108,6 @@ namespace KRWF.RimKata
                 : graphic.MatSingleFor(weapon);
             Matrix4x4 matrix = Matrix4x4.TRS(position, Quaternion.AngleAxis(angle, Vector3.up),
                 new Vector3(graphic.drawSize.x, 0f, graphic.drawSize.y));
-            // This is the breach transform only, not the fall/prone pipeline.
             Graphics.DrawMesh(mesh, RimKataBreachRender.TransformEquipment(current.pawn, matrix), material, 0);
         }
 
@@ -141,6 +130,7 @@ namespace KRWF.RimKata
     {
         [HarmonyPriority(Priority.First + 100)]
         private static bool Prefix(Thing eq) => !RimKataBreachWeaponRender.SuppressNative(eq)
-            && !RimKataSubdueWeaponRender.SuppressNative(eq);
+            && !RimKataSubdueWeaponRender.SuppressNative(eq)
+            && !RimKataReactiveRender.SuppressNative(eq);
     }
 }

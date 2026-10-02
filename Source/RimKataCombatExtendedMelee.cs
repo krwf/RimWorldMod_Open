@@ -39,8 +39,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // CE's override never calls vanilla TryCastShot. Reuse its context and
-            // gun-butt replacement hooks once, without patching CE damage/armor.
+            // CE's override never calls vanilla TryCastShot.
             Type context = typeof(Patch_Verb_MeleeAttack_Context);
             harmony.Patch(attack,
                 prefix: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Prefix)),
@@ -49,9 +48,7 @@ namespace KRWF.RimKata
                 finalizer: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Finalizer)));
             if (attack.IsPublic)
             {
-                // The common discovery covers only non-public TryCastShot methods.
-                // CE's public melee override must also report a performed attempt:
-                // misses and defended blows still consume the native attack cycle.
+                // Common TryCastShot discovery covers only non-public overrides.
                 Type shot = typeof(Patch_Verb_TryCastShot_RimKata);
                 harmony.Patch(attack,
                     prefix: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Prefix)),
@@ -84,8 +81,6 @@ namespace KRWF.RimKata
             codes[afterStagger].labels.Add(skipStagger);
             CodeInstruction storeFailedHit = new CodeInstruction(codes[resultStore].opcode, codes[resultStore].operand);
 
-            // A successful RimKata parry skips defender stagger, while keeping CE's
-            // attacker animation, facing, attack notification and result handling.
             CodeInstruction guard = new CodeInstruction(OpCodes.Ldloc, parried);
             MoveEntryMetadata(codes[staggerGuard], guard);
             codes.InsertRange(staggerGuard, new[]

@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Definições do perfil</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Funcionalidades de combate</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Funcionalidades do mod</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Efeitos visuais</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Funcionalidades de ativação</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Valor aplicado</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Bónus de furtividade na caça enquanto deitado</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Tempo de espera antes de voltar a deitar-se</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Tempo no chão após cair</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Evitar fogo amigo enquanto caído</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Tempo de movimento durante o arrombamento</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Tempo de espera após chegar ao destino do arrombamento</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Valores predefinidos</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permitir que peões não hostis disparem enquanto rastejam</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permitir que peões hostis disparem enquanto rastejam</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja por predefinição</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Transições suaves de mira</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Subjugar</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Os ataques estão desativados.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Transferência de dano</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfere o dano recebido para a personagem subjugada. Quando desativado, esquivar ou entrar em combate próximo liberta a personagem.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Deslize</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Sacudidela</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Probabilidade de deslize</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Probabilidade de sacudidela</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Probabilidade dos genes</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Probabilidade positiva</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Sem probabilidade</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Repor tudo</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Repor resultados filtrados</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Trôpego</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Recém-chegado sinistro</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

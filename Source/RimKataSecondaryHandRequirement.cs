@@ -6,8 +6,6 @@ namespace KRWF.RimKata
 {
     internal static class RimKataSecondaryHandRequirement
     {
-        // Only used by the equipment menu, the pickup toil, and a missing-part event.
-        // General slot validation deliberately allows developer-forced equipment.
         internal static bool HasMissingHand(Pawn pawn)
         {
             HediffSet hediffs = pawn?.health?.hediffSet;

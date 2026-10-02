@@ -38,7 +38,6 @@ namespace KRWF.RimKata
                         if (instruction.Calls(MakeRoom)) roomCalls++;
                         if (instruction.Calls(AddEquipment)) addCalls++;
                     }
-                    // Match the final exchange action, not its generated method name.
                     if (primaryCalls != 1 || roomCalls != 1 || addCalls != 1) continue;
                     if (exchange != null)
                         throw new InvalidOperationException("Multiple PocketSand equipment exchanges matched.");
@@ -65,7 +64,6 @@ namespace KRWF.RimKata
             {
                 if (instruction.Calls(PrimaryGetter))
                 {
-                    // Keep branch labels on the first replacement instruction.
                     var driver = new CodeInstruction(OpCodes.Ldarg_0);
                     driver.MoveLabelsFrom(instruction);
                     driver.MoveBlocksFrom(instruction);
@@ -94,7 +92,6 @@ namespace KRWF.RimKata
 
         private static void MakeRoomForReplacement(Pawn_EquipmentTracker tracker, ThingWithComps incoming)
         {
-            // AddEquipment consumes the existing handoff and validates both weapons.
             if (!CanCompleteReplacement(tracker, incoming)) tracker.MakeRoomFor(incoming);
         }
 

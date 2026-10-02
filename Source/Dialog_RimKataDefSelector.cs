@@ -70,7 +70,6 @@ namespace KRWF.RimKata
                     row.y, allowedWidth, row.height);
                 float nameX = row.x + 32f;
                 Name = new Rect(nameX, row.y, Mathf.Max(0f, Allowed.x - EquipmentColumnGap - nameX), row.height);
-                // CheckboxLabeled anchors its checkbox to the right edge.
                 Selection = new Rect(nameX, row.y,
                     Mathf.Max(0f, Allowed.center.x + CheckboxSize * 0.5f - nameX), row.height);
             }
@@ -233,7 +232,6 @@ namespace KRWF.RimKata
 
         protected override void LateWindowOnGUI(Rect inRect)
         {
-            // Keep checkbox painting separate from dragging the window by its title.
             GUI.DragWindow(new Rect(0f, 0f, Mathf.Max(0f, windowRect.width - 36f), inRect.y + 36f));
         }
 
@@ -335,8 +333,6 @@ namespace KRWF.RimKata
 
         private void ApplyScopedSelection(List<string> target, HashSet<string> edited)
         {
-            // Other equipment windows may own selections outside this catalog.
-            // Merge only the definitions shown by this window's candidate scope.
             target.RemoveAll(name => candidateDefNames.Contains(name));
             target.AddRange(edited.Where(name => candidateDefNames.Contains(name)));
             target.Sort(StringComparer.Ordinal);

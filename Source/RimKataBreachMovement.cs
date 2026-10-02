@@ -1,13 +1,13 @@
 using HarmonyLib;
 using RimWorld;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using UnityEngine;
 using Verse;
 using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // Keep ordinary cell entry, reservations, terrain notifications and draw
-    // interpolation. Only the accepted straight corridor replaces path finding.
     internal static class RimKataBreachMovement
     {
         internal struct CellEntryScope
@@ -25,6 +25,9 @@ namespace KRWF.RimKata
         private static readonly System.Action<Pawn_PathFollower> Setup =
             AccessTools.MethodDelegate<System.Action<Pawn_PathFollower>>(
                 AccessTools.Method(typeof(Pawn_PathFollower), "SetupMoveIntoNextCell"));
+        private static readonly System.Action<Pawn_PathFollower, Building> BashBlocker =
+            AccessTools.MethodDelegate<System.Action<Pawn_PathFollower, Building>>(
+                AccessTools.Method(typeof(Pawn_PathFollower), "MakeBashBlockerJob"));
         [System.ThreadStatic] internal static bool installing;
 
         internal static RimKataBreachState StraightState(Pawn pawn)
@@ -37,8 +40,6 @@ namespace KRWF.RimKata
 
         internal static RimKataBreachState DoorState(Pawn pawn, Building_Door door)
         {
-            // Ordinary door/path checks already know the current driver. Do not
-            // query the participant registry unless this pawn owns a breach Job.
             if (!(pawn?.jobs?.curDriver is JobDriver_RimKataBreach)) return null;
             RimKataBreachState state = RimKataBreachUtility.Get(pawn);
             return state != null && !state.broken && state.target == door
@@ -50,8 +51,6 @@ namespace KRWF.RimKata
             IntVec3 savedNext = pawn.pather.nextCell;
             float savedLeft = pawn.pather.nextCellCostLeft, savedTotal = pawn.pather.nextCellCostTotal;
             IntVec3 end = pawn.Position;
-            // The map bounds cap this once-per-start walk even with int.MaxValue
-            // duration. Future changes are checked only on this participant.
             for (IntVec3 cell = end + state.direction; cell.InBounds(pawn.Map); cell += state.direction)
             {
                 if (!RimKataBreachUtility.CanEnter(pawn, cell, state.target)) break;
@@ -93,6 +92,63 @@ namespace KRWF.RimKata
             if (!(pawn.jobs?.curDriver is JobDriver_RimKataBreach driver)) return;
             if (state.broken) driver.BeginRise(); else driver.Cancel();
         }
+
+        internal static void RememberBlocker(RimKataBreachState state)
+        {
+            Pawn pawn = state.pawn;
+            IntVec3 cell = pawn.pather.nextCell;
+            if (cell == pawn.Position || !cell.AdjacentTo8WayOrInside(pawn.Position))
+                cell = pawn.Position + state.direction;
+            state.blockingTarget = BlockerAt(pawn, cell);
+            state.blockingCell = state.blockingTarget != null ? cell : IntVec3.Invalid;
+        }
+
+        private static Thing BlockerAt(Pawn pawn, IntVec3 cell)
+        {
+            if (!cell.IsValid || !cell.InBounds(pawn.Map) || cell == pawn.Position
+                || !cell.AdjacentTo8WayOrInside(pawn.Position)) return null;
+            Building building = cell.GetEdifice(pawn.Map);
+            if (building?.BlocksPawn(pawn) == true) return building;
+            return PawnUtility.PawnBlockingPathAt(cell, pawn, true, false, false, false);
+        }
+
+        internal static void TryAttackBlocker(RimKataBreachState state)
+        {
+            Pawn pawn = state.pawn;
+            if (state.phase != BreachPhase.Released || RimKataBreachUtility.Get(pawn) != state) return;
+            Thing target = state.blockingTarget;
+            IntVec3 cell = state.blockingCell;
+            state.blockingTarget = null;
+            state.blockingCell = IntVec3.Invalid;
+            Job current = pawn.CurJob;
+            if (!pawn.Spawned || pawn.Dead || pawn.Downed
+                || state.player && !pawn.Drafted || pawn.InMentalState
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || RimKataTemporaryInactivity.IsInactive(pawn)
+                || current == null || current.playerForced
+                || current.def != JobDefOf.Wait_Combat && current.def != JobDefOf.Wait_MaintainPosture
+                    && current.def != RimKataDefOf.RimKata_Attack) return;
+            if (target == null)
+            {
+                RimKataReactiveMovement.RetargetUnreachableAttack(pawn);
+                return;
+            }
+            if (target.Spawned != true || target.Map != pawn.Map
+                || BlockerAt(pawn, cell) != target
+                || !pawn.CanReachImmediate(target, PathEndMode.Touch)
+                || pawn.TryGetAttackVerb(target, false, false) == null) return;
+            if (target is Building building)
+            {
+                if (current.canBashDoors || pawn.HostileTo(building)) BashBlocker(pawn.pather, building);
+            }
+            else if (target is Pawn blocker && pawn.HostileTo(blocker) && pawn.CanAttackWhenPathingBlocked)
+            {
+                Job attack = JobMaker.MakeJob(JobDefOf.AttackMelee, blocker);
+                attack.maxNumMeleeAttacks = 1;
+                attack.expiryInterval = 300;
+                pawn.jobs.StartJob(attack, JobCondition.InterruptForced, null, resumeCurJobAfterwards: false);
+            }
+        }
     }
 
     [HarmonyPatch(typeof(Pawn_PathFollower), "CostToPayThisTick")]
@@ -111,8 +167,7 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.TryResumePathingAfterLoading))]
     internal static class Patch_PawnPathFollower_RimKataBreachResume
     {
-        // GameComponent.FinalizeInit rebuilds the straight path after maps and
-        // jobs have loaded. Ordinary pathfinding would be mistaken for a detour.
+        // FinalizeInit restores the straight path after maps and jobs load; normal pathfinding would appear to be a detour.
         private static bool Prefix(Pawn ___pawn)
             => RimKataBreachMovement.StraightState(___pawn) == null;
     }
@@ -142,12 +197,52 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_PathFollower), "BuildingBlockingNextPathCell")]
     internal static class Patch_PawnPathFollower_RimKataBreachDoorBlock
     {
-        private static void Postfix(Pawn ___pawn, ref Building __result)
+        private static Building ResolveBreachDoor(Pawn pawn, Building blocker)
         {
-            if (!(__result is Building_Door door)) return;
-            RimKataBreachState state = RimKataBreachMovement.DoorState(___pawn, door);
-            if (state != null && (state.phase == BreachPhase.Run || state.phase == BreachPhase.Slide))
-                __result = null;
+            RimKataBreachState state = RimKataBreachMovement.DoorState(pawn, (Building_Door)blocker);
+            return state != null && (state.phase == BreachPhase.Run || state.phase == BreachPhase.Slide)
+                ? null : blocker;
+        }
+
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            LocalBuilder result = generator.DeclareLocal(typeof(Building));
+            LocalBuilder pawn = generator.DeclareLocal(typeof(Pawn));
+            LocalBuilder jobs = generator.DeclareLocal(typeof(Pawn_JobTracker));
+            Label completed = generator.DefineLabel(), done = generator.DefineLabel();
+            foreach (CodeInstruction code in instructions)
+            {
+                if (code.opcode != OpCodes.Ret) { yield return code; continue; }
+                code.opcode = OpCodes.Stloc;
+                code.operand = result;
+                yield return code;
+                yield return new CodeInstruction(OpCodes.Br, completed);
+            }
+            yield return new CodeInstruction(OpCodes.Ldloc, result).WithLabels(completed);
+            yield return new CodeInstruction(OpCodes.Isinst, typeof(Building_Door));
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"));
+            yield return new CodeInstruction(OpCodes.Stloc, pawn);
+            yield return new CodeInstruction(OpCodes.Ldloc, pawn);
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldloc, pawn);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), nameof(Pawn.jobs)));
+            yield return new CodeInstruction(OpCodes.Stloc, jobs);
+            yield return new CodeInstruction(OpCodes.Ldloc, jobs);
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldloc, jobs);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.curDriver)));
+            yield return new CodeInstruction(OpCodes.Isinst, typeof(JobDriver_RimKataBreach));
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldloc, pawn);
+            yield return new CodeInstruction(OpCodes.Ldloc, result);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                typeof(Patch_PawnPathFollower_RimKataBreachDoorBlock), nameof(ResolveBreachDoor)));
+            yield return new CodeInstruction(OpCodes.Stloc, result);
+            yield return new CodeInstruction(OpCodes.Ldloc, result).WithLabels(done);
+            yield return new CodeInstruction(OpCodes.Ret);
         }
     }
 
@@ -177,8 +272,6 @@ namespace KRWF.RimKata
         private static void Postfix(Pawn ___pawn, RimKataBreachMovement.CellEntryScope __state)
         {
             RimKataBreachState state = __state.state;
-            // The prefix already rejected ordinary pawns. Reuse the participant
-            // unless a callback replaced its Job or changed registry membership.
             if (state == null || !(___pawn.jobs?.curDriver is JobDriver_RimKataBreach)
                 || ___pawn.CurJob?.loadID != state.ownerJobId
                 || state.phase != BreachPhase.Run && state.phase != BreachPhase.Slide

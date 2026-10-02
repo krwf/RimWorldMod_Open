@@ -66,7 +66,6 @@ namespace KRWF.RimKata
             if (IsInitialized)
                 return;
 
-            // Validate every existing file before creating or changing any file.
             List<RimKataStoredProfile> loaded = new List<RimKataStoredProfile>();
             HashSet<string> ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             HashSet<string> names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -121,7 +120,6 @@ namespace KRWF.RimKata
             }
             if (selected == null)
             {
-                // Preserve live settings when migrating beside existing files or recovering a missing selection.
                 selected = CreateProfile(NewId(), UniqueName("Recovered profile", loaded),
                     RimKataSettingsProfile.Capture(settings));
                 loaded.Add(selected);
@@ -388,8 +386,7 @@ namespace KRWF.RimKata
                 }
                 if (replaceExisting && File.Exists(previousPath))
                 {
-                    // Move the existing XML before replacing its contents so there
-                    // is never a second XML with the same defName during a rename.
+                // Moving first avoids two XML files with the same defName.
                     MoveProfileFile(profile, destinationPath);
                     File.Replace(temporaryPath, profile.FilePath, null);
                 }
@@ -401,8 +398,7 @@ namespace KRWF.RimKata
             }
             catch
             {
-                // A failed replacement still contains the original XML. Restore
-                // its filename if possible, without hiding the save exception.
+                    // The failed replacement still contains the original XML.
                 if (!string.Equals(profile.FilePath, previousPath, StringComparison.Ordinal))
                 {
                     try { MoveProfileFile(profile, previousPath); }

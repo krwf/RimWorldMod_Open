@@ -10,8 +10,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // CE projectiles are Things, not Verse.Projectiles. Keep their native flight,
-    // collision and explosion implementations, and store only RimKata decisions.
     internal static class RimKataCombatExtendedProjectiles
     {
         internal static Type ProjectileType, BulletType, VerbType;
@@ -145,7 +143,6 @@ namespace KRWF.RimKata
 
         private static void LaunchPrefix(Thing __instance, Thing launcher, Vector2 origin)
         {
-            // These fields are consumed by CE's own Launch initialization below.
             if (!RimKataFireContext.SuppressCloseLaunch && RimKataFireContext.Shooter == launcher
                 && RimKataFireContext.InterceptionShot)
                 RimKataCombatExtendedTrajectory.AimInterception(__instance,
@@ -200,8 +197,6 @@ namespace KRWF.RimKata
 
         private static void CollisionPostfix(Thing __instance, ref bool __result)
         {
-            // Native collision checks walls, roofs and shields first. Only a
-            // surviving segment can intercept; never teleport through a blocker.
             if (__result || __instance.Destroyed || !__instance.Spawned) return;
             RimKataCEProjectileState record = Component(__instance.Map)?.Find(__instance);
             if (record?.interceptionTarget == null || !RimKataTargeting.IsInterceptionTargetActive(record.interceptionTarget)) return;
@@ -236,8 +231,7 @@ namespace KRWF.RimKata
                 target is Projectile, out Vector3 contact)) return;
             Pawn shooter = Launcher(__instance) as Pawn;
             if (shooter == null) return;
-            // One CE ray can visit several native impact points (penetration).
-            // Consume its link once, and never search beyond the native endpoint.
+            // A penetrating CE ray can visit multiple impact points; its interception link is consumed once.
             record.interceptionTarget = null;
             if (!RimKataInterceptionUtility.Resolve(shooter, target, contact)) return;
             RimKataCombatExtendedTrajectory.Place(__instance, contact);
@@ -259,13 +253,11 @@ namespace KRWF.RimKata
             out ImpactScope __state)
         {
             RimKataCEProjectileMapComponent component = Component(__instance.Map);
-            // CE's raycast weapons can reach Impact without calling Launch.
-            // Their launch context is still live here; no map scan is needed.
+            // CE raycast weapons can reach Impact without calling Launch.
             if (component?.Find(__instance) == null) component?.Register(__instance, true);
             RimKataCEProjectileState record = component?.Find(__instance);
             bool owns = current?.projectile != __instance;
-            // Base Impact owns explosions. Do not reuse a direct-hit decision for
-            // explosion damage to the same pawn or to any collateral victim.
+            // Base Impact handles explosions, which cannot reuse a direct-hit defense decision.
             __state = new ImpactScope { previous = current, projectile = __instance,
                 victim = hitThing as Pawn, record = record, ownsFrame = owns,
                 direct = __originalMethod.DeclaringType != ProjectileType && hitThing is Pawn };
@@ -355,8 +347,6 @@ namespace KRWF.RimKata
         }
     }
 
-    // A map-local index, populated by launch events and rebuilt once on loading.
-    // Per-hit operations never enumerate the map's Things or Pawns.
     public sealed class RimKataCEProjectileMapComponent : CustomMapComponent
     {
         private List<RimKataCEProjectileState> records = new List<RimKataCEProjectileState>();
@@ -478,9 +468,6 @@ namespace KRWF.RimKata
                     activeExplosiveCount += active ? 1 : -1;
                     record.activeExplosive = active;
                 }
-                // CE's launch target does not confirm its ballistic collision.
-                // Keep this existing reservation while prone, so its new miss
-                // chance runs first at a real impact, before ordinary dodge.
                 if (record.pendingDodge && record.dodgeTick <= Verse.Find.TickManager.TicksGame
                     && !RimKataGroundPoseUtility.IsProne(record.target))
                 {

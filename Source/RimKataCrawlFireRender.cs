@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
 using UnityEngine;
@@ -6,8 +8,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // This scope consumes the tick-owned aim snapshot and the native crawling
-    // head matrix. It never selects equipment, checks eligibility or moves a pawn.
     internal static class RimKataCrawlFireRender
     {
         internal struct Scope
@@ -124,8 +124,6 @@ namespace KRWF.RimKata
                 + new Vector3(0f, 0f, 0.4f + current.weapon.def.equippedDistanceOffset)
                     .RotatedBy(aim) * distanceFactor;
 
-            // A previous non-downed pose must never transform this native crawl
-            // matrix. Mask only its equipment scope while drawing this one gun.
             bool groundPoseScope = RimKataGroundPoseRender.PushEquipment(null, PawnRenderFlags.Portrait);
             current.drawing = true;
             try
@@ -140,38 +138,23 @@ namespace KRWF.RimKata
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderer), "GetDrawParms")]
-    internal static class Patch_PawnRenderer_RimKataCrawlFacing
-    {
-        private static void Prefix(Pawn ___pawn, Vector3 rootLoc, PawnRenderFlags flags,
-            ref float angle, ref Rot4 bodyFacing)
-        {
-            // Change only the native render inputs. The path and Pawn.Rotation
-            // still describe movement, allowing the pawn to crawl backwards.
-            RimKataCrawlFireRender.AdjustFacing(___pawn, rootLoc, flags, ref angle, ref bodyFacing);
-        }
-    }
-
-    // Native crawling pawns use the live render tree, whose carried node supplies
-    // the same draw parameters as the body and head. Keep its apparel work intact.
     [HarmonyPatch(typeof(PawnRenderNodeWorker_Carried), nameof(PawnRenderNodeWorker_Carried.PostDraw))]
     internal static class Patch_PawnRenderNodeWorkerCarried_RimKataCrawlFire
     {
-        [HarmonyPriority(Priority.First)]
-        private static void Prefix(PawnDrawParms parms, out RimKataCrawlFireRender.Scope __state)
-            => __state = RimKataCrawlFireRender.Begin(parms);
-
-        private static void Postfix()
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            // A crawling job can hide the native weapon with neverShowWeapon.
-            // Draw only if its ordinary equipment route did not already do so.
-            RimKataCrawlFireRender.Draw();
-        }
-
-        private static Exception Finalizer(Exception __exception, RimKataCrawlFireRender.Scope __state)
-        {
-            RimKataCrawlFireRender.End(__state);
-            return __exception;
+            LocalBuilder scope = generator.DeclareLocal(typeof(RimKataCrawlFireRender.Scope));
+            return RimKataRenderHookIL.LivingOnly(instructions, generator, 2,
+                new[] {
+                    new CodeInstruction(OpCodes.Ldarg_2),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataCrawlFireRender), nameof(RimKataCrawlFireRender.Begin))),
+                    new CodeInstruction(OpCodes.Stloc, scope)
+                }, new[] {
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataCrawlFireRender), nameof(RimKataCrawlFireRender.Draw)))
+                }, new[] {
+                    new CodeInstruction(OpCodes.Ldloc, scope),
+                    new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataCrawlFireRender), nameof(RimKataCrawlFireRender.End)))
+                });
         }
     }
 }

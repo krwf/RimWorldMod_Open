@@ -43,8 +43,6 @@ namespace KRWF.RimKata
         public string customCandidateRange;
         public string responseWeaponDurabilityLossChance;
         public string responseWeaponDurabilityLossAmount;
-        public string creepJoinerRimKataGeneChance;
-        public string creepJoinerDependencyGeneChance;
         public string aiSecondaryWeaponChance;
         public string responseDisarmChance;
         public string responseDisarmChanceGrowth;
@@ -102,8 +100,6 @@ namespace KRWF.RimKata
                 : string.Empty;
             responseWeaponDurabilityLossChance = settings.responseWeaponDurabilityLossChancePercent.ToString();
             responseWeaponDurabilityLossAmount = settings.responseWeaponDurabilityLossAmount.ToString();
-            creepJoinerRimKataGeneChance = settings.creepJoinerRimKataGeneChancePercent.ToString();
-            creepJoinerDependencyGeneChance = settings.creepJoinerDependencyGeneChancePercent.ToString();
             aiSecondaryWeaponChance = settings.aiSecondaryWeaponChancePercent.ToString();
             responseDisarmChance = settings.responseDisarmChancePercent.ToString();
             responseDisarmChanceGrowth = settings.responseDisarmChanceGrowthPerLevelPercent.ToString();
@@ -164,7 +160,7 @@ namespace KRWF.RimKata
                 + FieldWidth
                 + ColumnGap
                 + selectorWidth;
-            float contentWidth = Mathf.Max(standardWidth, rangeWidth, CreepJoinerSettingsWidth())
+            float contentWidth = Mathf.Max(standardWidth, rangeWidth)
                 + ScrollbarWidth
                 + 24f;
             float windowWidth = contentWidth + 72f;
@@ -219,12 +215,27 @@ namespace KRWF.RimKata
             DrawGeneralSettings(viewRect.width, ref y, settings, buffers);
             y += 3f;
             string activationFeaturesLabel = "KRWF_RimKata_ActivationFeatures".Translate();
-            float activationFeaturesWidth = Mathf.Min(viewRect.width,
-                Mathf.Max(Text.CalcSize(activationFeaturesLabel).x + 24f, 80f));
-            if (Widgets.ButtonText(new Rect((viewRect.width - activationFeaturesWidth) * 0.5f,
-                    y, activationFeaturesWidth, ButtonHeight), activationFeaturesLabel))
+            string geneProbabilityLabel = "KRWF_RimKata_GeneProbability".Translate();
+            float activationFeaturesWidth = Mathf.Max(Text.CalcSize(activationFeaturesLabel).x + 24f, 80f);
+            float geneProbabilityWidth = Mathf.Max(Text.CalcSize(geneProbabilityLabel).x + 24f, 80f);
+            float activationRowWidth = activationFeaturesWidth + ColumnGap + geneProbabilityWidth;
+            if (activationRowWidth > viewRect.width)
+            {
+                float scale = Mathf.Max(0f, viewRect.width - ColumnGap)
+                    / (activationFeaturesWidth + geneProbabilityWidth);
+                activationFeaturesWidth *= scale;
+                geneProbabilityWidth *= scale;
+                activationRowWidth = activationFeaturesWidth + ColumnGap + geneProbabilityWidth;
+            }
+            float activationX = (viewRect.width - activationRowWidth) * 0.5f;
+            if (Widgets.ButtonText(new Rect(activationX, y, activationFeaturesWidth, ButtonHeight), activationFeaturesLabel))
             {
                 Find.WindowStack.Add(new Dialog_RimKataActivationFeatures(settings, buffers));
+            }
+            if (Widgets.ButtonText(new Rect(activationX + activationFeaturesWidth + ColumnGap,
+                    y, geneProbabilityWidth, ButtonHeight), geneProbabilityLabel))
+            {
+                Find.WindowStack.Add(new Dialog_RimKataGeneProbability(settings));
             }
             y += ButtonHeight;
             y += 8f;
@@ -240,15 +251,19 @@ namespace KRWF.RimKata
             y += SectionHeaderHeight;
             string combatFeaturesLabel = "KRWF_RimKata_CombatFeatures".Translate();
             string modFeaturesLabel = "KRWF_RimKata_ModFeatures".Translate();
+            string visualFeaturesLabel = "KRWF_RimKata_VisualFeatures".Translate();
             float combatFeaturesWidth = Mathf.Max(Text.CalcSize(combatFeaturesLabel).x + 24f, 80f);
             float modFeaturesWidth = Mathf.Max(Text.CalcSize(modFeaturesLabel).x + 24f, 80f);
-            float featuresWidth = combatFeaturesWidth + ColumnGap + modFeaturesWidth;
+            float visualFeaturesWidth = Mathf.Max(Text.CalcSize(visualFeaturesLabel).x + 24f, 80f);
+            float featuresWidth = combatFeaturesWidth + modFeaturesWidth + visualFeaturesWidth + ColumnGap * 2f;
             if (featuresWidth > viewRect.width)
             {
-                float scale = Mathf.Max(0f, viewRect.width - ColumnGap) / (combatFeaturesWidth + modFeaturesWidth);
+                float scale = Mathf.Max(0f, viewRect.width - ColumnGap * 2f)
+                    / (combatFeaturesWidth + modFeaturesWidth + visualFeaturesWidth);
                 combatFeaturesWidth *= scale;
                 modFeaturesWidth *= scale;
-                featuresWidth = combatFeaturesWidth + ColumnGap + modFeaturesWidth;
+                visualFeaturesWidth *= scale;
+                featuresWidth = combatFeaturesWidth + modFeaturesWidth + visualFeaturesWidth + ColumnGap * 2f;
             }
             float featuresX = (viewRect.width - featuresWidth) * 0.5f;
             if (Widgets.ButtonText(new Rect(featuresX, y, combatFeaturesWidth, ButtonHeight), combatFeaturesLabel))
@@ -258,6 +273,11 @@ namespace KRWF.RimKata
             if (Widgets.ButtonText(new Rect(featuresX + combatFeaturesWidth + ColumnGap, y, modFeaturesWidth, ButtonHeight), modFeaturesLabel))
             {
                 Find.WindowStack.Add(new Dialog_RimKataModFeatures(settings, buffers));
+            }
+            if (Widgets.ButtonText(new Rect(featuresX + combatFeaturesWidth + modFeaturesWidth + ColumnGap * 2f,
+                y, visualFeaturesWidth, ButtonHeight), visualFeaturesLabel))
+            {
+                Find.WindowStack.Add(new Dialog_RimKataVisualFeatures(settings, buffers));
             }
             y += RowHeight;
             DrawCandidateRangeRow(viewRect.width, ref y, settings, buffers);
@@ -401,7 +421,6 @@ namespace KRWF.RimKata
             RimKataSettings settings,
             RimKataSettingsUiBuffers buffers)
         {
-            DrawCreepJoinerGeneRows(width, ref y, settings, buffers);
             DrawSimpleFloatRow(
                 width,
                 ref y,
@@ -411,73 +430,6 @@ namespace KRWF.RimKata
                 0f,
                 100f,
                 "%");
-        }
-
-        private static void DrawCreepJoinerGeneRows(
-            float width,
-            ref float y,
-            RimKataSettings settings,
-            RimKataSettingsUiBuffers buffers)
-        {
-            float previousRimKataChance = settings.creepJoinerRimKataGeneChancePercent;
-            float previousDependencyChance = settings.creepJoinerDependencyGeneChancePercent;
-            settings.SanitizeCreepJoinerGeneChances();
-            if (previousRimKataChance != settings.creepJoinerRimKataGeneChancePercent)
-                buffers.creepJoinerRimKataGeneChance = settings.creepJoinerRimKataGeneChancePercent.ToString();
-            if (previousDependencyChance != settings.creepJoinerDependencyGeneChancePercent)
-                buffers.creepJoinerDependencyGeneChance = settings.creepJoinerDependencyGeneChancePercent.ToString();
-            Rect rimKataRow = new Rect(0f, y, width, RowHeight);
-            Rect dependencyRow = new Rect(0f, y + RowHeight, width, RowHeight);
-            DrawCreepJoinerChanceField(rimKataRow,
-                ref settings.creepJoinerRimKataGeneChancePercent, ref buffers.creepJoinerRimKataGeneChance,
-                settings.creepJoinerDependencyGeneChancePercent, settings.enableRimKataG);
-            DrawCreepJoinerChanceField(dependencyRow,
-                ref settings.creepJoinerDependencyGeneChancePercent, ref buffers.creepJoinerDependencyGeneChance,
-                settings.creepJoinerRimKataGeneChancePercent, settings.enableSerumDependency);
-
-            float remaining = Mathf.Max(0f, 100f - settings.creepJoinerRimKataGeneChancePercent - settings.creepJoinerDependencyGeneChancePercent);
-            DrawCreepJoinerChanceLabels(rimKataRow,
-                "KRWF_RimKata_CreepJoinerRimKataGeneChance".Translate(),
-                "KRWF_RimKata_CreepJoinerNoGeneChance".Translate(remaining.ToString("0.##") + "%"));
-            DrawCreepJoinerChanceLabels(dependencyRow,
-                "KRWF_RimKata_CreepJoinerDependencyGeneChance".Translate(),
-                "KRWF_RimKata_CreepJoinerGeneChanceLimit".Translate());
-            y += RowHeight * 2f;
-        }
-
-        private static void DrawCreepJoinerChanceField(Rect row, ref float value, ref string buffer, float otherChance, bool enabled)
-        {
-            float maximum = enabled ? Mathf.Max(0f, 100f - otherChance) : 0f;
-            DrawFloatField(new Rect(row.x, row.y + 2f, FieldWidth, row.height - 4f),
-                ref value, ref buffer, 0f, maximum, "%");
-            float clamped = Mathf.Clamp(value, 0f, maximum);
-            if (value != clamped
-                || (float.TryParse(buffer, out float entered) && (entered < 0f || entered > maximum)))
-            {
-                value = clamped;
-                buffer = value.ToString();
-            }
-        }
-
-        private static void DrawCreepJoinerChanceLabels(Rect row, string label, string hint)
-        {
-            float hintWidth = Text.CalcSize(hint).x;
-            Rect hintRect = new Rect(row.xMax - hintWidth, row.y, hintWidth, row.height);
-            float labelX = row.x + FieldWidth + ColumnGap;
-            DrawRowLabel(new Rect(labelX, row.y, Mathf.Max(1f, hintRect.x - labelX - LabelPadding), row.height), label);
-            TextAnchor previousAnchor = Text.Anchor;
-            Text.Anchor = TextAnchor.MiddleRight;
-            Widgets.Label(hintRect, hint);
-            Text.Anchor = previousAnchor;
-        }
-
-        private static float CreepJoinerSettingsWidth()
-        {
-            float rimKataWidth = Text.CalcSize("KRWF_RimKata_CreepJoinerRimKataGeneChance".Translate()).x
-                + Text.CalcSize("KRWF_RimKata_CreepJoinerNoGeneChance".Translate("100.00%")).x;
-            float dependencyWidth = Text.CalcSize("KRWF_RimKata_CreepJoinerDependencyGeneChance".Translate()).x
-                + Text.CalcSize("KRWF_RimKata_CreepJoinerGeneChanceLimit".Translate()).x;
-            return FieldWidth + ColumnGap + LabelPadding + Mathf.Max(rimKataWidth, dependencyWidth);
         }
 
         private static void DrawCandidateRangeRow(
@@ -860,7 +812,7 @@ namespace KRWF.RimKata
 
         private static float CalculateContentHeight()
         {
-            const int rowCount = 24;
+            const int rowCount = 22;
             const int sectionCount = 3;
             return ButtonHeight * 3f + 3f
                 + rowCount * RowHeight
@@ -912,8 +864,6 @@ namespace KRWF.RimKata
                 "KRWF_RimKata_SerumResponseMultiplier",
                 "KRWF_RimKata_SerumInterceptionMultiplier",
                 "KRWF_RimKata_MaximumCandidateRange",
-                "KRWF_RimKata_CreepJoinerRimKataGeneChance",
-                "KRWF_RimKata_CreepJoinerDependencyGeneChance",
                 "KRWF_RimKata_AiSecondaryWeaponChance",
                 "KRWF_RimKata_CombatFeatures",
                 "KRWF_RimKata_EnableFriendlyPawnEffects",

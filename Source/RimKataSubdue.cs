@@ -24,7 +24,7 @@ namespace KRWF.RimKata
 
         public void ExposeData()
         {
-            // The pawn itself is deep-saved only by its native carryTracker.
+            // The native carryTracker is the sole deep-save owner of this pawn.
             Scribe_References.Look(ref pawn, "carrier");
             Scribe_References.Look(ref target, "heldPawn");
             Scribe_Values.Look(ref facing, "facing");
@@ -109,7 +109,6 @@ namespace KRWF.RimKata
         public override void FinalizeInit()
         {
             RimKataSubdueUtility.SetRegistry(this);
-            // Qualification caches are restored by other components too.
             LongEventHandler.ExecuteWhenFinished(() =>
             {
                 if (!IsCurrent) return;
@@ -136,7 +135,6 @@ namespace KRWF.RimKata
 
         public override void GameComponentTick()
         {
-            // Only live carrier/held-pawn pairs are visited; no map pawn scan.
             for (int i = active.Count - 1; i >= 0; --i)
             {
                 if (i >= active.Count) continue;
@@ -166,6 +164,7 @@ namespace KRWF.RimKata
     internal static class RimKataSubdueUtility
     {
         private static RimKataSubdueRegistry registry;
+        internal static int RelationVersion { get; private set; }
         internal static RimKataSubdueRegistry Registry => registry?.IsCurrent == true ? registry : null;
         internal static bool Any => Registry?.active.Count > 0;
         internal static RimKataSubdueState Get(Pawn pawn)
@@ -182,13 +181,16 @@ namespace KRWF.RimKata
         internal static void SetRegistry(RimKataSubdueRegistry value)
         {
             if (registry == value) return;
-            if (registry != null) foreach (var state in registry.active)
+            RimKataSubdueRegistry previous = registry;
+            registry = value;
+            unchecked { RelationVersion++; }
+            if (previous != null) foreach (var state in previous.active)
             {
+                RimKataSubdueCombat.End(state);
                 state.RestoreJobFlag();
                 state.Detach();
                 RimKataSubdueRender.Remove(state);
             }
-            registry = value;
         }
 
         internal static bool CanOrder(Pawn pawn)
@@ -226,6 +228,7 @@ namespace KRWF.RimKata
             };
             current.states.Add(pawn, state);
             current.active.Add(state);
+            unchecked { RelationVersion++; }
             state.Attach();
             RimKataSubdueCombat.Begin(state);
             state.SuspendAutomaticFire();
@@ -238,6 +241,7 @@ namespace KRWF.RimKata
             if (state == null || Get(state.pawn) != state) return;
             Registry.states.Remove(state.pawn);
             Registry.active.Remove(state);
+            unchecked { RelationVersion++; }
             state.Detach();
             state.RestoreJobFlag();
             RimKataSubdueCombat.End(state);
@@ -247,7 +251,6 @@ namespace KRWF.RimKata
         internal static void Release(RimKataSubdueState state)
         {
             if (!IsRelationValid(state)) { Remove(state); return; }
-            // Vanilla chooses a valid nearby drop cell, just like the native button.
             state.pawn.carryTracker.TryDropCarriedThing(state.pawn.Position, ThingPlaceMode.Near, out _);
             if (!IsRelationValid(state)) Remove(state);
         }
@@ -257,8 +260,6 @@ namespace KRWF.RimKata
             var state = Get(pawn);
             if (state == null) return;
             Release(state);
-            // If an external mod refuses a native drop, qualification loss must
-            // still end our attacks and render ownership immediately.
             Remove(state);
         }
 
@@ -278,15 +279,12 @@ namespace KRWF.RimKata
 
         internal static void KillAndDiscard(Pawn target)
         {
-            // Detach from the carrier before Kill: its native held-pawn path
-            // otherwise drops the victim onto the carrier's map cell first.
+            // Kill on a held pawn would first drop it onto the carrier's cell.
             if (!target.Dead) target.Kill(null);
             Corpse corpse = target.Corpse;
             if (corpse != null && !corpse.Destroyed) corpse.Destroy(DestroyMode.Vanish);
 
-            // Death may create new records. Clear references after all death
-            // notifications, then let normal discard clean up the remaining
-            // relations, quests and memories. No global warning suppression.
+            // Death notifications can create new tale records before discard.
             Find.PlayLog.Notify_PawnDiscarded(target, true);
             Find.BattleLog.Notify_PawnDiscarded(target, true);
             ClearPawnTales(Find.TaleManager, target);
@@ -307,9 +305,7 @@ namespace KRWF.RimKata
                     tales.RemoveAt(i);
                     continue;
                 }
-                // Art can still own an active tale. Keep its recorded name,
-                // appearance and other participant; release only the live pawn
-                // reference rather than invalidating the art's TaleReference.
+                // Art retains its TaleReference; only the live pawn reference can be released.
                 if (tale is Tale_SinglePawn single) DetachTalePawn(single.pawnData, pawn);
                 if (tale is Tale_DoublePawn pair)
                 {

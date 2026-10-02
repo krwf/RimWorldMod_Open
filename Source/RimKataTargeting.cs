@@ -49,8 +49,6 @@ namespace KRWF.RimKata
 
         internal static bool IsSleepingOrDormant(Pawn pawn)
         {
-            // Native references are already attached to the Pawn. Avoid Awake's
-            // consciousness evaluation and component-list searches for this gate.
             return pawn.jobs?.curDriver?.asleep == true
                 || pawn.canBeDormant?.Awake == false
                 || pawn.activity?.IsDormant == true;

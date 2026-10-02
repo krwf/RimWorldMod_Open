@@ -5,7 +5,6 @@ using Verse.AI;
 
 namespace KRWF.RimKata
 {
-    // Searchers own their temporary IDs. Events only advance shared versions.
     internal static class RimKataNeutralTargetInvalidation
     {
         internal sealed class Version
@@ -46,8 +45,6 @@ namespace KRWF.RimKata
         }
     }
 
-    // Vanilla uses this notification for mental-state changes, dormancy and
-    // other changes that affect a pawn's entry in its attack-target cache.
     [HarmonyPatch(typeof(AttackTargetsCache), nameof(AttackTargetsCache.UpdateTarget))]
     internal static class Patch_AttackTargetsCacheUpdateTarget_RimKataNeutralTargets
     {

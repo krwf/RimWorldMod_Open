@@ -9,74 +9,71 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Share the existing event-published participant classification throughout
-    // one render call, including the negative result for ordinary pawns.
     public static class RimKataWorldRenderContext
     {
         public struct Scope
         {
-            internal Frame previous;
+            internal Context previous;
             internal bool pushed;
+        }
+
+        internal struct Context
+        {
+            internal Pawn pawn;
+            internal bool scoped, portrait, nextAimRead, hasNextAim;
+            internal RimKataResponseVisualParticipantCache.BodyVisualEntry body;
+            internal Frame frame;
         }
 
         internal sealed class Frame
         {
             internal Frame next;
-            internal Pawn pawn;
-            internal bool portrait, response, responseRead, snapshotRead, snapshotActive;
-            internal RimKataResponseVisualParticipantCache.BodyVisualEntry body;
+            internal bool snapshotRead, snapshotActive;
             internal RimKataVisualSnapshot snapshot;
         }
 
-        [ThreadStatic] private static Frame current;
+        [ThreadStatic] private static Context current;
         [ThreadStatic] private static Frame spare;
 
         internal static Scope Begin(Pawn pawn, bool portrait = false)
         {
-            if (current != null && current.pawn == pawn && current.portrait == portrait) return default;
+            if (current.scoped && current.pawn == pawn && current.portrait == portrait) return default;
             var scope = new Scope { previous = current, pushed = true };
-            // Reuse render-stack storage; ordinary pawns neither allocate a
-            // snapshot nor copy its fields through every nested scope.
-            Frame frame = spare ?? new Frame();
-            spare = frame.next;
-            frame.next = null;
-            frame.pawn = pawn;
-            frame.portrait = portrait;
-            frame.body = portrait ? null : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
-            current = frame;
+            current = new Context
+            {
+                scoped = true, pawn = pawn, portrait = portrait,
+                body = portrait ? null
+                    : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn)
+            };
+            return scope;
+        }
+
+        internal static Scope BeginRegistered(Pawn pawn,
+            RimKataResponseVisualParticipantCache.BodyVisualEntry entry, bool portrait)
+        {
+            var scope = new Scope { previous = current, pushed = true };
+            current = new Context { scoped = true, pawn = pawn, portrait = portrait,
+                body = portrait ? null : entry };
             return scope;
         }
 
         internal static void End(Scope scope)
         {
             if (!scope.pushed) return;
-            Frame finished = current;
+            Frame finished = current.frame;
             current = scope.previous;
-            finished.pawn = null;
-            finished.body = null;
+            if (finished == null) return;
             if (finished.snapshotRead) finished.snapshot = default;
             finished.snapshotRead = finished.snapshotActive = false;
-            finished.responseRead = finished.response = false;
             finished.next = spare;
             spare = finished;
         }
 
         internal static RimKataResponseVisualParticipantCache.BodyVisualEntry BodyFor(Pawn pawn)
-            => current != null && current.pawn == pawn ? current.body
+            => current.scoped && current.pawn == pawn ? current.body
                 : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
 
-        internal static bool ResponseFor(Pawn pawn)
-        {
-            if (current == null || current.pawn != pawn)
-                return RimKataResponseVisualParticipantCache.IsParticipant(pawn);
-            if (!current.responseRead)
-            {
-                current.responseRead = true;
-                current.response = !current.portrait
-                    && RimKataResponseVisualParticipantCache.IsParticipant(pawn);
-            }
-            return current.response;
-        }
+        internal static bool ResponseFor(Pawn pawn) => BodyFor(pawn)?.response == true;
 
         internal static bool TryBreach(Pawn pawn, out RimKataBreachVisual visual)
         {
@@ -93,26 +90,51 @@ namespace KRWF.RimKata
             return weapon != null;
         }
 
-        internal static bool TrySnapshot(Pawn pawn, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)
+        internal static bool HasNextAim(Pawn pawn)
         {
-            if (pawn != null && current != null && current.pawn == pawn)
-                return ReadSnapshot(current, owner, out snapshot);
-            snapshot = default;
-            return (RimKataResponseVisualParticipantCache.IsParticipant(pawn)
-                    || RimKataResponseVisualParticipantCache.BodyVisualFor(pawn)?.body == true)
-                && (owner != null || RimKataCombatStatePresenceCache.TryGetOwner(pawn, out owner))
-                && RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot(pawn, owner, out snapshot);
+            if (pawn == null) return false;
+            if (!current.scoped || current.pawn != pawn)
+                return RimKataDualWeaponController.TryGetNextAim(pawn, out _, out _);
+            if (!current.nextAimRead)
+            {
+                current.nextAimRead = true;
+                current.hasNextAim = !current.portrait && (current.body?.snapshotState != null
+                    ? current.body.snapshotOwner != null
+                        && current.body.snapshotState.ownerComponent == current.body.snapshotOwner
+                        && pawn.Map == current.body.map
+                        && RimKataDualWeaponController.TryGetNextAim(pawn, current.body.snapshotState, out _, out _)
+                    : RimKataDualWeaponController.TryGetNextAim(pawn, out _, out _));
+            }
+            return current.hasNextAim;
         }
 
-        private static bool ReadSnapshot(Frame frame, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)
+        internal static bool TrySnapshot(Pawn pawn, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)
         {
+            bool scoped = current.scoped && current.pawn == pawn;
+            var body = BodyFor(pawn);
+            if (body?.HasSnapshot != true)
+            {
+                snapshot = default;
+                return false;
+            }
+            return scoped ? ReadSnapshot(ref current, out snapshot)
+                : RimKataResponseVisualParticipantCache.TryReadSnapshot(body, out snapshot);
+        }
+
+        private static bool ReadSnapshot(ref Context context, out RimKataVisualSnapshot snapshot)
+        {
+            Frame frame = context.frame;
+            if (frame == null)
+            {
+                frame = spare ?? new Frame();
+                spare = frame.next;
+                frame.next = null;
+                context.frame = frame;
+            }
             if (!frame.snapshotRead)
             {
                 frame.snapshotRead = true;
-                if (!frame.portrait && (frame.body?.body == true || ResponseFor(frame.pawn))
-                    && (owner != null || RimKataCombatStatePresenceCache.TryGetOwner(frame.pawn, out owner)))
-                    frame.snapshotActive = RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot(
-                        frame.pawn, owner, out frame.snapshot);
+                frame.snapshotActive = RimKataResponseVisualParticipantCache.TryReadSnapshot(context.body, out frame.snapshot);
             }
             snapshot = frame.snapshot;
             return frame.snapshotActive;
@@ -218,11 +240,7 @@ namespace KRWF.RimKata
             Pawn pawn,
             out RimKataVisualSnapshot snapshot)
         {
-            snapshot = default(RimKataVisualSnapshot);
-            return RimKataCombatStatePresenceCache.TryGetOwner(
-                    pawn,
-                    out RimKataMapComponent component)
-                && TryGetQualifiedOrResponseSnapshot(pawn, component, out snapshot);
+            return RimKataWorldRenderContext.TrySnapshot(pawn, null, out snapshot);
         }
 
         public static bool TryGetCachedActiveSnapshot(
@@ -245,25 +263,7 @@ namespace KRWF.RimKata
             RimKataMapComponent component,
             out RimKataVisualSnapshot snapshot)
         {
-            snapshot = default(RimKataVisualSnapshot);
-            bool qualified = RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
-            if ((!qualified && !RimKataWorldRenderContext.ResponseFor(pawn))
-                || component?.TryGetActiveVisualSnapshot(pawn, out snapshot) != true)
-            {
-                return false;
-            }
-
-            if (!qualified)
-            {
-                // Keep the current response pose without reviving stale dodge visuals.
-                snapshot.visualActive = false;
-                snapshot.additionalTumbleActive = false;
-                snapshot.dodgeMovementActive = false;
-                snapshot.closeDodgeActive = false;
-                snapshot.groundPoseActive = false;
-            }
-
-            return true;
+            return RimKataWorldRenderContext.TrySnapshot(pawn, component, out snapshot);
         }
 
         public static bool TryGetCachedResponseSnapshot(
@@ -273,7 +273,7 @@ namespace KRWF.RimKata
         {
             snapshot = default(RimKataVisualSnapshot);
             if (!participantKnown
-                && !RimKataResponseVisualParticipantCache.IsParticipant(pawn))
+                && !RimKataWorldRenderContext.ResponseFor(pawn))
             {
                 return false;
             }
@@ -289,7 +289,7 @@ namespace KRWF.RimKata
         {
             snapshot = default(RimKataVisualSnapshot);
             if (!participantKnown
-                && !RimKataResponseVisualParticipantCache.IsParticipant(pawn))
+                && !RimKataWorldRenderContext.ResponseFor(pawn))
             {
                 return false;
             }
@@ -327,8 +327,6 @@ namespace KRWF.RimKata
                 return new Vector3(0f, 0f, hop * 0.2f);
             }
 
-            // The additional tumble is a rotation overlay.  It must not turn
-            // its 24 visual ticks into a second lateral cell-dodge motion.
             if (snapshot.additionalTumbleActive)
             {
                 return Vector3.zero;
@@ -726,8 +724,7 @@ namespace KRWF.RimKata
 
         internal static float NativeSecondaryAngleForContext(float angle)
         {
-            // The native angle already includes its mesh branch and equipment
-            // offset. The V-flipped mesh reflects local Z, hence the half turn.
+            // The V-flipped mesh reflects local Z; the native angle already includes the equipment offset.
             return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
                 ? 2f * nativeSecondaryReflectionAxis - angle - 180f
                 : angle;
@@ -750,7 +747,6 @@ namespace KRWF.RimKata
         public static void DrawSecondaryEquipmentMesh(
             Mesh mesh, Matrix4x4 matrix, Material material, int layer)
         {
-            // Native and captured secondary draws share the same final placement.
             new RimKataWeaponDrawCapture.DrawCommand(mesh, matrix, material, layer)
                 .Submit(mesh, matrix, mirrorSecondaryDepth: mirroringSecondaryDepth,
                     adjustSecondaryHeight: mirroringSecondaryDepth && !mirroringRangedCombatWeapon,
@@ -849,8 +845,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // An idle primary draw does not grant visibility to the secondary.
-            // EndFrame evaluates that weapon's own renderer independently.
             if (RimKataWeaponRenderProbe.UsesIndependentIdleVisibility(pawn))
             {
                 return false;
@@ -913,9 +907,7 @@ namespace KRWF.RimKata
             }
 
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
-            // External animation renderers can enter here outside the ordinary
-            // equipment draw pass. Keep final weapon submission in this pawn's
-            // ground-pose scope without changing the external animation itself.
+            // External renderers may enter outside the equipment pass, so this call needs its own pose scope.
             bool groundPoseScope = RimKataGroundPoseRender.PushEquipment(pawn, PawnRenderFlags.None);
             drawingPair = true;
             currentEquipmentPivot = root;
@@ -1164,9 +1156,6 @@ namespace KRWF.RimKata
                 && RimKataVisualUtility.TryGetLiveResponseFocus(
                     pawn, snapshot, out responseFocus);
 
-            // A combat target does not necessarily switch an external renderer
-            // to aiming. Follow its actual draw route before applying native aim.
-            // A live defensive response still turns this weapon toward its attacker.
             if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
                 pawn, weapon, snapshotActive
                     ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
@@ -1250,8 +1239,7 @@ namespace KRWF.RimKata
             nativeSecondaryCombatTilt = secondary && !secondaryIdle && weapon.def.IsMeleeWeapon
                 ? (facing == Rot4.East ? 30f : facing == Rot4.West ? -30f : 0f)
                 : 0f;
-            // Combat mirroring flips the weapon around its actual aim, so a
-            // diagonal shot keeps its direction instead of reflecting across E/W.
+            // Reflection around the actual aim preserves diagonal shot direction.
             nativeSecondaryReflectionAxis = secondaryIdle ? facing.AsAngle : aimAngle;
             try
             {
@@ -1276,8 +1264,6 @@ namespace KRWF.RimKata
             Vector3 offset,
             Rot4 facing)
         {
-            // Side-facing draws keep their source pose until final submission,
-            // where only the screen-height distance to the pawn is halved.
             if (facing == Rot4.East || facing == Rot4.West)
             {
                 return offset;
@@ -1589,35 +1575,56 @@ namespace KRWF.RimKata
 
         internal static float VisualAimAngle(
             Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)
+            => VisualAimAngle(pawn, weapon, visual, fallback, out _);
+
+        private static float VisualAimAngle(
+            Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback, out bool resolved)
         {
             if (!visual.turning)
-                return AngleToTarget(pawn, weapon, visual.target, fallback);
-            float destination = AngleToTarget(pawn, weapon, visual.turnTarget, fallback);
+                return AngleToTarget(pawn, weapon, visual.target, fallback, out resolved);
+            float destination = AngleToTarget(pawn, weapon, visual.turnTarget, fallback, out resolved);
             return Mathf.Repeat(Mathf.LerpAngle(visual.turnStartAngle, destination,
                 Mathf.SmoothStep(0f, 1f, visual.turnProgress)), 360f);
         }
 
-        internal static void AdjustCooldownAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle)
+        internal struct AimPreparation
         {
-            // Reuse the qualified pawn's existing render scope. Ordinary pawns
-            // never look up a combat cycle, and paired draws already resolve each hand.
+            internal Pawn pawn;
+            internal ThingWithComps weapon;
+            internal bool hasVisual, adjusted;
+            internal RimKataWeaponVisualData visual;
+        }
+
+        internal static void AdjustCooldownAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle,
+            out AimPreparation prepared)
+        {
+            prepared = default;
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             if (drawingPair || !context.active || context.secondary != null
                 || equipment != context.primary || !(equipment is ThingWithComps weapon)
                 || (context.snapshotActive && context.snapshot.responsePoseWeapon == weapon
-                    && RimKataVisualUtility.TryGetLiveResponseFocus(context.pawn, context.snapshot, out _))
-                || !RimKataDualWeaponController.TryGetVisualData(context.pawn, weapon, out var visual)
-                || !visual.turning) return;
-            float angle = VisualAimAngle(context.pawn, weapon, visual, aimAngle);
+                    && RimKataVisualUtility.TryGetLiveResponseFocus(context.pawn, context.snapshot, out _))) return;
+            prepared.pawn = context.pawn;
+            prepared.weapon = weapon;
+            prepared.hasVisual = RimKataDualWeaponController.TryGetVisualData(context.pawn, weapon, out prepared.visual);
+            if (!prepared.hasVisual || !prepared.visual.turning) return;
+            float angle = VisualAimAngle(context.pawn, weapon, prepared.visual,
+                aimAngle, out bool resolvedDestination);
             Vector3 pivot = ResolveEquipmentPivot(context.pawn, weapon, drawLoc, aimAngle);
             float layer = drawLoc.y;
             drawLoc = pivot + (drawLoc - pivot).RotatedBy(Mathf.DeltaAngle(aimAngle, angle));
             drawLoc.y = layer;
             aimAngle = angle;
+            prepared.adjusted = resolvedDestination;
         }
 
         internal static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback)
+            => AngleToTarget(pawn, weapon, target, fallback, out _);
+
+        private static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback,
+            out bool resolved)
         {
+            resolved = false;
             if (!target.IsValid) return fallback;
             Vector3 targetPosition = target.HasThing && target.Thing.Spawned
                 ? target.Thing.DrawPos
@@ -1625,7 +1632,8 @@ namespace KRWF.RimKata
             Vector3 origin = RimKataGroundPoseRender.TryGetRangedAimOrigin(pawn, weapon, out Vector3 headOrigin)
                 ? headOrigin : pawn.DrawPos;
             Vector3 aim = targetPosition - origin;
-            return aim.sqrMagnitude > 0.001f ? aim.AngleFlat() : fallback;
+            resolved = aim.sqrMagnitude > 0.001f;
+            return resolved ? aim.AngleFlat() : fallback;
         }
 
         private static Mesh CreateVFlippedMesh(Mesh source)
@@ -1899,9 +1907,29 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_StanceTracker), nameof(Pawn_StanceTracker.StanceTrackerDraw))]
     public static class Patch_PawnStanceTracker_RimKataCombatIndicators
     {
-        public static void Postfix(Pawn ___pawn)
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            RimKataDualWeaponRenderUtility.DrawCombatIndicators(___pawn);
+            Label finished = generator.DefineLabel();
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (instruction.opcode == OpCodes.Ret)
+                {
+                    instruction.opcode = OpCodes.Br;
+                    instruction.operand = finished;
+                }
+                yield return instruction;
+            }
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(finished);
+            Label absent = generator.DefineLabel();
+            var loadPawn = new[] { new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_StanceTracker), "pawn")) };
+            foreach (var code in RimKataRegisteredPawnGate.Branch(generator, loadPawn, absent, true, out _))
+                yield return code;
+            foreach (var code in loadPawn) yield return new CodeInstruction(code);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                typeof(RimKataDualWeaponRenderUtility), nameof(RimKataDualWeaponRenderUtility.DrawCombatIndicators)));
+            yield return new CodeInstruction(OpCodes.Ret).WithLabels(absent);
         }
     }
 
@@ -1928,7 +1956,6 @@ namespace KRWF.RimKata
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.DynamicDrawPhaseAt))]
     public static class Patch_PawnRenderer_RimKataDodgeOffset
     {
         [HarmonyPriority(Priority.First)]
@@ -1946,16 +1973,14 @@ namespace KRWF.RimKata
             }
             __state = RimKataWorldRenderContext.Begin(___pawn);
 
-            if (!RimKataCombatStatePresenceCache.TryGetOwner(
-                    ___pawn,
-                    out RimKataMapComponent component))
-            {
-                return;
-            }
+            if (___pawn == null) return;
 
-            if (RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn)
-                && ___pawn?.stances?.curStance
-                    is Stance_RimKataAim movingAim
+            var visual = RimKataWorldRenderContext.BodyFor(___pawn);
+            RimKataMapComponent component = visual?.snapshotOwner;
+            if (___pawn?.stances?.curStance is Stance_RimKataAim movingAim
+                && (visual?.snapshotState != null ? visual.qualified : RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
+                && (component != null ? visual.snapshotState?.ownerComponent == component && ___pawn.Map == component.map
+                    : RimKataCombatStatePresenceCache.TryGetOwner(___pawn, out component))
                 && movingAim.TryGetCachedMovementDirection(
                     out IntVec3 movementDirection))
             {
@@ -1970,7 +1995,8 @@ namespace KRWF.RimKata
                 }
             }
 
-            if (!RimKataVisualUtility.TryGetCachedActiveSnapshot(
+            if (visual?.HasSnapshot != true
+                || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     ___pawn,
                     component,
                     out RimKataVisualSnapshot snapshot))
@@ -2005,7 +2031,6 @@ namespace KRWF.RimKata
             => RimKataWorldRenderContext.End(__state);
     }
 
-    [HarmonyPatch(typeof(PawnRenderer), "ParallelGetPreRenderResults")]
     public static class Patch_PawnRenderer_RimKataDynamicRotationCache
     {
         [HarmonyPriority(Priority.First)]
@@ -2013,7 +2038,8 @@ namespace KRWF.RimKata
             out RimKataWorldRenderContext.Scope __state)
         {
             __state = RimKataWorldRenderContext.Begin(___pawn);
-            if (!RimKataVisualUtility.TryGetCachedActiveSnapshot(
+            if (RimKataWorldRenderContext.BodyFor(___pawn)?.HasSnapshot != true
+                || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     ___pawn,
                     out RimKataVisualSnapshot snapshot))
             {
@@ -2030,7 +2056,6 @@ namespace KRWF.RimKata
             => RimKataWorldRenderContext.End(__state);
     }
 
-    [HarmonyPatch(typeof(PawnRenderTree), nameof(PawnRenderTree.ParallelPreDraw))]
     public static class Patch_PawnRenderTree_RimKataTumbleRotation
     {
         public struct RenderScope
@@ -2047,6 +2072,7 @@ namespace KRWF.RimKata
             __state.context = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
             RimKataGroundPoseHead.Restore(___drawRequests);
             if (parms.Portrait
+                || RimKataWorldRenderContext.BodyFor(parms.pawn)?.HasSnapshot != true
                 || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     parms.pawn,
                     out RimKataVisualSnapshot snapshot))
@@ -2111,8 +2137,8 @@ namespace KRWF.RimKata
         {
             if (RimKataCrawlFireRender.TryHandleEquipment(eq, out bool drawOriginal))
                 return drawOriginal;
-            RimKataDualWeaponRenderUtility.AdjustCooldownAim(eq, ref drawLoc, ref aimAngle);
-            RimKataGroundPoseRender.AdjustWeaponAim(eq, ref drawLoc, ref aimAngle);
+            RimKataDualWeaponRenderUtility.AdjustCooldownAim(eq, ref drawLoc, ref aimAngle, out var prepared);
+            RimKataGroundPoseRender.AdjustWeaponAim(eq, ref drawLoc, ref aimAngle, in prepared);
             if (RimKataWeaponRenderProbe.TryCaptureNativeDraw(eq, drawLoc, aimAngle))
             {
                 return false;
@@ -2151,8 +2177,6 @@ namespace KRWF.RimKata
                 }
                 else if (instruction.Calls(drawMesh))
                 {
-                    // Primary geometry stays intact; the scoped ground-pose
-                    // overlay is applied only at the final submission.
                     Label secondaryDraw = generator.DefineLabel();
                     Label drawComplete = generator.DefineLabel();
                     yield return new CodeInstruction(OpCodes.Ldsfld, drawingSecondary)
@@ -2342,14 +2366,13 @@ namespace KRWF.RimKata
             {
                 current.scopePawn = pawn;
                 if (portrait || pawn == null || RimKataBreachWeaponRender.Active
-                    || RimKataSubdueWeaponRender.Active)
+                    || RimKataSubdueWeaponRender.Active || RimKataReactiveRender.Active)
                 {
                     return scopeToken;
                 }
 
-                // Access and response events publish these participants. An ordinary
-                // draw must not discover eligibility, equipment, or combat state.
-                bool rimKataUser = RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
+                var visual = RimKataWorldRenderContext.BodyFor(pawn);
+                bool rimKataUser = visual?.registeredQualified == true;
                 if ((!rimKataUser
                         && !RimKataWorldRenderContext.ResponseFor(pawn))
                     || !pawn.Spawned)
@@ -2364,9 +2387,11 @@ namespace KRWF.RimKata
                         pawn,
                         out primary,
                         out rawSecondary);
-                bool statePresent = RimKataCombatStatePresenceCache.TryGetOwner(
-                    pawn,
-                    out RimKataMapComponent component);
+                RimKataMapComponent component = visual?.snapshotOwner;
+                bool statePresent = component != null
+                    ? visual.snapshotState?.ownerComponent == component && pawn.Map == component.map
+                    : RimKataCombatStatePresenceCache.TryGetOwner(pawn, out component);
+                if (!statePresent) component = null;
                 bool responseParticipant = false;
                 ThingWithComps participantPrimary = null;
                 ThingWithComps participantSecondary = null;
@@ -2562,7 +2587,7 @@ namespace KRWF.RimKata
         }
     }
 
-    [HarmonyPatch(typeof(PawnRenderUtility), nameof(PawnRenderUtility.DrawEquipmentAndApparelExtras))]
+    [HarmonyPatch(typeof(RimKataEquipmentRenderHooks), nameof(RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras))]
     public static class Patch_PawnRenderUtility_RimKataGunReadyContext
     {
         public struct DrawScope

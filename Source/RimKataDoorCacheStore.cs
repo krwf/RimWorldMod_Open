@@ -7,7 +7,6 @@ using System.Xml;
 
 namespace KRWF.RimKata
 {
-    // Plain cache documents, deliberately outside Defs and never registered as game definitions.
     internal sealed class RimKataDoorCacheRecord
     {
         internal readonly string Key;
@@ -22,7 +21,6 @@ namespace KRWF.RimKata
         }
     }
 
-    // No Verse/Unity dependencies: persistence cannot change a door, job or render state.
     internal sealed class RimKataDoorCacheStore
     {
         internal const int SchemaVersion = 1;
@@ -37,8 +35,6 @@ namespace KRWF.RimKata
             directory = Path.GetFullPath(Path.Combine(modRoot, "door", parsedId.ToString("N"), EnvironmentKey(environment)));
             Directory.CreateDirectory(directory);
             string manifest = Path.Combine(directory, "environment.xml");
-            // Human-readable environment identity. Old flat cache files are never read.
-            // This one write happens at most once per game instance, not per door.
             WriteAtomic(manifest, environment);
         }
 
@@ -58,8 +54,7 @@ namespace KRWF.RimKata
             if (prepared.TryGetValue(key, out RimKataDoorCacheRecord ready)) return ready;
             if (!TryRead(key, out ready))
             {
-                // The pair is accepted only when both documents match the filename hash.
-                // An interrupted write is regenerable on the next preparation.
+                // Both hashes are checked because an interrupted write can leave mismatched documents.
                 WriteAtomic(Path.Combine(directory, key + ".render.xml"), render);
                 WriteAtomic(Path.Combine(directory, key + ".xml"), metadata);
                 ready = new RimKataDoorCacheRecord(key, first, second);
@@ -68,7 +63,6 @@ namespace KRWF.RimKata
             return ready;
         }
 
-        // One explicit read for a future skill consumer; never used from drawing or ticking.
         internal bool TryRead(string key, out RimKataDoorCacheRecord record)
         {
             record = null;
@@ -132,9 +126,7 @@ namespace KRWF.RimKata
 
         private static void WriteAtomic(string destination, XmlDocument document)
         {
-            // Appending a second identifier to the full SHA filename exceeds
-            // Windows/Mono's path limit in the normal Steam installation path.
-            // Keep the temporary file on the same volume for atomic replacement.
+            // Appending to the full SHA filename can exceed the Windows/Mono path limit; atomic replacement also requires the same volume.
             string temporary = Path.Combine(Path.GetDirectoryName(destination),
                 Guid.NewGuid().ToString("N") + ".tmp");
             try

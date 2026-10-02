@@ -21,8 +21,6 @@ namespace KRWF.RimKata
             {
                 if (instruction.Calls(HediffRulesMethod))
                 {
-                    // Add this entry to the existing arguments without changing
-                    // the rest of vanilla's transition grammar or its saved data.
                     var entry = new CodeInstruction(OpCodes.Ldarg_0);
                     entry.labels.AddRange(instruction.labels);
                     entry.blocks.AddRange(instruction.blocks);
@@ -72,8 +70,7 @@ namespace KRWF.RimKata
             string noun = def.labelNoun.NullOrEmpty() ? def.label : def.labelNoun;
             yield return new Rule_String(prefix + "label", def.label);
             yield return new Rule_String(prefix + "labelNoun", noun);
-            // Old logs can retain an injury without its body part. Keep the
-            // injury and participants, but do not invent a location for it.
+            // Old logs can retain an injury without its body part.
             yield return new Rule_String(prefix + "labelNounPretty", noun);
         }
     }

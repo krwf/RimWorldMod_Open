@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Optional CE integration uses the installed CE components and jobs without
-    // requiring a compile-time reference to its assembly.
     internal static class RimKataCombatExtendedCompat
     {
         private static Type ammoCompType;
@@ -140,8 +138,6 @@ namespace KRWF.RimKata
                     secondaryReload = gizmo as Command;
             }
 
-            // Only take the two ammo controls; other CE components are handled
-            // separately so under-barrel and developer commands are not copied.
             if (secondaryStatus == null || secondaryReload == null)
             {
                 foreach (Gizmo gizmo in secondaryAmmo.CompGetGizmosExtra())
@@ -280,8 +276,7 @@ namespace KRWF.RimKata
             {
                 if (!IsHeldSecondary(pawn, ammo.parent) || !(bool)hasMagazine.GetValue(ammo))
                     return;
-                // CE's out-of-ammo fallback can switch the primary weapon. A
-                // manual secondary reload must not invoke that fallback.
+                // CE's out-of-ammo fallback can switch the primary weapon during a secondary reload.
                 if ((bool)useAmmo.GetValue(ammo) && !(bool)hasAmmo.GetValue(ammo))
                 {
                     Messages.Message("CE_OutOfAmmo".Translate(), pawn, MessageTypeDefOf.RejectInput, false);

@@ -92,7 +92,7 @@ namespace KRWF.RimKata
 
         public static void Apply(bool force = false)
         {
-            RimKataMod.Settings?.SanitizeCreepJoinerGeneChances();
+            RimKataMod.Settings?.SanitizeGeneProbabilityRules();
             if (applying) return;
             int mask = Mask;
             if (!force && appliedMask == mask && appliedGame == Current.Game) return;
@@ -103,8 +103,6 @@ namespace KRWF.RimKata
                 filteredGeneMask = -1;
                 if (Current.Game != null && Find.World != null)
                 {
-                    // This snapshot also includes caravans, suspended Pawns,
-                    // corpses, and temporary generation holders.
                     List<Pawn> pawns = new List<Pawn>(
                         PawnsFinder.AllMapsWorldAndTemporary_AliveOrDead);
                     HashSet<Ideo> ideos = new HashSet<Ideo>();
@@ -274,9 +272,7 @@ namespace KRWF.RimKata
         public static bool Prefix(Gene __0, ref Gene __result)
         {
             if (RimKataActivationSettings.IsGeneEnabled(__0?.def)) return true;
-            // AddGene(GeneDef, ...) first creates this Gene with its Pawn set.
-            // Keep the non-null return expected by callers, without inserting
-            // it into either gene list or running its PostAdd effects.
+            // AddGene callers require a non-null Gene even when insertion is suppressed.
             __result = __0;
             return false;
         }

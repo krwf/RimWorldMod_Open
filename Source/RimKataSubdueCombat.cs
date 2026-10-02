@@ -19,6 +19,10 @@ namespace KRWF.RimKata
         internal bool HasExternalTarget => externalTarget.HasThing;
         internal bool attackAllowed = true;
         internal int externalOrderJobId = -1;
+        internal RimKataNativeAttack nativeAttack;
+        internal Verb weaponVerb;
+        internal bool weaponDirty;
+        internal int lastAttackTick = -1;
 
         internal void ExposeCombat()
         {
@@ -33,6 +37,12 @@ namespace KRWF.RimKata
 
     internal static class RimKataSubdueCombat
     {
+        internal struct ExecutionScope
+        {
+            internal RimKataSubdueState previous;
+            internal bool hit, heldShot;
+        }
+
         private static readonly AccessTools.FieldRef<Verb, LocalTargetInfo> CurrentTarget =
             AccessTools.FieldRefAccess<Verb, LocalTargetInfo>("currentTarget");
         private static readonly AccessTools.FieldRef<Verb, bool> NonInterrupting =
@@ -68,12 +78,35 @@ namespace KRWF.RimKata
                 && (verb == null || executing.attackVerb == verb);
 
         internal static bool AllowsAttack(Verb verb, Pawn pawn)
+            => AllowsAttack(verb, pawn, RimKataSubdueUtility.Get(pawn));
+
+        internal static bool AllowsAttack(Verb verb, Pawn pawn, RimKataSubdueState state)
         {
-            var state = RimKataSubdueUtility.Get(pawn);
+            bool pending = state?.nativeAttack?.Pending == true;
             return state == null || RimKataSubdueAutomaticFire.IsAcquiring(verb, pawn)
-                || executing == state && state.attackVerb == verb
+                || (executing == state && !pending || pending
+                    && !state.nativeAttack.Cancelled && state.nativeAttack.verb == verb
+                    && state.nativeAttack.target == state.externalTarget
+                    && state.nativeAttack.weapon == state.externalWeapon)
+                && state.attackVerb == verb
+                && !state.weaponDirty
                 && state.attackAllowed && (state.HasExternalTarget || state.attackEnabled)
                 && RimKataSubdueUtility.IsRelationValid(state);
+        }
+
+        internal static ExecutionScope BeginNativeExecution(RimKataSubdueState state)
+        {
+            var scope = new ExecutionScope { previous = executing, hit = hit, heldShot = heldShot };
+            executing = state;
+            hit = heldShot = false;
+            return scope;
+        }
+
+        internal static void EndNativeExecution(ExecutionScope scope)
+        {
+            executing = scope.previous;
+            hit = scope.hit;
+            heldShot = scope.heldShot;
         }
 
         internal static void Begin(RimKataSubdueState state, bool restoring = false)
@@ -81,7 +114,6 @@ namespace KRWF.RimKata
             int ticks = state.attackTicks;
             bool warming = state.warming;
             if (state.HasExternalTarget) state.attackEnabled = false;
-            // End outstanding native requests before choosing the held-target verb.
             RimKataDualWeaponController.Reset(state.pawn, true);
             state.pawn.Map?.GetComponent<RimKataMapComponent>()?.GetState(state.pawn, false)?.CancelVisual();
             state.pawn.stances?.CancelBusyStanceHard();
@@ -91,11 +123,14 @@ namespace KRWF.RimKata
 
         internal static void RefreshWeapon(RimKataSubdueState state)
         {
-            if (executing == state) return;
+            state.weaponDirty = true;
+            state.nativeAttack?.Cancel();
+            if (executing == state || state.nativeAttack?.Executing == true) return;
             int cooldown = state.warming ? 0 : state.attackTicks;
             state.attackVerb?.Reset();
             ThingWithComps primary = state.pawn.equipment?.Primary;
-            if (state.HasExternalTarget && !CanUseExternalWeapon(state, state.externalWeapon))
+            Verb externalVerb = null;
+            if (state.HasExternalTarget && !TryGetExternalWeaponVerb(state, state.externalWeapon, out externalVerb))
             {
                 state.externalTarget = LocalTargetInfo.Invalid;
                 state.externalWeapon = null;
@@ -104,10 +139,12 @@ namespace KRWF.RimKata
             state.weapon = state.HasExternalTarget ? state.externalWeapon
                 : RimKataWeaponSlotUtility.CanUseOneHandWeapon(state.pawn, primary, true)
                 ? primary : null;
-            state.attackVerb = state.weapon != null
-                ? RimKataWeaponSlotUtility.CombatVerb(state.pawn, state.weapon)
+            state.weaponVerb = state.weapon != null
+                ? externalVerb ?? RimKataWeaponSlotUtility.CombatVerb(state.pawn, state.weapon)
                 : NaturalMelee(state.pawn);
+            state.attackVerb = state.weaponVerb;
             state.weaponRevision = RimKataEquipmentUtility.WeaponConfigurationRevision;
+            state.weaponDirty = false;
             state.warming = false;
             state.attackTicks = cooldown;
             if (state.attackVerb != null) RimKataPreparedWeaponData.Bind(state.attackVerb);
@@ -117,7 +154,6 @@ namespace KRWF.RimKata
         {
             Verb best = null;
             float score = -1f;
-            // Only owned body/hediff attacks, never a two-handed gun's bash verb.
             foreach (VerbEntry entry in pawn.meleeVerbs.GetUpdatedAvailableVerbsList(false))
             {
                 Verb verb = entry.verb;
@@ -135,16 +171,33 @@ namespace KRWF.RimKata
             state.externalTarget = LocalTargetInfo.Invalid;
             state.externalWeapon = null;
             state.externalOrderJobId = -1;
-            if (executing != state) state.attackVerb?.Reset();
+            state.nativeAttack?.Cancel();
+            if (executing != state && state.nativeAttack?.Executing != true) state.attackVerb?.Reset();
         }
 
         private static bool CanUseExternalWeapon(RimKataSubdueState state, ThingWithComps weapon)
+            => TryGetExternalWeaponVerb(state, weapon, out _);
+
+        private static bool TryGetExternalWeaponVerb(RimKataSubdueState state, ThingWithComps weapon,
+            out Verb verb)
         {
+            verb = null;
             if (weapon == null || weapon.Destroyed
                 || state.pawn.equipment?.AllEquipmentListForReading.Contains(weapon) != true
                 || !RimKataWeaponSlotUtility.CanUseOneHandWeapon(state.pawn, weapon, true)) return false;
-            Verb verb = RimKataWeaponSlotUtility.CombatVerb(state.pawn, weapon);
+            verb = RimKataWeaponSlotUtility.CombatVerb(state.pawn, weapon);
             return verb is Verb_LaunchProjectile || verb is Verb_MeleeAttackDamage;
+        }
+
+        private static bool CanAttackExternal(RimKataSubdueState state, Verb verb, Thing target,
+            bool? knownAdjacent, out bool adjacent)
+        {
+            if (verb == null) { adjacent = false; return false; }
+            adjacent = knownAdjacent ?? state.pawn.CanReachImmediate(target, PathEndMode.Touch);
+            if (verb.IsMeleeAttack) return adjacent && verb.Available();
+            bool available = adjacent ? RimKataDualWeaponController.VerbUsable(state.pawn, verb, true)
+                : verb.Available();
+            return available && (adjacent || !verb.ApparelPreventsShooting() && verb.CanHitTarget(target));
         }
 
         internal static void NotifyIncomingMeleeAttempt(Verb verb)
@@ -156,7 +209,7 @@ namespace KRWF.RimKata
             if (attacker == null || !RimKataTargeting.IsAutomaticEnemy(defender, attacker)) return;
             if (!RimKataSubdueDefense.IsDamageTransferEnabled(state)
                 && attacker.stances?.FullBodyBusy != true && verb.CanHitTarget(defender)
-                && RimKataSubdueDefense.ReleaseForDefense(defender, attacker)) return;
+                && RimKataSubdueDefense.ReleaseKnownForDefense(state, attacker)) return;
             if (state.attackAllowed && !state.attackEnabled && !state.HasExternalTarget)
                 TryQueueCloseTarget(state, attacker);
         }
@@ -166,11 +219,9 @@ namespace KRWF.RimKata
             var state = RimKataSubdueUtility.Get(pawn);
             if (state == null || OwnsAttack(pawn)) return false;
             if (state.attackAllowed && target != null
-                && RimKataSubdueDefense.ReleaseForDefense(pawn, target)) return false;
+                && RimKataSubdueDefense.ReleaseKnownForDefense(state, target)) return false;
             if (state.attackAllowed && !state.attackEnabled && !state.HasExternalTarget)
                 TryQueueCloseTarget(state, target);
-            // The held pair owns all attacks. Never let an ordinary bash or
-            // the main dual cycle run alongside its selected attack mode.
             return true;
         }
 
@@ -178,12 +229,11 @@ namespace KRWF.RimKata
         {
             if (target == null || !IsLiveExternalTarget(state, target)
                 || !state.pawn.CanReachImmediate(target, PathEndMode.Touch)) return;
-            if (TrySetExternalTarget(state, state.pawn.equipment?.Primary, target, true))
+            if (TrySetKnownExternalTarget(state, state.pawn.equipment?.Primary, target, true, true))
                 state.externalOrderJobId = -1;
         }
 
-        // Weapon orders stay inside the existing hold. Starting AttackStatic
-        // here would let native job cleanup drop the carried pawn.
+        // Starting AttackStatic would run native job cleanup and drop the held pawn.
         internal static bool TryHandleWeaponOrder(Verb verb, LocalTargetInfo target)
         {
             if (verb == null) return false;
@@ -213,12 +263,15 @@ namespace KRWF.RimKata
 
         internal static bool TrySetExternalTarget(RimKataSubdueState state, ThingWithComps weapon,
             LocalTargetInfo target, bool requireReachNow)
+            => TrySetKnownExternalTarget(state, weapon, target, requireReachNow, null);
+
+        private static bool TrySetKnownExternalTarget(RimKataSubdueState state, ThingWithComps weapon,
+            LocalTargetInfo target, bool requireReachNow, bool? knownAdjacent)
         {
             if (!state.attackAllowed || !RimKataSubdueUtility.IsRelationValid(state)
-                || !CanUseExternalWeapon(state, weapon) || target.Thing == state.target
+                || !TryGetExternalWeaponVerb(state, weapon, out Verb verb) || target.Thing == state.target
                 || target.Thing == state.pawn || !IsLiveExternalTarget(state, target)
-                || (requireReachNow && !RimKataWeaponSlotUtility.CanWeaponAttackTargetWithoutRushing(
-                    state.pawn, weapon, target.Thing))) return false;
+                || requireReachNow && !CanAttackExternal(state, verb, target.Thing, knownAdjacent, out _)) return false;
             state.attackEnabled = false;
             if (state.externalTarget == target && state.externalWeapon == weapon) return true;
             state.externalTarget = target;
@@ -254,7 +307,6 @@ namespace KRWF.RimKata
                 RimKataSubdueJobs.StopAttackJob(state.pawn);
             }
             state.attackEnabled = enabled;
-            // Toggling cannot bypass a cooldown already earned by an attack.
             if (!enabled && state.warming) { state.warming = false; state.attackTicks = 0; }
             state.SuspendAutomaticFire();
             RimKataSubdueRender.Publish(state);
@@ -269,7 +321,8 @@ namespace KRWF.RimKata
                 state.attackEnabled = false;
                 StopExternalAttack(state);
                 if (state.warming) { state.warming = false; state.attackTicks = 0; }
-                if (executing != state) state.attackVerb?.Reset();
+                state.nativeAttack?.Cancel();
+                if (executing != state && state.nativeAttack?.Executing != true) state.attackVerb?.Reset();
                 state.visualAttackTick = -1;
                 RimKataSubdueJobs.StopAttackJob(state.pawn);
             }
@@ -279,8 +332,12 @@ namespace KRWF.RimKata
 
         internal static void Tick(RimKataSubdueState state)
         {
+            if (state.weaponDirty || state.nativeAttack?.Pending == true
+                && state.weaponRevision != RimKataEquipmentUtility.WeaponConfigurationRevision)
+                RefreshWeapon(state);
             if (state.HasExternalTarget && !IsLiveExternalTarget(state, state.externalTarget))
                 StopExternalAttack(state);
+            if (state.nativeAttack?.Pending == true || state.lastAttackTick == Find.TickManager.TicksGame) return;
             if (state.attackTicks > 0) { --state.attackTicks; if (state.attackTicks > 0) return; }
             if (!state.attackAllowed || RimKataSubdueJobs.IsApproaching(state)) return;
             if (!state.HasExternalTarget && (!state.attackEnabled || state.target.Dead)) return;
@@ -288,9 +345,9 @@ namespace KRWF.RimKata
                 RefreshWeapon(state);
             Verb verb = state.attackVerb;
             if (verb == null) return;
-            if (state.HasExternalTarget && (!IsLiveExternalTarget(state, state.externalTarget)
-                || !RimKataWeaponSlotUtility.CanWeaponAttackTargetWithoutRushing(
-                    state.pawn, state.weapon, state.externalTarget.Thing)))
+            bool adjacent = false;
+            if (state.HasExternalTarget
+                && !CanAttackExternal(state, state.weaponVerb, state.externalTarget.Thing, null, out adjacent))
             {
                 if (RimKataSubdueJobs.IsMeleeOrder(state)) return;
                 StopExternalAttack(state);
@@ -299,28 +356,137 @@ namespace KRWF.RimKata
             if (!state.HasExternalTarget && !state.attackEnabled) return;
             Thing closeTarget = state.externalTarget.Thing;
             if (state.HasExternalTarget
-                && RimKataSubdueDefense.ReleaseForDefense(state.pawn, closeTarget))
+                && RimKataSubdueDefense.ReleaseKnownForDefense(state, closeTarget, adjacent))
             {
-                // Rejoin the established close-combat entry after putting the
-                // held pawn down; never fire this now-obsolete held cycle too.
                 RimKataDraftedFireController.TryQueuePhysicalMeleeAttack(state.pawn, closeTarget);
                 return;
             }
             if (!state.warming)
             {
+                if (state.weapon != null && verb.IsMeleeAttack)
+                {
+                    Verb selected = RimKataDualWeaponController.ResolveWeaponMeleeVerb(
+                        state.pawn, state.weapon,
+                        state.HasExternalTarget ? state.externalTarget.Thing : state.target,
+                        damageOnly: true);
+                    if (selected == null) return;
+                    state.attackVerb = verb = selected;
+                }
                 state.warming = true;
                 state.attackTicks = verb.IsMeleeAttack ? 0 : RimKataCombatMath.WarmupTicksForSingleShot(verb);
                 if (state.attackTicks > 0) return;
             }
-            state.warming = false;
-            // Set this before damage, which may kill/release the held pawn.
-            state.attackTicks = Math.Max(1, RimKataCombatMath.CooldownTicksForSingleShot(verb, state.pawn, false));
-            if (verb is Verb_MeleeAttackDamage melee)
+            if (state.HasExternalTarget)
             {
-                if (state.HasExternalTarget) StrikeExternal(state, melee);
-                else Strike(state, melee);
+                QueueExternalAttack(state, verb, adjacent);
+                return;
             }
-            else if (verb is Verb_LaunchProjectile) Shoot(state, verb);
+            state.warming = false;
+            // Damage callbacks can kill or release the held pawn.
+            state.attackTicks = Math.Max(1, RimKataCombatMath.CooldownTicksForSingleShot(verb, state.pawn, false));
+            RimKataSubdueState previous = executing;
+            executing = state;
+            try
+            {
+                if (verb is Verb_MeleeAttackDamage melee) Strike(state, melee);
+                else if (verb is Verb_LaunchProjectile) ShootHeld(state, verb);
+            }
+            finally { executing = previous; }
+        }
+
+        private static void QueueExternalAttack(RimKataSubdueState state, Verb verb, bool adjacent)
+        {
+            RimKataNativeAttack request = state.nativeAttack ?? (state.nativeAttack = new RimKataNativeAttack());
+            if (request.Pending || verb.state != VerbState.Idle || state.weaponDirty
+                || RimKataSubdueUtility.Get(state.pawn) != state || !state.attackAllowed
+                || !state.HasExternalTarget || state.attackEnabled || state.attackVerb != verb) return;
+            request.pawn = state.pawn;
+            request.subdueState = state;
+            request.weapon = state.weapon;
+            request.verb = verb;
+            request.cycleVerb = verb;
+            request.job = state.pawn.CurJob;
+            request.firedTarget = state.externalTarget.Thing;
+            request.target = state.externalTarget;
+            request.closeCombatContext = adjacent;
+            request.closeShot = !verb.IsMeleeAttack && adjacent;
+            request.closeMeleeResolution = request.closeShot;
+            request.closeMeleeHit = false;
+            request.closeDefensePrecheck = RimKataCloseDefensePrecheck.None;
+            try
+            {
+                if (!request.Queue()) return;
+                if (RimKataSubdueUtility.Get(state.pawn) == state && state.pawn.CurJob == request.job
+                    && !state.weaponDirty && state.weapon == request.weapon
+                    && state.externalTarget == request.target) return;
+                request.Cancel();
+            }
+            finally
+            {
+                if (!request.Pending) request.ClearCompletedReferences();
+            }
+        }
+
+        internal static bool CanContinueAttack(RimKataNativeAttack request)
+        {
+            RimKataSubdueState state = request.subdueState;
+            Pawn pawn = request.pawn;
+            if (state == null || RimKataSubdueUtility.Get(pawn) != state
+                || !RimKataSubdueUtility.IsRelationValid(state) || !state.attackAllowed
+                || state.attackEnabled || state.weaponDirty || state.nativeAttack != request
+                || state.weaponRevision != RimKataEquipmentUtility.WeaponConfigurationRevision
+                || state.externalTarget != request.target || state.weapon != request.weapon
+                || state.attackVerb != request.verb || pawn.CurJob != request.job
+                || pawn.Dead || pawn.Downed || pawn.InMentalState || pawn.stances.stunner.Stunned
+                || request.verb.CasterPawn != pawn || request.weapon?.Destroyed != false
+                || request.weapon.holdingOwner != pawn.equipment?.GetDirectlyHeldThings()
+                || RimKataSubdueJobs.IsApproaching(state) || !IsLiveExternalTarget(state, request.target))
+                return false;
+            Verb actionVerb = request.verb;
+            Thing target = request.target.Thing;
+            bool available = CanAttackExternal(state, actionVerb, target, null, out bool adjacent);
+            if (!request.Pending || request.Cancelled || state.weaponDirty
+                || RimKataSubdueUtility.Get(pawn) != state || state.externalTarget != request.target)
+                return false;
+            if (!available)
+            {
+                if (adjacent && actionVerb.IsMeleeAttack) state.warming = false;
+                return false;
+            }
+            if (RimKataSubdueDefense.ReleaseKnownForDefense(state, target, adjacent))
+            {
+                RimKataDraftedFireController.TryQueuePhysicalMeleeAttack(pawn, target);
+                return false;
+            }
+            if (RimKataSubdueUtility.Get(pawn) != state || !request.Pending || request.Cancelled) return false;
+            request.closeCombatContext = adjacent;
+            request.closeShot = !request.verb.IsMeleeAttack && adjacent;
+            request.closeMeleeResolution = request.closeShot;
+            return true;
+        }
+
+        internal static bool AttackStarting(RimKataNativeAttack request)
+        {
+            RimKataSubdueState state = request.subdueState;
+            if (!state.warming) return true;
+            int cooldown = Math.Max(1, RimKataCombatMath.CooldownTicksForSingleShot(request.verb, state.pawn, false));
+            if (!request.Pending || request.Cancelled || RimKataSubdueUtility.Get(state.pawn) != state
+                || state.weaponDirty || !state.attackAllowed || state.externalTarget != request.target)
+                return false;
+            state.warming = false;
+            state.attackTicks = cooldown;
+            state.lastAttackTick = Find.TickManager.TicksGame;
+            return true;
+        }
+
+        internal static void AttackCompleted(RimKataNativeAttack request)
+        {
+            RimKataSubdueState state = request.subdueState;
+            if (request.HasFired && !request.Cancelled && RimKataSubdueUtility.Get(state.pawn) == state)
+            {
+                RimKataSubdueRender.NotifyAttack(state, !request.verb.IsMeleeAttack, request.target);
+                RimKataSubdueRender.Publish(state);
+            }
         }
 
         private static float DarknessOffset(Pawn source, Pawn carrier, StatDef outdoorLight,
@@ -354,15 +520,12 @@ namespace KRWF.RimKata
             BattleLogEntry_MeleeCombat log;
             try { log = MeleeLog(verb, landed ? HitRules : dodged ? DodgeRules : MissRules, landed); }
             finally { CurrentTarget(verb) = oldTarget; }
-            // Native damage generation preserves weapon/tool, body-part, quality,
-            // armor penetration and extra damage. Only the held location differs.
             if (landed) foreach (DamageInfo generated in MeleeDamage(verb, target))
             {
                 if (!RimKataSubdueUtility.IsRelationValid(state) || target.Dead) break;
                 DamageInfo damage = generated;
                 damage.SetAngle(state.facing.FacingCell.ToVector3());
-                // Armor deflection uses Position with MapHeld. The unspawned
-                // target still has its pickup cell until this hit synchronizes it.
+                // Armor deflection uses Position with MapHeld; an unspawned pawn retains its pickup cell.
                 target.Position = pawn.Position;
                 target.TakeDamage(damage).AssociateWithLog(log);
             }
@@ -371,74 +534,23 @@ namespace KRWF.RimKata
             pawn.skills?.Learn(SkillDefOf.Melee, 20f);
         }
 
-        private static void StrikeExternal(RimKataSubdueState state, Verb_MeleeAttackDamage verb)
+        private static void ShootHeld(RimKataSubdueState state, Verb verb)
         {
             Pawn pawn = state.pawn;
-            LocalTargetInfo target = state.externalTarget;
-            var oldState = executing;
-            executing = state;
-            var previous = RimKataFireContext.Begin(verb, pawn, target.Thing,
-                false, false, false, null, false, false, default);
-            Rot4 facing = pawn.Rotation;
-            Stance stance = pawn.stances.curStance;
-            bool nonInterrupting = NonInterrupting(verb);
-            try
-            {
-                verb.Reset();
-                CurrentTarget(verb) = target;
-                NonInterrupting(verb) = true;
-                // Native melee hit/dodge/parry and equipment effects remain
-                // intact. The hold owns its timer and weapon-only animation.
-                verb.WarmupComplete();
-                if (RimKataFireContext.ShotFired && RimKataSubdueUtility.Get(pawn) == state)
-                    RimKataSubdueRender.NotifyAttack(state, false, target);
-            }
-            finally
-            {
-                verb.Reset();
-                NonInterrupting(verb) = nonInterrupting;
-                if (pawn.stances.curStance is Stance_Busy busy && busy.verb == verb)
-                    pawn.stances.curStance = stance;
-                pawn.Rotation = facing;
-                RimKataFireContext.End(verb, previous);
-                executing = oldState;
-            }
-        }
-
-        private static void Shoot(RimKataSubdueState state, Verb verb)
-        {
-            Pawn pawn = state.pawn;
-            bool outside = state.HasExternalTarget;
-            LocalTargetInfo destination = outside ? state.externalTarget : new LocalTargetInfo(state.target);
-            bool close = !outside || pawn.CanReachImmediate(destination, PathEndMode.Touch);
-            bool landed = false;
-            var precheck = RimKataCloseDefensePrecheck.None;
-            if (!outside)
-            {
-                // Held pawns have no map cell. Resolve only this close shot at
-                // the carrier's valid cell without spoofing the target's map.
-                ShotReport report = ShotReport.HitReportFor(pawn, verb, pawn.Position);
-                TargetSize(ref report) = Mathf.Clamp(state.target.BodySize, 0.5f, 2f);
-                landed = Rand.Chance(Mathf.Clamp01(report.TotalEstimatedHitChance));
-            }
-            else if (close)
-            {
-                landed = RimKataCombatMath.RollCloseRangedNonMiss(pawn, verb, destination);
-                precheck = RimKataDefenseUtility.PrecheckCloseGunfire(pawn, destination.Thing, verb, landed);
-                if (precheck == RimKataCloseDefensePrecheck.ResponseSucceeded) return;
-                if (precheck == RimKataCloseDefensePrecheck.ResponseSucceededWithAccidentalShot) landed = false;
-                if (!RimKataSubdueUtility.IsRelationValid(state)) return;
-            }
+            LocalTargetInfo destination = state.target;
+            // Held pawns have no map cell, so the close-shot report uses the carrier's cell.
+            ShotReport report = ShotReport.HitReportFor(pawn, verb, pawn.Position);
+            TargetSize(ref report) = Mathf.Clamp(state.target.BodySize, 0.5f, 2f);
+            bool landed = Rand.Chance(Mathf.Clamp01(report.TotalEstimatedHitChance));
             var oldState = executing;
             bool oldHit = hit;
             bool oldHeldShot = heldShot;
             executing = state;
             hit = landed;
-            heldShot = !outside;
-            var previous = RimKataFireContext.Begin(verb, pawn, close ? destination.Thing : null,
-                outside && !close && pawn.pather?.MovingNow == true, close, false, null,
-                close, landed, precheck);
-            RimKataFireContext.SuppressCloseLaunch = !outside;
+            heldShot = true;
+            var previous = RimKataFireContext.Begin(verb, pawn, destination.Thing,
+                false, true, false, null, true, landed, RimKataCloseDefensePrecheck.None);
+            RimKataFireContext.SuppressCloseLaunch = true;
             Rot4 facing = pawn.Rotation;
             Stance stance = pawn.stances.curStance;
             int? count = BurstCount(verb);
@@ -446,11 +558,9 @@ namespace KRWF.RimKata
             try
             {
                 verb.Reset();
-                CurrentTarget(verb) = outside ? destination : new LocalTargetInfo(pawn.Position);
+                CurrentTarget(verb) = new LocalTargetInfo(pawn.Position);
                 NonInterrupting(verb) = true;
                 BurstCount(verb) = 1;
-                // Retain native ammo use, shot callbacks, muzzle/sound effects
-                // and projectile subclass behavior for this one close shot.
                 verb.WarmupComplete();
                 if (RimKataFireContext.ShotFired && RimKataSubdueUtility.Get(pawn) == state)
                     RimKataSubdueRender.NotifyAttack(state, true, destination);
@@ -478,7 +588,6 @@ namespace KRWF.RimKata
             IntendedTarget(projectile) = state.target;
             if (RimKataProjectileUtility.PrepareImmediateImpact(projectile, state.pawn.Position))
             {
-                // Moving the projectile alone does not move pawn armor effects.
                 if (hit) state.target.Position = state.pawn.Position;
                 RimKataProjectileUtility.Impact(projectile, hit ? state.target : null);
             }

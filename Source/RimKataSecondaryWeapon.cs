@@ -113,8 +113,6 @@ namespace KRWF.RimKata
         }
 
         // External swaps remove the old primary before adding its replacement.
-        // Keep only that short-lived handoff, never a second live slot binding.
-        // Update also expires it while paused; neither callback scans pawns.
         public override void GameComponentTick() => ExpirePrimaryReplacements();
 
         public override void GameComponentUpdate() => ExpirePrimaryReplacements();
@@ -329,8 +327,6 @@ namespace KRWF.RimKata
                 RemoveRecovery(pawn);
                 return;
             }
-            // A second down before the old secondary is recovered does not
-            // cancel that recovery when the same primary is still retained.
             recovery.phase = RimKataSecondaryRecoveryPhase.PrimaryRecovered;
             recovery.nextRetryTick = Find.TickManager?.TicksGame ?? 0;
         }
@@ -824,6 +820,7 @@ namespace KRWF.RimKata
 
         public static Verb CombatVerb(Pawn pawn, ThingWithComps weapon)
         {
+            // Cached slot representative, not the per-attack melee tool selection.
             Verb verb = PrimaryVerb(weapon);
             if (verb != null)
             {
@@ -1100,7 +1097,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            // This is an explicit secondary-slot action, not a primary swap.
             RimKataSecondaryWeaponRegistry.CurrentRegistry?.CancelPrimaryReplacement(pawn);
             ThingWithComps existing = SecondaryWeapon(pawn);
             bool existingDestroyed = false;
@@ -1365,8 +1361,7 @@ namespace KRWF.RimKata
                 && pawn.equipment.AllEquipmentListForReading.Contains(changedEquipment)
                 && registry.TryTakePrimaryReplacement(pawn, out ThingWithComps pendingSecondary))
             {
-                // Transfers directly into the equipment owner can bypass
-                // AddEquipment. They still publish this same added event.
+            // Direct ThingOwner transfers can bypass AddEquipment.
                 Patch_PawnEquipmentTracker_RimKataRestoreSecondary.CompleteExternalPrimaryReplacement(
                     pawn.equipment, pawn, changedEquipment, pendingSecondary, alreadyAdded: true);
                 return;
@@ -1469,6 +1464,7 @@ namespace KRWF.RimKata
 
         public static void Postfix(Pawn __instance, bool respawningAfterLoad, bool __state)
         {
+            RimKataGeneProbability.NotifySpawned(__instance, respawningAfterLoad, __state);
             RimKataEligibilityCache.NotifyPawnSpawned(__instance);
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(__instance);
             if (respawningAfterLoad
@@ -1513,8 +1509,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            // The existing primary is already appropriate for this pawn's race
-            // and faction. Do not draw unique racial gear from a global pool.
             ThingWithComps primary = pawn.equipment.Primary;
             ThingWithComps weapon = ThingMaker.MakeThing(primary.def, primary.Stuff) as ThingWithComps;
             if (weapon == null)
@@ -2474,7 +2468,8 @@ namespace KRWF.RimKata
             out bool? __state)
         {
             __state = null;
-            if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
+            if (pawn?.Drafted != true
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
             {
                 return true;
             }
@@ -2498,8 +2493,8 @@ namespace KRWF.RimKata
             ref bool __result,
             bool? __state)
         {
-            if (RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
-                && pawn?.Drafted == true
+            if (pawn?.Drafted == true
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 && (__state
                     ?? RimKataEligibility.CanBeginGunKataAttack(pawn)))
             {
@@ -2515,15 +2510,18 @@ namespace KRWF.RimKata
             public readonly bool HasAutomaticSearchRange;
             public readonly bool HasCombatCapableUser;
             public readonly bool UseUnifiedAttackGizmo;
+            public readonly bool HasRangedSecondary;
 
             public SelectedAttackGizmoFacts(
                 bool hasAutomaticSearchRange,
                 bool hasCombatCapableUser,
-                bool useUnifiedAttackGizmo)
+                bool useUnifiedAttackGizmo,
+                bool hasRangedSecondary)
             {
                 HasAutomaticSearchRange = hasAutomaticSearchRange;
                 HasCombatCapableUser = hasCombatCapableUser;
                 UseUnifiedAttackGizmo = useUnifiedAttackGizmo;
+                HasRangedSecondary = hasRangedSecondary;
             }
         }
 
@@ -2592,6 +2590,7 @@ namespace KRWF.RimKata
             bool hasAutomaticSearchRange = false;
             bool hasCombatCapableUser = false;
             bool hasUsableSecondary = false;
+            bool hasRangedSecondary = false;
             for (int i = 0; i < selected.Count; i++)
             {
                 if (!(selected[i] is Pawn pawn)
@@ -2605,7 +2604,8 @@ namespace KRWF.RimKata
                 if (selectedPlayerPawns >= 2
                     && hasAutomaticSearchRange
                     && hasCombatCapableUser
-                    && hasUsableSecondary)
+                    && hasUsableSecondary
+                    && hasRangedSecondary)
                 {
                     break;
                 }
@@ -2617,14 +2617,19 @@ namespace KRWF.RimKata
                 {
                     hasAutomaticSearchRange = true;
                     hasCombatCapableUser = true;
-                    if (!hasUsableSecondary
-                        && RimKataWeaponSlotUtility.CanUseSecondarySlot(
-                            pawn,
-                            true)
-                        && RimKataWeaponSlotUtility
-                            .SecondaryWeaponWithVerifiedAccess(pawn) != null)
+                    if (!hasUsableSecondary || !hasRangedSecondary)
                     {
-                        hasUsableSecondary = true;
+                        ThingWithComps secondary = RimKataWeaponSlotUtility
+                            .SecondaryWeaponWithVerifiedAccess(pawn);
+                        if (secondary != null)
+                        {
+                            hasRangedSecondary |= secondary.def?.IsRangedWeapon == true;
+                            if (!hasUsableSecondary
+                                && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, true))
+                            {
+                                hasUsableSecondary = true;
+                            }
+                        }
                     }
                 }
                 else if (!hasAutomaticSearchRange
@@ -2637,7 +2642,8 @@ namespace KRWF.RimKata
             return new SelectedAttackGizmoFacts(
                 hasAutomaticSearchRange,
                 hasCombatCapableUser,
-                selectedPlayerPawns >= 2 && hasUsableSecondary);
+                selectedPlayerPawns >= 2 && hasUsableSecondary,
+                hasRangedSecondary);
         }
     }
 
@@ -2665,25 +2671,8 @@ namespace KRWF.RimKata
                 return;
             }
 
-            List<object> selected = Find.Selector.SelectedObjectsListForReading;
-
-            for (int i = 0; i < selected.Count; i++)
-            {
-                if (!(selected[i] is Pawn pawn) || !pawn.IsPlayerControlled
-                    || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
-                {
-                    continue;
-                }
-
-                ThingWithComps secondary = RimKataWeaponSlotUtility.SecondaryWeapon(pawn);
-
-                if (secondary?.def?.IsRangedWeapon == true
-                    && RimKataEligibility.CanBeginGunKataAttack(pawn))
-                {
-                    __result = true;
-                    return;
-                }
-            }
+            __result = RimKataMultiSelectAttackGizmoUtility
+                .GetSelectedAttackGizmoFacts().HasRangedSecondary;
         }
     }
 
@@ -2868,7 +2857,6 @@ namespace KRWF.RimKata
                 }
                 else if (!tracker.TryDropEquipment(secondary, out _, pawn.Position, !validWeapons))
                 {
-                    // Do not leave two unregistered primaries if placement fails.
                     owner.Remove(incoming);
                     RestoreUnheldIncoming(pawn, incoming);
                     RimKataWeaponSlotUtility.NotifyLoadoutChanged(pawn);

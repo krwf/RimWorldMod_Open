@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>プロファイル設定</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>戦闘機能</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>MOD 機能</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>視覚効果</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>有効化機能</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>適用値</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>伏せた状態での狩猟ステルスボーナス</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>再び伏せるまでの待機時間</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>転倒後に横たわる時間</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>転倒中の味方からの誤射防止</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>突破時の移動時間</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>突破先に到達した後の待機時間</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>デフォルト</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>非敵対ポーンの這いながらの射撃を許可</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>敵対ポーンの這いながらの射撃を許可</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃をデフォルトで許可</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>滑らかな照準切り替え</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>制圧</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>攻撃の許可が無効です。</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>ダメージ転嫁</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>受けるダメージを制圧中の相手に転嫁します。無効にすると、回避または近接戦闘の開始時に相手を解放します。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>スライディング</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>振り払い</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>スライディング確率</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>振り払い確率</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>遺伝子の確率</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>確率あり</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>なし</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>すべて初期化</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>絞り込み結果を初期化</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>シャンブラー</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>不気味な加入者</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

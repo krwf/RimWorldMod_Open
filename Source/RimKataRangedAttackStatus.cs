@@ -10,7 +10,6 @@ namespace KRWF.RimKata
         Cooldown
     }
 
-    /// <summary>A read-only snapshot of one weapon's actual RimKata attack.</summary>
     public readonly struct RimKataRangedAttackState
     {
         public RimKataRangedAttackPhase Phase { get; }
@@ -23,18 +22,9 @@ namespace KRWF.RimKata
         }
     }
 
-    /// <summary>
-    /// Compatibility API for mods that need to observe independent weapon attacks.
-    /// This supplements their native checks; it never changes a stance or Verb,
-    /// creates combat state, advances timers, or searches for a target.
-    /// </summary>
     public static class RimKataRangedAttackStatus
     {
-        /// <summary>
-        /// Returns true only for an equipped weapon's active RimKata ranged attack.
-        /// Target search, a stored order and a retained aim pose alone return false.
-        /// Cooldown means recovery after shooting, not ammunition reloading.
-        /// </summary>
+        /// <summary>Active equipped ranged attack; cooldown is post-shot recovery, not reloading.</summary>
         public static bool TryGetState(
             Pawn pawn, ThingWithComps weapon, out RimKataRangedAttackState result)
         {

@@ -53,26 +53,6 @@ namespace KRWF.RimKata
             return pawn?.Map?.GetComponent<RimKataMapComponent>()?.IsDodgeMotionBlocking(pawn) == true;
         }
 
-        internal static void GetStatus(
-            Pawn pawn,
-            out bool blocksJob,
-            out bool isActive)
-        {
-            RimKataMapComponent component =
-                pawn?.Map?.GetComponent<RimKataMapComponent>();
-            if (component == null)
-            {
-                blocksJob = false;
-                isActive = false;
-                return;
-            }
-
-            component.GetDodgeMovementStatus(
-                pawn,
-                out blocksJob,
-                out isActive);
-        }
-
         public static bool IsVisualLocked(Pawn pawn)
         {
             return pawn?.Map?.GetComponent<RimKataMapComponent>()?.IsDodgeVisualLocked(pawn) == true;
@@ -133,10 +113,6 @@ namespace KRWF.RimKata
 
         private static bool IsUnarmedAutomaticMeleeApproach(Pawn pawn, Job job)
         {
-            // Natural melee attackers have no equipment-backed weapon cycle,
-            // but their legitimate attack path can still own a physical dodge.
-            // Keep nonhostile and player-forced AttackMelee Jobs outside this
-            // exception so it cannot mask a stale automatic friendly response.
             return pawn != null
                 && job?.def == JobDefOf.AttackMelee
                 && !job.playerForced
@@ -510,47 +486,57 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_PathFollower), "PatherArrived")]
     public static class Patch_PawnPathFollower_RimKataDodgeArrived
     {
-        public static bool Prefix(Pawn ___pawn)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            return !RimKataDodgeMovementUtility.TryFinish(___pawn, false);
+            return Patch_PawnPathFollower_RimKataDodgeFailed.Wrap(instructions, generator, false);
         }
     }
 
     [HarmonyPatch(typeof(Pawn_PathFollower), "PatherFailed")]
     public static class Patch_PawnPathFollower_RimKataDodgeFailed
     {
-        public static bool Prefix(Pawn ___pawn)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            return !RimKataDodgeMovementUtility.TryFinish(___pawn, true);
+            return Wrap(instructions, generator, true);
+        }
+
+        internal static IEnumerable<CodeInstruction> Wrap(IEnumerable<CodeInstruction> instructions,
+            ILGenerator generator, bool failed)
+        {
+            Label original = generator.DefineLabel();
+            var gate = RimKataMotionJobGate.ParticipantBranch(generator, new[] {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"))
+            }, original, out LocalBuilder participant);
+            foreach (var code in gate) yield return code;
+            yield return new CodeInstruction(OpCodes.Ldloc, participant);
+            yield return new CodeInstruction(failed ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataMotionJobGate), nameof(RimKataMotionJobGate.FinishDodge)));
+            yield return new CodeInstruction(OpCodes.Brfalse, original);
+            yield return new CodeInstruction(OpCodes.Ret);
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(original);
+            foreach (var code in instructions) yield return code;
         }
     }
 
     [HarmonyPatch(typeof(JobDriver), nameof(JobDriver.DriverTick))]
     public static class Patch_JobDriver_RimKataDodgeMovement
     {
-        public static bool Prefix(JobDriver __instance, Pawn ___pawn)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            // Negative-only fast gate. Active dodge movement is published to
-            // the body-visual participant cache before its path starts; a hit
-            // still requires the exact movement-state check below.
-            if (!RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn)
-                || !RimKataResponseVisualParticipantCache
-                    .IsBodyVisualParticipant(___pawn))
-            {
-                return true;
-            }
-
-            RimKataDodgeMovementUtility.GetStatus(
-                ___pawn,
-                out bool blocksJob,
-                out bool isActive);
-            if (!blocksJob)
-            {
-                return true;
-            }
-
-            return isActive
-                && __instance is JobDriver_RimKataAttack;
+            Label original = generator.DefineLabel();
+            var gate = RimKataMotionJobGate.ParticipantBranch(generator, new[] {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(JobDriver), "pawn"))
+            }, original, out LocalBuilder participant);
+            foreach (var code in gate) yield return code;
+            yield return new CodeInstruction(OpCodes.Ldloc, participant);
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataMotionJobGate), nameof(RimKataMotionJobGate.AllowJobTick)));
+            yield return new CodeInstruction(OpCodes.Brtrue, original);
+            yield return new CodeInstruction(OpCodes.Ret);
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(original);
+            foreach (var code in instructions) yield return code;
         }
     }
 
@@ -562,10 +548,9 @@ namespace KRWF.RimKata
             nameof(Pawn_StanceTracker.FullBodyBusy));
         private static readonly FieldInfo PawnField = AccessTools.Field(typeof(Pawn_PathFollower), "pawn");
         private static readonly MethodInfo GateMethod = AccessTools.Method(
-            typeof(Patch_PawnPathFollower_RimKataDodgeMovement),
-            nameof(GateFullBodyBusy));
+            typeof(RimKataMotionJobGate), nameof(RimKataMotionJobGate.GateFullBodyBusy));
 
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             bool patched = false;
@@ -574,9 +559,16 @@ namespace KRWF.RimKata
                 yield return codes[i];
                 if (!patched && codes[i].Calls(FullBodyBusyGetter))
                 {
-                    yield return new CodeInstruction(OpCodes.Ldarg_0);
-                    yield return new CodeInstruction(OpCodes.Ldfld, PawnField);
+                    Label original = generator.DefineLabel();
+                    yield return new CodeInstruction(OpCodes.Dup);
+                    yield return new CodeInstruction(OpCodes.Brfalse, original);
+                    var gate = RimKataMotionJobGate.ParticipantBranch(generator, new[] {
+                        new CodeInstruction(OpCodes.Ldarg_0), new CodeInstruction(OpCodes.Ldfld, PawnField)
+                    }, original, out LocalBuilder participant);
+                    foreach (var code in gate) yield return code;
+                    yield return new CodeInstruction(OpCodes.Ldloc, participant);
                     yield return new CodeInstruction(OpCodes.Call, GateMethod);
+                    yield return new CodeInstruction(OpCodes.Nop).WithLabels(original);
                     patched = true;
                 }
             }
@@ -585,17 +577,6 @@ namespace KRWF.RimKata
             {
                 Log.Error("[RimKata] Could not place the dodge movement stance gate.");
             }
-        }
-
-        public static bool GateFullBodyBusy(bool fullBodyBusy, Pawn pawn)
-        {
-            // Body-visual participation is only a negative fast gate. The
-            // exact dodge owner, Job and path are still verified by IsActive.
-            return fullBodyBusy
-                && (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
-                    || !RimKataResponseVisualParticipantCache
-                        .IsBodyVisualParticipant(pawn)
-                    || !RimKataDodgeMovementUtility.IsActive(pawn));
         }
     }
 }

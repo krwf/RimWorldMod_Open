@@ -1,0 +1,129 @@
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using HarmonyLib;
+using UnityEngine;
+using Verse;
+
+namespace KRWF.RimKata
+{
+    internal static class RimKataEquipmentRenderHooks
+    {
+        [ThreadStatic] private static int equipmentDepth;
+
+        internal static void DrawRegisteredEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing,
+            PawnRenderFlags flags, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)
+        {
+            var scope = RimKataWorldRenderContext.BeginRegistered(pawn, entry,
+                (flags & PawnRenderFlags.Portrait) != 0);
+            equipmentDepth++;
+            try
+            {
+                if (equipmentDepth > 1 || entry == null
+                    || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue)
+                    DrawSpecialEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+                else DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+            }
+            finally
+            {
+                equipmentDepth--;
+                RimKataWorldRenderContext.End(scope);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void DrawSpecialEquipmentAndApparelExtras(
+            Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)
+        {
+            DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void DrawEquipmentAndApparelExtras(
+            Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)
+        {
+            PawnRenderUtility.DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+        }
+
+        internal static IEnumerable<CodeInstruction> ReplaceEquipmentCall(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator, bool cached)
+        {
+            MethodInfo original = AccessTools.Method(typeof(PawnRenderUtility),
+                nameof(PawnRenderUtility.DrawEquipmentAndApparelExtras));
+            MethodInfo registered = AccessTools.Method(typeof(RimKataEquipmentRenderHooks),
+                nameof(DrawRegisteredEquipment));
+            FieldInfo dead = AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.dead));
+            FieldInfo results = cached ? AccessTools.Field(typeof(PawnRenderer), "results") : null;
+            FieldInfo parms = cached ? AccessTools.Field(results.FieldType, "parms") : null;
+            int replaced = 0;
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (!instruction.Calls(original))
+                {
+                    yield return instruction;
+                    continue;
+                }
+
+                Label native = generator.DefineLabel();
+                Label absent = generator.DefineLabel();
+                Label finished = generator.DefineLabel();
+                var first = new CodeInstruction(cached ? OpCodes.Ldarg_0 : OpCodes.Ldarga_S,
+                    cached ? null : (object)(byte)2);
+                first.labels.AddRange(instruction.labels);
+                first.blocks.AddRange(instruction.blocks);
+                yield return first;
+                if (cached)
+                {
+                    yield return new CodeInstruction(OpCodes.Ldflda, results);
+                    yield return new CodeInstruction(OpCodes.Ldflda, parms);
+                }
+                yield return new CodeInstruction(OpCodes.Ldfld, dead);
+                yield return new CodeInstruction(OpCodes.Brtrue, native);
+                var loadPawn = cached
+                    ? new[] { new CodeInstruction(OpCodes.Ldarg_0),
+                        new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PawnRenderer), "pawn")) }
+                    : new[] { new CodeInstruction(OpCodes.Ldarga_S, (byte)2),
+                        new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.pawn))) };
+                LocalBuilder entry;
+                foreach (var code in RimKataRegisteredPawnGate.Branch(generator, loadPawn, absent, false, out entry))
+                    yield return code;
+                yield return new CodeInstruction(OpCodes.Ldloc, entry);
+                yield return new CodeInstruction(OpCodes.Call, registered);
+                yield return new CodeInstruction(OpCodes.Br, finished);
+                yield return new CodeInstruction(OpCodes.Ldsfld,
+                    AccessTools.Field(typeof(RimKataEquipmentRenderHooks), nameof(equipmentDepth))).WithLabels(absent);
+                yield return new CodeInstruction(OpCodes.Brfalse, native);
+                yield return new CodeInstruction(OpCodes.Ldnull);
+                yield return new CodeInstruction(OpCodes.Call, registered);
+                yield return new CodeInstruction(OpCodes.Br, finished);
+                var nativeCall = new CodeInstruction(instruction.opcode, instruction.operand);
+                nativeCall.labels.Add(native);
+                yield return nativeCall;
+                var end = new CodeInstruction(OpCodes.Nop);
+                end.labels.Add(finished);
+                yield return end;
+                replaced++;
+            }
+            if (replaced != 1)
+                throw new InvalidOperationException("RimKata equipment render call site changed: " + replaced);
+        }
+    }
+
+    [HarmonyPatch(typeof(PawnRenderer), nameof(PawnRenderer.RenderPawnAt))]
+    internal static class Patch_PawnRenderer_RimKataEquipmentEntry
+    {
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            => RimKataEquipmentRenderHooks.ReplaceEquipmentCall(instructions, generator, true);
+    }
+
+    [HarmonyPatch(typeof(PawnRenderNodeWorker_Carried), nameof(PawnRenderNodeWorker_Carried.PostDraw))]
+    internal static class Patch_PawnRenderNodeWorker_RimKataEquipmentEntry
+    {
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+            => RimKataEquipmentRenderHooks.ReplaceEquipmentCall(instructions, generator, false);
+    }
+}

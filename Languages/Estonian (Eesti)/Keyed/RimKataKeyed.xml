@@ -23,6 +23,7 @@
   <KRWF_RimKata_ProfileSettingsHeader>Profiili sätted</KRWF_RimKata_ProfileSettingsHeader>
   <KRWF_RimKata_CombatFeatures>Võitlusfunktsioonid</KRWF_RimKata_CombatFeatures>
   <KRWF_RimKata_ModFeatures>Modi funktsioonid</KRWF_RimKata_ModFeatures>
+  <KRWF_RimKata_VisualFeatures>Visuaalsed efektid</KRWF_RimKata_VisualFeatures>
   <KRWF_RimKata_ActivationFeatures>Aktiveerimisfunktsioonid</KRWF_RimKata_ActivationFeatures>
 
   <KRWF_RimKata_AppliedValue>Rakendatud väärtus</KRWF_RimKata_AppliedValue>
@@ -191,8 +192,12 @@
   <KRWF_RimKata_ProneHuntingStealthBonus>Jahil hiilimise boonus lamades</KRWF_RimKata_ProneHuntingStealthBonus>
   <KRWF_RimKata_ProneResumeDelay>Ooteaeg enne uuesti pikali heitmist</KRWF_RimKata_ProneResumeDelay>
   <KRWF_RimKata_MeleeFallDuration>Pärast kukkumist maas viibimise aeg</KRWF_RimKata_MeleeFallDuration>
+  <KRWF_RimKata_FallenFriendlyFireAvoidChance>Sõbraliku tule vältimine pärast kukkumist</KRWF_RimKata_FallenFriendlyFireAvoidChance>
   <KRWF_RimKata_BreachSlideDuration>Liikumisaeg läbimurde ajal</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Ooteaeg pärast läbimurde sihtkohta jõudmist</KRWF_RimKata_BreachWaitDuration>
+  <KRWF_RimKata_DefaultsHeader>Vaikeväärtused</KRWF_RimKata_DefaultsHeader>
+  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Luba mittevaenulikel tegelastel roomates tulistada</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
+  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Luba vaenulikel tegelastel roomates tulistada</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
   <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine vaikimisi</KRWF_RimKata_CrawlFireDefaultAllowed>
   <KRWF_RimKata_SmoothAimTransition>Sujuvad sihtimisüleminekud</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Alista</KRWF_RimKata_FeatureSubdue>
@@ -212,4 +217,16 @@
   <KRWF_RimKata_SubdueAttackNotAllowed>Rünnakud on keelatud.</KRWF_RimKata_SubdueAttackNotAllowed>
   <KRWF_RimKata_FeatureSubdueDamageTransfer>Kahju ülekandmine</KRWF_RimKata_FeatureSubdueDamageTransfer>
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Kannab saadud kahju üle kinnihoitud tegelasele. Kui see on välja lülitatud, vabastatakse tegelane põiklemisel või lähivõitlusse astumisel.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
+  <KRWF_RimKata_FeatureSliding>Libisemine</KRWF_RimKata_FeatureSliding>
+  <KRWF_RimKata_FeatureShakeOff>Maharaputamine</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_SlidingChance>Libisemise tõenäosus</KRWF_RimKata_SlidingChance>
+  <KRWF_RimKata_ShakeOffChance>Maharaputamise tõenäosus</KRWF_RimKata_ShakeOffChance>
+
+  <KRWF_RimKata_GeneProbability>Geenide tõenäosus</KRWF_RimKata_GeneProbability>
+  <KRWF_RimKata_GeneProbabilityPresent>Tõenäosus olemas</KRWF_RimKata_GeneProbabilityPresent>
+  <KRWF_RimKata_GeneProbabilityAbsent>Tõenäosus puudub</KRWF_RimKata_GeneProbabilityAbsent>
+  <KRWF_RimKata_ResetAllGeneProbabilities>Lähtesta kõik</KRWF_RimKata_ResetAllGeneProbabilities>
+  <KRWF_RimKata_ResetFilteredGeneProbabilities>Lähtesta filtreeritud tulemused</KRWF_RimKata_ResetFilteredGeneProbabilities>
+  <KRWF_RimKata_TargetShambler>Tuikuja</KRWF_RimKata_TargetShambler>
+  <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 </LanguageData>

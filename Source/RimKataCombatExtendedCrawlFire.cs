@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // Installed only with CE. Its extra-aim timer accepts our mobile warmup
-    // without changing CE's native firing, aim mode or ordinary stance checks.
     internal static class RimKataCombatExtendedCrawlFire
     {
         internal static void Apply(Harmony harmony, Type shooter)
@@ -68,7 +66,6 @@ namespace KRWF.RimKata
 
         private static bool IsDifferentWarmupType(Type actual, Type expected, Verb verb)
         {
-            // Other mods' stance subclasses retain CE's original exact-type rule.
             return actual != expected
                 && (actual != typeof(Stance_RimKataCrawlWarmup)
                     || !RimKataCrawlFireUtility.IsCrawlVerb(verb));
@@ -76,8 +73,6 @@ namespace KRWF.RimKata
 
         private static bool AmmoActionPrefix(ThingComp __instance)
         {
-            // Running out of rounds ends crawling fire. CE must not replace the
-            // pawn's crawl job with reloading, collecting ammo or switching guns.
             return !RimKataCrawlFireUtility.IsCrawlWeapon(__instance.parent);
         }
     }

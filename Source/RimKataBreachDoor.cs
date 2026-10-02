@@ -7,8 +7,6 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    // A selected door owns a frozen recipe. The live building and cache files are
-    // never consulted after acceptance, including while drawing or after loading.
     public sealed class RimKataBreachDoorSnapshot : IExposable
     {
         private string metadataXml;
@@ -38,8 +36,7 @@ namespace KRWF.RimKata
             {
                 metadataXml = recipe.MetadataXml,
                 renderXml = recipe.RenderXml,
-                // DoorPreDraw normally refreshes this from the adjoining walls.
-                // Capture the same result without invoking a render or changing it.
+                // DoorPreDraw normally refreshes this value from adjoining walls.
                 rotation = door.def.size == IntVec2.One
                     ? DoorUtility.DoorRotationAt(door.Position, door.Map, door.def.building.preferConnectingToFences)
                     : door.Rotation
@@ -70,7 +67,7 @@ namespace KRWF.RimKata
                 if (render.DocumentElement["supported"]?.InnerText != "true") return false;
                 string renderer = render.DocumentElement["renderer"]?.InnerText;
                 if (renderer == "door-panels-v2") return ResolveLayers(render);
-                // Already saved debris keeps its original single-layer recipe.
+                // Older saved debris contains only a single-layer recipe.
                 if (renderer != "vanilla-door-movers-v1") return false;
                 string path = render.DocumentElement["texturePath"]?.InnerText;
                 string shaderPath = metadata.DocumentElement["shaderPath"]?.InnerText;
@@ -92,8 +89,6 @@ namespace KRWF.RimKata
                     renderQueue = int.Parse(sample.GetAttribute("renderQueue"), CultureInfo.InvariantCulture)
                 };
                 Material candidate = MaterialPool.MatFrom(request);
-                // The supported recipe never approximates a custom UV transform
-                // or keyword variant with the wrong-looking vanilla material.
                 if (!SamePair(sample.GetAttribute("textureScale"), candidate.mainTextureScale)
                     || !SamePair(sample.GetAttribute("textureOffset"), candidate.mainTextureOffset)) return false;
                 string[] keywords = candidate.shaderKeywords;
@@ -160,7 +155,7 @@ namespace KRWF.RimKata
                 && SamePair(sample.GetAttribute("textureOffset"), candidate.mainTextureOffset)
                 && string.Join(",", keywords) == savedKeywords) return candidate;
 
-            // Never mutate a pooled material when a mod supplies UV adjustments.
+            // The source material may be pooled and shared.
             var copy = new Material(candidate);
             float[] uvScale = Numbers(sample.GetAttribute("textureScale"), 2);
             float[] uvOffset = Numbers(sample.GetAttribute("textureOffset"), 2);
@@ -213,14 +208,13 @@ namespace KRWF.RimKata
 
         internal void Draw(Vector3 location)
         {
-            // Resolution is performed on capture/load only, never in a draw call.
             location.y = AltitudeLayer.Filth.AltitudeFor() + 0.001f;
             if (layers != null)
             {
                 foreach (PanelLayer layer in layers)
                 {
                     Vector3 center = location + new Vector3(0f, layer.altitude, 0f);
-                    // DrawMovers rotates its +/- local Z offsets clockwise first.
+                    // DrawMovers rotates its local Z offsets clockwise first.
                     Vector3 displacement = rotation.AsQuat * new Vector3(layer.offset, 0f, 0f);
                     Graphics.DrawMesh(MeshPool.plane10,
                         Matrix4x4.TRS(center - displacement, rotation.AsQuat, layer.scale), layer.material, 0);
@@ -242,8 +236,7 @@ namespace KRWF.RimKata
             if (definition == null) return;
             var debris = (Filth_RimKataBreachDoor)ThingMaker.MakeThing(definition);
             debris.SetSnapshot(this);
-            // Do not use FilthMaker: it merges equal filth defs, losing the
-            // individual door recipe. Each breach drops precisely one instance.
+            // FilthMaker merges equal defs and would discard individual door recipes.
             GenSpawn.Spawn(debris, cell, map);
         }
     }
