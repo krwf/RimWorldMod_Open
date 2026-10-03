@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Overfører mottatt skade til den fastholdte figuren. Når dette er deaktivert, slippes figuren ved unnvikelse eller nærkamp.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Glidning</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Avristing</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Spredningsild</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Sjanse for glidning</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Sjanse for avristing</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Tilbakestill filtrerte resultater</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Vakler</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Muskelforsterkning</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Styrkeøkning</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantater</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Standard: {0}%. Tøm feltet for å bruke standarden. Fet skrift angir individuelle verdier, også 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Tilbakestill alle</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Tilbakestill filtrerte resultater</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

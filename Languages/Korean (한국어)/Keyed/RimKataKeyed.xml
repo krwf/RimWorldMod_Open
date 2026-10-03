@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>받는 피해를 제압 대상에게 전가합니다. 비활성화하면 회피하거나 근접 전투에 진입할 때 제압을 해제합니다.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>슬라이딩</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>떨치기</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>난사</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>슬라이딩 확률</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>떨치기 확률</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>필터 결과 초기화</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>휘청이는 자</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>크립조이너</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>근력 강화</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>근력 증가량</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>이식물</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>기본값: {0}%. 입력칸을 비우면 기본값을 따릅니다. 굵은 수치는 0%를 포함한 개별 지정값입니다.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>전체 초기화</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>필터 결과 초기화</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

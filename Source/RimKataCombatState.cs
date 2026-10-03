@@ -224,6 +224,7 @@ namespace KRWF.RimKata
             internal Pawn pawn;
             internal Map map;
             internal bool body, groundPose, response, qualified, registeredQualified;
+            internal bool enhancedGrip;
             internal RimKataPawnCombatState snapshotState;
             internal RimKataMapComponent snapshotOwner;
             internal RimKataBreachVisual? breach;
@@ -290,6 +291,7 @@ namespace KRWF.RimKata
             return new BodyVisualEntry { pawn = old?.pawn, map = old?.map, body = old?.body == true,
                 response = old?.response == true, qualified = old?.qualified == true,
                 registeredQualified = old?.registeredQualified == true,
+                enhancedGrip = old?.enhancedGrip == true,
                 snapshotState = old?.snapshotState, snapshotOwner = old?.snapshotOwner,
                 groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue, reactive = old?.reactive,
                 crawlWeapon = old?.crawlWeapon, crawlTarget = old?.crawlTarget ?? LocalTargetInfo.Invalid };
@@ -344,8 +346,22 @@ namespace KRWF.RimKata
                     && (old.snapshotState == null || old.qualified == qualified)) return;
                 BodyVisualEntry entry = CopyBodyVisual(old);
                 entry.registeredQualified = qualified;
+                entry.enhancedGrip = qualified && RimKataStrengthUtility.HasEnhancedGrip(pawn);
                 if (qualified) entry.map = pawn.Map;
                 if (entry.snapshotState != null) entry.qualified = qualified;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void NotifyStrengthChanged(Pawn pawn, bool enhancedGrip)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry previous = BodyVisualFor(pawn);
+                if (previous == null || previous.enhancedGrip == enhancedGrip) return;
+                BodyVisualEntry entry = CopyBodyVisual(previous);
+                entry.enhancedGrip = enhancedGrip;
                 StoreBodyVisual(pawn, entry);
             }
         }

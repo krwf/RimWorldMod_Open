@@ -21,6 +21,8 @@ namespace KRWF.RimKata
         {
             internal Pawn pawn;
             internal bool scoped, portrait, nextAimRead, hasNextAim;
+            internal bool hasBodyAltitude;
+            internal float bodyAltitude;
             internal RimKataResponseVisualParticipantCache.BodyVisualEntry body;
             internal Frame frame;
         }
@@ -49,11 +51,11 @@ namespace KRWF.RimKata
         }
 
         internal static Scope BeginRegistered(Pawn pawn,
-            RimKataResponseVisualParticipantCache.BodyVisualEntry entry, bool portrait)
+            RimKataResponseVisualParticipantCache.BodyVisualEntry entry, bool portrait, float bodyAltitude)
         {
             var scope = new Scope { previous = current, pushed = true };
             current = new Context { scoped = true, pawn = pawn, portrait = portrait,
-                body = portrait ? null : entry };
+                body = portrait ? null : entry, hasBodyAltitude = !portrait, bodyAltitude = bodyAltitude };
             return scope;
         }
 
@@ -74,6 +76,17 @@ namespace KRWF.RimKata
                 : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
 
         internal static bool ResponseFor(Pawn pawn) => BodyFor(pawn)?.response == true;
+
+        internal static float EquipmentBodyAltitude(Pawn pawn, Vector3 equipmentRoot, Rot4 facing)
+            => current.scoped && current.pawn == pawn && current.hasBodyAltitude
+                ? current.bodyAltitude
+                : equipmentRoot.y - PawnRenderUtility.AltitudeForLayer(facing == Rot4.North ? -10f : 90f);
+
+        internal static bool TryEnhancedGrip(Pawn pawn, out bool enhanced)
+        {
+            enhanced = current.body?.enhancedGrip == true;
+            return current.scoped && current.pawn == pawn && current.body != null;
+        }
 
         internal static bool TryBreach(Pawn pawn, out RimKataBreachVisual visual)
         {
@@ -192,8 +205,9 @@ namespace KRWF.RimKata
                 && secondary != null
                 && RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
                 && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
-                && RimKataGripUtility.GripTypeFor(primary?.def)
-                    == RimKataGripType.OneHand;
+                && (RimKataGripUtility.GripTypeFor(primary?.def) == RimKataGripType.OneHand
+                    || (RimKataWorldRenderContext.TryEnhancedGrip(pawn, out bool enhanced)
+                        ? enhanced : RimKataStrengthUtility.HasEnhancedGrip(pawn)));
         }
 
         public static bool TryGetResponseParticipantLoadout(
@@ -699,13 +713,12 @@ namespace KRWF.RimKata
         [ThreadStatic] private static bool mirroringSecondaryDepth;
         [ThreadStatic] private static bool mirroringRangedCombatWeapon;
         [ThreadStatic] private static Vector3 nativePlacementPivot;
+        [ThreadStatic] private static float nativeBodyAltitude;
         [ThreadStatic] private static float nativeSecondaryCombatTilt;
         [ThreadStatic] private static float nativeSecondaryReflectionAxis;
         [ThreadStatic] private static Vector3 currentEquipmentPivot;
         private static Mesh plane10VFlip;
         private static Mesh plane10UvFlip;
-        internal static readonly float PawnRenderAltitude =
-            Altitudes.AltitudeFor(AltitudeLayer.Pawn);
 
         private const float CombatIndicatorBaseAltitude = 0.2f;
         private const float CombatIndicatorTopAltitude = 0.201f;
@@ -752,7 +765,8 @@ namespace KRWF.RimKata
                     adjustSecondaryHeight: mirroringSecondaryDepth && !mirroringRangedCombatWeapon,
                     pawnPivot: nativePlacementPivot,
                     weaponAngleOffset: nativeSecondaryCombatTilt,
-                    lowerSecondaryDepth: drawingSecondary && !mirroringSecondaryDepth);
+                    lowerSecondaryDepth: drawingSecondary && !mirroringSecondaryDepth,
+                    bodyAltitude: nativeBodyAltitude);
         }
 
         public static bool TryDrawPair(
@@ -857,6 +871,7 @@ namespace KRWF.RimKata
                 originalAimAngle);
             drawingPair = true;
             currentEquipmentPivot = equipmentPivot;
+            float bodyAltitude = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, equipmentPivot, pawn.Rotation);
             try
             {
                 DrawWeapon(
@@ -868,7 +883,7 @@ namespace KRWF.RimKata
                     originalAimAngle,
                     false,
                     snapshotActive,
-                    snapshot);
+                    snapshot, bodyAltitude);
                 DrawWeapon(
                     pawn,
                     primary,
@@ -878,7 +893,7 @@ namespace KRWF.RimKata
                     originalAimAngle,
                     true,
                     snapshotActive,
-                    snapshot);
+                    snapshot, bodyAltitude);
             }
             finally
             {
@@ -891,7 +906,8 @@ namespace KRWF.RimKata
         }
 
         internal static void DrawSecondaryAfterExternalPrimary(
-            Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root, bool combat = false)
+            Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root,
+            float bodyAltitude, bool combat = false)
         {
             if (drawingPair || secondary == null) return;
             float aimAngle = pawn.Rotation.AsAngle;
@@ -914,7 +930,7 @@ namespace KRWF.RimKata
             try
             {
                 DrawWeapon(pawn, primary, secondary, drawLoc, root, aimAngle, true,
-                    context.snapshotActive, context.snapshot, nativeCombat: combat);
+                    context.snapshotActive, context.snapshot, bodyAltitude, nativeCombat: combat);
             }
             finally
             {
@@ -927,7 +943,7 @@ namespace KRWF.RimKata
 
         internal static void DrawSecondaryFromOwnIdlePose(
             ThingWithComps secondary, Vector3 root, Rot4 facing,
-            Vector3 originalDrawLoc, float originalAimAngle)
+            Vector3 originalDrawLoc, float originalAimAngle, float bodyAltitude)
         {
             if (drawingPair || secondary == null)
             {
@@ -939,7 +955,7 @@ namespace KRWF.RimKata
             currentEquipmentPivot = root;
             try
             {
-                DrawNativeWeapon(secondary, drawLoc, originalAimAngle, true, true, facing, root);
+                DrawNativeWeapon(secondary, drawLoc, originalAimAngle, true, true, facing, root, bodyAltitude);
             }
             finally
             {
@@ -1148,7 +1164,7 @@ namespace KRWF.RimKata
             float fallbackAngle,
             bool secondary,
             bool snapshotActive,
-            RimKataVisualSnapshot snapshot, bool nativeCombat = false)
+            RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false)
         {
             LocalTargetInfo responseFocus = LocalTargetInfo.Invalid;
             bool responseTarget = snapshotActive
@@ -1217,18 +1233,19 @@ namespace KRWF.RimKata
 
             bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat;
             DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
-                placementPivot);
+                placementPivot, bodyAltitude);
         }
 
         private static void DrawNativeWeapon(
             ThingWithComps weapon, Vector3 drawLoc, float aimAngle,
             bool secondary, bool secondaryIdle, Rot4 facing,
-            Vector3 placementPivot)
+            Vector3 placementPivot, float bodyAltitude)
         {
             bool previousSecondary = drawingSecondary;
             bool previousDepthMirroring = mirroringSecondaryDepth;
             bool previousRangedMirroring = mirroringRangedCombatWeapon;
             Vector3 previousPlacementPivot = nativePlacementPivot;
+            float previousBodyAltitude = nativeBodyAltitude;
             float previousCombatTilt = nativeSecondaryCombatTilt;
             float previousAxis = nativeSecondaryReflectionAxis;
             drawingSecondary = secondary;
@@ -1236,6 +1253,7 @@ namespace KRWF.RimKata
             mirroringRangedCombatWeapon = mirroringSecondaryDepth && !secondaryIdle
                 && weapon.def.IsRangedWeapon;
             nativePlacementPivot = placementPivot;
+            nativeBodyAltitude = bodyAltitude;
             nativeSecondaryCombatTilt = secondary && !secondaryIdle && weapon.def.IsMeleeWeapon
                 ? (facing == Rot4.East ? 30f : facing == Rot4.West ? -30f : 0f)
                 : 0f;
@@ -1255,6 +1273,7 @@ namespace KRWF.RimKata
                 mirroringSecondaryDepth = previousDepthMirroring;
                 mirroringRangedCombatWeapon = previousRangedMirroring;
                 nativePlacementPivot = previousPlacementPivot;
+                nativeBodyAltitude = previousBodyAltitude;
                 nativeSecondaryCombatTilt = previousCombatTilt;
                 nativeSecondaryReflectionAxis = previousAxis;
             }

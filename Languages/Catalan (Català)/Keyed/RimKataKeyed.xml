@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfereix el dany rebut al peó sotmès. Si es desactiva, el peó l’allibera en esquivar o entrar en combat cos a cos.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Lliscament</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Sacsejada</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Foc indiscriminat</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Probabilitat de lliscament</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Probabilitat de sacsejada</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Restableix els resultats filtrats</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Titubejant</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Visitant inquietant</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Reforç muscular</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Augment de força</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implants</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Valor predeterminat: {0}%. Buideu el camp per utilitzar-lo. La negreta indica valors individuals, inclòs 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Restableix-ho tot</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Restableix els resultats filtrats</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

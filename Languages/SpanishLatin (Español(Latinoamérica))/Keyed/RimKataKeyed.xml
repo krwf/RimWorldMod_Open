@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfiere el daño recibido al personaje sometido. Al desactivarlo, esquivar o entrar en combate cuerpo a cuerpo libera al personaje.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Deslizamiento</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Sacudida</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Fuego indiscriminado</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Probabilidad de deslizamiento</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Probabilidad de sacudida</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Restablecer resultados filtrados</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Tambaleante</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Recién llegado inquietante</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Mejora de fuerza</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Aumento de fuerza</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantes</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Valor predeterminado: {0}%. Vacía el campo para usarlo. La negrita indica un valor individual, incluido 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Restablecer todo</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Restablecer resultados filtrados</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

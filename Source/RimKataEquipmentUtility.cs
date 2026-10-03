@@ -165,6 +165,18 @@ namespace KRWF.RimKata
         private static HashSet<string> forcedTwoHandedDefNames;
         private static HashSet<string> forcedOneHandedDefNames;
 
+        internal static RimKataGripType GripTypeFor(Pawn pawn, ThingDef weaponDef)
+        {
+            RimKataGripType grip = GripTypeFor(weaponDef);
+            return grip == RimKataGripType.TwoHand && RimKataStrengthUtility.HasEnhancedGrip(pawn)
+                ? RimKataGripType.OneHand : grip;
+        }
+
+        internal static bool CanGripPair(Pawn pawn, ThingDef primary, ThingDef secondary)
+            => (GripTypeFor(primary) == RimKataGripType.OneHand
+                    && GripTypeFor(secondary) == RimKataGripType.OneHand)
+                || RimKataStrengthUtility.HasEnhancedGrip(pawn);
+
         public static RimKataGripType GripTypeFor(ThingDef weaponDef)
         {
             if (weaponDef == null)

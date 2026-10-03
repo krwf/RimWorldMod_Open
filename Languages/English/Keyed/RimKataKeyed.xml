@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfer incoming damage to the subdued pawn. When disabled, dodging or entering close combat releases the subdued pawn.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Sliding</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Shake-off</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Spray fire</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Sliding chance</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Shake-off chance</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Reset filtered results</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Shambler</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Strength enhancement</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Strength increase</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implants</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Default: {0}%. Clear the field to inherit the default. Bold values are individual overrides, including 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Reset all</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Reset filtered results</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

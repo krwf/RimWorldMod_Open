@@ -29,7 +29,7 @@ namespace KRWF.RimKata
             No
         }
 
-        private enum ApparelKindFilter
+        internal enum ApparelKindFilter
         {
             All,
             Headgear,
@@ -630,7 +630,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private static string ApparelKindLabel(ApparelKindFilter value)
+        internal static string ApparelKindLabel(ApparelKindFilter value)
         {
             switch (value)
             {
@@ -651,7 +651,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private static ApparelKindFilter ClassifyApparel(ThingDef def)
+        internal static ApparelKindFilter ClassifyApparel(ThingDef def)
         {
             if (def?.apparel == null)
             {

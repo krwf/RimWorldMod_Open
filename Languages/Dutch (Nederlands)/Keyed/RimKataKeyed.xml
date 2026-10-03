@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Draagt ontvangen schade over aan de vastgehouden pawn. Als dit uitstaat, wordt de pawn losgelaten bij ontwijken of het aangaan van een gevecht van dichtbij.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Glijden</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Afschudden</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Ongericht vuur</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Kans op glijden</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Kans op afschudden</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Gefilterde resultaten herstellen</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Wankelaar</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Spierversterking</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Krachttoename</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantaten</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Standaard: {0}%. Maak het veld leeg om deze waarde te gebruiken. Vetgedrukte waarden zijn individuele instellingen, ook 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Alles herstellen</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Gefilterde resultaten herstellen</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

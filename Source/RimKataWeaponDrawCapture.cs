@@ -61,14 +61,14 @@ namespace KRWF.RimKata
                 bool mirrorSecondaryDepth = false, bool adjustSecondaryHeight = false,
                 Vector3 pawnPivot = default(Vector3), bool keepSecondaryHeight = false,
                 float weaponAngleOffset = 0f, bool lowerSecondaryDepth = false, bool accessory = false,
-                bool finalPose = false)
+                bool finalPose = false, float bodyAltitude = 0f)
             {
                 if (mirrorSecondaryDepth)
                 {
                     // Reflecting the fallen weapon layer would put one weapon behind the body.
                     matrix.m13 = RimKataGroundPoseRender.WeaponsAboveBody()
                         ? Matrix.m13 - 0.001f
-                        : 2f * RimKataDualWeaponRenderUtility.PawnRenderAltitude - Matrix.m13;
+                        : 2f * bodyAltitude - Matrix.m13;
                 }
                 else if (lowerSecondaryDepth)
                 {
@@ -179,7 +179,7 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            internal bool ReplayMirrored(Vector3 pivot, float facingAngle,
+            internal bool ReplayMirrored(Vector3 pivot, float facingAngle, float bodyAltitude,
                 float visualAngleOffset = 0f, bool sideFacingSecondary = false,
                 bool keepSecondaryHeight = false, bool accessoriesOnly = false)
             {
@@ -224,7 +224,7 @@ namespace KRWF.RimKata
                         adjustSecondaryHeight: sideFacingSecondary, pawnPivot: pivot,
                         keepSecondaryHeight: keepSecondaryHeight,
                         lowerSecondaryDepth: !sideFacingSecondary,
-                        accessory: accessories.Contains(command));
+                        accessory: accessories.Contains(command), bodyAltitude: bodyAltitude);
                 }
                 return true;
             }

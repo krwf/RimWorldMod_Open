@@ -32,7 +32,7 @@ namespace KRWF.RimKata
                 || weapon.stackCount < 1 || weapon.def?.equipmentType != EquipmentType.Primary
                 || weapon == pawn.equipment.Primary || weapon == HeldSecondary(pawn)
                 || !RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)
-                || RimKataGripUtility.GripTypeFor(weapon.def) != RimKataGripType.OneHand
+                || RimKataGripUtility.GripTypeFor(pawn, weapon.def) != RimKataGripType.OneHand
                 || weapon.TryGetComp<CompEquippable>() == null
                 || pawn.IsPrisoner || pawn.WorkTagIsDisabled(WorkTags.Violent)
                 || (weapon.def.IsRangedWeapon && pawn.WorkTagIsDisabled(WorkTags.Shooting))
@@ -45,7 +45,7 @@ namespace KRWF.RimKata
 
             ThingWithComps secondary = HeldSecondary(pawn);
             if (secondary != null && (!RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
-                || RimKataGripUtility.GripTypeFor(secondary.def) != RimKataGripType.OneHand))
+                || RimKataGripUtility.GripTypeFor(pawn, secondary.def) != RimKataGripType.OneHand))
                 return false;
             Caravan caravan = pawn.GetCaravan();
             if (FindDirectOwner(caravan, weapon.holdingOwner) == null)
@@ -167,6 +167,20 @@ namespace KRWF.RimKata
             ThingWithComps secondary = registry.GetRegistered(pawn);
             if (secondary != null && HeldSecondary(pawn) == null)
                 registry.Clear(pawn, secondary, false);
+        }
+
+        internal static void NormalizeStrengthLoadout(Pawn pawn)
+        {
+            if (pawn == null || pawn.Spawned || pawn.GetCaravan() == null) return;
+            ThingWithComps secondary = HeldSecondary(pawn);
+            if (secondary == null || (CanUseSlot(pawn)
+                && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
+                && RimKataGripUtility.GripTypeFor(pawn, secondary.def) == RimKataGripType.OneHand)) return;
+            ThingOwner inventory = pawn.inventory?.innerContainer;
+            if (inventory == null || secondary.holdingOwner.TryTransferToContainer(
+                secondary, inventory, 1, out Thing moved, false) != 1 || moved != secondary) return;
+            RimKataSecondaryWeaponRegistry.CurrentRegistry?.Clear(pawn, secondary, false);
+            RimKataWeaponSlotUtility.NotifyLoadoutChanged(pawn);
         }
 
         private static Pawn FindDirectOwner(Caravan caravan, ThingOwner owner)

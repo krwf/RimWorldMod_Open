@@ -246,8 +246,15 @@ namespace KRWF.RimKata
             }
 
             RimKataStoredProfile profile = ProfileFor(rule);
-            Widgets.Dropdown<RimKataTargetRule, RimKataStoredProfile>(profileRect, rule, ProfileFor,
-                ProfileMenuElements, profile.Name, dragLabel: profile.Name, paintable: true);
+            GUIStyle style = Text.CurFontStyle;
+            FontStyle previousStyle = style.fontStyle;
+            try
+            {
+                if (profile.Id != profiles.Current.Id) style.fontStyle = FontStyle.Bold;
+                Widgets.Dropdown<RimKataTargetRule, RimKataStoredProfile>(profileRect, rule, ProfileFor,
+                    ProfileMenuElements, profile.Name, dragLabel: profile.Name, paintable: true);
+            }
+            finally { style.fontStyle = previousStyle; }
         }
 
         private void DrawFilterControls(Rect rect)

@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Trasferisce i danni subiti al personaggio immobilizzato. Se disattivato, una schivata o l’inizio del combattimento ravvicinato libera il personaggio.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Scivolata</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Divincolamento</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Fuoco indiscriminato</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Probabilità di scivolata</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Probabilità di divincolamento</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Ripristina risultati filtrati</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Barcollante</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Nuovo arrivato inquietante</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Potenziamento muscolare</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Aumento della forza</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Impianti</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Valore predefinito: {0}%. Svuota il campo per usarlo. Il grassetto indica valori individuali, incluso 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Ripristina tutto</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Ripristina risultati filtrati</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

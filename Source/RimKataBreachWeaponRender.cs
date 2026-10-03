@@ -12,6 +12,7 @@ namespace KRWF.RimKata
             internal Pawn pawn;
             internal ThingWithComps primary, secondary;
             internal Vector3 root;
+            internal float bodyAltitude;
             internal RimKataBreachVisual visual;
             internal PawnRenderFlags flags;
             internal bool drawn;
@@ -53,7 +54,8 @@ namespace KRWF.RimKata
             {
                 pawn = pawn, primary = primary,
                 secondary = RimKataVisualUtility.IsSecondaryUsable(pawn, primary, secondary) ? secondary : null,
-                root = root, visual = visual, flags = flags
+                root = root, visual = visual, flags = flags,
+                bodyAltitude = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, root, visual.facing)
             };
             return previous;
         }
@@ -90,7 +92,7 @@ namespace KRWF.RimKata
                 position.z = current.root.z + (position.z - current.root.z) * 0.5f;
             if (secondary)
                 position.y = side && !current.visual.poseActive
-                    ? 2f * Altitudes.AltitudeFor(AltitudeLayer.Pawn) - position.y
+                    ? 2f * current.bodyAltitude - position.y
                     : position.y - 0.001f;
 
             bool west = facing == Rot4.West;

@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transfère les dégâts reçus au pion maîtrisé. Si cette option est désactivée, une esquive ou l’entrée en combat rapproché libère le pion.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Glissade</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Dégagement</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Tir en rafale</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Probabilité de glissade</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Probabilité de dégagement</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Réinitialiser les résultats filtrés</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Titubant</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Recrue inquiétante</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Renforcement musculaire</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Gain de force</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implants</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Valeur par défaut : {0} %. Videz le champ pour utiliser cette valeur. Le gras indique une valeur individuelle, y compris 0 %.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Tout réinitialiser</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Réinitialiser les résultats filtrés</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

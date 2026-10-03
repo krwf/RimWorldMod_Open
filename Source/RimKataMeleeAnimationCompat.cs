@@ -217,8 +217,9 @@ namespace KRWF.RimKata
         {
             if (current?.NativeSecondaryCombat == true)
             {
+                Vector3 root = EquipmentRoot(current.Pawn, out float bodyAltitude);
                 RimKataDualWeaponRenderUtility.DrawSecondaryAfterExternalPrimary(current.Pawn,
-                    current.Primary, current.Secondary, EquipmentRoot(current.Pawn), combat: true);
+                    current.Primary, current.Secondary, root, bodyAltitude, combat: true);
                 return;
             }
             if (current?.Replay != null && !current.ReplayAttempted)
@@ -274,8 +275,17 @@ namespace KRWF.RimKata
             return false;
         }
 
-        private static Vector3 EquipmentRoot(Pawn pawn)
-            => equipmentFrames.TryGetValue(pawn, out EquipmentFrame frame) ? frame.Root : pawn.DrawPos;
+        private static Vector3 EquipmentRoot(Pawn pawn, out float bodyAltitude)
+        {
+            if (equipmentFrames.TryGetValue(pawn, out EquipmentFrame frame))
+            {
+                bodyAltitude = frame.BodyRoot.y;
+                return frame.Root;
+            }
+            Vector3 root = pawn.DrawPos;
+            bodyAltitude = root.y;
+            return root;
+        }
 
         [HarmonyPriority(Priority.First + 100)]
         private static void BeginEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags,
@@ -290,8 +300,8 @@ namespace KRWF.RimKata
             EquipmentFrame frame = equipmentFrames.GetValue(pawn, _ => new EquipmentFrame());
             frame.Pawn = pawn; frame.Primary = pawn.equipment.Primary; frame.Secondary = secondary;
             frame.Root = drawPos; frame.Facing = facing; frame.Flags = flags; frame.SecondaryDrawn = false;
-            frame.BodyRoot = drawPos - new Vector3(0f,
-                PawnRenderUtility.AltitudeForLayer(facing == Rot4.North ? -10f : 90f), 0f);
+            frame.BodyRoot = drawPos;
+            frame.BodyRoot.y = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, drawPos, facing);
             frame.DrawingEquipment = true;
             __state = frame;
         }

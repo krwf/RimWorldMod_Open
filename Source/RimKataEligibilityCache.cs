@@ -137,6 +137,7 @@ namespace KRWF.RimKata
                 {
                     entry.publishedMap = null;
                     entry.qualified = false;
+                    RimKataStrengthUtility.NotifyQualificationChanged(pawn, false);
                     RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);
                 }
             }
@@ -145,6 +146,7 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
+            RimKataStrengthUtility.ResetGame();
             RimKataMotionJobGate.ResetGame();
             RimKataResponseVisualParticipantCache.ResetGame();
             mapUsers = new ConditionalWeakTable<Map, MapUsers>();
@@ -226,6 +228,7 @@ namespace KRWF.RimKata
         {
             if (entry.qualified == qualified) return;
             entry.qualified = qualified;
+            RimKataStrengthUtility.NotifyQualificationChanged(pawn, qualified);
             RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, qualified);
             if (qualified)
             {
@@ -572,6 +575,7 @@ namespace KRWF.RimKata
         {
             if (pawn?.Spawned != true)
             {
+                RimKataStrengthUtility.Refresh(pawn);
                 RimKataColonistBarWeaponCache.Refresh(pawn);
                 return;
             }
@@ -943,6 +947,7 @@ namespace KRWF.RimKata
         {
             RimKataEligibilityCache.InvalidateHediff(___pawn, __0?.def);
             RimKataSecondaryHandRequirement.NotifyMissingPartAdded(___pawn, __0);
+            RimKataStrengthUtility.NotifyHediffChanged(___pawn, __0);
             if (__0?.def?.defName == "MindNumbSerum")
             {
                 Gene_MindNumbSerumDependency gene =
@@ -961,6 +966,7 @@ namespace KRWF.RimKata
         public static void Postfix(Pawn ___pawn, Hediff __0)
         {
             RimKataEligibilityCache.InvalidateHediff(___pawn, __0?.def);
+            RimKataStrengthUtility.NotifyHediffChanged(___pawn, __0);
         }
     }
 

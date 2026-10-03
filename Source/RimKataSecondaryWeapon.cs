@@ -9,6 +9,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Verse;
 using Verse.AI;
+using Verse.Sound;
 
 namespace KRWF.RimKata
 {
@@ -107,6 +108,9 @@ namespace KRWF.RimKata
         public override void FinalizeInit()
         {
             base.FinalizeInit();
+            for (int i = 0; i < pawns.Count; i++)
+                RimKataStrengthUtility.Refresh(pawns[i],
+                    RimKataEligibility.HasRimKataAccess(pawns[i]), notifyLoadout: false);
             CleanupSpawnedRegistrations();
             CleanupRecoveries();
             NormalizeSpawnedLoadouts();
@@ -923,7 +927,7 @@ namespace KRWF.RimKata
             return (accessVerified
                     || RimKataEligibility.HasRimKataAccess(pawn))
                 && RimKataEquipmentUtility.IsWeaponEnabled(weapon?.def)
-                && RimKataGripUtility.GripTypeFor(weapon?.def) == RimKataGripType.OneHand;
+                && RimKataGripUtility.GripTypeFor(pawn, weapon?.def) == RimKataGripType.OneHand;
         }
 
         public static bool CanAttackTargetWithoutRushing(Pawn pawn, Thing target)
@@ -1077,14 +1081,17 @@ namespace KRWF.RimKata
 
         public static bool CanEquipAsSecondary(Pawn pawn, ThingWithComps weapon)
         {
+            ThingWithComps primary = PrimaryWeapon(pawn);
             return pawn != null
                 && weapon != null
                 && weapon.def?.equipmentType == EquipmentType.Primary
-                && weapon != PrimaryWeapon(pawn)
+                && weapon != primary
                 && weapon != SecondaryWeapon(pawn)
-                && CanUseSecondarySlot(pawn)
+                && RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
+                && RimKataEligibility.HasRimKataAccess(pawn)
+                && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
                 && RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)
-                && RimKataGripUtility.GripTypeFor(weapon.def) == RimKataGripType.OneHand;
+                && RimKataGripUtility.CanGripPair(pawn, primary?.def, weapon.def);
         }
 
         public static bool TryEquipSecondary(
@@ -1183,8 +1190,7 @@ namespace KRWF.RimKata
             ThingWithComps primary = PrimaryWeapon(pawn);
             bool validWeapons = RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
                 && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
-                && RimKataGripUtility.GripTypeFor(primary.def) == RimKataGripType.OneHand
-                && RimKataGripUtility.GripTypeFor(secondary.def) == RimKataGripType.OneHand;
+                && RimKataGripUtility.CanGripPair(pawn, primary.def, secondary.def);
             bool valid = RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
                 && validWeapons;
             if (valid || !dropInvalidSecondary)
@@ -1303,6 +1309,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            RimKataStrengthUtility.Refresh(pawn, notifyLoadout: false);
             InvalidateTargetProfileCaches(pawn);
             if (pawn.Spawned)
             {
@@ -1611,6 +1618,7 @@ namespace KRWF.RimKata
                 }
 
                 equipped = true;
+                weapon.def.soundInteract?.PlayOneShot(new TargetInfo(pawn.Position, pawn.Map));
             };
             equip.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return equip;
@@ -1779,7 +1787,7 @@ namespace KRWF.RimKata
 
             bool primaryEnabled = RimKataEquipmentUtility.IsWeaponEnabled(primary.def);
             bool incomingEnabled = RimKataEquipmentUtility.IsWeaponEnabled(eq.def);
-            bool incomingTwoHanded = RimKataGripUtility.GripTypeFor(eq.def) == RimKataGripType.TwoHand;
+            bool incomingTwoHanded = RimKataGripUtility.GripTypeFor(___pawn, eq.def) == RimKataGripType.TwoHand;
 
             if (!primaryEnabled && secondary != null)
             {
@@ -2511,17 +2519,20 @@ namespace KRWF.RimKata
             public readonly bool HasCombatCapableUser;
             public readonly bool UseUnifiedAttackGizmo;
             public readonly bool HasRangedSecondary;
+            public readonly bool HasDirectionalFireUser;
 
             public SelectedAttackGizmoFacts(
                 bool hasAutomaticSearchRange,
                 bool hasCombatCapableUser,
                 bool useUnifiedAttackGizmo,
-                bool hasRangedSecondary)
+                bool hasRangedSecondary,
+                bool hasDirectionalFireUser)
             {
                 HasAutomaticSearchRange = hasAutomaticSearchRange;
                 HasCombatCapableUser = hasCombatCapableUser;
                 UseUnifiedAttackGizmo = useUnifiedAttackGizmo;
                 HasRangedSecondary = hasRangedSecondary;
+                HasDirectionalFireUser = hasDirectionalFireUser;
             }
         }
 
@@ -2591,6 +2602,7 @@ namespace KRWF.RimKata
             bool hasCombatCapableUser = false;
             bool hasUsableSecondary = false;
             bool hasRangedSecondary = false;
+            bool hasDirectionalFireUser = false;
             for (int i = 0; i < selected.Count; i++)
             {
                 if (!(selected[i] is Pawn pawn)
@@ -2605,7 +2617,8 @@ namespace KRWF.RimKata
                     && hasAutomaticSearchRange
                     && hasCombatCapableUser
                     && hasUsableSecondary
-                    && hasRangedSecondary)
+                    && hasRangedSecondary
+                    && hasDirectionalFireUser)
                 {
                     break;
                 }
@@ -2617,17 +2630,23 @@ namespace KRWF.RimKata
                 {
                     hasAutomaticSearchRange = true;
                     hasCombatCapableUser = true;
-                    if (!hasUsableSecondary || !hasRangedSecondary)
+                    bool needsDirectionalUser = !hasDirectionalFireUser && pawn.Drafted
+                        && RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled != false;
+                    if (needsDirectionalUser)
+                        hasDirectionalFireUser = pawn.equipment?.Primary?.def.IsRangedWeapon == true;
+                    if (!hasUsableSecondary || !hasRangedSecondary
+                        || !hasDirectionalFireUser && needsDirectionalUser)
                     {
                         ThingWithComps secondary = RimKataWeaponSlotUtility
                             .SecondaryWeaponWithVerifiedAccess(pawn);
                         if (secondary != null)
                         {
                             hasRangedSecondary |= secondary.def?.IsRangedWeapon == true;
-                            if (!hasUsableSecondary
+                            if ((!hasUsableSecondary || !hasDirectionalFireUser && needsDirectionalUser)
                                 && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, true))
                             {
                                 hasUsableSecondary = true;
+                                hasDirectionalFireUser |= needsDirectionalUser && secondary.def?.IsRangedWeapon == true;
                             }
                         }
                     }
@@ -2643,7 +2662,8 @@ namespace KRWF.RimKata
                 hasAutomaticSearchRange,
                 hasCombatCapableUser,
                 selectedPlayerPawns >= 2 && hasUsableSecondary,
-                hasRangedSecondary);
+                hasRangedSecondary,
+                hasDirectionalFireUser);
         }
     }
 
@@ -2748,7 +2768,10 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            bool canRemainSecondary = RimKataWeaponSlotUtility.CanUseSecondarySlot(___pawn) && RimKataEquipmentUtility.IsWeaponEnabled(newEq.def) && RimKataGripUtility.GripTypeFor(newEq.def) == RimKataGripType.OneHand;
+            bool canRemainSecondary = RimKataTargetAccess.SettingsFor(___pawn)?.secondaryWeaponEnabled != false
+                && RimKataEligibility.HasRimKataAccess(___pawn)
+                && RimKataEquipmentUtility.IsWeaponEnabled(newEq.def)
+                && RimKataGripUtility.CanGripPair(___pawn, newEq.def, secondary.def);
             if (canRemainSecondary)
             {
                 return !TryInsertPrimaryBeforeSecondary(__instance, ___pawn, newEq, secondary);
@@ -2756,7 +2779,7 @@ namespace KRWF.RimKata
 
             MovePromotedSecondaryOut(__instance, ___pawn, secondary,
                 !RimKataEquipmentUtility.IsWeaponEnabled(newEq.def)
-                    || RimKataGripUtility.GripTypeFor(newEq.def) == RimKataGripType.TwoHand);
+                    || RimKataGripUtility.GripTypeFor(___pawn, newEq.def) == RimKataGripType.TwoHand);
             if (registry?.GetRegistered(___pawn) == secondary)
             {
                 registry.Clear(___pawn, secondary, false);
@@ -2849,9 +2872,9 @@ namespace KRWF.RimKata
             {
                 bool validWeapons = RimKataEquipmentUtility.IsWeaponEnabled(incoming.def)
                     && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
-                    && RimKataGripUtility.GripTypeFor(incoming.def) == RimKataGripType.OneHand
-                    && RimKataGripUtility.GripTypeFor(secondary.def) == RimKataGripType.OneHand;
-                if (validWeapons && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn))
+                    && RimKataGripUtility.CanGripPair(pawn, incoming.def, secondary.def);
+                if (validWeapons && RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
+                    && RimKataEligibility.HasRimKataAccess(pawn))
                 {
                     RimKataSecondaryWeaponRegistry.CurrentRegistry?.Set(pawn, secondary, false);
                 }
@@ -3013,7 +3036,7 @@ namespace KRWF.RimKata
             for (int i = 0; i < defs.Count; i++)
             {
                 ThingDef def = defs[i];
-                if (def?.equipmentType != EquipmentType.Primary || !RimKataEquipmentUtility.IsWeaponEnabled(def) || RimKataGripUtility.GripTypeFor(def) != RimKataGripType.OneHand)
+                if (def?.equipmentType != EquipmentType.Primary || !RimKataEquipmentUtility.IsWeaponEnabled(def) || RimKataGripUtility.GripTypeFor(pawn, def) != RimKataGripType.OneHand)
                 {
                     continue;
                 }
@@ -3028,7 +3051,7 @@ namespace KRWF.RimKata
 
         private static void EquipSecondary(Pawn pawn, ThingDef weaponDef)
         {
-            if (!RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn) || weaponDef == null || !RimKataEquipmentUtility.IsWeaponEnabled(weaponDef) || RimKataGripUtility.GripTypeFor(weaponDef) != RimKataGripType.OneHand)
+            if (!RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn) || weaponDef == null || !RimKataEquipmentUtility.IsWeaponEnabled(weaponDef) || RimKataGripUtility.GripTypeFor(pawn, weaponDef) != RimKataGripType.OneHand)
             {
                 return;
             }

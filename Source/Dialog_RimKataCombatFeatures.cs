@@ -34,6 +34,7 @@ namespace KRWF.RimKata
         private bool crawlFireEnabled;
         private bool slidingEnabled;
         private bool shakeOffEnabled;
+        private bool directionalFireEnabled;
 
         private static readonly string[] LabelKeys =
         {
@@ -53,7 +54,8 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureProneFire",
             "KRWF_RimKata_FeatureCrawlFire",
             "KRWF_RimKata_FeatureSliding",
-            "KRWF_RimKata_FeatureShakeOff"
+            "KRWF_RimKata_FeatureShakeOff",
+            "KRWF_RimKata_FeatureDirectionalFire"
         };
 
         public Dialog_RimKataCombatFeatures(RimKataSettings settings)
@@ -80,6 +82,7 @@ namespace KRWF.RimKata
                 crawlFireEnabled = settings.crawlFireEnabled;
                 slidingEnabled = settings.slidingEnabled;
                 shakeOffEnabled = settings.shakeOffEnabled;
+                directionalFireEnabled = settings.directionalFireEnabled;
             }
 
             doCloseX = false;
@@ -162,6 +165,7 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[14], ref crawlFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[15], ref slidingEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[16], ref shakeOffEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[17], ref directionalFireEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -239,7 +243,8 @@ namespace KRWF.RimKata
                 || settings.proneFireEnabled != proneFireEnabled
                 || settings.crawlFireEnabled != crawlFireEnabled
                 || settings.slidingEnabled != slidingEnabled
-                || settings.shakeOffEnabled != shakeOffEnabled;
+                || settings.shakeOffEnabled != shakeOffEnabled
+                || settings.directionalFireEnabled != directionalFireEnabled;
 
             settings.secondaryWeaponEnabled = secondaryWeaponEnabled;
             settings.singleShotConversionEnabled =
@@ -260,6 +265,7 @@ namespace KRWF.RimKata
             settings.crawlFireEnabled = crawlFireEnabled;
             settings.slidingEnabled = slidingEnabled;
             settings.shakeOffEnabled = shakeOffEnabled;
+            settings.directionalFireEnabled = directionalFireEnabled;
 
             if (changed)
             {

@@ -97,6 +97,8 @@ namespace KRWF.RimKata
 
         internal static bool CanEnterProne(Pawn pawn, Verb verb, LocalTargetInfo target)
         {
+            if (pawn?.jobs?.curDriver is JobDriver_RimKataAttack driver && driver.IsDirectionalFire)
+                return false;
             if (pawn?.Spawned != true
                 || pawn.Dead
                 || pawn.Downed

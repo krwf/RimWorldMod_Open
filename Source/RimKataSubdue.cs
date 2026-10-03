@@ -204,9 +204,10 @@ namespace KRWF.RimKata
             if (!CanOrder(pawn) || target == null || target == pawn || !target.Spawned
                 || target.Dead || target.Map != pawn.Map)
                 return "KRWF_RimKata_SubdueUnavailable".Translate();
-            float maximum = pawn.GetStatValue(StatDefOf.Mass)
-                * RimKataTargetAccess.SettingsFor(pawn).GetSubdueMassMultiplier(pawn);
-            if (target.GetStatValue(StatDefOf.Mass) > maximum)
+            float maximum = (float)System.Math.Min((double)RimKataStrengthUtility.BodyMass(pawn)
+                * (RimKataTargetAccess.SettingsFor(pawn).GetSubdueMassMultiplier(pawn)
+                    + (double)RimKataStrengthUtility.Bonus(pawn)), float.MaxValue);
+            if (RimKataStrengthUtility.BodyMass(target) > maximum)
                 return "KRWF_RimKata_SubdueTooHeavy".Translate(target.LabelShort, maximum.ToString("0.#"));
             if (!pawn.CanReach(target, PathEndMode.Touch, Danger.Deadly))
                 return "NoPath".Translate();

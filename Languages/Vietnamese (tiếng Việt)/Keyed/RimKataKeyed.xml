@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Chuyển sát thương nhận vào sang nhân vật đang bị khống chế. Khi tắt, né tránh hoặc bước vào cận chiến sẽ thả nhân vật đó ra.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Trượt</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Rũ bỏ</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Bắn loạn xạ</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Xác suất trượt</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Xác suất rũ bỏ</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Đặt lại kết quả đã lọc</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Kẻ lảo đảo</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Kẻ gia nhập bí ẩn</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Tăng cường cơ bắp</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Mức tăng sức mạnh</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Bộ phận cấy ghép</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Mặc định: {0}%. Xóa nội dung ô để dùng mặc định. Số in đậm là giá trị riêng, kể cả 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Đặt lại tất cả</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Đặt lại kết quả đã lọc</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

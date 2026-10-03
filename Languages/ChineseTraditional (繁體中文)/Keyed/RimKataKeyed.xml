@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>將受到的傷害轉移給被制服的角色。關閉後，閃避或進入近戰時會釋放該角色。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>滑鏟</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>揮退</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>掃射</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>滑鏟機率</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>揮退機率</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>重設篩選結果</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>蹣跚者</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>詭異加入者</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>力量強化</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>力量增幅</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>植入物</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>預設值：{0}%。清空輸入框以使用預設值。粗體表示個別設定，包括0%。</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>全部重設</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>重設篩選結果</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

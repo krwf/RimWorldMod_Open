@@ -52,6 +52,7 @@ namespace KRWF.RimKata
             }
 
             LongEventHandler.ExecuteWhenFinished(() => RimKataWeaponRenderProbe.Initialize(harmony));
+            LongEventHandler.ExecuteWhenFinished(RimKataStrengthUtility.Initialize);
             try
             {
                 RimKataCombatExtendedCompat.Apply(harmony);
@@ -73,8 +74,10 @@ namespace KRWF.RimKata
             ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
             ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
             ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedDirectionalFire.Apply, "directional firing");
             ApplyCombatExtended(harmony, RimKataCombatExtendedGroundPose.Apply, "ground-pose firing");
             RimKataDynamicAnimeCombatCompat.Apply();
+            RimKataInkCombatCompat.Apply();
             RimKataReboundCompat.Apply();
             RimKataPocketSandCompat.Apply();
             LongEventHandler.ExecuteWhenFinished(() =>
@@ -296,6 +299,7 @@ namespace KRWF.RimKata
         private void PersistSettings()
         {
             Settings.SanitizeGeneProbabilityRules();
+            Settings.SanitizeStrengthRules();
             if (Profiles?.IsInitialized == true)
             {
                 try
@@ -363,6 +367,7 @@ namespace KRWF.RimKata
         {
             RimKataTargetAccess.Rebuild();
             RimKataEquipmentUtility.InvalidateCaches();
+            RimKataStrengthUtility.NotifySettingsChanged(false);
             RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
             RimKataCrawlFireUtility.NotifySettingsChanged();
             RefreshSettingsSnapshot();
@@ -385,6 +390,7 @@ namespace KRWF.RimKata
             RimKataTargetAccess.Rebuild();
             RimKataEquipmentUtility.InvalidateCaches();
             RimKataEligibilityCache.RefreshSettings();
+            RimKataStrengthUtility.NotifySettingsChanged(false);
             RimKataWeaponSlotUtility.NormalizeAllSpawnedLoadouts();
             RefreshSettingsSnapshot();
         }

@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>将受到的伤害转移给被制服的角色。关闭后，闪避或进入近战时会释放该角色。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>滑铲</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>挥退</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>扫射</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>滑铲概率</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>挥退概率</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>重置筛选结果</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>蹒跚者</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>诡异加入者</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>力量强化</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>力量增幅</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>植入体</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>默认值：{0}%。清空输入框以使用默认值。粗体表示单独设置，包括0%。</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>全部重置</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>重置筛选结果</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

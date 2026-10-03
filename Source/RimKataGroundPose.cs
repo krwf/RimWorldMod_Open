@@ -290,11 +290,22 @@ namespace KRWF.RimKata
         {
             NotifyMovement(pawn);
             if (Active.Count == 0 || pawn == null || !Active.TryGetValue(pawn, out var state)
-                || state.groundPose?.PronePose != true) return;
+                || ClearDirectionalFireProne(state) || state.groundPose?.PronePose != true) return;
             if (pawn.CurJobDef == JobDefOf.AttackStatic || pawn.CurJobDef == RimKataDefOf.RimKata_Attack
                 || pawn.CurJobDef == JobDefOf.Wait_Combat || pawn.jobs?.curDriver is JobDriver_Hunt) return;
             if (pawn.Drafted && pawn.drafter.FireAtWill && state.dualEngagementActive) return;
             BeginRise(state);
+        }
+
+        private static bool ClearDirectionalFireProne(RimKataPawnCombatState state)
+        {
+            RimKataGroundPoseState pose = state?.groundPose;
+            if (pose == null || (!pose.PronePose
+                    && !(pose.phase == RimKataFallPhase.Rising && pose.risingFromProne))
+                || !(state.pawn?.jobs?.curDriver is JobDriver_RimKataAttack driver)
+                || !driver.IsDirectionalFire) return false;
+            Clear(state);
+            return true;
         }
 
         internal static void NotifyLoadoutChanged(Pawn pawn)
@@ -519,6 +530,7 @@ namespace KRWF.RimKata
         internal static void Rebuild(RimKataPawnCombatState state)
         {
             if (state?.pawn == null || state.groundPose == null) return;
+            if (ClearDirectionalFireProne(state)) return;
             RimKataGroundPoseState pose = state.groundPose;
             if (pose.resumeProneTick >= 0 && state.ownerComponent != null)
             {

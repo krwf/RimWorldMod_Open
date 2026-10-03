@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>受けるダメージを制圧中の相手に転嫁します。無効にすると、回避または近接戦闘の開始時に相手を解放します。</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>スライディング</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>振り払い</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>乱射</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>スライディング確率</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>振り払い確率</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>絞り込み結果を初期化</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>シャンブラー</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>不気味な加入者</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>筋力強化</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>筋力増加量</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>インプラント</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>既定値：{0}%。入力欄を空にすると既定値を使います。太字は0%を含む個別設定です。</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>すべて初期化</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>絞り込み結果を初期化</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

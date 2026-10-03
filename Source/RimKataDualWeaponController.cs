@@ -34,6 +34,11 @@ namespace KRWF.RimKata
         public bool openingSupportDelayConsumed;
         public Thing cachedCandidateTarget;
         public bool cachedCandidateInterception;
+        public IntVec3 directionalFireCell = IntVec3.Invalid;
+        public IntVec3 cachedDirectionalFireCell = IntVec3.Invalid;
+        public IntVec3 plannedDirectionalFireCell = IntVec3.Invalid;
+        public IntVec3 visualDirectionalFireCell = IntVec3.Invalid;
+        internal IntVec3 cooldownTurnCell = IntVec3.Invalid;
         public List<Thing> automaticCandidates = new List<Thing>();
         private HashSet<int> automaticCandidateIds;
         private int nextAutomaticCandidateValidationIndex;
@@ -71,13 +76,16 @@ namespace KRWF.RimKata
         internal bool ResponseCooldownAppliedThisTick => responseCooldownAppliedTick >= 0
             && responseCooldownAppliedTick == (Find.TickManager?.TicksGame ?? -1);
 
-        public bool HasPlan => plannedTarget != null;
+        public bool HasDirectionalFire => directionalFireCell.IsValid;
+        internal bool HasCachedCandidate => cachedCandidateTarget != null
+            || cachedDirectionalFireCell.IsValid;
+        public bool HasPlan => plannedTarget != null || plannedDirectionalFireCell.IsValid;
         public bool IsWarming => warmupTicksRemaining > 0;
         public bool Active => weapon != null
             && (cooldownTicksRemaining > 0
             || warmupTicksRemaining > 0
             || openingWarmupPending
-             || cachedCandidateTarget != null
+             || HasCachedCandidate || HasDirectionalFire
              || HasAutomaticCandidates
             || focusedTarget != null
             || HasPlan
@@ -85,13 +93,13 @@ namespace KRWF.RimKata
 
         public bool CombatActive => weapon != null
             && (openingWarmupPending
-             || cachedCandidateTarget != null
+             || HasCachedCandidate || HasDirectionalFire
              || HasAutomaticCandidates
             || focusedTarget != null
             || HasPlan);
 
         public bool DedicatedActive => weapon != null
-            && (cachedCandidateTarget != null
+            && (HasCachedCandidate || HasDirectionalFire
                  || HasAutomaticCandidates
                 || focusedTarget != null
                 || HasPlan);
@@ -110,6 +118,11 @@ namespace KRWF.RimKata
                 ref openingSupportDelayConsumed,
                 "openingSupportDelayConsumed");
             Scribe_References.Look(ref cachedCandidateTarget, "cachedCandidateTarget");
+            Scribe_Values.Look(ref directionalFireCell, "directionalFireCell", IntVec3.Invalid);
+            Scribe_Values.Look(ref cachedDirectionalFireCell, "cachedDirectionalFireCell", IntVec3.Invalid);
+            Scribe_Values.Look(ref plannedDirectionalFireCell, "plannedDirectionalFireCell", IntVec3.Invalid);
+            Scribe_Values.Look(ref visualDirectionalFireCell, "visualDirectionalFireCell", IntVec3.Invalid);
+            Scribe_Values.Look(ref cooldownTurnCell, "cooldownTurnCell", IntVec3.Invalid);
             Scribe_Collections.Look(
                 ref automaticCandidates,
                 "automaticCandidates",
@@ -223,6 +236,8 @@ namespace KRWF.RimKata
 
         internal void ClearInvalidVisualTarget(Pawn pawn)
         {
+            if (!HasPlan && cooldownTicksRemaining <= 0 && visualAimTicksRemaining <= 0)
+                visualDirectionalFireCell = IntVec3.Invalid;
             if (visualTarget != null
                 && ((!HasPlan && cooldownTicksRemaining <= 0
                         && visualAimTicksRemaining <= 0)
@@ -238,6 +253,7 @@ namespace KRWF.RimKata
         {
             cooldownTicksRemaining = ticks;
             cooldownTurnTarget = null;
+            cooldownTurnCell = IntVec3.Invalid;
             cooldownTurnTicks = 0;
             rangedCooldown = false;
             responseCooldownAppliedTick = Find.TickManager?.TicksGame ?? -1;
@@ -266,6 +282,7 @@ namespace KRWF.RimKata
                 if (cooldownTicksRemaining == 0)
                 {
                     cooldownTurnTarget = null;
+                    cooldownTurnCell = IntVec3.Invalid;
                     cooldownTurnTicks = 0;
                 }
                 if (cooldownTicksRemaining <= 0
@@ -291,6 +308,7 @@ namespace KRWF.RimKata
                 if (visualAimTicksRemaining <= 0 && !HasPlan)
                 {
                     visualTarget = null;
+                    visualDirectionalFireCell = IntVec3.Invalid;
                 }
             }
         }
@@ -299,6 +317,7 @@ namespace KRWF.RimKata
         {
             nativeAttack?.Cancel();
             plannedTarget = null;
+            plannedDirectionalFireCell = IntVec3.Invalid;
             plannedInterception = false;
             plannedCloseAttack = false;
             plannedCloseContext = false;
@@ -441,6 +460,10 @@ namespace KRWF.RimKata
 
             cachedCandidateTarget = null;
             cachedCandidateInterception = false;
+            directionalFireCell = IntVec3.Invalid;
+            cachedDirectionalFireCell = IntVec3.Invalid;
+            visualDirectionalFireCell = IntVec3.Invalid;
+            cooldownTurnCell = IntVec3.Invalid;
             ClearStoredAutomaticCandidates();
             automaticCandidateCollectionClosed = false;
             pendingCandidateLimitOverride = 0;
@@ -1264,6 +1287,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            RimKataDirectionalFire.Clear(cycle);
             cycle.focusedTarget = target;
             cycle.focusedTargetFromAttackGizmo = fromAttackGizmo;
 
@@ -1271,6 +1295,38 @@ namespace KRWF.RimKata
             RefreshDualEngagementState(pawn, state);
             state.dualLastDrivenTick = -1;
 
+            return true;
+        }
+
+        internal static bool BeginDirectionalFire(Pawn pawn, Verb orderedVerb, IntVec3 cell)
+        {
+            if (pawn?.Map == null || !cell.IsValid || !cell.InBounds(pawn.Map)
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn))
+                return false;
+
+            RimKataPawnCombatState state = StateFor(pawn, true);
+            BindCurrentWeapons(pawn, state, true);
+            if (!RimKataDirectionalFire.Register(pawn, state, cell,
+                orderedVerb?.EquipmentSource as ThingWithComps))
+                return false;
+
+            state.engagementOwnerWeapon = orderedVerb?.EquipmentSource as ThingWithComps;
+            state.dualLastDrivenTick = -1;
+            if (RimKataTargetAccess.SettingsFor(pawn)?.randomAttackEnabled != false)
+                RimKataSharedTargetSearch.Begin(pawn, state, pawn.Position);
+            RefreshDualEngagementState(pawn, state);
+            return true;
+        }
+
+        internal static bool UpdateDirectionalFire(Pawn pawn, Verb orderedVerb, IntVec3 cell)
+        {
+            ThingWithComps weapon = orderedVerb?.EquipmentSource as ThingWithComps;
+            if (weapon == null) return false;
+            RimKataPawnCombatState state = StateFor(pawn, false);
+            if (state == null) return false;
+            BindCurrentWeapons(pawn, state, true);
+            if (!RimKataDirectionalFire.Register(pawn, state, cell, weapon)) return false;
+            RefreshDualEngagementState(pawn, state);
             return true;
         }
 
@@ -2780,7 +2836,7 @@ namespace KRWF.RimKata
             }
 
             Thing cachedTarget = cycle.cachedCandidateTarget;
-            if (cachedTarget != null)
+            if (cycle.HasCachedCandidate)
             {
                 return false;
             }
@@ -2792,6 +2848,7 @@ namespace KRWF.RimKata
                 ?? RimKataEligibility.RandomAttackEnabledForPawn(pawn);
             RimKataMapComponent component = state.ownerComponent;
             bool noAutomaticSources = randomAttack
+                && !cycle.HasDirectionalFire
                 && !cycle.HasAutomaticCandidates
                 && component != null && component.map == pawn.Map
                 && !component.HasActiveExplosiveProjectiles;
@@ -2802,7 +2859,7 @@ namespace KRWF.RimKata
             Thing retainedTarget = cycle.lastFiredTarget;
             if (retainedTarget is Pawn
                 && ordinaryWeaponEnabled
-                && !randomAttack)
+                && !randomAttack && !cycle.HasDirectionalFire)
             {
                 if (ValidCurrentTargetForVerb(
                         pawn,
@@ -2838,6 +2895,7 @@ namespace KRWF.RimKata
             if (!selected)
             {
                 availability.selectionEmpty = randomAttack
+                    && !cycle.HasDirectionalFire
                     && !cycle.HasAutomaticCandidates
                     && component != null && component.map == pawn.Map
                     && !component.HasActiveExplosiveProjectiles;
@@ -2845,6 +2903,11 @@ namespace KRWF.RimKata
             }
 
             availability.selectionEmpty = false;
+            if (cycle.cachedDirectionalFireCell.IsValid)
+            {
+                availability.checkedDirectionalCell = cycle.cachedDirectionalFireCell;
+                availability.checkedDirectionalVerb = verb;
+            }
             if (randomAttack && candidate is Pawn)
             {
                 availability.checkedTarget = candidate;
@@ -3158,6 +3221,9 @@ namespace KRWF.RimKata
             {
                 return true;
             }
+
+            if (ordinaryWeaponEnabled && cycle.HasDirectionalFire && !verb.IsMeleeAttack)
+                return true;
 
             if (ordinaryWeaponEnabled && FocusedTargetUsableNow(
                 pawn,
@@ -3504,6 +3570,7 @@ namespace KRWF.RimKata
             }
 
             cycle.plannedTarget = null;
+            cycle.plannedDirectionalFireCell = IntVec3.Invalid;
             cycle.plannedInterception = false;
             cycle.plannedCloseAttack = false;
             cycle.plannedCloseContext = false;
@@ -4335,6 +4402,7 @@ namespace KRWF.RimKata
             }
 
             Thing previousTarget = cycle.plannedTarget;
+            IntVec3 previousCell = cycle.plannedDirectionalFireCell;
             cycle.ClearPlan(false);
             if (cycle.openingWarmupPending
                 && !cycle.firedInCurrentOpening)
@@ -4348,6 +4416,8 @@ namespace KRWF.RimKata
                 cycle.visualTarget = null;
                 cycle.visualAimTicksRemaining = 0;
             }
+            if (previousCell.IsValid && cycle.visualDirectionalFireCell == previousCell)
+                cycle.visualDirectionalFireCell = IntVec3.Invalid;
         }
 
         private static void RecordFirstFiredWeapon(
@@ -4949,6 +5019,13 @@ namespace KRWF.RimKata
             LocalTargetInfo target = targetThing != null && targetThing.Spawned
                 ? new LocalTargetInfo(targetThing)
                 : LocalTargetInfo.Invalid;
+            if (cycle.cooldownTicksRemaining > 0 && cycle.visualDirectionalFireCell.IsValid)
+                target = new LocalTargetInfo(cycle.visualDirectionalFireCell);
+            else if (cycle.plannedDirectionalFireCell.IsValid)
+                target = new LocalTargetInfo(cycle.plannedDirectionalFireCell);
+            else if (!target.IsValid && cycle.visualAimTicksRemaining > 0
+                && cycle.visualDirectionalFireCell.IsValid)
+                target = new LocalTargetInfo(cycle.visualDirectionalFireCell);
             data = new RimKataWeaponVisualData
             {
                 weapon = weapon,
@@ -4962,6 +5039,15 @@ namespace KRWF.RimKata
                 && livePlannedTarget != null && cycle.cooldownTurnTarget == livePlannedTarget)
             {
                 data.turnTarget = new LocalTargetInfo(livePlannedTarget);
+                data.turning = true;
+                data.turnStartAngle = cycle.cooldownTurnStartAngle;
+                data.turnProgress = cycle.CooldownTurnProgress;
+            }
+            else if (cycle.cooldownTicksRemaining > 0 && cycle.cooldownTurnTicks > 0
+                && cycle.plannedDirectionalFireCell.IsValid
+                && cycle.cooldownTurnCell == cycle.plannedDirectionalFireCell)
+            {
+                data.turnTarget = new LocalTargetInfo(cycle.cooldownTurnCell);
                 data.turning = true;
                 data.turnStartAngle = cycle.cooldownTurnStartAngle;
                 data.turnProgress = cycle.CooldownTurnProgress;
@@ -5594,6 +5680,8 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            if (cycle.HasDirectionalFire) return true;
+
             bool closeContext = cycle.plannedCloseContext
                 || state?.dualCloseCombatActive == true;
             Verb verb = RimKataWeaponSlotUtility.CombatVerb(
@@ -5959,7 +6047,10 @@ namespace KRWF.RimKata
                 | state.secondaryWeaponCycle.Bind(secondary);
             ResolveWeaponBinding(pawn, state.primaryWeaponCycle);
             ResolveWeaponBinding(pawn, state.secondaryWeaponCycle);
-            if (RimKataTargetAccess.SettingsFor(pawn)?.smoothAimTransition == false)
+            RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
+            if (settings?.directionalFireEnabled == false)
+                RimKataDirectionalFire.Clear(state);
+            if (settings?.smoothAimTransition == false)
             {
                 state.primaryWeaponCycle.cooldownTurnTarget = null;
                 state.primaryWeaponCycle.cooldownTurnTicks = 0;
@@ -6014,7 +6105,10 @@ namespace KRWF.RimKata
                 return;
             }
 
-            if (RimKataTargetAccess.SettingsFor(pawn)?.smoothAimTransition == false)
+            RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
+            if (settings?.directionalFireEnabled == false)
+                RimKataDirectionalFire.Clear(state);
+            if (settings?.smoothAimTransition == false)
             {
                 state.primaryWeaponCycle.cooldownTurnTarget = null;
                 state.primaryWeaponCycle.cooldownTurnTicks = 0;
@@ -6091,6 +6185,8 @@ namespace KRWF.RimKata
 
         private struct CycleVerbAvailability
         {
+            internal IntVec3 checkedDirectionalCell;
+            internal Verb checkedDirectionalVerb;
             public Verb verb;
             public bool evaluated;
             public bool usable;
@@ -6153,7 +6249,7 @@ namespace KRWF.RimKata
                 return changed;
             }
 
-            bool hadUnavailableWork = cycle.HasAutomaticCandidates
+            bool hadUnavailableWork = cycle.HasAutomaticCandidates || cycle.HasDirectionalFire
                 || cycle.cachedCandidateTarget != null
                 || cycle.focusedTarget != null
                 || cycle.HasPlan
@@ -6175,6 +6271,8 @@ namespace KRWF.RimKata
             bool ordinaryWeaponEnabled = cycle.ordinaryWeaponEnabled;
             bool interceptionWork = !ordinaryWeaponEnabled
                 && HasActiveInterceptionWork(pawn, cycle);
+            if (!ordinaryWeaponEnabled && cycle.HasDirectionalFire)
+                RimKataDirectionalFire.Clear(cycle);
             if (interceptionWork)
             {
                 changed |= cycle.HasAutomaticCandidates
@@ -6316,7 +6414,7 @@ namespace KRWF.RimKata
             }
 
             Thing rangeCheckedTarget = null;
-            if (!focusedTargetControlsCycle)
+            if (!focusedTargetControlsCycle && !cycle.plannedDirectionalFireCell.IsValid)
             {
                 Thing rangeTarget = cycle.plannedTarget ?? cycle.visualTarget;
                 if (!InterruptMovingFireOutsideAutomaticRange(
@@ -6349,6 +6447,7 @@ namespace KRWF.RimKata
                 cycle.plannedActionVerb = null;
             }
             Thing checkedTarget = null;
+            bool checkedDirectionalPlan = false;
             bool explicitPlan = cycle.plannedTarget != null
                 && (cycle.plannedTarget == cycle.focusedTarget
                     || (playerForced && cycle.plannedTarget == assignedTarget));
@@ -6369,6 +6468,7 @@ namespace KRWF.RimKata
                     ref availability))
                 {
                     checkedTarget = cycle.plannedTarget;
+                    checkedDirectionalPlan = cycle.plannedDirectionalFireCell.IsValid;
                 }
                 else
                 {
@@ -6400,7 +6500,7 @@ namespace KRWF.RimKata
                 && !cycle.HasPlan)
             {
                 rangeCheckedTarget = null;
-                if (cycle.cachedCandidateTarget == null)
+                if (!cycle.HasCachedCandidate)
                 {
                     bool selectedNow = TryCacheSharedCandidate(
                         pawn,
@@ -6415,7 +6515,7 @@ namespace KRWF.RimKata
                 }
 
                 automaticPromotionAttempted =
-                    cycle.cachedCandidateTarget != null;
+                    cycle.HasCachedCandidate;
                 if (automaticPromotionAttempted
                     && TryPromoteCachedCandidate(
                         pawn,
@@ -6430,6 +6530,9 @@ namespace KRWF.RimKata
                         ref availability))
                 {
                     promotedAutomaticTarget = promotedCandidate;
+                    checkedDirectionalPlan = cycle.plannedDirectionalFireCell.IsValid
+                        && availability.checkedDirectionalVerb == verb
+                        && availability.checkedDirectionalCell == cycle.plannedDirectionalFireCell;
                 }
             }
 
@@ -6573,7 +6676,8 @@ namespace KRWF.RimKata
                 return;
             }
 
-            if (cycle.plannedTarget != checkedTarget
+            if (((cycle.plannedDirectionalFireCell.IsValid && !checkedDirectionalPlan)
+                    || cycle.plannedTarget != checkedTarget)
                 && !ValidPlan(
                     pawn, cycle, verb, assignedTarget, playerForced,
                     killIncappedTarget, closeCombatContext, ref availability))
@@ -6749,8 +6853,11 @@ namespace KRWF.RimKata
             cycle.rangedCooldown = !actionVerb.IsMeleeAttack;
             cycle.lastFiredTarget = firedTarget;
             cycle.visualTarget = firedTarget;
+            cycle.visualDirectionalFireCell = !attack.target.HasThing
+                ? attack.target.Cell : IntVec3.Invalid;
             cycle.visualAimTicksRemaining = cooldown;
             cycle.cooldownTurnTarget = null;
+            cycle.cooldownTurnCell = IntVec3.Invalid;
             cycle.cooldownTurnTicks = 0;
             if (RimKataTargetAccess.SettingsFor(pawn)?.smoothAimTransition != false)
             {
@@ -6765,6 +6872,7 @@ namespace KRWF.RimKata
             {
                 cycle.cachedCandidateTarget = null;
                 cycle.cachedCandidateInterception = false;
+                cycle.cachedDirectionalFireCell = IntVec3.Invalid;
                 return;
             }
 
@@ -6780,7 +6888,7 @@ namespace KRWF.RimKata
                         || verb.IsMeleeAttack);
                 if (allowAutomaticReselection)
                 {
-                    if (!(RimKataTargeting.IsProjectile(firedTarget))
+                    if (firedTarget != null && !(RimKataTargeting.IsProjectile(firedTarget))
                         && !RimKataSharedTargetSearch.IsLiveRegisteredCandidate(
                             pawn,
                             firedTarget))
@@ -6801,7 +6909,7 @@ namespace KRWF.RimKata
                         randomAttackEnabled,
                         verb,
                         ref availability);
-                    if (cycle.cachedCandidateTarget != null
+                    if (cycle.HasCachedCandidate
                         && TryPromoteCachedCandidate(
                             pawn,
                             state,
@@ -6847,7 +6955,8 @@ namespace KRWF.RimKata
                         pawn,
                         assignedTarget))
                 || (primaryCandidate == null && secondaryCandidate == null)
-                || !(pawn.jobs?.curDriver is JobDriver_RimKataAttack driver))
+                || !(pawn.jobs?.curDriver is JobDriver_RimKataAttack driver)
+                || driver.IsDirectionalFire)
             {
                 return false;
             }
@@ -6911,9 +7020,24 @@ namespace KRWF.RimKata
             Thing cachedTarget = cycle?.cachedCandidateTarget;
             bool cachedInterception =
                 cycle?.cachedCandidateInterception == true;
-            if (cycle == null || cachedTarget == null || cycle.ResponseCooldownAppliedThisTick)
+            if (cycle == null || !cycle.HasCachedCandidate || cycle.ResponseCooldownAppliedThisTick)
             {
                 return false;
+            }
+
+            if (cycle.cachedDirectionalFireCell.IsValid)
+            {
+                IntVec3 shotCell = cycle.cachedDirectionalFireCell;
+                cycle.cachedDirectionalFireCell = IntVec3.Invalid;
+                SetCandidate(pawn, cycle, null, false, false, false, false);
+                cycle.plannedDirectionalFireCell = shotCell;
+                if (cycle.cooldownTicksRemaining > 0
+                    && RimKataTargetAccess.SettingsFor(pawn)?.smoothAimTransition != false)
+                {
+                    cycle.cooldownTurnCell = shotCell;
+                    cycle.cooldownTurnTicks = cycle.cooldownTicksRemaining;
+                }
+                return true;
             }
 
             cycle.cachedCandidateTarget = null;
@@ -7184,6 +7308,7 @@ namespace KRWF.RimKata
                 || verb.IsMeleeAttack
                 || cycle == null
                 || !cycle.HasPlan
+                || cycle.plannedDirectionalFireCell.IsValid
                 || cycle.plannedInterception
                 || cycle.plannedCloseContext
                 || !pawn.CanReachImmediate(cycle.plannedTarget, PathEndMode.Touch))
@@ -7232,6 +7357,8 @@ namespace KRWF.RimKata
                 cycle.cooldownTurnTicks = cycle.cooldownTicksRemaining;
             }
             cycle.plannedTarget = target;
+            cycle.plannedDirectionalFireCell = IntVec3.Invalid;
+            cycle.cooldownTurnCell = IntVec3.Invalid;
             cycle.plannedInterception = interception;
             cycle.plannedCloseAttack = closeAttack;
             cycle.plannedCloseContext = closeContext;
@@ -7239,6 +7366,7 @@ namespace KRWF.RimKata
             if (updateVisualTarget)
             {
                 cycle.visualTarget = target;
+                cycle.visualDirectionalFireCell = IntVec3.Invalid;
             }
         }
                 
@@ -7383,6 +7511,18 @@ namespace KRWF.RimKata
             bool closeCombatContext,
             ref CycleVerbAvailability availability)
         {
+            if (cycle.plannedDirectionalFireCell.IsValid)
+            {
+                if (availability.checkedDirectionalVerb == verb
+                    && availability.checkedDirectionalCell == cycle.plannedDirectionalFireCell)
+                    return true;
+                if (!RimKataDirectionalFire.TryGetShotTarget(pawn, cycle, verb, out LocalTargetInfo shot))
+                    return false;
+                cycle.plannedDirectionalFireCell = shot.Cell;
+                availability.checkedDirectionalCell = shot.Cell;
+                availability.checkedDirectionalVerb = verb;
+                return true;
+            }
             Thing target = cycle.plannedTarget;
             if (target == null
                 || target.Destroyed
@@ -7561,6 +7701,12 @@ namespace KRWF.RimKata
             bool closeCombatContext,
             bool allowAutomaticRangedFire)
         {
+            if (cycle.plannedDirectionalFireCell.IsValid)
+            {
+                ApplyInterruptedBurstCooldown(pawn, cycle, verb);
+                ClearTargetPreservingCycle(cycle);
+                return;
+            }
             Thing invalidTarget = cycle.plannedTarget ?? assignedTarget;
             ApplyInterruptedBurstCooldown(pawn, cycle, verb);
             ClearTargetPreservingCycle(cycle);
@@ -7752,6 +7898,8 @@ namespace KRWF.RimKata
 
         private static LocalTargetInfo TargetInfo(RimKataWeaponCycleState cycle)
         {
+            if (cycle.plannedDirectionalFireCell.IsValid)
+                return new LocalTargetInfo(cycle.plannedDirectionalFireCell);
             if (cycle.plannedInterception && RimKataTargeting.IsProjectile(cycle.plannedTarget))
             {
                 return new LocalTargetInfo(cycle.plannedTarget);
@@ -7930,12 +8078,14 @@ namespace KRWF.RimKata
         {
             RimKataWeaponCycleState primary = state.primaryWeaponCycle;
             RimKataWeaponCycleState secondary = state.secondaryWeaponCycle;
-            bool primaryHasAim = IsLiveVisualTarget(pawn, primary?.plannedTarget)
+            bool primaryHasAim = HasDirectionalAim(primary)
+                || IsLiveVisualTarget(pawn, primary?.plannedTarget)
                 || ((primary?.HasPlan == true
                         || primary?.cooldownTicksRemaining > 0
                         || primary?.visualAimTicksRemaining > 0)
                     && IsLiveVisualTarget(pawn, primary?.visualTarget));
-            bool secondaryHasAim = IsLiveVisualTarget(pawn, secondary?.plannedTarget)
+            bool secondaryHasAim = HasDirectionalAim(secondary)
+                || IsLiveVisualTarget(pawn, secondary?.plannedTarget)
                 || ((secondary?.HasPlan == true
                         || secondary?.cooldownTicksRemaining > 0
                         || secondary?.visualAimTicksRemaining > 0)
@@ -7978,6 +8128,11 @@ namespace KRWF.RimKata
 
             return primaryEta <= secondaryEta ? primary : secondary;
         }
+
+        private static bool HasDirectionalAim(RimKataWeaponCycleState cycle)
+            => cycle != null && (cycle.plannedDirectionalFireCell.IsValid
+                || ((cycle.cooldownTicksRemaining > 0 || cycle.visualAimTicksRemaining > 0)
+                    && cycle.visualDirectionalFireCell.IsValid));
 
         private static Verb CombatVerbForAim(
             Pawn pawn,

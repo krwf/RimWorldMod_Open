@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Siirtää saadun vahingon kiinni pidettyyn hahmoon. Kun toiminto on pois käytöstä, hahmo päästetään irti väistettäessä tai lähitaistelun alkaessa.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Liuku</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Ravistelu</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Hajatuli</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Liu’un todennäköisyys</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Ravistelun todennäköisyys</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Palauta suodatetut tulokset</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Hoipertelija</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Lihasvoiman vahvistus</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Voiman lisäys</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantit</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Oletus: {0} %. Tyhjennä kenttä käyttääksesi oletusta. Lihavoidut arvot ovat yksilöllisiä asetuksia, myös 0 %.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Palauta kaikki</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Palauta suodatetut tulokset</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

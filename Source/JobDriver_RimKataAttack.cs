@@ -264,11 +264,30 @@ namespace KRWF.RimKata
 
         private Thing AssignedTarget => TargetThingA;
         private bool IsPlayerForced => job?.playerForced == true;
+        internal bool IsDirectionalFire => job != null && job.targetA.IsValid && !job.targetA.HasThing;
         internal bool IsStructureMelee => structureMelee || (job?.targetA.Thing is Building
             && job.verbToUse?.IsMeleeAttack == true);
         internal bool CanAbsorbAutomaticAttackJob => !endingJob && !IsStructureMelee;
         internal bool StructureMeleeLimitReached => structureMeleeAttacksMade > 0
             && structureMeleeAttacksMade >= job.maxNumMeleeAttacks;
+
+        private bool EnsureDirectionalFireInitialized()
+        {
+            if (dualCycleStateImported) return true;
+            if (!RimKataDualWeaponController.BeginDirectionalFire(
+                    pawn, job.verbToUse, job.targetA.Cell)) return false;
+            dualCycleStateImported = true;
+            return true;
+        }
+
+        internal bool TryUpdateDirectionalFire(Verb verb, IntVec3 cell)
+        {
+            if (endingJob || !IsDirectionalFire || !EnsureDirectionalFireInitialized()
+                || !RimKataDualWeaponController.UpdateDirectionalFire(pawn, verb, cell)) return false;
+            job.targetA = cell;
+            job.verbToUse = verb;
+            return true;
+        }
 
         public override string GetReport()
         {
@@ -313,6 +332,7 @@ namespace KRWF.RimKata
             {
                 endingJob = true;
                 postTickCombatState = null;
+                if (IsDirectionalFire) RimKataDirectionalFire.Clear(pawn);
                 ClearPlannedAttack();
                 ClearAimStance();
                 if (IsStructureMelee)
@@ -328,6 +348,12 @@ namespace KRWF.RimKata
                 "RimKataCombatInitialization");
             initialization.initAction = delegate
             {
+                if (IsDirectionalFire)
+                {
+                    if (!EnsureDirectionalFireInitialized())
+                        EndRimKataJobWith(JobCondition.Incompletable);
+                    return;
+                }
                 if (IsStructureMelee)
                 {
                     structureMelee = true;
@@ -442,6 +468,12 @@ namespace KRWF.RimKata
             out bool assignedTargetValid,
             out bool weaponScopedFocusJob)
         {
+            if (IsDirectionalFire)
+            {
+                assignedTargetValid = false;
+                weaponScopedFocusJob = false;
+                return null;
+            }
             Thing assignedTarget = AssignedTarget;
             weaponScopedFocusJob =
                 RimKataDualWeaponController.IsWeaponScopedFocusJob(
@@ -466,6 +498,15 @@ namespace KRWF.RimKata
             bool weaponScopedFocusJob,
             bool allowAutomaticRangedFire)
         {
+            if (IsDirectionalFire)
+            {
+                RimKataDualWeaponController.TickPreparedWeaponCycles(
+                    pawn, state, null, false, false, null, false, true);
+                if (!RimKataDirectionalFire.HasRegisteredTarget(state)
+                    && !RimKataDualWeaponController.HasCombatContinuity(pawn, state))
+                    EndRimKataJobWith(JobCondition.Succeeded);
+                return;
+            }
             if (!assignedTargetValid)
             {
                 if (weaponScopedFocusJob)
@@ -1310,6 +1351,7 @@ namespace KRWF.RimKata
         {
             if (!fromQueue
                 || job?.def != RimKataDefOf.RimKata_Attack
+                || !job.targetA.HasThing
                 || job.playerForced != true
                 || pawn?.Drafted != true
                 || pawn.InMentalState

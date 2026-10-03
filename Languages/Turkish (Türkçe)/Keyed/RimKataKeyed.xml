@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Alınan hasarı etkisiz hâle getirilen kişiye aktarır. Devre dışıyken kaçınma veya yakın dövüşe girme, tutulan kişiyi serbest bırakır.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Kayma</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Silkinme</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Rastgele ateş</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Kayma olasılığı</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Silkinme olasılığı</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Filtrelenen sonuçları sıfırla</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Sendeleyen</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Kas güçlendirme</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Güç artışı</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>İmplantlar</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Varsayılan: %{0}. Varsayılanı kullanmak için alanı boşaltın. Kalın değerler, %0 dahil, özel ayarlardır.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Tümünü sıfırla</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Filtrelenen sonuçları sıfırla</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

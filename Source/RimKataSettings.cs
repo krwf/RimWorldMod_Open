@@ -443,6 +443,7 @@ namespace KRWF.RimKata
         public const bool DefaultCrawlFireEnabled = true;
         public const bool DefaultSlidingEnabled = false;
         public const bool DefaultShakeOffEnabled = true;
+        public const bool DefaultDirectionalFireEnabled = true;
         public const bool DefaultCrawlFireDefaultAllowed = true;
         public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
@@ -590,6 +591,22 @@ namespace KRWF.RimKata
         public float slidingChancePercent = DefaultSlidingChancePercent;
         public float shakeOffChancePercent = DefaultShakeOffChancePercent;
         public int subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
+        public float strengthIncreasePercent = 0f;
+        private static readonly string[] DefaultStrengthApparelDefNames =
+        {
+            "Apparel_ArmorCataphract",
+            "Apparel_ArmorCataphractPrestige",
+            "Apparel_MechlordSuit",
+            "Apparel_ArmorLocust",
+            "Apparel_ArmorCataphractPhoenix",
+            "Apparel_ArmorRecon",
+            "Apparel_ArmorReconPrestige",
+            "Apparel_ArmorMarineGrenadier",
+            "Apparel_PowerArmor",
+            "Apparel_ArmorMarinePrestige"
+        };
+        public List<RimKataStrengthRule> strengthRules = CreateDefaultStrengthRules();
+        private bool strengthApparelDefaultsInitialized = true;
         public float responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
         public int responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
         public List<RimKataGeneProbabilityRule> geneProbabilityRules = new List<RimKataGeneProbabilityRule>();
@@ -644,6 +661,7 @@ namespace KRWF.RimKata
         public bool crawlFireEnabled = DefaultCrawlFireEnabled;
         public bool slidingEnabled = DefaultSlidingEnabled;
         public bool shakeOffEnabled = DefaultShakeOffEnabled;
+        public bool directionalFireEnabled = DefaultDirectionalFireEnabled;
         public bool crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
         public bool crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
         public bool smoothAimTransition = DefaultSmoothAimTransition;
@@ -851,6 +869,9 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref slidingChancePercent, "slidingChancePercent", DefaultSlidingChancePercent);
             Scribe_Values.Look(ref shakeOffChancePercent, "shakeOffChancePercent", DefaultShakeOffChancePercent);
             Scribe_Values.Look(ref subdueImpactStunTicks, "subdueImpactStunTicks", DefaultSubdueImpactStunTicks);
+            Scribe_Values.Look(ref strengthIncreasePercent, "strengthIncreasePercent", 0f);
+            Scribe_Collections.Look(ref strengthRules, "strengthRules", LookMode.Deep);
+            Scribe_Values.Look(ref strengthApparelDefaultsInitialized, "strengthApparelDefaultsInitialized", false);
             if (preservePreviousCombatDefaults)
                 combatDefaultsVersion = CurrentCombatDefaultsVersion;
             Scribe_Values.Look(ref responseWeaponDurabilityLossChancePercent, "responseWeaponDurabilityLossChancePercent", DefaultResponseWeaponDurabilityLossChancePercent);
@@ -903,6 +924,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref crawlFireEnabled, "crawlFireEnabled", DefaultCrawlFireEnabled);
             Scribe_Values.Look(ref slidingEnabled, "slidingEnabled", DefaultSlidingEnabled);
             Scribe_Values.Look(ref shakeOffEnabled, "shakeOffEnabled", DefaultShakeOffEnabled);
+            Scribe_Values.Look(ref directionalFireEnabled, "directionalFireEnabled", DefaultDirectionalFireEnabled);
             bool legacyCrawlDefault = DefaultCrawlFireDefaultAllowed;
             if (Scribe.mode == LoadSaveMode.LoadingVars)
                 Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
@@ -968,6 +990,7 @@ namespace KRWF.RimKata
                     MinimumResponseWeaponDurabilityLossAmount,
                     MaximumResponseWeaponDurabilityLossAmount);
                 SanitizeGeneProbabilityRules();
+                SanitizeStrengthRules();
                 aiSecondaryWeaponChancePercent = SanitizePercent(
                     aiSecondaryWeaponChancePercent,
                     DefaultAiSecondaryWeaponChancePercent);
@@ -1041,11 +1064,49 @@ namespace KRWF.RimKata
             slidingChancePercent = SanitizePercent(slidingChancePercent, DefaultSlidingChancePercent);
             shakeOffChancePercent = SanitizePercent(shakeOffChancePercent, DefaultShakeOffChancePercent);
             subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
             subdueMassMultiplierPercent = SanitizeNonNegative(subdueMassMultiplierPercent, DefaultSubdueMassMultiplierPercent);
             subdueMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(subdueMassMultiplierGrowthPerLevelPercent, DefaultSubdueMassMultiplierGrowthPerLevelPercent);
             subdueMassMultiplierMinimumPercent = SanitizeNonNegative(subdueMassMultiplierMinimumPercent, DefaultSubdueMassMultiplierMinimumPercent);
             responseAccidentalFireChancePercent = SanitizePercent(
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
+        }
+
+        internal void SanitizeStrengthRules()
+        {
+            strengthRules ??= new List<RimKataStrengthRule>();
+            var keys = new HashSet<string>(StringComparer.Ordinal);
+            for (int i = 0; i < strengthRules.Count; i++)
+            {
+                RimKataStrengthRule rule = strengthRules[i];
+                if (string.IsNullOrEmpty(rule?.defName)
+                    || (rule.sourceKind != RimKataStrengthSourceKind.Apparel
+                        && rule.sourceKind != RimKataStrengthSourceKind.Implant)
+                    || !keys.Add(rule.Key))
+                {
+                    strengthRules.RemoveAt(i--);
+                    continue;
+                }
+                rule.Sanitize();
+            }
+            if (!strengthApparelDefaultsInitialized)
+            {
+                foreach (RimKataStrengthRule rule in CreateDefaultStrengthRules())
+                {
+                    if (keys.Add(rule.Key)) strengthRules.Add(rule);
+                }
+                strengthApparelDefaultsInitialized = true;
+            }
+        }
+
+        internal static List<RimKataStrengthRule> CreateDefaultStrengthRules()
+        {
+            return DefaultStrengthApparelDefNames.Select(defName => new RimKataStrengthRule
+            {
+                sourceKind = RimKataStrengthSourceKind.Apparel,
+                defName = defName,
+                enabled = true
+            }).ToList();
         }
 
         internal void SanitizeGeneProbabilityRules()
@@ -1133,6 +1194,7 @@ namespace KRWF.RimKata
             slidingChancePercent = DefaultSlidingChancePercent;
             shakeOffChancePercent = DefaultShakeOffChancePercent;
             subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
+            strengthIncreasePercent = 0f;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
             responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -1169,6 +1231,7 @@ namespace KRWF.RimKata
             crawlFireEnabled = DefaultCrawlFireEnabled;
             slidingEnabled = DefaultSlidingEnabled;
             shakeOffEnabled = DefaultShakeOffEnabled;
+            directionalFireEnabled = DefaultDirectionalFireEnabled;
             crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
             crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
             smoothAimTransition = DefaultSmoothAimTransition;

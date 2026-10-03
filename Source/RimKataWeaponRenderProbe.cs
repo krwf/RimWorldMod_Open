@@ -22,6 +22,7 @@ namespace KRWF.RimKata
             internal ThingWithComps primary;
             internal ThingWithComps secondary;
             internal Vector3 root;
+            internal float bodyAltitude;
             internal Rot4 facing;
             internal PawnRenderFlags flags;
             internal bool independentIdle;
@@ -140,6 +141,7 @@ namespace KRWF.RimKata
             frame.primary = context.primary;
             frame.secondary = context.secondary;
             frame.root = root;
+            frame.bodyAltitude = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, root, facing);
             frame.facing = facing;
             frame.flags = flags;
             frame.independentIdle = !PawnRenderUtility.CarryWeaponOpenly(pawn) && !IsAiming(pawn);
@@ -164,14 +166,14 @@ namespace KRWF.RimKata
                             out Vector3 drawLoc, out float aimAngle) == SecondaryDrawResult.Native)
                         {
                             RimKataDualWeaponRenderUtility.DrawSecondaryFromOwnIdlePose(
-                                frame.secondary, frame.root, frame.facing, drawLoc, aimAngle);
+                                frame.secondary, frame.root, frame.facing, drawLoc, aimAngle, frame.bodyAltitude);
                         }
                     }
                     else if (frame.primaryDrawn)
                     {
                         // External primary renderers may never call DrawEquipmentAiming.
                         RimKataDualWeaponRenderUtility.DrawSecondaryAfterExternalPrimary(
-                            frame.pawn, frame.primary, frame.secondary, frame.root);
+                            frame.pawn, frame.primary, frame.secondary, frame.root, frame.bodyAltitude);
                     }
                 }
             }
@@ -266,7 +268,8 @@ namespace KRWF.RimKata
             try
             {
                 frame = new Frame { pawn = pawn, primary = primary, secondary = secondary,
-                    root = root, facing = facing, flags = flags };
+                    root = root, facing = facing, flags = flags,
+                    bodyAltitude = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, root, facing) };
                 DrawSpecialSecondary(pawn, secondary, 0f, false, out _, out _);
             }
             finally { frame = previous; }
@@ -319,7 +322,7 @@ namespace KRWF.RimKata
 
                         // Captured materials and world-space poses are valid only within this capture scope.
                         if (capturedCount > 0 && !capture.ReplayMirrored(
-                            frame.root, frame.facing.AsAngle,
+                            frame.root, frame.facing.AsAngle, frame.bodyAltitude,
                             nativeWeapon || accessoriesOnly ? 0f : visualAngleOffset,
                             pawn.Rotation == Rot4.East || pawn.Rotation == Rot4.West,
                             keepSecondaryHeight: pawn.Rotation == Rot4.East,

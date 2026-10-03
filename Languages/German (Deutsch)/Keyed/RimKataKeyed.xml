@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Überträgt erlittenen Schaden auf die festgehaltene Figur. Bei deaktivierter Option wird sie beim Ausweichen oder beim Eintritt in den Nahkampf losgelassen.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Rutschen</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Abschütteln</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Streufeuer</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Wahrscheinlichkeit für Rutschen</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Wahrscheinlichkeit für Abschütteln</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Gefilterte Ergebnisse zurücksetzen</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Schlurfer</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Kraftverstärkung</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Kraftzuwachs</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantate</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Standard: {0}%. Leeren Sie das Feld, um den Standard zu verwenden. Fett gedruckte Werte sind individuelle Vorgaben, auch 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Alle zurücksetzen</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Gefilterte Ergebnisse zurücksetzen</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

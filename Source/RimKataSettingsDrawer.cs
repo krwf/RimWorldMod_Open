@@ -216,16 +216,19 @@ namespace KRWF.RimKata
             y += 3f;
             string activationFeaturesLabel = "KRWF_RimKata_ActivationFeatures".Translate();
             string geneProbabilityLabel = "KRWF_RimKata_GeneProbability".Translate();
+            string strengthLabel = "KRWF_RimKata_StrengthEnhancement".Translate();
             float activationFeaturesWidth = Mathf.Max(Text.CalcSize(activationFeaturesLabel).x + 24f, 80f);
             float geneProbabilityWidth = Mathf.Max(Text.CalcSize(geneProbabilityLabel).x + 24f, 80f);
-            float activationRowWidth = activationFeaturesWidth + ColumnGap + geneProbabilityWidth;
+            float strengthWidth = Mathf.Max(Text.CalcSize(strengthLabel).x + 24f, 80f);
+            float activationRowWidth = activationFeaturesWidth + geneProbabilityWidth + strengthWidth + ColumnGap * 2f;
             if (activationRowWidth > viewRect.width)
             {
-                float scale = Mathf.Max(0f, viewRect.width - ColumnGap)
-                    / (activationFeaturesWidth + geneProbabilityWidth);
+                float scale = Mathf.Max(0f, viewRect.width - ColumnGap * 2f)
+                    / (activationFeaturesWidth + geneProbabilityWidth + strengthWidth);
                 activationFeaturesWidth *= scale;
                 geneProbabilityWidth *= scale;
-                activationRowWidth = activationFeaturesWidth + ColumnGap + geneProbabilityWidth;
+                strengthWidth *= scale;
+                activationRowWidth = activationFeaturesWidth + geneProbabilityWidth + strengthWidth + ColumnGap * 2f;
             }
             float activationX = (viewRect.width - activationRowWidth) * 0.5f;
             if (Widgets.ButtonText(new Rect(activationX, y, activationFeaturesWidth, ButtonHeight), activationFeaturesLabel))
@@ -236,6 +239,11 @@ namespace KRWF.RimKata
                     y, geneProbabilityWidth, ButtonHeight), geneProbabilityLabel))
             {
                 Find.WindowStack.Add(new Dialog_RimKataGeneProbability(settings));
+            }
+            if (Widgets.ButtonText(new Rect(activationX + activationFeaturesWidth + geneProbabilityWidth + ColumnGap * 2f,
+                    y, strengthWidth, ButtonHeight), strengthLabel))
+            {
+                Find.WindowStack.Add(new Dialog_RimKataStrength(settings));
             }
             y += ButtonHeight;
             y += 8f;
@@ -756,12 +764,32 @@ namespace KRWF.RimKata
             ref string buffer,
             float minimum,
             float maximum,
-            string unit)
+            string unit,
+            bool bold = false)
         {
-            Widgets.TextFieldNumeric(rect, ref value, ref buffer, minimum, maximum);
-            if (!NumericFieldHasFocus(rect))
+            if (!bold)
             {
-                DrawNumericUnit(rect, buffer.NullOrEmpty() ? value.ToString() : buffer, unit);
+                Widgets.TextFieldNumeric(rect, ref value, ref buffer, minimum, maximum);
+                if (!NumericFieldHasFocus(rect))
+                    DrawNumericUnit(rect, buffer.NullOrEmpty() ? value.ToString() : buffer, unit);
+                return;
+            }
+            GUIStyle fieldStyle = Text.CurTextFieldStyle;
+            GUIStyle labelStyle = Text.CurFontStyle;
+            FontStyle previousField = fieldStyle.fontStyle;
+            FontStyle previousLabel = labelStyle.fontStyle;
+            try
+            {
+                fieldStyle.fontStyle = FontStyle.Bold;
+                labelStyle.fontStyle = FontStyle.Bold;
+                Widgets.TextFieldNumeric(rect, ref value, ref buffer, minimum, maximum);
+                if (!NumericFieldHasFocus(rect))
+                    DrawNumericUnit(rect, buffer.NullOrEmpty() ? value.ToString() : buffer, unit);
+            }
+            finally
+            {
+                fieldStyle.fontStyle = previousField;
+                labelStyle.fontStyle = previousLabel;
             }
         }
 

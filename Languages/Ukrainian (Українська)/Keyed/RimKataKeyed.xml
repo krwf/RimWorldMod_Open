@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Переносить отриману шкоду на утримуваного персонажа. Якщо вимкнено, ухилення або вступ у ближній бій звільняє його.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Підкат</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Струшування</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Безладна стрільба</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Шанс підкату</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Шанс струшування</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Скинути результати фільтра</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Шкандиба</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Таємничий новоприбулий</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Посилення м’язів</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Приріст сили</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Імпланти</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Типове значення: {0}%. Очистьте поле, щоб використати його. Жирним виділено індивідуальні значення, зокрема 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Скинути все</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Скинути результати фільтра</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

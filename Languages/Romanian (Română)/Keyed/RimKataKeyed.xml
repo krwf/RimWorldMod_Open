@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Transferă daunele primite către personajul imobilizat. Când opțiunea este dezactivată, eschivarea sau intrarea în lupta corp la corp eliberează personajul.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Alunecare</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Scuturare</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Foc nediscriminatoriu</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Șansă de alunecare</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Șansă de scuturare</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Resetează rezultatele filtrate</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Șovăitor</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Întărire musculară</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Creșterea forței</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implanturi</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Implicit: {0}%. Goliți câmpul pentru a folosi valoarea implicită. Valorile îngroșate sunt setări individuale, inclusiv 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Resetează tot</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Resetează rezultatele filtrate</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

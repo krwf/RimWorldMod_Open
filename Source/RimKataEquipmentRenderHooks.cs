@@ -14,10 +14,11 @@ namespace KRWF.RimKata
         [ThreadStatic] private static int equipmentDepth;
 
         internal static void DrawRegisteredEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing,
-            PawnRenderFlags flags, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)
+            PawnRenderFlags flags, RimKataResponseVisualParticipantCache.BodyVisualEntry entry,
+            float bodyAltitude)
         {
             var scope = RimKataWorldRenderContext.BeginRegistered(pawn, entry,
-                (flags & PawnRenderFlags.Portrait) != 0);
+                (flags & PawnRenderFlags.Portrait) != 0, bodyAltitude);
             equipmentDepth++;
             try
             {
@@ -90,12 +91,14 @@ namespace KRWF.RimKata
                 foreach (var code in RimKataRegisteredPawnGate.Branch(generator, loadPawn, absent, false, out entry))
                     yield return code;
                 yield return new CodeInstruction(OpCodes.Ldloc, entry);
+                foreach (var code in LoadBodyAltitude(cached, results)) yield return code;
                 yield return new CodeInstruction(OpCodes.Call, registered);
                 yield return new CodeInstruction(OpCodes.Br, finished);
                 yield return new CodeInstruction(OpCodes.Ldsfld,
                     AccessTools.Field(typeof(RimKataEquipmentRenderHooks), nameof(equipmentDepth))).WithLabels(absent);
                 yield return new CodeInstruction(OpCodes.Brfalse, native);
                 yield return new CodeInstruction(OpCodes.Ldnull);
+                foreach (var code in LoadBodyAltitude(cached, results)) yield return code;
                 yield return new CodeInstruction(OpCodes.Call, registered);
                 yield return new CodeInstruction(OpCodes.Br, finished);
                 var nativeCall = new CodeInstruction(instruction.opcode, instruction.operand);
@@ -108,6 +111,23 @@ namespace KRWF.RimKata
             }
             if (replaced != 1)
                 throw new InvalidOperationException("RimKata equipment render call site changed: " + replaced);
+        }
+
+        private static IEnumerable<CodeInstruction> LoadBodyAltitude(bool cached, FieldInfo results)
+        {
+            if (cached)
+            {
+                yield return new CodeInstruction(OpCodes.Ldarg_0);
+                yield return new CodeInstruction(OpCodes.Ldflda, results);
+                yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(results.FieldType, "bodyPos"));
+                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Vector3), nameof(Vector3.y)));
+            }
+            else
+            {
+                yield return new CodeInstruction(OpCodes.Ldarga_S, (byte)2);
+                yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.matrix)));
+                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Matrix4x4), nameof(Matrix4x4.m13)));
+            }
         }
     }
 

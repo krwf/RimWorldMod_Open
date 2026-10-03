@@ -81,6 +81,7 @@ namespace KRWF.RimKata
         private Stance_RimKataAim previousAim;
         private Stance previousSpecialStance;
         private RimKataSubdueCombat.ExecutionScope previousSubdueExecution;
+        private RimKataDirectionalFire.ExecutionScope previousDirectionalExecution;
         private Rot4 previousSubdueRotation;
         internal int extraAimTicks;
         private int? previousBurstShotCount;
@@ -191,6 +192,8 @@ namespace KRWF.RimKata
                 || pawn.stances.stunner.Stunned || pawn.CurJob != job
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || cycle.weapon != weapon || cycle.plannedTarget != firedTarget
+                || (!target.HasThing && (!cycle.HasDirectionalFire
+                    || cycle.plannedDirectionalFireCell != target.Cell))
                 || verb.CasterPawn != pawn
                 || !RimKataDualWeaponController.NativeAttackStillAllowed(this))
             {
@@ -326,6 +329,7 @@ namespace KRWF.RimKata
             previousSlidingOrigin = RimKataSlidingAttackOrigin.Begin(this);
             if (subdueState != null)
                 previousSubdueExecution = RimKataSubdueCombat.BeginNativeExecution(subdueState);
+            previousDirectionalExecution = RimKataDirectionalFire.BeginNativeExecution(this);
         }
 
         internal static bool OwnsActiveMelee(Verb verb)
@@ -334,6 +338,8 @@ namespace KRWF.RimKata
 
         internal void FinishNativeCast(Exception exception)
         {
+            RimKataDirectionalFire.EndNativeExecution(previousDirectionalExecution);
+            previousDirectionalExecution = default;
             HasFired |= RimKataFireContext.ShotFired;
             RimKataFireContext.End(verb, previousContext);
             RimKataSlidingAttackOrigin.End(previousSlidingOrigin);

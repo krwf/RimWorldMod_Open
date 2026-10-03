@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>A kapott sebzést a lefogott szereplőre hárítja. Kikapcsolva a kitérés vagy a közelharc megkezdése elengedi a lefogott szereplőt.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Csúszás</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Lerázás</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Vaktában tüzelés</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Csúszás esélye</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Lerázás esélye</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Szűrt eredmények visszaállítása</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Tántorgó</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Izomerősítés</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Erőnövekedés</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantátumok</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Alapérték: {0}%. Az alapértékhez ürítse ki a mezőt. A félkövér értékek egyedi beállítások, a 0% is.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Összes visszaállítása</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Szűrt eredmények visszaállítása</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

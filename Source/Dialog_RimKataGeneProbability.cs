@@ -477,7 +477,7 @@ namespace KRWF.RimKata
             try
             {
                 GUI.enabled = previousEnabled && enabled;
-                RimKataSettingsDrawer.DrawFloatField(rect, ref value, ref buffer, 0f, maximum, "%");
+                RimKataSettingsDrawer.DrawFloatField(rect, ref value, ref buffer, 0f, maximum, "%", bold: value > 0f);
                 float clamped = float.IsNaN(value) || float.IsInfinity(value) ? 0f : Mathf.Clamp(value, 0f, maximum);
                 bool invalidBuffer = float.TryParse(buffer, out float entered)
                     && (float.IsNaN(entered) || float.IsInfinity(entered) || entered < 0f || entered > maximum);

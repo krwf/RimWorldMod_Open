@@ -660,7 +660,8 @@ namespace KRWF.RimKata
 
             bool randomAttack = RandomAttackEnabled(pawn);
             bool idleProjectilePriority = !randomAttack
-                && combatState.idleProjectileSearchTriggerPending;
+                && combatState.idleProjectileSearchTriggerPending
+                && !cycle.HasDirectionalFire;
             bool ordinaryWeaponEnabled = !idleProjectilePriority
                 && cycle.weapon != null
                 && RimKataEquipmentUtility.IsWeaponEnabled(cycle.weapon.def);
@@ -723,10 +724,21 @@ namespace KRWF.RimKata
             }
 
             bool idleProjectilePriority = !randomAttack
-                && combatState.idleProjectileSearchTriggerPending;
+                && combatState.idleProjectileSearchTriggerPending
+                && !cycle.HasDirectionalFire;
             ordinaryWeaponEnabled = !idleProjectilePriority
                 && cycle.weapon != null
                 && ordinaryWeaponEnabled;
+            cycle.cachedDirectionalFireCell = IntVec3.Invalid;
+            bool includeDirectionalFire = ordinaryWeaponEnabled && !verb.IsMeleeAttack
+                && cycle.HasDirectionalFire;
+            if (!randomAttack && includeDirectionalFire)
+            {
+                if (!RimKataDirectionalFire.TryGetShotTarget(pawn, cycle, verb, out LocalTargetInfo shot))
+                    return false;
+                cycle.cachedDirectionalFireCell = shot.Cell;
+                return true;
+            }
             if (!randomAttack && !idleProjectilePriority)
             {
                 bool movingSearch = RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn);
@@ -788,17 +800,27 @@ namespace KRWF.RimKata
                 }
             }
 
-            if (EligibleCandidates.Count == 0)
+            if (EligibleCandidates.Count == 0 && !includeDirectionalFire)
             {
                 return false;
             }
 
             bool removedCandidate = false;
-            while (EligibleCandidates.Count > 0)
+            while (EligibleCandidates.Count > 0 || includeDirectionalFire)
             {
                 int candidateIndex = randomAttack
-                    ? Rand.Range(0, EligibleCandidates.Count)
+                    ? Rand.Range(0, EligibleCandidates.Count + (includeDirectionalFire ? 1 : 0))
                     : 0;
+                if (includeDirectionalFire && candidateIndex == EligibleCandidates.Count)
+                {
+                    if (RimKataDirectionalFire.TryGetShotTarget(pawn, cycle, verb, out LocalTargetInfo shot))
+                    {
+                        cycle.cachedDirectionalFireCell = shot.Cell;
+                        break;
+                    }
+                    includeDirectionalFire = false;
+                    continue;
+                }
                 Thing candidate = EligibleCandidates[candidateIndex];
                 if (RimKataTargeting.IsProjectile(candidate))
                 {
@@ -832,7 +854,7 @@ namespace KRWF.RimKata
             }
 
             interception = RimKataTargeting.IsProjectile(target);
-            return target != null;
+            return target != null || cycle.cachedDirectionalFireCell.IsValid;
         }
 
         internal static bool TryAddKnownAutomaticTarget(

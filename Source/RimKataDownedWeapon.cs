@@ -293,6 +293,17 @@ namespace KRWF.RimKata
                 ForgetRecovery(state);
         }
 
+        internal static void NotifyStrengthChanged(Pawn pawn)
+        {
+            if (pawn?.Spawned != true
+                || RimKataDownedWeaponRegistry.Current?.TryGet(pawn, out RimKataDownedWeaponState state) != true
+                || !state.activeDowned || !StillHeld(state)
+                || RimKataWeaponSlotUtility.CanUseOneHandWeapon(pawn, state.weapon)) return;
+            ThingWithComps weapon = state.weapon;
+            Release(pawn);
+            pawn.equipment.TryDropEquipment(weapon, out _, pawn.Position, true);
+        }
+
         private static void ForgetRecovery(RimKataDownedWeaponState state)
         {
             state.originalPrimary = null;
@@ -357,7 +368,7 @@ namespace KRWF.RimKata
                 || pawn.equipment.Primary != state.weapon
                 || !RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, incoming, false)
                 || !RimKataEquipmentUtility.IsWeaponEnabled(state.weapon.def)
-                || RimKataGripUtility.GripTypeFor(state.weapon.def) != RimKataGripType.OneHand)
+                || RimKataGripUtility.GripTypeFor(pawn, state.weapon.def) != RimKataGripType.OneHand)
                 return false;
             retained = state.weapon;
             return true;

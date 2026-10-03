@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Kannab saadud kahju üle kinnihoitud tegelasele. Kui see on välja lülitatud, vabastatakse tegelane põiklemisel või lähivõitlusse astumisel.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Libisemine</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Maharaputamine</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Hajutatud tuli</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Libisemise tõenäosus</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Maharaputamise tõenäosus</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Lähtesta filtreeritud tulemused</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Tuikuja</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Lihasjõu tugevdamine</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Jõu suurenemine</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantaadid</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Vaikimisi: {0}%. Vaikeväärtuse kasutamiseks tühjendage väli. Paks kiri tähistab eraldi määratud väärtust, ka 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Lähtesta kõik</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Lähtesta filtreeritud tulemused</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

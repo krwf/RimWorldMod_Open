@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Μεταφέρει την εισερχόμενη ζημιά στον ακινητοποιημένο χαρακτήρα. Όταν είναι ανενεργό, η αποφυγή ή η έναρξη μάχης σώμα με σώμα τον απελευθερώνει.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Ολίσθηση</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Απώθηση</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Αδιάκριτα πυρά</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Πιθανότητα ολίσθησης</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Πιθανότητα απώθησης</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Επαναφορά φιλτραρισμένων αποτελεσμάτων</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Παραπατών</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Απόκοσμος νεοφερμένος</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Μυϊκή ενίσχυση</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Αύξηση δύναμης</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Εμφυτεύματα</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Προεπιλογή: {0}%. Αδειάστε το πεδίο για την προεπιλογή. Οι έντονες τιμές είναι ατομικές ρυθμίσεις, ακόμη και 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Επαναφορά όλων</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Επαναφορά φιλτραρισμένων αποτελεσμάτων</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

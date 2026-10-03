@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Przenosi otrzymywane obrażenia na obezwładnioną postać. Po wyłączeniu unik lub rozpoczęcie walki w zwarciu uwalnia tę postać.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Ślizg</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Otrząśnięcie</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Ostrzał na oślep</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Szansa na ślizg</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Szansa na otrząśnięcie</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Resetuj przefiltrowane wyniki</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Kuśtykacz</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Upiorny przybysz</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Wzmocnienie siły</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Przyrost siły</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implanty</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Domyślnie: {0}%. Wyczyść pole, aby użyć wartości domyślnej. Pogrubienie oznacza indywidualne ustawienie, także 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Resetuj wszystko</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Resetuj przefiltrowane wyniki</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

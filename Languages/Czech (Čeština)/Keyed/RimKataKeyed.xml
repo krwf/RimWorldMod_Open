@@ -219,6 +219,7 @@
   <KRWF_RimKata_FeatureSubdueDamageTransferDesc>Přenáší utrpěné poškození na drženou postavu. Po vypnutí se při úhybu nebo zahájení boje zblízka držená postava uvolní.</KRWF_RimKata_FeatureSubdueDamageTransferDesc>
   <KRWF_RimKata_FeatureSliding>Skluz</KRWF_RimKata_FeatureSliding>
   <KRWF_RimKata_FeatureShakeOff>Setřesení</KRWF_RimKata_FeatureShakeOff>
+  <KRWF_RimKata_FeatureDirectionalFire>Střelba naslepo</KRWF_RimKata_FeatureDirectionalFire>
   <KRWF_RimKata_SlidingChance>Šance na skluz</KRWF_RimKata_SlidingChance>
   <KRWF_RimKata_ShakeOffChance>Šance na setřesení</KRWF_RimKata_ShakeOffChance>
 
@@ -229,4 +230,11 @@
   <KRWF_RimKata_ResetFilteredGeneProbabilities>Obnovit filtrované výsledky</KRWF_RimKata_ResetFilteredGeneProbabilities>
   <KRWF_RimKata_TargetShambler>Vrávoravec</KRWF_RimKata_TargetShambler>
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
+
+  <KRWF_RimKata_StrengthEnhancement>Posílení svalů</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthIncrease>Zvýšení síly</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_StrengthImplants>Implantáty</KRWF_RimKata_StrengthImplants>
+  <KRWF_RimKata_StrengthOverrideTip>Výchozí hodnota: {0} %. Vymazáním pole ji převezmete. Tučné hodnoty jsou individuální nastavení, včetně 0 %.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_ResetAllStrength>Obnovit vše</KRWF_RimKata_ResetAllStrength>
+  <KRWF_RimKata_ResetFilteredStrength>Obnovit filtrované výsledky</KRWF_RimKata_ResetFilteredStrength>
 </LanguageData>

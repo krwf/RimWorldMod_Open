@@ -14,7 +14,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 15f + HeaderHeight;
+        private const float ContentHeight = RowHeight * 16f + HeaderHeight;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -34,6 +34,7 @@ namespace KRWF.RimKata
         private float slidingChancePercent;
         private float shakeOffChancePercent;
         private int subdueImpactStunTicks;
+        private float strengthIncreasePercent;
         private string immediateTumbleBuffer;
         private string responseAttackerSpinBuffer;
         private string responseAccidentalFireBuffer;
@@ -49,6 +50,7 @@ namespace KRWF.RimKata
         private string slidingChanceBuffer;
         private string shakeOffChanceBuffer;
         private string subdueImpactStunBuffer;
+        private string strengthIncreaseBuffer;
 
         private static readonly string[] NumericLabelKeys =
         {
@@ -66,7 +68,8 @@ namespace KRWF.RimKata
             "KRWF_RimKata_BreachWaitDuration",
             "KRWF_RimKata_SlidingChance",
             "KRWF_RimKata_ShakeOffChance",
-            "KRWF_RimKata_SubdueImpactStunDuration"
+            "KRWF_RimKata_SubdueImpactStunDuration",
+            "KRWF_RimKata_StrengthIncrease"
         };
 
         private static readonly string[] HeaderKeys =
@@ -95,6 +98,7 @@ namespace KRWF.RimKata
                 slidingChancePercent = settings.slidingChancePercent;
                 shakeOffChancePercent = settings.shakeOffChancePercent;
                 subdueImpactStunTicks = settings.subdueImpactStunTicks;
+                strengthIncreasePercent = settings.strengthIncreasePercent;
             }
             immediateTumbleBuffer = immediateTumbleChancePercent.ToString();
             responseAttackerSpinBuffer = responseAttackerSpinChancePercent.ToString();
@@ -111,6 +115,7 @@ namespace KRWF.RimKata
             slidingChanceBuffer = slidingChancePercent.ToString();
             shakeOffChanceBuffer = shakeOffChancePercent.ToString();
             subdueImpactStunBuffer = subdueImpactStunTicks.ToString();
+            strengthIncreaseBuffer = strengthIncreasePercent.ToString();
 
             doCloseX = false;
             doCloseButton = false;
@@ -175,6 +180,12 @@ namespace KRWF.RimKata
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref slidingChancePercent, ref slidingChanceBuffer);
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[13], ref shakeOffChancePercent, ref shakeOffChanceBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[14], ref subdueImpactStunTicks, ref subdueImpactStunBuffer);
+            RimKataSettingsDrawer.DrawFloatField(new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
+                ref strengthIncreasePercent, ref strengthIncreaseBuffer, 0f, float.MaxValue, "%");
+            strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
+            DrawRowLabel(new Rect(FieldWidth + ColumnGap, y, viewRect.width - FieldWidth - ColumnGap, RowHeight),
+                NumericLabelKeys[15].Translate());
+            y += RowHeight;
             Widgets.EndScrollView();
             DrawButtons(new Rect(inRect.x, inRect.yMax - ButtonHeight, inRect.width, ButtonHeight));
             Text.Font = previousFont;
@@ -200,7 +211,8 @@ namespace KRWF.RimKata
                 || settings.breachWaitDurationTicks != breachWaitDurationTicks
                 || settings.slidingChancePercent != slidingChancePercent
                 || settings.shakeOffChancePercent != shakeOffChancePercent
-                || settings.subdueImpactStunTicks != subdueImpactStunTicks;
+                || settings.subdueImpactStunTicks != subdueImpactStunTicks
+                || settings.strengthIncreasePercent != strengthIncreasePercent;
             settings.immediateTumbleChancePercent = immediateTumbleChancePercent;
             settings.responseAttackerSpinChancePercent = responseAttackerSpinChancePercent;
             settings.responseAccidentalFireChancePercent = responseAccidentalFireChancePercent;
@@ -216,6 +228,7 @@ namespace KRWF.RimKata
             settings.slidingChancePercent = slidingChancePercent;
             settings.shakeOffChancePercent = shakeOffChancePercent;
             settings.subdueImpactStunTicks = subdueImpactStunTicks;
+            settings.strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
             mainBuffers?.SyncFrom(settings);
             if (changed)
                 RimKataMod.ApplyCombatFeatureSettingsChange();
