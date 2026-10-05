@@ -13,7 +13,7 @@ namespace KRWF.RimKata
         internal struct Frame
         {
             internal Vector3 anchor, foot, shadow;
-            internal Matrix4x4 transform;
+            internal Matrix4x4 transform, equipmentTransform;
             internal float layer, northLift;
         }
 
@@ -30,6 +30,8 @@ namespace KRWF.RimKata
             internal RimKataBreachWeaponRender.Scope weapons;
             internal RimKataSubdueWeaponRender.Scope subdueWeapons;
             internal RimKataReactiveRender.Scope reactive;
+            internal RimKataFlyingKickRender.EquipmentScope flyingKick;
+            internal RimKataKickRender.EquipmentScope kick;
         }
 
         private struct EquipmentContext
@@ -46,6 +48,8 @@ namespace KRWF.RimKata
             internal RimKataBreachVisual visual;
             internal RimKataSubdueVisual? subdue;
             internal RimKataReactiveVisual? reactive;
+            internal RimKataFlyingKickVisual? flyingKick;
+            internal RimKataKickVisual? kick;
         }
 
         private static readonly ConcurrentDictionary<Pawn, FrameSlot> Frames = new ConcurrentDictionary<Pawn, FrameSlot>();
@@ -68,15 +72,22 @@ namespace KRWF.RimKata
         {
             Vector3 foot = parms.matrix.MultiplyPoint3x4(new Vector3(0f, 0f, -0.5f));
             Vector3 anchor = parms.matrix.MultiplyPoint3x4(Vector3.zero);
-            Matrix4x4 transform = Matrix4x4.Translate(foot)
+            Matrix4x4 transform = Matrix4x4.Translate(new Vector3(0f, 0f, visual.height))
+                * Matrix4x4.Translate(foot)
                 * Matrix4x4.Rotate(Quaternion.AngleAxis(visual.angle, Vector3.up))
                 * Matrix4x4.Translate(-foot);
+            float weaponRotation = Mathf.Clamp01(visual.weaponRotation);
+            Matrix4x4 equipmentTransform = weaponRotation >= 1f ? transform
+                : Matrix4x4.Translate(transform.MultiplyPoint3x4(anchor))
+                    * Matrix4x4.Rotate(Quaternion.AngleAxis(visual.angle * weaponRotation, Vector3.up))
+                    * Matrix4x4.Translate(-anchor);
             var frame = new Frame { anchor = anchor, foot = foot, transform = transform,
+                equipmentTransform = equipmentTransform,
                 shadow = transform.MultiplyPoint3x4(anchor),
                 // A northward fall has no additional tilt in the sprite plane.
                 northLift = Mathf.Max(0f, anchor.z - foot.z) * 0.5f
                     * Mathf.Max(0f, Mathf.Cos((visual.facing.AsAngle + 180f) * Mathf.Deg2Rad))
-                    * Mathf.Clamp01(visual.progress) };
+                    * Mathf.Clamp01(visual.progress) * weaponRotation };
             float top = anchor.y;
             if (visual.poseActive)
             {
@@ -90,8 +101,9 @@ namespace KRWF.RimKata
                     requests[i] = request;
                 }
                 frame.layer = Mathf.Clamp01(visual.progress)
-                    * (top - anchor.y + PawnRenderUtility.AltitudeForLayer(100f));
+                    * (top - anchor.y + PawnRenderUtility.AltitudeForLayer(100f)) * weaponRotation;
             }
+            frame.shadow.z -= visual.height * 1.5f;
             FrameSlot slot = Frames.GetOrAdd(parms.pawn, CreateFrameSlot);
             lock (slot)
             {
@@ -183,7 +195,7 @@ namespace KRWF.RimKata
         internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)
         {
             if (!TryFrame(pawn, out Frame frame)) return matrix;
-            matrix = frame.transform * matrix;
+            matrix = frame.equipmentTransform * matrix;
             matrix.m13 += frame.layer;
             matrix.m23 += frame.northLift;
             return matrix;
@@ -192,10 +204,10 @@ namespace KRWF.RimKata
         internal static void TransformEquipment(ref Vector3 position, ref Quaternion rotation)
         {
             if (!TryFrame(equipment.pawn, out Frame frame)) return;
-            position = frame.transform.MultiplyPoint3x4(position);
+            position = frame.equipmentTransform.MultiplyPoint3x4(position);
             position.y += frame.layer;
             position.z += frame.northLift;
-            rotation = frame.transform.rotation * rotation;
+            rotation = frame.equipmentTransform.rotation * rotation;
         }
 
         internal static bool WeaponsAboveBody(Pawn pawn = null)
@@ -223,8 +235,15 @@ namespace KRWF.RimKata
             if (visual.door == null) return;
             Vector3 location = visual.doorOrigin;
             if (visual.carryDoor)
-                location = TryReadFrame(parms.pawn, out Frame frame) ? frame.foot
+            {
+                Vector3 foot = TryReadFrame(parms.pawn, out Frame frame) ? frame.foot
                     : parms.matrix.MultiplyPoint3x4(new Vector3(0f, 0f, -0.5f));
+                IntVec3 direction = visual.facing.FacingCell;
+                Vector3 offset = foot - visual.doorOrigin;
+                // Cell entry precedes the tweened foot reaching the door.
+                if (offset.x * direction.x + offset.z * direction.z >= 0f)
+                    location = foot;
+            }
             visual.door.Draw(location);
         }
     }
@@ -237,6 +256,19 @@ namespace KRWF.RimKata
             __state = default;
             if (parms.Portrait) return;
             var body = RimKataWorldRenderContext.BodyFor(parms.pawn);
+            __state.kick = body?.kick.HasValue == true ? RimKataWorldRenderContext.KickFor(parms.pawn) : null;
+            if (__state.kick.HasValue)
+            {
+                parms.facing = RimKataKickRender.RenderFacing(__state.kick.Value);
+                return;
+            }
+            __state.flyingKick = body?.flyingKick.HasValue == true
+                ? RimKataWorldRenderContext.FlyingKickFor(parms.pawn) : null;
+            if (__state.flyingKick.HasValue)
+            {
+                parms.facing = RimKataFlyingKickRender.RenderFacing(__state.flyingKick.Value);
+                return;
+            }
             __state.subdue = body?.subdue;
             if (__state.subdue.HasValue)
             {
@@ -252,14 +284,19 @@ namespace KRWF.RimKata
             __state.visual = body?.breach ?? default;
             __state.active = body?.breach.HasValue == true
                 && (__state.visual.poseActive || __state.visual.protectedPose);
-            if (__state.active) parms.facing = __state.visual.facing;
+            if (__state.active) parms.facing = __state.visual.bodyFacing.IsValid
+                ? __state.visual.bodyFacing : __state.visual.facing;
         }
 
         [HarmonyPriority(Priority.Last)]
         internal static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests,
             RimKataBreachRender.BodyScope __state)
         {
-            if (__state.subdue.HasValue)
+            if (__state.kick.HasValue)
+                RimKataKickRender.Prepare(parms, ___drawRequests, __state.kick.Value);
+            else if (__state.flyingKick.HasValue)
+                RimKataFlyingKickRender.Prepare(parms, ___drawRequests, __state.flyingKick.Value);
+            else if (__state.subdue.HasValue)
                 RimKataSubdueRender.Prepare(parms, ___drawRequests, __state.subdue.Value);
             else if (__state.reactive.HasValue)
                 RimKataReactiveRender.Prepare(parms, ___drawRequests, __state.reactive.Value);
@@ -275,7 +312,12 @@ namespace KRWF.RimKata
         {
             if (phase == DrawPhase.EnsureInitialized) return;
             var body = RimKataWorldRenderContext.BodyFor(___pawn);
-            if (body?.subdue.HasValue == true) rotOverride = body.subdue.Value.BodyFacing;
+            var kick = body?.kick.HasValue == true ? RimKataWorldRenderContext.KickFor(___pawn) : null;
+            var flyingKick = !kick.HasValue && body?.flyingKick.HasValue == true
+                ? RimKataWorldRenderContext.FlyingKickFor(___pawn) : null;
+            if (kick.HasValue) rotOverride = RimKataKickRender.RenderFacing(kick.Value);
+            else if (flyingKick.HasValue) rotOverride = RimKataFlyingKickRender.RenderFacing(flyingKick.Value);
+            else if (body?.subdue.HasValue == true) rotOverride = body.subdue.Value.BodyFacing;
             else if (body?.reactive.HasValue == true)
             {
                 rotOverride = body.reactive.Value.facing;
@@ -283,7 +325,8 @@ namespace KRWF.RimKata
             }
             else if (body?.breach.HasValue == true
                 && (body.breach.Value.poseActive || body.breach.Value.protectedPose))
-                rotOverride = body.breach.Value.facing;
+                rotOverride = body.breach.Value.bodyFacing.IsValid
+                    ? body.breach.Value.bodyFacing : body.breach.Value.facing;
         }
     }
 
@@ -293,7 +336,8 @@ namespace KRWF.RimKata
         {
             var body = RimKataWorldRenderContext.BodyFor(___pawn);
             if (body?.subdue.HasValue == true || body?.breach?.poseActive == true
-                || body?.reactive.HasValue == true) disableCache = true;
+                || body?.reactive.HasValue == true || body?.flyingKick.HasValue == true
+                || body?.kick.HasValue == true) disableCache = true;
         }
     }
 
@@ -306,16 +350,29 @@ namespace KRWF.RimKata
         {
             __state = default;
             __state.context = RimKataWorldRenderContext.Begin(pawn, (flags & PawnRenderFlags.Portrait) != 0);
-            __state.token = RimKataBreachRender.PushEquipment(pawn, flags).token;
             var body = RimKataWorldRenderContext.BodyFor(pawn);
-            RimKataSubdueVisual? subdue = body?.subdue;
-            RimKataReactiveVisual? reactive = subdue.HasValue ? null : body?.reactive;
+            var kick = body?.kick.HasValue == true ? RimKataWorldRenderContext.KickFor(pawn) : null;
+            var flyingKick = !kick.HasValue && body?.flyingKick.HasValue == true
+                ? RimKataWorldRenderContext.FlyingKickFor(pawn) : null;
+            bool kicking = kick.HasValue;
+            bool flying = flyingKick.HasValue;
+            bool isolated = kicking || flying;
+            __state.token = RimKataBreachRender.PushEquipment(isolated ? null : pawn, flags).token;
+            __state.kick = RimKataKickRender.BeginEquipment(pawn, flags, kick);
+            __state.flyingKick = RimKataFlyingKickRender.BeginEquipment(pawn, flags, flyingKick);
+            RimKataSubdueVisual? subdue = isolated ? null : body?.subdue;
+            RimKataReactiveVisual? reactive = isolated || subdue.HasValue ? null : body?.reactive;
             __state.reactive = RimKataReactiveRender.Begin(pawn, drawPos, flags, reactive);
             __state.subdueWeapons = RimKataSubdueWeaponRender.Begin(pawn, drawPos, flags, subdue);
             bool participant = RimKataBreachRender.TryGetEquipmentVisual(pawn, out var visual);
             __state.weapons = RimKataBreachWeaponRender.Begin(pawn, drawPos, flags,
                 participant && !subdue.HasValue && !reactive.HasValue, visual);
-            if ((flags & PawnRenderFlags.Portrait) == 0
+            if ((flags & PawnRenderFlags.Portrait) == 0 && kicking)
+                facing = kick.Value.facing;
+            else if ((flags & PawnRenderFlags.Portrait) == 0 && flying)
+                facing = flyingKick.Value.facing == Rot4.South ? Rot4.South
+                    : RimKataFlyingKickRender.RenderFacing(flyingKick.Value);
+            else if ((flags & PawnRenderFlags.Portrait) == 0
                 && subdue.HasValue) facing = subdue.Value.facing;
             else if ((flags & PawnRenderFlags.Portrait) == 0 && reactive.HasValue) facing = reactive.Value.facing;
             else if ((flags & PawnRenderFlags.Portrait) == 0
@@ -335,6 +392,8 @@ namespace KRWF.RimKata
             RimKataBreachWeaponRender.End(__state.weapons);
             RimKataSubdueWeaponRender.End(__state.subdueWeapons);
             RimKataReactiveRender.End(__state.reactive);
+            RimKataFlyingKickRender.EndEquipment(__state.flyingKick);
+            RimKataKickRender.EndEquipment(__state.kick);
             RimKataBreachRender.PopEquipment(__state);
             RimKataWorldRenderContext.End(__state.context);
         }

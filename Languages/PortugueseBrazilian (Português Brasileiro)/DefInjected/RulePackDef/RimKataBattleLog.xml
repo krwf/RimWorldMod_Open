@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_ParryBattleLog.rulePack.rulesStrings.0>r_logentry->[SUBJECT_nameDef] aparou o ataque de [INITIATOR_nameDef].</RimKata_ParryBattleLog.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] atingiu [RECIPIENT_nameDef] com uma voadora.</RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;A armadura de [RECIPIENT_nameDef] desviou a voadora de [INITIATOR_nameDef].</RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] errou a voadora contra [RECIPIENT_nameDef].</RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] se esquivou da voadora de [INITIATOR_nameDef].</RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] evitou a voadora de [INITIATOR_nameDef].</RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>
+  <RimKata_Kick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] atingiu [RECIPIENT_nameDef] com um chute.</RimKata_Kick_Hit.rulePack.rulesStrings.0>
+  <RimKata_Kick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;A armadura de [RECIPIENT_nameDef] desviou o chute de [INITIATOR_nameDef].</RimKata_Kick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_Kick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] errou o chute contra [RECIPIENT_nameDef].</RimKata_Kick_Miss.rulePack.rulesStrings.0>
+  <RimKata_Kick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] se esquivou do chute de [INITIATOR_nameDef].</RimKata_Kick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_Kick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] evitou o chute de [INITIATOR_nameDef].</RimKata_Kick_Blocked.rulePack.rulesStrings.0>
 </LanguageData>

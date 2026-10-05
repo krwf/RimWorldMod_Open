@@ -1421,6 +1421,17 @@ namespace KRWF.RimKata
             ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            MethodInfo busy = AccessTools.PropertyGetter(typeof(Pawn_StanceTracker), nameof(Pawn_StanceTracker.FullBodyBusy));
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (!codes[i].Calls(busy)) continue;
+                CodeInstruction loadVerb = new CodeInstruction(OpCodes.Ldarg_0);
+                loadVerb.labels.AddRange(codes[i].labels);
+                loadVerb.blocks.AddRange(codes[i].blocks);
+                codes[i] = CodeInstruction.Call(typeof(Verb_RimKataKick), nameof(Verb_RimKataKick.FullBodyBusy));
+                codes.Insert(i, loadVerb);
+                break;
+            }
             int dodgeChanceIndex = -1;
             int dodgeBranchIndex = -1;
             for (int i = 0; i < codes.Count - 2; i++)

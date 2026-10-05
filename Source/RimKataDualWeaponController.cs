@@ -3551,6 +3551,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            if (state.kick != null) RimKataKick.ClearOpportunity(state);
             state.CancelDraftedFire(false);
             state.ClearDraftedMovementSearchTracking();
             CancelUnfiredWarmupForDraftChange(state.primaryWeaponCycle);
@@ -4221,6 +4222,12 @@ namespace KRWF.RimKata
         }
 
         public static bool CanRushTarget(Pawn pawn, Thing target)
+            => CanRushTarget(pawn, target, null, false);
+
+        internal static bool CanRushTarget(Pawn pawn, Thing target, RimKataPawnCombatState state)
+            => CanRushTarget(pawn, target, state, true);
+
+        private static bool CanRushTarget(Pawn pawn, Thing target, RimKataPawnCombatState state, bool stateKnown)
         {
             if (pawn?.Map == null
                 || pawn.Drafted
@@ -4235,7 +4242,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            RimKataPawnCombatState state = StateFor(pawn, false);
+            if (!stateKnown) state = StateFor(pawn, false);
             bool playerRushRequest =
                 state?.IsPlayerRushRequestFor(target) == true;
             bool allowIncapacitated = playerRushRequest
@@ -4531,6 +4538,7 @@ namespace KRWF.RimKata
             Verb verb,
             LocalTargetInfo focus)
         {
+            if (verb is Verb_RimKataFlyingKick || verb is Verb_RimKataKick) return true;
             if (RimKataReactiveAttack.OwnsVerb(verb)) return true;
             if (RimKataSubdueCombat.OwnsAttack(pawn, verb)) return true;
             if (pawn?.Map == null
@@ -4980,8 +4988,14 @@ namespace KRWF.RimKata
             Pawn pawn,
             ThingWithComps weapon,
             out RimKataWeaponVisualData data)
+            => TryGetVisualData(pawn, StateFor(pawn, false), weapon, out data);
+
+        internal static bool TryGetVisualData(
+            Pawn pawn,
+            RimKataPawnCombatState state,
+            ThingWithComps weapon,
+            out RimKataWeaponVisualData data)
         {
-            RimKataPawnCombatState state = StateFor(pawn, false);
             RimKataWeaponCycleState cycle = CycleForWeapon(state, weapon);
             return TryGetVisualData(pawn, cycle, weapon, out data);
         }
@@ -5406,8 +5420,10 @@ namespace KRWF.RimKata
         }
 
         public static void TickIdleCycleTimers(Pawn pawn)
+            => TickIdleCycleTimers(pawn, StateFor(pawn, false));
+
+        internal static void TickIdleCycleTimers(Pawn pawn, RimKataPawnCombatState state)
         {
-            RimKataPawnCombatState state = StateFor(pawn, false);
             int currentTick = Find.TickManager.TicksGame;
             if (state == null
                 || state.dualLastDrivenTick == currentTick
@@ -7994,6 +8010,7 @@ namespace KRWF.RimKata
         {
             if (pawn?.Map == null || !(pawn.stances?.curStance is Stance_Mobile)) return;
             state ??= StateFor(pawn, false);
+            RimKataKick.ClearIdleOpportunity(state);
             if (state == null
                 || (!state.primaryWeaponCycle.HasAutomaticCandidates
                     && !state.secondaryWeaponCycle.HasAutomaticCandidates)

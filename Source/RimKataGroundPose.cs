@@ -24,6 +24,7 @@ namespace KRWF.RimKata
         internal Verb aimVerb;
         internal int transitionTicks;
         internal int holdTicks;
+        internal bool flyingKickFall;
         internal float angle;
         internal float headAimAngle;
         internal Rot4 originalFacing;
@@ -57,9 +58,14 @@ namespace KRWF.RimKata
                 if (rolling)
                     return new Rot4((originalFacing.AsInt + rollStep % 4 + 4) % 4);
                 if (phase == RimKataFallPhase.Rising && riseRollFacing.IsValid) return riseRollFacing;
-                float aim = Mathf.FloorToInt((Mathf.Repeat(headAimAngle, 360f) + 22.5f) / 45f) % 8 * 45f;
-                return Rot4.FromAngleFlat(Mathf.Repeat(aim - DrawAngle, 360f));
+                return FacingAt(headAimAngle, DrawAngle);
             }
+        }
+
+        internal static Rot4 FacingAt(float headAimAngle, float drawAngle)
+        {
+            float aim = Mathf.FloorToInt((Mathf.Repeat(headAimAngle, 360f) + 22.5f) / 45f) % 8 * 45f;
+            return Rot4.FromAngleFlat(Mathf.Repeat(aim - drawAngle, 360f));
         }
 
         public void ExposeData()
@@ -76,6 +82,7 @@ namespace KRWF.RimKata
             Scribe_References.Look(ref aimWeapon, "aimWeapon");
             Scribe_Values.Look(ref transitionTicks, "transitionTicks");
             Scribe_Values.Look(ref holdTicks, "holdTicks");
+            Scribe_Values.Look(ref flyingKickFall, "flyingKickFall");
             Scribe_Values.Look(ref angle, "angle");
             Scribe_Values.Look(ref headAimAngle, "headAimAngle");
             Scribe_Values.Look(ref originalFacing, "originalFacing");
@@ -276,6 +283,7 @@ namespace KRWF.RimKata
         {
             if (Active.Count == 0 || pawn == null || !Active.TryGetValue(pawn, out var state)
                 || state.groundPose == null
+                || state.groundPose.flyingKickFall && state.groundPose.phase == RimKataFallPhase.Fallen
                 || !RimKataGroundPoseConditions.HasMovementJob(pawn)) return;
             BeginRise(state);
         }
@@ -354,7 +362,7 @@ namespace KRWF.RimKata
                 if (pose?.PronePose == true)
                     NotifyAimStarted(pawn, pose.aimVerb
                         ?? RimKataWeaponSlotUtility.PrimaryVerb(pose.aimWeapon), pose.focus, knownState: state);
-                else if (pose != null && pose.phase != RimKataFallPhase.Rising
+                else if (pose != null && !pose.flyingKickFall && pose.phase != RimKataFallPhase.Rising
                     && !RimKataGroundPoseConditions.HasAttackableOpponent(pawn, state)) BeginRise(state);
             }
         }
@@ -370,7 +378,7 @@ namespace KRWF.RimKata
                 Clear(state);
                 return;
             }
-            if (pose.phase != RimKataFallPhase.Rising && pose.focus.HasThing
+            if (!pose.flyingKickFall && pose.phase != RimKataFallPhase.Rising && pose.focus.HasThing
                 && (pose.focus.Thing.Destroyed || !pose.focus.Thing.Spawned
                     || (pose.focus.Thing is Pawn victim
                         && !RimKataTargeting.IsPawnTargetStateValid(victim,
@@ -385,7 +393,8 @@ namespace KRWF.RimKata
                 }
                 else BeginRise(state);
             }
-            pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state);
+            if (!pose.flyingKickFall)
+                pose.headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state);
             if (pose.PronePose) pose.angle = pose.headAimAngle;
             pose.TickFall();
             if (pose.prone) Prone[pawn] = state;
@@ -431,6 +440,7 @@ namespace KRWF.RimKata
         private static void TryFallOrRoll(RimKataPawnCombatState state, Thing attacker, bool melee)
         {
             Pawn pawn = state.pawn;
+            if (state.flyingKick != null) return;
             if (!melee || attacker == null || attacker == pawn || attacker.Map != pawn.Map) return;
             RimKataGroundPoseState pose = state.groundPose;
             if (pose?.phase == RimKataFallPhase.Fallen)
@@ -463,7 +473,25 @@ namespace KRWF.RimKata
             RimKataResponseVisualParticipantCache.RefreshBodyVisual(state);
         }
 
-        private static float LieAngle(Vector3 direction, Rot4 facing)
+        internal static void AcceptFlyingKickFall(RimKataPawnCombatState state, Thing target,
+            float angle, Vector3 offset)
+        {
+            Pawn pawn = state.pawn;
+            Rot4 facing = pawn.Rotation;
+            var pose = new RimKataGroundPoseState {
+                phase = RimKataFallPhase.Fallen, flyingKickFall = true,
+                holdTicks = RimKataTargetAccess.SettingsFor(pawn)?.meleeFallDurationTicks ?? 50,
+                angle = angle, headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state),
+                originalFacing = facing, offset = offset, rollOrigin = offset,
+                rollAxis = new Vector3(facing.FacingCell.z, 0f, -facing.FacingCell.x)
+            };
+            state.groundPose = pose;
+            SetFocus(pawn, pose, target);
+            Register(state);
+            RimKataResponseVisualParticipantCache.RefreshBodyVisual(state);
+        }
+
+        internal static float LieAngle(Vector3 direction, Rot4 facing)
         {
             if (direction.x * direction.x + direction.z * direction.z < 0.0001f)
                 direction = facing.FacingCell.ToVector3();
@@ -473,6 +501,8 @@ namespace KRWF.RimKata
 
         internal static bool TryGetShotCenter(Verb verb, out Vector3 center, bool headCentered = false)
         {
+            if (RimKataKickRender.TryGetShotCenter(verb, out center)
+                || RimKataFlyingKickRender.TryGetShotCenter(verb, out center)) return true;
             if (RimKataSlidingAttackOrigin.TryGet(verb, out center)) return true;
             center = Vector3.zero;
             if (!TryGetShotState(verb, out var state)) return false;

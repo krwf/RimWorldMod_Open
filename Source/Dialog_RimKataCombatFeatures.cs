@@ -25,6 +25,9 @@ namespace KRWF.RimKata
         private bool closeFireEnabled;
         private bool targetRushEnabled;
         private bool breachEnabled;
+        private bool flyingKickEnabled;
+        private bool kickEnabled;
+        private bool pushKickEnabled;
         private bool subdueEnabled;
         private bool subdueDamageTransferEnabled;
         private bool responseEnabled;
@@ -44,18 +47,21 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureExplosiveInterception",
             "KRWF_RimKata_FeatureMovingFire",
             "KRWF_RimKata_FeatureCloseFire",
-            "KRWF_RimKata_FeatureTargetRush",
-            "KRWF_RimKata_FeatureBreach",
-            "KRWF_RimKata_FeatureSubdue",
-            "KRWF_RimKata_FeatureSubdueDamageTransfer",
-            "KRWF_RimKata_FeatureResponse",
-            "KRWF_RimKata_FeatureRangedDodge",
-            "KRWF_RimKata_FeatureTumble",
             "KRWF_RimKata_FeatureProneFire",
             "KRWF_RimKata_FeatureCrawlFire",
-            "KRWF_RimKata_FeatureSliding",
+            "KRWF_RimKata_FeatureDirectionalFire",
+            "KRWF_RimKata_FeatureTargetRush",
+            "KRWF_RimKata_FeatureBreach",
+            "KRWF_RimKata_FeatureFlyingKick",
+            "KRWF_RimKata_FeatureKick",
+            "KRWF_RimKata_FeaturePushKick",
+            "KRWF_RimKata_FeatureSubdue",
+            "KRWF_RimKata_FeatureSubdueDamageTransfer",
+            "KRWF_RimKata_FeatureRangedDodge",
+            "KRWF_RimKata_FeatureTumble",
+            "KRWF_RimKata_FeatureResponse",
             "KRWF_RimKata_FeatureShakeOff",
-            "KRWF_RimKata_FeatureDirectionalFire"
+            "KRWF_RimKata_FeatureSliding"
         };
 
         public Dialog_RimKataCombatFeatures(RimKataSettings settings)
@@ -73,6 +79,9 @@ namespace KRWF.RimKata
                 closeFireEnabled = settings.closeFireEnabled;
                 targetRushEnabled = settings.targetRushEnabled;
                 breachEnabled = settings.breachEnabled;
+                flyingKickEnabled = settings.flyingKickEnabled;
+                kickEnabled = settings.kickEnabled;
+                pushKickEnabled = settings.pushKickEnabled;
                 subdueEnabled = settings.subdueEnabled;
                 subdueDamageTransferEnabled = settings.subdueDamageTransferEnabled;
                 responseEnabled = settings.responseEnabled;
@@ -153,19 +162,22 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[3], ref explosiveInterceptionEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[4], ref movingFireEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[5], ref closeFireEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[6], ref targetRushEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[7], ref breachEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[8], ref subdueEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[9], ref subdueDamageTransferEnabled,
+            DrawCheckbox(inRect, ref y, LabelKeys[6], ref proneFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[7], ref crawlFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[8], ref directionalFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[9], ref targetRushEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[10], ref breachEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[11], ref flyingKickEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[12], ref kickEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[13], ref pushKickEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[14], ref subdueEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[15], ref subdueDamageTransferEnabled,
                 "KRWF_RimKata_FeatureSubdueDamageTransferDesc");
-            DrawCheckbox(inRect, ref y, LabelKeys[10], ref responseEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[11], ref rangedDodgeEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[12], ref tumbleEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[13], ref proneFireEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[14], ref crawlFireEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[15], ref slidingEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[16], ref shakeOffEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[17], ref directionalFireEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[16], ref rangedDodgeEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[17], ref tumbleEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[18], ref responseEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[19], ref shakeOffEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[20], ref slidingEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -235,6 +247,9 @@ namespace KRWF.RimKata
                 || settings.closeFireEnabled != closeFireEnabled
                 || settings.targetRushEnabled != targetRushEnabled
                 || settings.breachEnabled != breachEnabled
+                || settings.flyingKickEnabled != flyingKickEnabled
+                || settings.kickEnabled != kickEnabled
+                || settings.pushKickEnabled != pushKickEnabled
                 || settings.subdueEnabled != subdueEnabled
                 || settings.subdueDamageTransferEnabled != subdueDamageTransferEnabled
                 || settings.responseEnabled != responseEnabled
@@ -256,6 +271,9 @@ namespace KRWF.RimKata
             settings.closeFireEnabled = closeFireEnabled;
             settings.targetRushEnabled = targetRushEnabled;
             settings.breachEnabled = breachEnabled;
+            settings.flyingKickEnabled = flyingKickEnabled;
+            settings.kickEnabled = kickEnabled;
+            settings.pushKickEnabled = pushKickEnabled;
             settings.subdueEnabled = subdueEnabled;
             settings.subdueDamageTransferEnabled = subdueDamageTransferEnabled;
             settings.responseEnabled = responseEnabled;

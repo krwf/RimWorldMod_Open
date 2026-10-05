@@ -58,6 +58,7 @@ namespace KRWF.RimKata
         public Vector3 groundPoseOffset;
         public Vector3 groundPoseWeaponOffset;
         public Rot4 groundPoseFacing;
+        public LocalTargetInfo groundPoseAimTarget;
     }
 
     public sealed class RimKataTrackedRangedProjectile : IExposable
@@ -230,6 +231,8 @@ namespace KRWF.RimKata
             internal RimKataBreachVisual? breach;
             internal RimKataSubdueVisual? subdue;
             internal RimKataReactiveVisual? reactive;
+            internal RimKataFlyingKickVisual? flyingKick;
+            internal RimKataKickVisual? kick;
             internal ThingWithComps crawlWeapon;
             internal LocalTargetInfo crawlTarget;
             internal bool HasSnapshot => snapshotOwner != null && (qualified || response);
@@ -294,6 +297,8 @@ namespace KRWF.RimKata
                 enhancedGrip = old?.enhancedGrip == true,
                 snapshotState = old?.snapshotState, snapshotOwner = old?.snapshotOwner,
                 groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue, reactive = old?.reactive,
+                flyingKick = old?.flyingKick,
+                kick = old?.kick,
                 crawlWeapon = old?.crawlWeapon, crawlTarget = old?.crawlTarget ?? LocalTargetInfo.Invalid };
         }
 
@@ -305,7 +310,7 @@ namespace KRWF.RimKata
                 entry.snapshotOwner = null;
                 entry.qualified = false;
             }
-            if (entry.registeredQualified || entry.body || entry.response || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue || entry.crawlWeapon != null)
+            if (entry.registeredQualified || entry.body || entry.response || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue || entry.flyingKick.HasValue || entry.kick.HasValue || entry.crawlWeapon != null)
             {
                 entry.pawn = pawn;
                 BodyVisualByPawn[pawn] = entry;
@@ -402,6 +407,34 @@ namespace KRWF.RimKata
                 BodyVisualEntry entry = CopyBodyVisual(pawn);
                 if (visual.HasValue) entry.map = pawn.Map;
                 entry.reactive = visual;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void PublishFlyingKick(Pawn pawn, RimKataFlyingKickVisual? visual)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry previous = BodyVisualFor(pawn);
+                if (!visual.HasValue && previous?.flyingKick.HasValue != true) return;
+                BodyVisualEntry entry = CopyBodyVisual(previous);
+                if (visual.HasValue) entry.map = pawn.Map;
+                entry.flyingKick = visual;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void PublishKick(Pawn pawn, RimKataKickVisual? visual)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry previous = BodyVisualFor(pawn);
+                if (!visual.HasValue && previous?.kick.HasValue != true) return;
+                BodyVisualEntry entry = CopyBodyVisual(previous);
+                if (visual.HasValue) entry.map = pawn.Map;
+                entry.kick = visual;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -742,6 +775,8 @@ namespace KRWF.RimKata
         internal bool temporaryInactive;
         internal bool temporaryInactivityCleanupPending;
         public RimKataGroundPoseState groundPose;
+        public RimKataFlyingKickState flyingKick;
+        public RimKataKickState kick;
         // The active Hunt toil rebuilds this transient session after loading.
         internal RimKataHuntingSession huntingSession;
 
@@ -823,7 +858,9 @@ namespace KRWF.RimKata
             || sharedTargetSearch?.KeepsCombatAlive == true
             || dedicatedFollowupJobPending
             || weaponSwapPending
-            || groundPose != null;
+            || groundPose != null
+            || flyingKick != null
+            || kick != null;
         public float VisualProgress => totalTicks <= 0 ? 1f : 1f - ticksRemaining / (float)totalTicks;
         public float AdditionalTumbleProgress =>
             additionalTumbleTotalTicks <= 0
@@ -868,6 +905,8 @@ namespace KRWF.RimKata
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Deep.Look(ref groundPose, "groundPose");
+            Scribe_Deep.Look(ref flyingKick, "flyingKick");
+            Scribe_Deep.Look(ref kick, "kick");
             Scribe_Values.Look(ref visualState, "visualState", RimKataVisualState.None);
             Scribe_Values.Look(ref ticksRemaining, "ticksRemaining");
             Scribe_Values.Look(ref totalTicks, "totalTicks");
@@ -1031,6 +1070,8 @@ namespace KRWF.RimKata
 
         public void Tick()
         {
+            if (flyingKick != null) RimKataFlyingKick.Tick(this);
+            if (kick != null) RimKataKick.Tick(this);
             if (shakeOffPending && pawn?.stances?.stagger?.Staggered != true)
                 shakeOffPending = false;
             UpdateDraftedCooldown();
@@ -1480,6 +1521,7 @@ namespace KRWF.RimKata
 
         public void CancelCloseCombat()
         {
+            if (kick != null) RimKataKick.ClearOpportunity(this);
             closeCombatTrigger = null;
         }
 
@@ -1528,7 +1570,9 @@ namespace KRWF.RimKata
                 groundPoseProgress = groundPose?.DrawProgress ?? 0f,
                 groundPoseOffset = groundPose?.DrawOffset ?? Vector3.zero,
                 groundPoseWeaponOffset = groundPose?.DrawWeaponOffset ?? Vector3.zero,
-                groundPoseFacing = groundPose?.DrawFacing ?? Rot4.Invalid
+                groundPoseFacing = groundPose?.DrawFacing ?? Rot4.Invalid,
+                groundPoseAimTarget = groundPose?.flyingKickFall == true && groundPose.VisualActive
+                    ? groundPose.focus : LocalTargetInfo.Invalid
             };
         }
 
@@ -1873,6 +1917,9 @@ namespace KRWF.RimKata
         internal Dictionary<Pawn, long> groundPoseResumeTicks = new Dictionary<Pawn, long>();
         private List<Pawn> groundPoseResumeKeys;
         private List<long> groundPoseResumeValues;
+        private Dictionary<Pawn, int> kickCooldownUntil = new Dictionary<Pawn, int>();
+        private List<Pawn> kickCooldownKeys;
+        private List<int> kickCooldownValues;
         private readonly Dictionary<Pawn, RimKataPawnCombatState> statesByPawn =
             new Dictionary<Pawn, RimKataPawnCombatState>();
         private List<RimKataTrackedRangedProjectile>
@@ -1980,6 +2027,8 @@ namespace KRWF.RimKata
                         map);
                     if (states[i] != null)
                     {
+                        RimKataFlyingKick.Clear(states[i]);
+                        RimKataKick.Clear(states[i]);
                         RimKataMotionJobGate.Clear(states[i]);
                         states[i].ownerComponent = null;
                     }
@@ -1996,6 +2045,7 @@ namespace KRWF.RimKata
             interceptionShotLinksByTarget.Clear();
             RimKataResponseVisualParticipantCache.ClearForMap(map);
             groundPoseResumeTicks.Clear();
+            kickCooldownUntil.Clear();
             base.MapRemoved();
         }
 
@@ -2015,6 +2065,17 @@ namespace KRWF.RimKata
                 Scribe_Collections.Look(ref states, "rimKataPawnStates", LookMode.Deep);
                 Scribe_Collections.Look(ref groundPoseResumeTicks, "rimKataGroundPoseResumeTicks",
                     LookMode.Reference, LookMode.Value, ref groundPoseResumeKeys, ref groundPoseResumeValues);
+                if (Scribe.mode == LoadSaveMode.Saving && kickCooldownUntil.Count != 0)
+                {
+                    var expired = new List<Pawn>();
+                    int now = Find.TickManager.TicksGame;
+                    foreach (var pair in kickCooldownUntil)
+                        if (pair.Key.Destroyed || pair.Key.Dead || pair.Key.Map != map || pair.Value <= now)
+                            expired.Add(pair.Key);
+                    foreach (Pawn pawn in expired) kickCooldownUntil.Remove(pawn);
+                }
+                Scribe_Collections.Look(ref kickCooldownUntil, "rimKataKickCooldownUntil",
+                    LookMode.Reference, LookMode.Value, ref kickCooldownKeys, ref kickCooldownValues);
                 Scribe_Collections.Look(
                     ref trackedRangedProjectiles,
                     "rimKataTrackedRangedProjectiles",
@@ -2054,6 +2115,7 @@ namespace KRWF.RimKata
                 if (Scribe.mode == LoadSaveMode.PostLoadInit)
                 {
                     groundPoseResumeTicks ??= new Dictionary<Pawn, long>();
+                    kickCooldownUntil ??= new Dictionary<Pawn, int>();
                     pendingProjectileValidations ??=
                         new Dictionary<Projectile, PendingProjectileValidation>();
                     weatherRangeCapInitialized = false;
@@ -2086,6 +2148,7 @@ namespace KRWF.RimKata
 
                     if (state.pawn.Dead)
                     {
+                        RimKataKick.Clear(state);
                         if (state.DodgeMotionBlocksJob)
                         {
                             state.pawn.pather?.StopDead();
@@ -2131,7 +2194,7 @@ namespace KRWF.RimKata
                         state.CancelOffenseForFire();
                     }
 
-                    RimKataDualWeaponController.TickIdleCycleTimers(state.pawn);
+                    RimKataDualWeaponController.TickIdleCycleTimers(state.pawn, state);
                     state.Tick();
                     if (state.incomingThreatTicksRemaining > 0)
                     {
@@ -2176,6 +2239,20 @@ namespace KRWF.RimKata
                     RimKataGroundPoseUtility.Tick(groundPoseParticipants[i]);
             }
             RimKataDormantHostileMovementRegistry.ProcessPending(map, actualCombatActive);
+        }
+
+        internal int KickCooldownUntil(Pawn pawn)
+        {
+            if (!kickCooldownUntil.TryGetValue(pawn, out int until)) return 0;
+            if (until > Find.TickManager.TicksGame) return until;
+            kickCooldownUntil.Remove(pawn);
+            return 0;
+        }
+
+        internal void RememberKickCooldown(Pawn pawn, int until)
+        {
+            if (until > Find.TickManager.TicksGame)
+                kickCooldownUntil[pawn] = until;
         }
 
         internal void RegisterGroundPose(RimKataPawnCombatState state)
@@ -3292,6 +3369,8 @@ namespace KRWF.RimKata
                     if (RimKataEligibilityCache.IsCachedQualifiedPawn(state.pawn))
                         RimKataMotionJobGate.Refresh(state);
                     RimKataGroundPoseUtility.Rebuild(state);
+                    RimKataFlyingKick.Rebuild(state);
+                    RimKataKick.Rebuild(state);
                     RimKataResponseVisualParticipantCache.Refresh(state);
                     RimKataResponseVisualParticipantCache
                         .RefreshBodyVisual(state);
@@ -3303,6 +3382,8 @@ namespace KRWF.RimKata
         {
             RimKataPawnCombatState state = states[index];
             RimKataReactiveMotion.Remove(state?.pawn);
+            RimKataFlyingKick.Clear(state);
+            RimKataKick.Clear(state);
             RimKataGroundPoseUtility.Clear(state);
             RimKataMotionJobGate.Clear(state);
             if (state != null) state.ownerComponent = null;

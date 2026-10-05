@@ -25,7 +25,6 @@ namespace KRWF.RimKata
         private const float RowHeight = 32f;
         private const float ColumnGap = 8f;
         private const float CheckboxSize = 24f;
-        private const float UsageColumnWidth = 80f;
         private const float BottomButtonHeight = 30f;
         private const float BottomButtonGap = 8f;
         private readonly RimKataSettings settings;
@@ -38,7 +37,8 @@ namespace KRWF.RimKata
         private Vector2 scrollPosition;
         private string searchText = string.Empty;
         private int categoryFilter = -1;
-        private UsageFilter usageFilter;
+        private UsageFilter friendlyUsageFilter;
+        private UsageFilter hostileUsageFilter;
         private CorpseFilter corpseFilter = CorpseFilter.NonCorpses;
         private bool filteredCandidatesDirty = true;
         private bool commitChangesOnClose;
@@ -69,8 +69,8 @@ namespace KRWF.RimKata
                     rules.Add(entry.Key, new RimKataTargetRule
                     {
                         key = entry.Key,
-                        enabled = false,
-                        profileId = profiles.Current.Id
+                        profileIdFriendly = profiles.Current.Id,
+                        profileIdHostile = profiles.Current.Id
                     });
                 }
             }
@@ -114,9 +114,11 @@ namespace KRWF.RimKata
             DrawFilterControls(new Rect(inRect.x, y, inRect.width, 30f));
             y += 36f;
             Widgets.Dropdown<Dialog_RimKataTargetSelector, int>(
-                new Rect(inRect.x, y, inRect.width, 30f), this, dialog => dialog.categoryFilter,
+                new Rect(inRect.x, y, (inRect.width - ColumnGap) * 0.7f, 30f), this, dialog => dialog.categoryFilter,
                 dialog => dialog.CategoryMenuElements(),
                 "KRWF_RimKata_TargetCategoryFilter".Translate() + ": " + CategoryLabel(categoryFilter));
+            DrawFilteredUsageButton(new Rect(inRect.x + (inRect.width - ColumnGap) * 0.7f + ColumnGap,
+                y, (inRect.width - ColumnGap) * 0.3f, 30f));
             y += 36f;
             float contentWidth = inRect.width - 18f;
             DrawRow(new Rect(inRect.x, y, contentWidth, RowHeight), null);
@@ -200,8 +202,12 @@ namespace KRWF.RimKata
                 filteredProfileWidth, BottomButtonHeight), filteredProfileLabel,
                 active: filteredCandidates.Count > 0))
             {
-                Find.WindowStack.Add(new FloatMenu(profiles.Profiles.Select(profile =>
-                    new FloatMenuOption(profile.Name, () => SetFilteredProfile(profile))).ToList()));
+                var options = new List<FloatMenuOption>();
+                foreach (bool hostile in new[] { false, true })
+                    foreach (RimKataStoredProfile profile in profiles.Profiles)
+                        options.Add(new FloatMenuOption(SideLabel(hostile) + ": " + profile.Name,
+                            () => SetFilteredProfile(profile, hostile)));
+                Find.WindowStack.Add(new FloatMenu(options));
             }
         }
 
@@ -219,40 +225,58 @@ namespace KRWF.RimKata
 
         private void DrawRow(Rect row, RimKataTargetEntry entry)
         {
-            float profileWidth = Mathf.Clamp(row.width * 0.3f, 180f, 280f);
-            Rect profileRect = new Rect(row.xMax - profileWidth, row.y + 2f, profileWidth, row.height - 4f);
-            Rect usageRect = new Rect(profileRect.x - ColumnGap - UsageColumnWidth, row.y,
-                UsageColumnWidth, row.height);
-            Rect nameRect = new Rect(row.x + 4f, row.y, Mathf.Max(0f, usageRect.x - row.x - ColumnGap - 4f), row.height);
+            float usageWidth = Mathf.Max(CheckboxSize + 12f,
+                Mathf.Max(Text.CalcSize(SideLabel(false)).x, Text.CalcSize(SideLabel(true)).x) + 12f);
+            float profileWidth = Mathf.Clamp(row.width * 0.22f, 130f, 250f);
+            Rect hostileProfileRect = new Rect(row.xMax - profileWidth, row.y + 2f, profileWidth, row.height - 4f);
+            Rect hostileUsageRect = new Rect(hostileProfileRect.x - ColumnGap - usageWidth,
+                row.y, usageWidth, row.height);
+            Rect friendlyProfileRect = new Rect(hostileUsageRect.x - ColumnGap - profileWidth,
+                row.y + 2f, profileWidth, row.height - 4f);
+            Rect friendlyUsageRect = new Rect(friendlyProfileRect.x - ColumnGap - usageWidth,
+                row.y, usageWidth, row.height);
+            Rect nameRect = new Rect(row.x + 4f, row.y,
+                Mathf.Max(0f, friendlyUsageRect.x - row.x - ColumnGap - 4f), row.height);
             if (entry == null)
             {
                 DrawLabel(nameRect, "KRWF_RimKata_TargetName".Translate(), TextAnchor.MiddleLeft);
-                DrawLabel(usageRect, "KRWF_RimKata_TargetEnabled".Translate(), TextAnchor.MiddleCenter);
-                DrawLabel(profileRect, "KRWF_RimKata_TargetProfile".Translate(), TextAnchor.MiddleCenter);
+                DrawLabel(friendlyUsageRect, SideLabel(false), TextAnchor.MiddleCenter);
+                DrawLabel(hostileUsageRect, SideLabel(true), TextAnchor.MiddleCenter);
+                DrawLabel(friendlyProfileRect, "KRWF_RimKata_TargetFriendlyProfile".Translate(), TextAnchor.MiddleCenter);
+                DrawLabel(hostileProfileRect, "KRWF_RimKata_TargetHostileProfile".Translate(), TextAnchor.MiddleCenter);
                 return;
             }
 
             DrawLabel(nameRect, entry.DisplayLabel, TextAnchor.MiddleLeft);
             TooltipHandler.TipRegion(nameRect, entry.DisplayLabel);
             RimKataTargetRule rule = rules[entry.Key];
-            bool enabled = rule.enabled;
+            DrawSide(rule, friendlyUsageRect, friendlyProfileRect, false);
+            DrawSide(rule, hostileUsageRect, hostileProfileRect, true);
+        }
+
+        private void DrawSide(RimKataTargetRule rule, Rect usageRect, Rect profileRect, bool hostile)
+        {
+            bool enabled = hostile ? rule.enabledHostile : rule.enabledFriendly;
+            bool previous = enabled;
             Widgets.Checkbox(new Vector2(usageRect.center.x - CheckboxSize * 0.5f,
                 usageRect.center.y - CheckboxSize * 0.5f), ref enabled, CheckboxSize,
-                paintable: usageFilter == UsageFilter.All);
-            if (enabled != rule.enabled)
+                paintable: (hostile ? hostileUsageFilter : friendlyUsageFilter) == UsageFilter.All);
+            if (enabled != previous)
             {
-                rule.enabled = enabled;
+                if (hostile) rule.enabledHostile = enabled;
+                else rule.enabledFriendly = enabled;
                 filteredCandidatesDirty = true;
             }
 
-            RimKataStoredProfile profile = ProfileFor(rule);
+            RimKataStoredProfile profile = ProfileFor(rule, hostile);
             GUIStyle style = Text.CurFontStyle;
             FontStyle previousStyle = style.fontStyle;
             try
             {
                 if (profile.Id != profiles.Current.Id) style.fontStyle = FontStyle.Bold;
-                Widgets.Dropdown<RimKataTargetRule, RimKataStoredProfile>(profileRect, rule, ProfileFor,
-                    ProfileMenuElements, profile.Name, dragLabel: profile.Name, paintable: true);
+                Widgets.Dropdown<RimKataTargetRule, RimKataStoredProfile>(profileRect, rule,
+                    value => ProfileFor(value, hostile), value => ProfileMenuElements(value, hostile),
+                    profile.Name, dragLabel: profile.Name, paintable: true);
             }
             finally { style.fontStyle = previousStyle; }
         }
@@ -266,15 +290,29 @@ namespace KRWF.RimKata
                 "KRWF_RimKata_TargetCorpseFilter".Translate() + ": " + CorpseLabel(corpseFilter));
             Widgets.Dropdown<Dialog_RimKataTargetSelector, UsageFilter>(
                 new Rect(rect.x + width + ColumnGap, rect.y, width, rect.height), this,
-                dialog => dialog.usageFilter, dialog => dialog.UsageMenuElements(),
-                "KRWF_RimKata_TargetUsageFilter".Translate() + ": " + UsageLabel(usageFilter));
-            if (Widgets.ButtonText(new Rect(rect.x + (width + ColumnGap) * 2f, rect.y, width, rect.height),
+                dialog => dialog.friendlyUsageFilter, dialog => dialog.UsageMenuElements(false),
+                SideLabel(false) + ": " + UsageLabel(friendlyUsageFilter));
+            Widgets.Dropdown<Dialog_RimKataTargetSelector, UsageFilter>(
+                new Rect(rect.x + (width + ColumnGap) * 2f, rect.y, width, rect.height), this,
+                dialog => dialog.hostileUsageFilter, dialog => dialog.UsageMenuElements(true),
+                SideLabel(true) + ": " + UsageLabel(hostileUsageFilter));
+        }
+
+        private void DrawFilteredUsageButton(Rect rect)
+        {
+            if (Widgets.ButtonText(rect,
                 "KRWF_RimKata_FilteredResults".Translate()))
             {
                 Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
                 {
-                    new FloatMenuOption("KRWF_RimKata_SelectFiltered".Translate(), () => SetFilteredEnabled(true)),
-                    new FloatMenuOption("KRWF_RimKata_ClearFiltered".Translate(), () => SetFilteredEnabled(false))
+                    new FloatMenuOption(SideLabel(false) + ": " + "KRWF_RimKata_SelectFiltered".Translate(),
+                        () => SetFilteredEnabled(true, false)),
+                    new FloatMenuOption(SideLabel(false) + ": " + "KRWF_RimKata_ClearFiltered".Translate(),
+                        () => SetFilteredEnabled(false, false)),
+                    new FloatMenuOption(SideLabel(true) + ": " + "KRWF_RimKata_SelectFiltered".Translate(),
+                        () => SetFilteredEnabled(true, true)),
+                    new FloatMenuOption(SideLabel(true) + ": " + "KRWF_RimKata_ClearFiltered".Translate(),
+                        () => SetFilteredEnabled(false, true))
                 }));
             }
         }
@@ -318,7 +356,7 @@ namespace KRWF.RimKata
             };
         }
 
-        private IEnumerable<Widgets.DropdownMenuElement<UsageFilter>> UsageMenuElements()
+        private IEnumerable<Widgets.DropdownMenuElement<UsageFilter>> UsageMenuElements(bool hostile)
         {
             foreach (UsageFilter value in new[] { UsageFilter.All, UsageFilter.Enabled, UsageFilter.Disabled })
             {
@@ -327,27 +365,34 @@ namespace KRWF.RimKata
                     payload = value,
                     option = new FloatMenuOption(UsageLabel(value), () =>
                     {
-                        usageFilter = value;
+                        if (hostile) hostileUsageFilter = value;
+                        else friendlyUsageFilter = value;
                         FiltersChanged();
                     })
                 };
             }
         }
 
-        private RimKataStoredProfile ProfileFor(RimKataTargetRule rule)
+        private RimKataStoredProfile ProfileFor(RimKataTargetRule rule, bool hostile)
         {
-            return rule.profileId != null && profilesById.TryGetValue(rule.profileId, out RimKataStoredProfile profile)
+            string profileId = hostile ? rule.profileIdHostile : rule.profileIdFriendly;
+            return profileId != null && profilesById.TryGetValue(profileId, out RimKataStoredProfile profile)
                 ? profile : profiles.Current;
         }
 
-        private IEnumerable<Widgets.DropdownMenuElement<RimKataStoredProfile>> ProfileMenuElements(RimKataTargetRule rule)
+        private IEnumerable<Widgets.DropdownMenuElement<RimKataStoredProfile>> ProfileMenuElements(
+            RimKataTargetRule rule, bool hostile)
         {
             foreach (RimKataStoredProfile profile in profiles.Profiles)
             {
                 yield return new Widgets.DropdownMenuElement<RimKataStoredProfile>
                 {
                     payload = profile,
-                    option = new FloatMenuOption(profile.Name, () => rule.profileId = profile.Id)
+                    option = new FloatMenuOption(profile.Name, () =>
+                    {
+                        if (hostile) rule.profileIdHostile = profile.Id;
+                        else rule.profileIdFriendly = profile.Id;
+                    })
                 };
             }
         }
@@ -371,9 +416,9 @@ namespace KRWF.RimKata
                 if ((corpseFilter == CorpseFilter.NonCorpses && entry.IsCorpse)
                     || (corpseFilter == CorpseFilter.Corpses && !entry.IsCorpse))
                     continue;
-                bool enabled = rules[entry.Key].enabled;
-                if ((usageFilter == UsageFilter.Enabled && !enabled)
-                    || (usageFilter == UsageFilter.Disabled && enabled))
+                RimKataTargetRule rule = rules[entry.Key];
+                if (!MatchesUsage(rule.enabledFriendly, friendlyUsageFilter)
+                    || !MatchesUsage(rule.enabledHostile, hostileUsageFilter))
                     continue;
                 if (query.Length > 0
                     && entry.Label.IndexOf(query, StringComparison.CurrentCultureIgnoreCase) < 0
@@ -385,19 +430,31 @@ namespace KRWF.RimKata
             filteredCandidatesDirty = false;
         }
 
-        private void SetFilteredEnabled(bool enabled)
+        private static bool MatchesUsage(bool enabled, UsageFilter filter) =>
+            filter == UsageFilter.All || (filter == UsageFilter.Enabled) == enabled;
+
+        private static string SideLabel(bool hostile) =>
+            (hostile ? "KRWF_RimKata_TargetHostile" : "KRWF_RimKata_TargetFriendly").Translate();
+
+        private void SetFilteredEnabled(bool enabled, bool hostile)
         {
             RefreshFilteredCandidates();
             foreach (RimKataTargetEntry entry in filteredCandidates)
-                rules[entry.Key].enabled = enabled;
+            {
+                if (hostile) rules[entry.Key].enabledHostile = enabled;
+                else rules[entry.Key].enabledFriendly = enabled;
+            }
             filteredCandidatesDirty = true;
         }
 
-        private void SetFilteredProfile(RimKataStoredProfile profile)
+        private void SetFilteredProfile(RimKataStoredProfile profile, bool hostile)
         {
             RefreshFilteredCandidates();
             foreach (RimKataTargetEntry entry in filteredCandidates)
-                rules[entry.Key].profileId = profile.Id;
+            {
+                if (hostile) rules[entry.Key].profileIdHostile = profile.Id;
+                else rules[entry.Key].profileIdFriendly = profile.Id;
+            }
         }
 
         private void ResetSelection()
@@ -406,8 +463,8 @@ namespace KRWF.RimKata
             foreach (RimKataTargetEntry entry in candidates)
             {
                 RimKataTargetRule rule = rules[entry.Key];
-                rule.enabled = false;
-                rule.profileId = profileId;
+                rule.enabledFriendly = rule.enabledHostile = false;
+                rule.profileIdFriendly = rule.profileIdHostile = profileId;
             }
             FiltersChanged();
         }

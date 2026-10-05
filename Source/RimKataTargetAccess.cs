@@ -7,19 +7,37 @@ namespace KRWF.RimKata
     public sealed class RimKataTargetRule : IExposable
     {
         public string key;
-        public bool enabled;
-        public string profileId;
+        public bool enabledFriendly;
+        public bool enabledHostile;
+        public string profileIdFriendly;
+        public string profileIdHostile;
 
         public RimKataTargetRule Copy()
         {
-            return new RimKataTargetRule { key = key, enabled = enabled, profileId = profileId };
+            return new RimKataTargetRule
+            {
+                key = key,
+                enabledFriendly = enabledFriendly,
+                enabledHostile = enabledHostile,
+                profileIdFriendly = profileIdFriendly,
+                profileIdHostile = profileIdHostile
+            };
         }
 
         public void ExposeData()
         {
             Scribe_Values.Look(ref key, "key");
-            Scribe_Values.Look(ref enabled, "enabled", false);
-            Scribe_Values.Look(ref profileId, "profileId");
+            bool legacyEnabled = false;
+            string legacyProfileId = null;
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            {
+                Scribe_Values.Look(ref legacyEnabled, "enabled", false);
+                Scribe_Values.Look(ref legacyProfileId, "profileId");
+            }
+            Scribe_Values.Look(ref enabledFriendly, "enabledFriendly", legacyEnabled);
+            Scribe_Values.Look(ref enabledHostile, "enabledHostile", legacyEnabled);
+            Scribe_Values.Look(ref profileIdFriendly, "profileIdFriendly", legacyProfileId);
+            Scribe_Values.Look(ref profileIdHostile, "profileIdHostile", legacyProfileId);
         }
     }
 
@@ -27,7 +45,23 @@ namespace KRWF.RimKata
     {
         private sealed class Binding
         {
-            internal RimKataStoredProfile profile;
+            internal bool enabledFriendly;
+            internal bool enabledHostile;
+            internal RimKataStoredProfile friendlyProfile;
+            internal RimKataStoredProfile hostileProfile;
+
+            internal bool EnabledFor(Pawn pawn) => enabledFriendly == enabledHostile
+                ? enabledFriendly : RimKataEligibility.IsHostileToPlayerFaction(pawn)
+                    ? enabledHostile : enabledFriendly;
+
+            internal RimKataStoredProfile ProfileFor(Pawn pawn)
+            {
+                if (enabledFriendly && enabledHostile && ReferenceEquals(friendlyProfile, hostileProfile))
+                    return friendlyProfile;
+                return RimKataEligibility.IsHostileToPlayerFaction(pawn)
+                    ? enabledHostile ? hostileProfile : null
+                    : enabledFriendly ? friendlyProfile : null;
+            }
         }
 
         private static Dictionary<RimKataTargetEntry, Binding> bindings =
@@ -43,17 +77,18 @@ namespace KRWF.RimKata
         {
             if (bindings.Count == 0) return false;
             RimKataTargetEntry target = RimKataTargetCatalog.Resolve(pawn);
-            return target != null && bindings.ContainsKey(target);
+            return target != null && bindings.TryGetValue(target, out Binding binding) && binding.EnabledFor(pawn);
         }
 
         internal static RimKataSettings SettingsFor(Pawn pawn)
         {
             if (bindings.Count == 0) return RimKataMod.Settings;
             RimKataTargetEntry target = RimKataTargetCatalog.Resolve(pawn);
-            if (target != null && bindings.TryGetValue(target, out Binding binding)
-                && binding.profile != null && !ReferenceEquals(binding.profile, RimKataMod.Profiles?.Current))
+            if (target != null && bindings.TryGetValue(target, out Binding binding))
             {
-                return binding.profile.RuntimeSettings;
+                RimKataStoredProfile profile = binding.ProfileFor(pawn);
+                if (profile != null && !ReferenceEquals(profile, RimKataMod.Profiles?.Current))
+                    return profile.RuntimeSettings;
             }
             return RimKataMod.Settings;
         }
@@ -75,8 +110,10 @@ namespace KRWF.RimKata
                             settings.targetAccessRules.Add(new RimKataTargetRule
                             {
                                 key = target.Key,
-                                enabled = true,
-                                profileId = settings.ActiveProfileId
+                                enabledFriendly = true,
+                                enabledHostile = true,
+                                profileIdFriendly = settings.ActiveProfileId,
+                                profileIdHostile = settings.ActiveProfileId
                             });
                     }
                 }
@@ -100,13 +137,31 @@ namespace KRWF.RimKata
             bool anyInactiveInterception = false;
             foreach (RimKataTargetEntry target in targets)
             {
-                if (!rules.TryGetValue(target.Key, out RimKataTargetRule rule) || !rule.enabled) continue;
-                profiles.TryGetValue(rule.profileId ?? string.Empty, out RimKataStoredProfile profile);
-                nextBindings[target] = new Binding { profile = profile };
-                nextEnabled[target.Key] = rule.profileId;
-                if (profile != null && !ReferenceEquals(profile, RimKataMod.Profiles.Current)
-                    && profile.RuntimeSettings.explosiveInterceptionEnabled)
-                    anyInactiveInterception = true;
+                if (!rules.TryGetValue(target.Key, out RimKataTargetRule rule)
+                    || (!rule.enabledFriendly && !rule.enabledHostile)) continue;
+                profiles.TryGetValue(rule.profileIdFriendly ?? string.Empty, out RimKataStoredProfile friendlyProfile);
+                profiles.TryGetValue(rule.profileIdHostile ?? string.Empty, out RimKataStoredProfile hostileProfile);
+                nextBindings[target] = new Binding
+                {
+                    enabledFriendly = rule.enabledFriendly,
+                    enabledHostile = rule.enabledHostile,
+                    friendlyProfile = friendlyProfile,
+                    hostileProfile = hostileProfile
+                };
+                if (rule.enabledFriendly)
+                {
+                    nextEnabled[target.Key + ":friendly"] = rule.profileIdFriendly;
+                    if (friendlyProfile != null && !ReferenceEquals(friendlyProfile, RimKataMod.Profiles.Current)
+                        && friendlyProfile.RuntimeSettings.explosiveInterceptionEnabled)
+                        anyInactiveInterception = true;
+                }
+                if (rule.enabledHostile)
+                {
+                    nextEnabled[target.Key + ":hostile"] = rule.profileIdHostile;
+                    if (hostileProfile != null && !ReferenceEquals(hostileProfile, RimKataMod.Profiles.Current)
+                        && hostileProfile.RuntimeSettings.explosiveInterceptionEnabled)
+                        anyInactiveInterception = true;
+                }
             }
             bool changed = nextEnabled.Count != enabledProfiles.Count;
             if (!changed)

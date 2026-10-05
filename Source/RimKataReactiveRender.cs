@@ -96,8 +96,12 @@ namespace KRWF.RimKata
         }
 
         internal static bool Owns(Pawn pawn)
-            => pawn != null && (current.pawn == pawn ? current.visual.OwnsWeapons
-                : RimKataWorldRenderContext.BodyFor(pawn)?.reactive?.OwnsWeapons == true);
+        {
+            if (pawn == null) return false;
+            if (current.pawn == pawn) return current.visual.OwnsWeapons;
+            var body = RimKataWorldRenderContext.BodyFor(pawn);
+            return body?.kick.HasValue != true && body?.flyingKick.HasValue != true && body?.reactive?.OwnsWeapons == true;
+        }
 
         internal static void PlaceBody(RimKataReactiveVisual visual, ref Vector3 drawLoc)
         {

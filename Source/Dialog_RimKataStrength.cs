@@ -17,7 +17,6 @@ namespace KRWF.RimKata
             internal string label;
             internal string displayLabel;
             internal string buffer;
-            internal float displayedDefault;
         }
 
         private const float RowHeight = 32f;
@@ -75,7 +74,7 @@ namespace KRWF.RimKata
                 int labelOrder = StringComparer.CurrentCultureIgnoreCase.Compare(left.label, right.label);
                 return labelOrder != 0 ? labelOrder : StringComparer.Ordinal.Compare(left.rule.Key, right.rule.Key);
             });
-            batchPercent = RimKataStrengthRule.SanitizePercent(settings.strengthIncreasePercent);
+            batchPercent = 0f;
             batchBuffer = batchPercent.ToString();
             doCloseX = true;
             closeOnAccept = false;
@@ -103,8 +102,7 @@ namespace KRWF.RimKata
                 category = category,
                 label = def.LabelCap.ToString(),
                 displayLabel = def.LabelCap + " [" + def.defName + "]",
-                buffer = rule.EffectivePercent(settings.strengthIncreasePercent).ToString(),
-                displayedDefault = RimKataStrengthRule.SanitizePercent(settings.strengthIncreasePercent)
+                buffer = rule.AdditionalPercent.ToString()
             });
         }
 
@@ -128,10 +126,9 @@ namespace KRWF.RimKata
                 y += 36f;
                 float contentWidth = inRect.width - 18f;
                 infoWidth = Mathf.Max(32f, Text.CalcSize("KRWF_RimKata_EquipmentInfo".Translate()).x + 8f);
-                percentWidth = Mathf.Max(FieldWidth, Text.CalcSize("KRWF_RimKata_StrengthIncrease".Translate()).x + 8f);
+                percentWidth = Mathf.Max(FieldWidth, Text.CalcSize("KRWF_RimKata_IndependentStrengthIncrease".Translate()).x + 8f);
                 allowedWidth = Mathf.Max(32f, Text.CalcSize("KRWF_RimKata_EquipmentAllowed".Translate()).x + 8f);
-                overrideTip = "KRWF_RimKata_StrengthOverrideTip".Translate(
-                    RimKataStrengthRule.SanitizePercent(settings.strengthIncreasePercent).ToString());
+                overrideTip = "KRWF_RimKata_StrengthOverrideTip".Translate();
                 DrawRow(new Rect(inRect.x, y, contentWidth, RowHeight), null);
                 y += RowHeight;
                 Widgets.DrawLineHorizontal(inRect.x, y, contentWidth);
@@ -179,7 +176,7 @@ namespace KRWF.RimKata
             {
                 Label(name, "KRWF_RimKata_TargetName".Translate(), TextAnchor.MiddleLeft);
                 Label(allowed, "KRWF_RimKata_EquipmentAllowed".Translate(), TextAnchor.MiddleCenter);
-                Label(percent, "KRWF_RimKata_StrengthIncrease".Translate(), TextAnchor.MiddleCenter);
+                Label(percent, "KRWF_RimKata_IndependentStrengthIncrease".Translate(), TextAnchor.MiddleCenter);
                 Label(info, "KRWF_RimKata_EquipmentInfo".Translate(), TextAnchor.MiddleCenter);
                 return;
             }
@@ -195,12 +192,11 @@ namespace KRWF.RimKata
             }
             Rect field = new Rect(percent.center.x - FieldWidth * 0.5f, row.y + 2f, FieldWidth, row.height - 4f);
             string control = "TextField" + field.y.ToString("F0") + field.x.ToString("F0");
-            float value = editor.rule.EffectivePercent(settings.strengthIncreasePercent);
+            float value = editor.rule.AdditionalPercent;
             if (!editor.rule.hasOverride && GUI.GetNameOfFocusedControl() != control
-                && (editor.displayedDefault != value || !float.TryParse(editor.buffer, out float shown) || shown != value))
+                && (!float.TryParse(editor.buffer, out float shown) || shown != value))
             {
                 editor.buffer = value.ToString();
-                editor.displayedDefault = value;
             }
             string previousBuffer = editor.buffer;
             Event input = Event.current;
@@ -274,7 +270,7 @@ namespace KRWF.RimKata
                 GUI.FocusControl(null);
             }
             float labelX = rect.x + width + Gap;
-            string label = "KRWF_RimKata_StrengthIncrease".Translate() + ":";
+            string label = "KRWF_RimKata_IndependentStrengthIncrease".Translate() + ":";
             float labelWidth = Mathf.Min(Text.CalcSize(label).x + Gap, Mathf.Max(0f, rect.xMax - labelX - FieldWidth));
             Label(new Rect(labelX, rect.y, labelWidth, rect.height), label, TextAnchor.MiddleLeft);
             RimKataSettingsDrawer.DrawFloatField(new Rect(labelX + labelWidth, rect.y + 2f, FieldWidth, rect.height - 4f),
@@ -322,7 +318,7 @@ namespace KRWF.RimKata
                 rule.hasOverride = false;
                 rule.percent = 0f;
             }
-            foreach (RowEditor row in rows) row.buffer = row.rule.EffectivePercent(settings.strengthIncreasePercent).ToString();
+            foreach (RowEditor row in rows) row.buffer = row.rule.AdditionalPercent.ToString();
             GUI.FocusControl(null);
             FiltersChanged();
         }

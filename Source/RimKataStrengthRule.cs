@@ -28,7 +28,11 @@ namespace KRWF.RimKata
             percent = percent
         };
 
-        public float EffectivePercent(float defaultPercent) => SanitizePercent(hasOverride ? percent : defaultPercent);
+        internal float AdditionalPercent => hasOverride ? SanitizePercent(percent) : 0f;
+
+        public float EffectivePercent(float defaultPercent)
+            => (float)Math.Min((enabled ? (double)SanitizePercent(defaultPercent) : 0d)
+                + AdditionalPercent, float.MaxValue);
 
         public void Sanitize()
         {

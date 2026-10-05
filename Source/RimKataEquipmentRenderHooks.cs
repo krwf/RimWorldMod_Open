@@ -23,7 +23,8 @@ namespace KRWF.RimKata
             try
             {
                 if (equipmentDepth > 1 || entry == null
-                    || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue)
+                    || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue
+                    || entry.flyingKick.HasValue || entry.kick.HasValue)
                     DrawSpecialEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
                 else DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
             }

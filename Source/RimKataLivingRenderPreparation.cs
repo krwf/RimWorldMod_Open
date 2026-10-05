@@ -81,9 +81,21 @@ namespace KRWF.RimKata
                         ref drawLoc, ref facing);
                 }
                 else scope = RimKataWorldRenderContext.Begin(pawn);
-                RimKataGroundPoseRender.PlaceShadow(pawn, ref drawLoc);
-                RimKataBreachRender.PlaceShadow(pawn, ref drawLoc);
-                RimKataReactiveRender.PlaceShadow(pawn, ref drawLoc);
+                var body = RimKataWorldRenderContext.BodyFor(pawn);
+                if (body == null) return;
+                var kick = body.kick.HasValue ? RimKataWorldRenderContext.KickFor(pawn) : null;
+                var flyingKick = !kick.HasValue && body.flyingKick.HasValue
+                    ? RimKataWorldRenderContext.FlyingKickFor(pawn) : null;
+                if (kick.HasValue)
+                    RimKataKickRender.PlaceShadow(pawn, kick.Value, ref drawLoc);
+                else if (flyingKick.HasValue)
+                    RimKataFlyingKickRender.PlaceShadow(pawn, flyingKick.Value, ref drawLoc);
+                else
+                {
+                    if (body.groundPose) RimKataGroundPoseRender.PlaceShadow(pawn, ref drawLoc);
+                    if (body.breach?.poseActive == true) RimKataBreachRender.PlaceShadow(pawn, ref drawLoc);
+                    if (body.reactive?.Falling == true) RimKataReactiveRender.PlaceShadow(pawn, ref drawLoc);
+                }
             }
             finally
             {

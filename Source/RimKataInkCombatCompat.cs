@@ -15,6 +15,8 @@ namespace KRWF.RimKata
         private struct MeleeScope
         {
             internal Verb verb;
+            internal Verb_RimKataFlyingKick flyingKick;
+            internal Verb_RimKataKick kick;
             internal Pawn attacker, defender;
             internal bool defenseOwned, resolved, avoided, rimKataAvoided, parried, resolving, continueDamage;
             internal float dodgeChance;
@@ -131,6 +133,8 @@ namespace KRWF.RimKata
             melee = new MeleeScope
             {
                 verb = __instance,
+                flyingKick = __instance as Verb_RimKataFlyingKick,
+                kick = __instance as Verb_RimKataKick,
                 attacker = __instance.CasterPawn,
                 defender = __instance.CurrentTarget.Pawn
             };
@@ -202,6 +206,10 @@ namespace KRWF.RimKata
 
         private static void ResolveAfterInk(Pawn __0, ref DamageInfo __1, ref bool __2, ref bool __result)
         {
+            if (Patch_Verb_TryCastShot_RimKata.CurrentVerb is Verb_RimKataFlyingKick kick)
+                kick.RecordDamageDecision(__0, __1, __result && !__2);
+            else if (Patch_Verb_TryCastShot_RimKata.CurrentVerb is Verb_RimKataKick standingKick)
+                standingKick.RecordDamageDecision(__0, __1, __result && !__2);
             if (!MatchesDamage(__0, __1) || melee.resolved) return;
             melee.resolved = true;
             melee.continueDamage = __result;
@@ -240,7 +248,13 @@ namespace KRWF.RimKata
         }
 
         private static void PublishDefense()
-            => recordSharedDefense?.Invoke((Verb_MeleeAttack)melee.verb, melee.avoided, melee.parried);
+        {
+            recordSharedDefense?.Invoke((Verb_MeleeAttack)melee.verb, melee.avoided, melee.parried);
+            if (melee.verb is Verb_RimKataFlyingKick kick)
+                kick.RecordResolvedDefense(melee.continueDamage && !melee.avoided);
+            else if (melee.verb is Verb_RimKataKick standingKick)
+                standingKick.RecordResolvedDefense(melee.continueDamage && !melee.avoided);
+        }
 
         private static IEnumerable<CodeInstruction> MeleeTranspiler(IEnumerable<CodeInstruction> instructions)
         {
@@ -309,7 +323,7 @@ namespace KRWF.RimKata
         private static Mote DeferImpactMote(Vector3 location, Map map, ThingDef def,
             float scale, bool overrideVisibility, float rotation)
         {
-            if (!melee.defenseOwned || melee.resolved)
+            if ((!melee.defenseOwned && melee.flyingKick == null && melee.kick == null) || melee.resolved)
                 return MoteMaker.MakeStaticMote(location, map, def, scale, overrideVisibility, rotation);
             melee.mote = new MoteRequest
             {
@@ -321,7 +335,7 @@ namespace KRWF.RimKata
 
         private static void DeferImpactFleck(Vector3 location, Map map, FleckDef def, float scale)
         {
-            if (!melee.defenseOwned || melee.resolved)
+            if ((!melee.defenseOwned && melee.flyingKick == null && melee.kick == null) || melee.resolved)
             {
                 FleckMaker.Static(location, map, def, scale);
                 return;
@@ -335,7 +349,7 @@ namespace KRWF.RimKata
             FleckRequest fleck = melee.fleck;
             melee.mote = default;
             melee.fleck = default;
-            if (!melee.rimKataAvoided)
+            if (!melee.rimKataAvoided && melee.flyingKick?.Blocked != true && melee.kick?.Blocked != true)
             {
                 if (mote.def != null)
                     MoteMaker.MakeStaticMote(mote.location, mote.map, mote.def,
@@ -348,7 +362,7 @@ namespace KRWF.RimKata
 
         private static BattleLogEntry_MeleeCombat CaptureLog(BattleLogEntry_MeleeCombat log)
         {
-            if (melee.defenseOwned && !melee.resolved) melee.hitLog = log;
+            if ((melee.defenseOwned || melee.flyingKick != null || melee.kick != null) && !melee.resolved) melee.hitLog = log;
             return log;
         }
 
@@ -358,6 +372,7 @@ namespace KRWF.RimKata
 
         private static void PlaySound(SoundDef sound, SoundInfo info)
         {
+            if ((melee.flyingKick?.Blocked == true || melee.kick?.Blocked == true) && !melee.rimKataAvoided) return;
             if (melee.rimKataAvoided)
             {
                 if (melee.parried) return;
@@ -368,6 +383,16 @@ namespace KRWF.RimKata
 
         private static bool FinishResult(bool result, Verb_MeleeAttack verb)
         {
+            if (melee.verb == verb && (melee.flyingKick?.Blocked == true || melee.kick?.Blocked == true))
+            {
+                result = false;
+                if (!melee.rimKataAvoided && melee.hitLog != null)
+                {
+                    melee.hitLog.RuleDef = melee.kick != null
+                        ? RimKataKickDefOf.RimKata_Kick_Blocked : RimKataFlyingKickDefOf.RimKata_FlyingKick_Blocked;
+                    melee.hitLog.alwaysShowInCompact = false;
+                }
+            }
             if (melee.verb != verb || !melee.rimKataAvoided) return result;
             if (melee.hitLog != null)
             {

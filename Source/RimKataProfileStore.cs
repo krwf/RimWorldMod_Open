@@ -181,7 +181,8 @@ namespace KRWF.RimKata
             File.Delete(Current.FilePath);
             foreach (RimKataTargetRule rule in settings.targetAccessRules)
             {
-                if (rule.profileId == Current.Id) rule.profileId = replacement.Id;
+                if (rule.profileIdFriendly == Current.Id) rule.profileIdFriendly = replacement.Id;
+                if (rule.profileIdHostile == Current.Id) rule.profileIdHostile = replacement.Id;
             }
             profiles.RemoveAt(index);
             replacement.Values.ApplyTo(settings);

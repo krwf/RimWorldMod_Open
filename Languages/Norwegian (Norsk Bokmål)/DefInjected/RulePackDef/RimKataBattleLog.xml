@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_ParryBattleLog.rulePack.rulesStrings.0>r_logentry-&gt;[SUBJECT_nameDef] parerte angrepet til [INITIATOR_nameDef].</RimKata_ParryBattleLog.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] traff [RECIPIENT_nameDef] med et flygespark.</RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;Rustningen til [RECIPIENT_nameDef] avverget flygesparket fra [INITIATOR_nameDef].</RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] bommet på [RECIPIENT_nameDef] med et flygespark.</RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] dukket unna flygesparket fra [INITIATOR_nameDef].</RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] unngikk flygesparket fra [INITIATOR_nameDef].</RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>
+  <RimKata_Kick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] traff [RECIPIENT_nameDef] med et spark.</RimKata_Kick_Hit.rulePack.rulesStrings.0>
+  <RimKata_Kick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;Rustningen til [RECIPIENT_nameDef] avverget sparket fra [INITIATOR_nameDef].</RimKata_Kick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_Kick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;[INITIATOR_nameDef] bommet på [RECIPIENT_nameDef] med et spark.</RimKata_Kick_Miss.rulePack.rulesStrings.0>
+  <RimKata_Kick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] dukket unna sparket fra [INITIATOR_nameDef].</RimKata_Kick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_Kick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] unngikk sparket fra [INITIATOR_nameDef].</RimKata_Kick_Blocked.rulePack.rulesStrings.0>
 </LanguageData>
-

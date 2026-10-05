@@ -127,7 +127,7 @@ namespace KRWF.RimKata
         private static void Postfix(Pawn __instance)
         {
             RimKataNeutralTargetInvalidation.Invalidate(__instance.Map);
-            RimKataEligibilityCache.NotifyPawnSpawned(__instance);
+            RimKataEligibilityCache.NotifyTargetChanged(__instance);
             RimKataColonistBarWeaponCache.Refresh(__instance);
             RimKataCrawlFireUtility.NotifyFactionChanged(__instance);
         }

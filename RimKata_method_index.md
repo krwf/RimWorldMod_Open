@@ -1,8 +1,8 @@
 # RimKata 소스 메서드 색인
 
-작성 기준: **2026-10-03**의 현재 작업 소스 · **136개 파일 / 일반 메서드 2,851개**.
+작성 기준: **2026-10-05**의 현재 작업 소스 · **144개 파일 / 일반 메서드 2,990개**.
 
-작업 경과·변경 및 검증 기록은 [작업 기억 파일](RimKata_code_cleanup_worklog_260830.md)에 기록합니다.
+작업 경과·변경 및 검증 기록은 [개발 작업 기억](RimKata_development_memory.md)에 기록합니다.
 
 최적화 기준은 [최적화 방식 기록](RimKata_optimization_reference_20260901-20261001.md), 참가자 렌더의 등록·소비 원칙은 [등록 자료 직접 소비](RimKata_optimization_reference_20260901-20261001.md#registered-visual-source)를 함께 확인합니다.
 
@@ -21,7 +21,7 @@
 
 - 파일은 이름순, 각 파일의 메서드는 **소스 선언 순서**입니다. 중첩 타입의 메서드도 원래 위치 순서를 유지합니다.
 - 기존 목록 방식에 맞춰 **일반 메서드만 개별 항목**으로 기록합니다. 생성자·프로퍼티 접근자·연산자·로컬 함수·람다·컴파일러 생성 메서드는 별도 항목으로 만들지 않습니다.
-- **호출받음**은 이 프로젝트의 136개 소스에서 해당 심볼을 직접 호출하는 **문법상 호출 지점 수**입니다. 같은 메서드 안의 두 호출은 2곳이고 반복문의 한 호출은 1곳입니다. 실행 횟수나 호출하는 메서드의 개수가 아닙니다. **호출자 이름과 역방향 호출 경로는 기록하지 않습니다.**
+- **호출받음**은 이 프로젝트의 144개 소스에서 해당 심볼을 직접 호출하는 **문법상 호출 지점 수**입니다. 같은 메서드 안의 두 호출은 2곳이고 반복문의 한 호출은 1곳입니다. 실행 횟수나 호출하는 메서드의 개수가 아닙니다. **호출자 이름과 역방향 호출 경로는 기록하지 않습니다.**
 - 생성자·프로퍼티 접근자·초기화식·람다 안의 직접 호출도 호출받음 수에는 포함합니다. 각 항목의 호출 목록에는 그 본문 안의 람다·로컬 함수에 쓰인 호출도 포함합니다. 조건 분기의 실제 실행 여부까지 판정하지 않습니다.
 - 호출 목록의 **×N**은 해당 본문에 같은 호출이 N곳 있다는 뜻입니다. 내부 링크는 호출 대상 항목으로 이동합니다. 외부 호출은 게임·Unity·Harmony·표준 라이브러리 등의 정적 대상입니다.
 - 오버로드는 매개변수로 구분합니다. 확장 메서드와 제네릭 구체화는 원래 정의 심볼에 합칩니다. 가상 호출은 소스에서 선택되는 정적 심볼 기준이며 가능한 모든 override에 수를 배분하지 않습니다.
@@ -39,8 +39,8 @@
 | [Dialog_RimKataCombatFeatures.cs](#file-02) | 3 | 프로필별 전투 요소 설정 창 |
 | [Dialog_RimKataDefSelector.cs](#file-03) | 40 | 허용 무기·의류 선택과 그립·분류 필터 |
 | [Dialog_RimKataGeneProbability.cs](#file-106) | 26 | 인종·특수 분류별 유전자 확률 검색·필터·일괄 편집과 저장 |
-| [Dialog_RimKataModFeatures.cs](#file-04) | 8 | 프로필별 모드 요소·시각 안내·아군/적군 기면서 사격 기본값 설정 창 |
-| [Dialog_RimKataStrength.cs](#file-130) | 17 | 의류·이식물별 근력 허용·증가율·기본값 상속 편집 창 |
+| [Dialog_RimKataModFeatures.cs](#file-04) | 8 | 프로필별 모드 요소·시각 안내·아군/적군 기면서 사격 및 날아 차기 기본값 설정 창 |
+| [Dialog_RimKataStrength.cs](#file-130) | 17 | 의류·이식물별 강화 허용·독립 추가 근력 편집 창 |
 | [Dialog_RimKataTargetSelector.cs](#file-05) | 21 | 제한 해제 대상·프로필 선택 목록 |
 | [Dialog_RimKataVisualFeatures.cs](#file-107) | 9 | 프로필별 연출 시간·확률 설정 창 |
 | [JobDriver_RimKataAttack.cs](#file-06) | 67 | 림카타 전용 공격 작업과 공격 명령 연결 |
@@ -53,6 +53,7 @@
 | [RimKataBreachCombat.cs](#file-99) | 24 | 돌파 중 공격 중지·근접 시도 보상과 범위 피해를 보존하는 직접탄 무효 |
 | [RimKataBreachDoor.cs](#file-100) | 15 | 문 패널 v2와 기존 v1 recipe 복원·다층 잔해 출력·청소 및 저장 연계 |
 | [RimKataBreachEvents.cs](#file-101) | 9 | 플레이어 문 공격 명령·AI 실제 근접·채굴 타격과 작업·이동·퇴장 사건 연결 |
+| [RimKataBreachLeap.cs](#file-144) | 5 | 돌파 마지막 2칸 도약·문 접점 이후 착지의 렌더 전용 진행과 저장 |
 | [RimKataBreachMovement.cs](#file-102) | 18 | 도움닫기·도달 속도 보존·직선 경로·장애물 기립과 본인의 문 열기 차단 |
 | [RimKataBreachRender.cs](#file-103) | 21 | 돌파 전용 발밑 회전·몸 방향 고정·문 운반과 독립 무기 출력 스코프 |
 | [RimKataBreachWeaponRender.cs](#file-104) | 9 | 돌파 대기 주·부 무기의 독립 좌표·각도·메시 출력과 일반 무기 중복 억제 |
@@ -77,7 +78,7 @@
 | [RimKataCombatExtendedRiposte.cs](#file-29) | 8 | CE 받아치기로 자격자에게 들어오는 직접 피해의 방어·일지·상처 연결 |
 | [RimKataCombatExtendedTrajectory.cs](#file-30) | 16 | CE 탄도·빗나감·요격·튕긴 탄 처리 |
 | [RimKataCombatMath.cs](#file-31) | 23 | 림카타 명중·회피·준비시간·쿨다운 계산 |
-| [RimKataCombatState.cs](#file-32) | 157 | 폰별 전투 상태·주기·시각 스냅샷·맵 이벤트 관리 |
+| [RimKataCombatState.cs](#file-32) | 159 | 폰별 전투 상태·주기·시각 스냅샷·맵 이벤트 관리 |
 | [RimKataConfirmationDialog.cs](#file-33) | 2 | 공통 확인 안내창과 중앙 정렬 |
 | [RimKataCrawlFire.cs](#file-34) | 44 | 실제 기어 이동의 전용 사격·자유 사격·명중 후 위협 등록 |
 | [RimKataCrawlFireHits.cs](#file-35) | 12 | 실제 기어 사격 투사체의 출처·명중·저장 추적 |
@@ -104,8 +105,11 @@
 | [RimKataExternalPatchGuard.cs](#file-108) | 3 | 외부 모드 메서드의 Harmony 등록 실패 격리와 재시도 차단 |
 | [RimKataFeatureWindowUtility.cs](#file-129) | 1 | 요소 창 체크박스 연속 칠하기와 창 드래그 시작 입력 분리 |
 | [RimKataFireUtility.cs](#file-49) | 49 | 발사 문맥·투사체 조작·주기 및 기본 사격 패치 |
+| [RimKataFlyingKick.cs](#file-137) | 25 | 등록된 자격자의 직선 접근 날아 차기·공격과 연출 단계 분리·발끝 접촉·맨손 한 타격 대체·중단 및 넘어짐 인계 |
+| [RimKataFlyingKickCombat.cs](#file-138) | 9 | 날아 차기 전용 Verb·접점 단발 실행·최종 방어 결과·상처 출처 표기·고정 시간 기절 |
+| [RimKataFlyingKickRender.cs](#file-139) | 20 | 날아 차기의 발 기준 몸 회전·상승·지정 대상 접촉점과 장비 변위·그림자·발사 원점 문맥 |
 | [RimKataGeneProbability.cs](#file-109) | 13 | 인종·크립조이너·휘청이는 자 규칙과 등장 시 배타적 유전자 부여 |
-| [RimKataGroundPose.cs](#file-50) | 32 | 넘어짐·구르기·엎드림의 저장 상태와 사건·시간 관리 |
+| [RimKataGroundPose.cs](#file-50) | 34 | 넘어짐·구르기·엎드림의 저장 상태와 사건·시간 관리 |
 | [RimKataGroundPoseConditions.cs](#file-51) | 14 | 정지 원거리 조준·앞 엄폐·단일 근접 후보 조건 |
 | [RimKataGroundPoseEvents.cs](#file-52) | 6 | 실제 빗나감·회피 사건과 엎드린 추가 빗나감·사냥 은폐 |
 | [RimKataGroundPoseGeometry.cs](#file-53) | 17 | 실측 신체·무기 상대좌표와 렌더·발사 공통 이동량 |
@@ -115,6 +119,9 @@
 | [RimKataInkCombatCompat.cs](#file-136) | 24 | Ink 방어 우선·실패 시 림카타 회피/쳐내기 판정과 동일 공격 결과·일지·연출 공유 |
 | [RimKataInspectPatches.cs](#file-56) | 9 | 림 정보창의 장착 무기와 슬롯별 작업 표시 |
 | [RimKataInterceptionTrajectory.cs](#file-57) | 14 | 기본 투사체의 요격 예상 위치·충돌·재지정 |
+| [RimKataKick.cs](#file-140) | 22 | 등록 자격자의 stagger 종료 후 일회 발차기 기회·재사용 우선 판단·원래 대상 인계·독립 연출 수명과 정리 |
+| [RimKataKickCombat.cs](#file-141) | 13 | 발차기 전용 인간 주먹 기반 Verb·독립 네이티브 타격 요청·최종 방어 결과·상처 출처 표기 |
+| [RimKataKickRender.cs](#file-142) | 20 | 발차기의 목 기준 몸 회전·원래 무기 조준 유지·몸 변위를 따르는 무기/그림자/발사 중심 문맥 |
 | [RimKataLivingRenderPreparation.cs](#file-125) | 5 | 살아 있는 폰의 기존 위치·방향·캐시·그림자 보정과 네이티브 렌더 준비 호출 연결 |
 | [RimKataMeleeAnimationAttackBridge.cs](#file-58) | 6 | Melee Animation의 부 슬롯 공격 알림 분리와 실제 완료 신호 연결 |
 | [RimKataMeleeAnimationCompat.cs](#file-59) | 25 | Melee Animation의 손·무기 제출과 림카타 부 무기 렌더 연결 |
@@ -123,7 +130,7 @@
 | [RimKataMod.cs](#file-62) | 24 | 시작 및 DAC·Rebound·PocketSand·PocketSand 호환 등록·설정 저장·프로필 적용·설정 창 연결 |
 | [RimKataMotionJobGate.cs](#file-127) | 9 | 회피·슬라이딩·떨치기 시작 시 등록한 상태와 담당 작업을 직접 소비하는 작업 제어 및 비참가자 호출 제외 |
 | [RimKataMuzzleFlashCompat.cs](#file-63) | 7 | Muzzle Flash 선택적 화염 기준 좌표 보정 |
-| [RimKataNativeAttack.cs](#file-64) | 31 | 실제 Verb 소유자에게 전달하는 림카타 발사 요청 |
+| [RimKataNativeAttack.cs](#file-64) | 33 | 실제 Verb 소유자에게 전달하는 림카타 발사 요청 |
 | [RimKataNeutralTargetCache.cs](#file-65) | 5 | 중립 표적 탐색 무효화를 위한 맵·전역 버전 관리 |
 | [RimKataNonHumanEquipmentCatalog.cs](#file-66) | 10 | 메카노이드·곤충·동물·기타 장비 분류 |
 | [RimKataPocketSandCompat.cs](#file-93) | 5 | PocketSand 장비 교체의 부 무기 보존 및 기존 임시 교체 기록 연결 |
@@ -147,11 +154,12 @@
 | [RimKataRingTraversal.cs](#file-77) | 8 | 반지름·방향별 원형 셀 순회 |
 | [RimKataSecondaryHandRequirement.cs](#file-78) | 5 | 손 상실에 따른 부 슬롯 제한과 장비 정리 |
 | [RimKataSecondaryWeapon.cs](#file-79) | 132 | 부 무기 등록·교체·복구·장착·관련 메뉴 |
-| [RimKataSettings.cs](#file-80) | 53 | 공통·프로필 설정 값과 저장·마이그레이션 |
-| [RimKataSettingsDrawer.cs](#file-81) | 29 | 메인 설정 창의 가변 너비·수치 입력·섹션 표시 |
+| [RimKataPushKick.cs](#file-143) | 2 | 일반 발차기 명중 후 무게 조건에 따른 한 칸 밀기·구조물 충돌·지형 처리 |
+| [RimKataSettings.cs](#file-80) | 58 | 공통·프로필 설정 값과 저장·마이그레이션 |
+| [RimKataSettingsDrawer.cs](#file-81) | 30 | 메인 설정 창의 가변 너비·수치 입력·섹션 표시 |
 | [RimKataSharedTargetSearch.cs](#file-82) | 89 | 공유 자동 표적 탐색·후보 관리·범위 전환 |
 | [RimKataSlidingAttackOrigin.cs](#file-123) | 9 | 슬라이딩 공격의 중간 좌표 문맥, 근접 타격 방향 및 총구 섬광 보정 |
-| [RimKataStrengthRule.cs](#file-132) | 5 | 종류별 근력 허용 규칙과 기본값 상속/명시 증가율 저장 |
+| [RimKataStrengthRule.cs](#file-132) | 5 | 종류별 강화 허용과 독립 추가 근력 저장 |
 | [RimKataStrengthUtility.cs](#file-133) | 35 | 장비·이식물 사건 기반 근력 등록, 폰별 유효 그립, 제압 몸 질량 및 바닐라·CE 질량 한도 |
 | [RimKataSubdue.cs](#file-115) | 27 | 제압 접근·운반 관계·자격·참가 등록·해제와 저장 |
 | [RimKataSubdueAutomaticFire.cs](#file-116) | 11 | 제압 중 대기 자동 사격 포착과 한 손 무기의 전투 인계 |
@@ -160,12 +168,12 @@
 | [RimKataSubdueEvents.cs](#file-119) | 11 | 작업·퇴장 사건 및 제압 공격·공격 허용·던지기 기즈모 |
 | [RimKataSubdueJobs.cs](#file-120) | 9 | 운반을 유지하는 제압 전용 전투 작업과 이동·근접 명령 처리 |
 | [RimKataSubdueRender.cs](#file-121) | 21 | 방향별 운반 배치·발버둥·무기 타격과 제압 독립 무기 출력 |
-| [RimKataSubdueThrow.cs](#file-122) | 14 | 던져진 폰의 지연 이동 렌더·착지·구조물 충격·이동 불가 결과 처리 |
+| [RimKataSubdueThrow.cs](#file-122) | 17 | 제압 던지기·밀어 차기의 지연 이동 렌더·착지·구조물 충격·이동 불가 결과 처리 |
 | [RimKataTargetAccess.cs](#file-83) | 5 | 대상별 제한 해제 규칙과 적용 프로필 선택 |
 | [RimKataTargetCatalog.cs](#file-84) | 4 | 종족·이종족·샴블러 등 게임 내 대상 선택 목록과 내부 이름·시체 여부 표시 캐시 |
 | [RimKataTargeting.cs](#file-85) | 17 | 공격·요격 표적 유효성 및 폭발체 요격 결과 |
 | [RimKataTemporaryInactivity.cs](#file-86) | 16 | 일시적인 림카타 비활성 상태와 표시 |
-| [RimKataVisualPatches.cs](#file-87) | 113 | 몸·무기·대응 연출·전투 표시·사거리 렌더 |
+| [RimKataVisualPatches.cs](#file-87) | 115 | 몸·무기·대응 연출·전투 표시·사거리 렌더 |
 | [RimKataWeaponDrawCapture.cs](#file-88) | 22 | Unity 제출 명령 캡처·재생·부 슬롯 변환 |
 | [RimKataWeaponRenderDiscovery.cs](#file-89) | 13 | 외부 무기 렌더 경로 발견과 제출 호출 연결 |
 | [RimKataWeaponRenderProbe.cs](#file-90) | 23 | 무기별 렌더 관측·가시성·특수 부 슬롯 출력 |
@@ -266,20 +274,20 @@
 
 ### 001. Dialog_RimKataCombatFeatures.DoWindowContents
 
-`public override void DoWindowContents(Rect inRect)` · [L141](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:141)
+`public override void DoWindowContents(Rect inRect)` · [L147](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:147)
 
-- **역할:** 전투 기능 플래그와 확인·닫기를 표시하며 돌파 아래 제압·피해 전가, 기면서 쏴 아래 슬라이딩·떨치기·난사를 배치합니다.
+- **역할:** 전투 기능 21개 플래그와 확인·닫기를 표시합니다. 사격 항목 뒤 난사, 돌격·돌파·날아 차기·발차기·밀어 차기, 제압·피해 전가, 원거리 회피·공중제비·쳐내기, 떨치기·슬라이딩 순으로 배치합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Dialog_RimKataCombatFeatures.DrawCheckbox(UnityEngine.Rect inRect, ref float y, string key, ref bool value, \[string descriptionKey = null\])](#m-0010) ×18
+- **호출 — 프로젝트 내부:** [Dialog_RimKataCombatFeatures.DrawCheckbox(UnityEngine.Rect inRect, ref float y, string key, ref bool value, \[string descriptionKey = null\])](#m-0010) ×20
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)` ×3 · `Verse.Window.Close([bool doCloseSound = true])` ×3 · `Verse.Text.CalcSize(string text)` ×2 · `Verse.Translator.Translate(string key)` ×2 · `Verse.Widgets.ButtonText(UnityEngine.Rect rect, string label, [bool drawBackground = true], [bool doMouseoverSound = true], [bool active = true], [UnityEngine.TextAnchor? overrideTextAnchor = null])` ×2
 
 <a id="m-0009"></a>
 
 ### 002. Dialog_RimKataCombatFeatures.PostClose
 
-`public override void PostClose()` · [L219](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:219)
+`public override void PostClose()` · [L227](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:227)
 
-- **역할:** 확인한 경우에만 전투 기능 값을 반영하고 변경이 있으면 관련 캐시·자격·장비 상태를 갱신합니다. 확인한 기면서 쏴 변경도 저장하고 공통 설정 변경 사건을 전달합니다. 난사 플래그도 같은 확인·설정 갱신 경계에 포함합니다.
+- **역할:** 확인한 경우에만 전투 기능 값을 반영하고 변경이 있으면 관련 캐시·자격·장비 상태를 갱신합니다. 확인한 기면서 쏴 변경도 저장하고 공통 설정 변경 사건을 전달합니다. 난사 플래그도 같은 확인·설정 갱신 경계에 포함합니다. 날아 차기 활성 값도 확인 시 반영하고 취소 시 이전 값으로 유지합니다. 발차기 허용도 확인 시에만 반영하고 닫기 시에는 버립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataMod.ApplyCombatFeatureSettingsChange()](#m-1483)
 - **호출 — 외부:** `Verse.Window.PostClose()`
@@ -288,10 +296,10 @@
 
 ### 003. Dialog_RimKataCombatFeatures.DrawCheckbox
 
-`private static void DrawCheckbox(Rect inRect, ref float y, string key, ref bool value, string descriptionKey = null)` · [L276](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:276)
+`private static void DrawCheckbox(Rect inRect, ref float y, string key, ref bool value, string descriptionKey = null)` · [L288](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataCombatFeatures.cs:288)
 
 - **역할:** 전투 요소 번역 라벨과 체크박스를 배치하고 다음 행으로 이동합니다. 공통 플래그 입력 도우미로 창 이동 시작을 차단합니다.
-- **호출받음:** 직접 **18곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **20곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataFeatureWindowUtility.DrawCheckbox(UnityEngine.Rect rect, string label, ref bool value)](#m-2751)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` ×2 · `Verse.TooltipHandler.TipRegion(UnityEngine.Rect rect, Verse.TipSignal tip)`
 
@@ -1040,26 +1048,26 @@
 
 ## 04. Dialog_RimKataModFeatures.cs
 
-[Source/Dialog_RimKataModFeatures.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs) · 메서드 **8개** · 프로필별 모드 요소·시각 안내·아군/적군 기면서 사격 기본값 설정 창 · [파일 목차](#files)
+[Source/Dialog_RimKataModFeatures.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs) · 메서드 **8개** · 프로필별 모드 요소·시각 안내·아군/적군 기면서 사격 및 날아 차기 기본값 설정 창 · [파일 목차](#files)
 
 <a id="m-0051"></a>
 
 ### 001. Dialog_RimKataModFeatures.DoWindowContents
 
-`public override void DoWindowContents(Rect inRect)` · [L125](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:125)
+`public override void DoWindowContents(Rect inRect)` · [L131](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:131)
 
-- **역할:** 후보 수·시각 안내·기본값 세 구역을 표시하며 부드러운 조준은 시각 안내에, 아군·적군 기면서 사격 허용은 기본값 구역에 배치합니다.
+- **역할:** 후보 수·시각 안내·기본값 세 구역을 표시하며 부드러운 조준은 시각 안내에, 아군·적군 기면서 사격 허용은 기본값 구역에 배치합니다. 기본값 구간에 날아 차기 아군·적군 허용을 각각 표시하고 늘어난 두 행을 창 높이·스크롤에 포함합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Dialog_RimKataModFeatures.DrawCheckbox(float width, ref float y, string key, ref bool value)](#m-0058) ×6 · [Dialog_RimKataModFeatures.DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-0054) ×5 · [Dialog_RimKataModFeatures.DrawHeader(float width, ref float y, string key)](#m-0053) ×3 · [Dialog_RimKataModFeatures.DrawButtons(UnityEngine.Rect rect)](#m-0060)
+- **호출 — 프로젝트 내부:** [Dialog_RimKataModFeatures.DrawCheckbox(float width, ref float y, string key, ref bool value)](#m-0058) ×8 · [Dialog_RimKataModFeatures.DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-0054) ×5 · [Dialog_RimKataModFeatures.DrawHeader(float width, ref float y, string key)](#m-0053) ×3 · [Dialog_RimKataModFeatures.DrawButtons(UnityEngine.Rect rect)](#m-0060)
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)` ×2 · `Verse.Widgets.DrawLineHorizontal(float x, float y, float length)` ×2 · `Verse.Widgets.BeginScrollView(UnityEngine.Rect outRect, ref UnityEngine.Vector2 scrollPosition, UnityEngine.Rect viewRect, [bool showScrollbars = true])` · `Verse.Widgets.EndScrollView()` · `Verse.Window.Close([bool doCloseSound = true])`
 
 <a id="m-0052"></a>
 
 ### 002. Dialog_RimKataModFeatures.PostClose
 
-`public override void PostClose()` · [L165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:165)
+`public override void PostClose()` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:173)
 
-- **역할:** 확인한 경우에만 후보 수·시각 안내·부드러운 조준·아군/적군 기면서 사격 기본값을 반영하고 관련 설정과 입력 버퍼를 갱신합니다.
+- **역할:** 확인한 경우에만 후보 수·시각 안내·부드러운 조준·아군/적군 기면서 사격 기본값을 반영하고 관련 설정과 입력 버퍼를 갱신합니다. 날아 차기 아군·적군 허용도 확인 시에만 반영하고 설정 변경 알림을 보냅니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataMod.ApplyCombatFeatureSettingsChange()](#m-1483) · [RimKataSettingsUiBuffers.SyncFrom(RimKataSettings settings)](#m-1824)
 - **호출 — 외부:** `Verse.Window.PostClose()`
@@ -1068,7 +1076,7 @@
 
 ### 003. Dialog_RimKataModFeatures.DrawHeader
 
-`private static void DrawHeader(float width, ref float y, string key)` · [L198](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:198)
+`private static void DrawHeader(float width, ref float y, string key)` · [L210](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:210)
 
 - **역할:** 모드 요소 소제목과 구분선을 그립니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -1079,7 +1087,7 @@
 
 ### 004. Dialog_RimKataModFeatures.DrawIntRow
 
-`private static void DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L210](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:210)
+`private static void DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L222](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:222)
 
 - **역할:** 정수 값 입력 행을 그리고 입력 버퍼와 설정 값을 연결합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -1090,7 +1098,7 @@
 
 ### 005. Dialog_RimKataModFeatures.DrawRowLabel
 
-`private static void DrawRowLabel(Rect rect, string label)` · [L217](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:217)
+`private static void DrawRowLabel(Rect rect, string label)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:229)
 
 - **역할:** 모드 요소 행의 라벨을 정해진 정렬과 영역에 표시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -1101,10 +1109,10 @@
 
 ### 006. Dialog_RimKataModFeatures.DrawCheckbox
 
-`private static void DrawCheckbox(float width, ref float y, string key, ref bool value)` · [L225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:225)
+`private static void DrawCheckbox(float width, ref float y, string key, ref bool value)` · [L237](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:237)
 
 - **역할:** 모드 요소 체크박스 행을 그립니다. 공통 플래그 입력 도우미로 창 이동 시작을 차단합니다.
-- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataFeatureWindowUtility.DrawCheckbox(UnityEngine.Rect rect, string label, ref bool value)](#m-2751)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)`
 
@@ -1112,7 +1120,7 @@
 
 ### 007. Dialog_RimKataModFeatures.ButtonWidth
 
-`private static float ButtonWidth(string key)` · [L231](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:231)
+`private static float ButtonWidth(string key)` · [L243](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:243)
 
 - **역할:** 번역된 버튼 라벨에 필요한 너비를 계산합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -1123,7 +1131,7 @@
 
 ### 008. Dialog_RimKataModFeatures.DrawButtons
 
-`private void DrawButtons(Rect rect)` · [L236](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:236)
+`private void DrawButtons(Rect rect)` · [L248](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataModFeatures.cs:248)
 
 - **역할:** 확인·닫기 버튼을 배치하고 창 종료 동작을 처리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -1135,7 +1143,7 @@
 
 ## 130. Dialog_RimKataStrength.cs
 
-[Source/Dialog_RimKataStrength.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs) · 메서드 **17개** · 의류·이식물별 근력 허용·증가율·기본값 상속 편집 창 · [파일 목차](#files)
+[Source/Dialog_RimKataStrength.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs) · 메서드 **17개** · 의류·이식물별 강화 허용·독립 추가 근력 편집 창 · [파일 목차](#files)
 
 <a id="m-2755"></a>
 
@@ -1143,9 +1151,9 @@
 
 `private void AddRow(Def def, RimKataStrengthSourceKind kind, int category)` · [L91](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs:91)
 
-- **역할:** 의류 또는 설치 이식물 Def를 종류별 저장 키와 연결하여 이름·분류·상속 수치 편집 행을 만듭니다.
+- **역할:** 의류 또는 이식물 Def를 종류별 규칙에 연결하고 독립 추가 근력(미지정 시 0%) 편집 행을 만듭니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataStrengthRule.EffectivePercent(float defaultPercent)](#m-2804) · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
+- **호출 — 프로젝트 내부:** [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Add(TKey key, TValue value)` · `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Generic.List<T>.Add(T item)` · `float.ToString()` · `Verse.TaggedString.ToString()`
 
 <a id="m-2756"></a>
@@ -1187,9 +1195,9 @@
 
 `private void DrawRow(Rect row, RowEditor editor)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs:172)
 
-- **역할:** 이름·허용 체크·증가율·정보 버튼을 그립니다. 명시 값은 0%도 굵게 표시하고 빈 입력은 상속으로 돌리며 같은 값 입력 의도와 GUI 변경 상태를 해당 필드 범위에서 처리합니다.
+- **역할:** 허용 체크와 허용 여부와 무관한 추가 근력을 독립 편집합니다. 명시 값은 굵게 표시하며 빈칸은 추가 근력 0%로 처리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Dialog_RimKataStrength.Label(UnityEngine.Rect rect, string text, UnityEngine.TextAnchor anchor)](#m-2771) ×4 · [RimKataPreviewInfoCard.Open(Verse.ThingDef def)](#m-1556) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) · [RimKataStrengthRule.EffectivePercent(float defaultPercent)](#m-2804)
+- **호출 — 프로젝트 내부:** [Dialog_RimKataStrength.Label(UnityEngine.Rect rect, string text, UnityEngine.TextAnchor anchor)](#m-2771) ×4 · [RimKataPreviewInfoCard.Open(Verse.ThingDef def)](#m-1556) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` ×4 · `float.ToString(string format)` ×2 · `float.TryParse(string s, out float result)` ×2 · `UnityEngine.GUI.GetNameOfFocusedControl()` ×2 · `char.IsDigit(char c)` · `float.IsInfinity(float f)` · `float.IsNaN(float f)` · `float.ToString()` · `UnityEngine.Mathf.Max(float a, float b)` · `Verse.GenText.NullOrEmpty(string str)` · `Verse.TooltipHandler.TipRegion(UnityEngine.Rect rect, Verse.TipSignal tip)` · `Verse.Widgets.ButtonImage(UnityEngine.Rect butRect, UnityEngine.Texture2D tex, [bool doMouseoverSound = true], [string tooltip = null])` · `Verse.Widgets.CheckboxLabeled(UnityEngine.Rect rect, string label, ref bool checkOn, [bool disabled = false], [UnityEngine.Texture2D texChecked = null], [UnityEngine.Texture2D texUnchecked = null], [bool placeCheckboxNearText = false], [bool paintable = false])` · `Verse.Widgets.DefIcon(UnityEngine.Rect rect, Verse.Def def, [Verse.ThingDef stuffDef = null], [float scale = 1], [Verse.ThingStyleDef thingStyleDef = null], [bool drawPlaceholder = false], [UnityEngine.Color? color = null], [UnityEngine.Material material = null], [int? graphicIndexOverride = null], [float alpha = 1])` · `Verse.WindowStack.Add(Verse.Window window)`
 
 <a id="m-2760"></a>
@@ -1209,7 +1217,7 @@
 
 `private void DrawBatch(Rect rect)` · [L261](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs:261)
 
-- **역할:** 필터 결과에 동일한 명시 증가율을 입력합니다. 허용 체크는 변경하지 않습니다.
+- **역할:** 필터 결과에 동일한 독립 추가 근력을 입력합니다. 허용 체크는 변경하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataStrengthRule.SanitizePercent(float value)](#m-2806) ×2 · [Dialog_RimKataStrength.Label(UnityEngine.Rect rect, string text, UnityEngine.TextAnchor anchor)](#m-2771) · [Dialog_RimKataStrength.RefreshFiltered()](#m-2770) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846)
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)` ×2 · `Verse.Text.CalcSize(string text)` ×2 · `Verse.Translator.Translate(string key)` ×2 · `float.ToString()` · `UnityEngine.GUI.FocusControl(string name)` · `UnityEngine.Mathf.Min(float a, float b)` · `Verse.Widgets.ButtonText(UnityEngine.Rect rect, string label, [bool drawBackground = true], [bool doMouseoverSound = true], [bool active = true], [UnityEngine.TextAnchor? overrideTextAnchor = null])`
@@ -1231,9 +1239,9 @@
 
 `private void Reset(bool onlyFiltered)` · [L313](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataStrength.cs:313)
 
-- **역할:** 전체 또는 현재 필터 결과의 근력 규칙을 기본 보호구 10종만 허용하는 상태로 복원하고 개별 증가량 지정을 해제합니다. 편집 버퍼는 현재 프로필의 기본 증가량 상속 표시로 갱신하며 창 확인 전까지 설정에 확정하지 않습니다.
+- **역할:** 전체 또는 필터 결과의 기본 보호구 허용값을 복원하고 개별 추가 근력을 0%로 초기화합니다. 창 확인 전까지 설정에 확정하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Dialog_RimKataStrength.FiltersChanged()](#m-2769) · [Dialog_RimKataStrength.RefreshFiltered()](#m-2770) · [RimKataSettings.CreateDefaultStrengthRules()](#m-2844) · [RimKataStrengthRule.EffectivePercent(float defaultPercent)](#m-2804)
+- **호출 — 프로젝트 내부:** [Dialog_RimKataStrength.FiltersChanged()](#m-2769) · [Dialog_RimKataStrength.RefreshFiltered()](#m-2770) · [RimKataSettings.CreateDefaultStrengthRules()](#m-2844)
 - **호출 — 외부:** `System.Linq.Enumerable.Select<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, TResult> selector)` ×2 · `System.Collections.Generic.HashSet<T>.Contains(T item)` · `float.ToString()` · `UnityEngine.GUI.FocusControl(string name)`
 
 <a id="m-2764"></a>
@@ -1329,7 +1337,7 @@
 
 ## 05. Dialog_RimKataTargetSelector.cs
 
-[Source/Dialog_RimKataTargetSelector.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs) · 메서드 **21개** · 제한 해제 대상·프로필 선택 목록 · [파일 목차](#files)
+[Source/Dialog_RimKataTargetSelector.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs) · 메서드 **25개** · 제한 해제 대상·프로필 선택 목록 · [파일 목차](#files)
 
 <a id="m-0061"></a>
 
@@ -1381,25 +1389,41 @@
 
 `private void DrawRow(Rect row, RimKataTargetEntry entry)` · [L220](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:220)
 
-- **역할:** 내부 이름을 포함한 대상 표시 이름과 툴팁을 그리며, 한 행의 허용 플래그·프로필 선택·드래그 적용을 처리합니다. 현재 프로필과 다른 유효 개별 프로필 이름은 허용 체크와 독립적으로 굵게 표시하고 그리기 스타일을 복원합니다.
+- **역할:** 대상 이름과 아군 체크·프로필, 적군 체크·프로필 열을 배치하고 각 측의 편집 함수를 호출합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataTargetSelector.DrawLabel(UnityEngine.Rect rect, string text, UnityEngine.TextAnchor anchor)](#m-0081) ×4 · [Dialog_RimKataTargetSelector.ProfileFor(RimKataTargetRule rule)](#m-0071)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` ×3 · `UnityEngine.Mathf.Clamp(float value, float min, float max)` · `UnityEngine.Mathf.Max(float a, float b)` · `Verse.TooltipHandler.TipRegion(UnityEngine.Rect rect, Verse.TipSignal tip)` · `Verse.Widgets.Checkbox(UnityEngine.Vector2 topLeft, ref bool checkOn, [float size = 24], [bool disabled = false], [bool paintable = false], [UnityEngine.Texture2D texChecked = null], [UnityEngine.Texture2D texUnchecked = null])` · `Verse.Widgets.Dropdown<Target, Payload>(UnityEngine.Rect rect, Target target, System.Func<Target, Payload> getPayload, System.Func<Target, System.Collections.Generic.IEnumerable<Verse.Widgets.DropdownMenuElement<Payload>>> menuGenerator, [string buttonLabel = null], [UnityEngine.Texture2D buttonIcon = null], [string dragLabel = null], [UnityEngine.Texture2D dragIcon = null], [System.Action dropdownOpened = null], [bool paintable = false])`
 
+<a id="m-3021"></a>
+
+### 006. Dialog_RimKataTargetSelector.DrawSide
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:257)
+
+- **역할:** 지정한 측의 체크와 프로필 드롭다운을 편집합니다. 별도 프로필의 굵은 표시와 드래그 적용을 유지합니다.
+
 <a id="m-0066"></a>
 
-### 006. Dialog_RimKataTargetSelector.DrawFilterControls
+### 007. Dialog_RimKataTargetSelector.DrawFilterControls
 
 `private void DrawFilterControls(Rect rect)` · [L260](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:260)
 
-- **역할:** 시체 여부와 사용 여부 필터 및 필터 결과의 일괄 사용 설정을 같은 행에 그립니다.
+- **역할:** 시체 여부와 아군·적군 각각의 허용 여부 필터를 같은 줄에 배치합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataTargetSelector.SetFilteredEnabled(bool enabled)](#m-0075) ×2 · [Dialog_RimKataTargetSelector.CorpseLabel(Dialog_RimKataTargetSelector.CorpseFilter value)](#m-0079) · [Dialog_RimKataTargetSelector.CorpseMenuElements()](#m-0067) · [Dialog_RimKataTargetSelector.UsageLabel(Dialog_RimKataTargetSelector.UsageFilter value)](#m-0080) · [Dialog_RimKataTargetSelector.UsageMenuElements()](#m-0070)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` ×5 · `Verse.Widgets.Dropdown<Target, Payload>(UnityEngine.Rect rect, Target target, System.Func<Target, Payload> getPayload, System.Func<Target, System.Collections.Generic.IEnumerable<Verse.Widgets.DropdownMenuElement<Payload>>> menuGenerator, [string buttonLabel = null], [UnityEngine.Texture2D buttonIcon = null], [string dragLabel = null], [UnityEngine.Texture2D dragIcon = null], [System.Action dropdownOpened = null], [bool paintable = false])` ×2 · `Verse.Widgets.ButtonText(UnityEngine.Rect rect, string label, [bool drawBackground = true], [bool doMouseoverSound = true], [bool active = true], [UnityEngine.TextAnchor? overrideTextAnchor = null])` · `Verse.WindowStack.Add(Verse.Window window)`
 
+<a id="m-3022"></a>
+
+### 008. Dialog_RimKataTargetSelector.DrawFilteredUsageButton
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:301)
+
+- **역할:** 필터 결과에서 아군 허용/해제와 적군 허용/해제를 각각 선택하게 합니다.
+
 <a id="m-0067"></a>
 
-### 007. Dialog_RimKataTargetSelector.CorpseMenuElements
+### 009. Dialog_RimKataTargetSelector.CorpseMenuElements
 
 `private IEnumerable<Widgets.DropdownMenuElement<CorpseFilter>> CorpseMenuElements()` · [L282](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:282)
 
@@ -1410,7 +1434,7 @@
 
 <a id="m-0068"></a>
 
-### 008. Dialog_RimKataTargetSelector.CategoryMenuElements
+### 010. Dialog_RimKataTargetSelector.CategoryMenuElements
 
 `private IEnumerable<Widgets.DropdownMenuElement<int>> CategoryMenuElements()` · [L298](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:298)
 
@@ -1421,7 +1445,7 @@
 
 <a id="m-0069"></a>
 
-### 009. Dialog_RimKataTargetSelector.CategoryMenuElement
+### 011. Dialog_RimKataTargetSelector.CategoryMenuElement
 
 `private Widgets.DropdownMenuElement<int> CategoryMenuElement(int value)` · [L308](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:308)
 
@@ -1432,7 +1456,7 @@
 
 <a id="m-0070"></a>
 
-### 010. Dialog_RimKataTargetSelector.UsageMenuElements
+### 012. Dialog_RimKataTargetSelector.UsageMenuElements
 
 `private IEnumerable<Widgets.DropdownMenuElement<UsageFilter>> UsageMenuElements()` · [L321](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:321)
 
@@ -1443,18 +1467,18 @@
 
 <a id="m-0071"></a>
 
-### 011. Dialog_RimKataTargetSelector.ProfileFor
+### 013. Dialog_RimKataTargetSelector.ProfileFor
 
 `private RimKataStoredProfile ProfileFor(RimKataTargetRule rule)` · [L337](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:337)
 
-- **역할:** 대상 규칙의 프로필 ID에 대응하는 저장 프로필을 찾습니다.
+- **역할:** 지정한 측의 프로필 ID를 찾고 유효하지 않으면 현재 프로필을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **1곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
 <a id="m-0072"></a>
 
-### 012. Dialog_RimKataTargetSelector.ProfileMenuElements
+### 014. Dialog_RimKataTargetSelector.ProfileMenuElements
 
 `private IEnumerable<Widgets.DropdownMenuElement<RimKataStoredProfile>> ProfileMenuElements(RimKataTargetRule rule)` · [L343](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:343)
 
@@ -1465,7 +1489,7 @@
 
 <a id="m-0073"></a>
 
-### 013. Dialog_RimKataTargetSelector.FiltersChanged
+### 015. Dialog_RimKataTargetSelector.FiltersChanged
 
 `private void FiltersChanged()` · [L355](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:355)
 
@@ -1476,7 +1500,7 @@
 
 <a id="m-0074"></a>
 
-### 014. Dialog_RimKataTargetSelector.RefreshFilteredCandidates
+### 016. Dialog_RimKataTargetSelector.RefreshFilteredCandidates
 
 `private void RefreshFilteredCandidates()` · [L361](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:361)
 
@@ -1485,42 +1509,58 @@
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `string.IndexOf(string value, System.StringComparison comparisonType)` ×3 · `System.Collections.Generic.List<T>.Add(T item)` · `System.Collections.Generic.List<T>.Clear()` · `string.Trim()`
 
+<a id="m-3023"></a>
+
+### 017. Dialog_RimKataTargetSelector.MatchesUsage
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:433)
+
+- **역할:** 한쪽 허용 플래그가 해당 측의 전체/허용/비허용 필터에 맞는지 확인합니다.
+
+<a id="m-3024"></a>
+
+### 018. Dialog_RimKataTargetSelector.SideLabel
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:436)
+
+- **역할:** 아군 또는 적군 번역 라벨을 반환합니다.
+
 <a id="m-0075"></a>
 
-### 015. Dialog_RimKataTargetSelector.SetFilteredEnabled
+### 019. Dialog_RimKataTargetSelector.SetFilteredEnabled
 
 `private void SetFilteredEnabled(bool enabled)` · [L388](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:388)
 
-- **역할:** 현재 필터 결과 전체에 지정한 활성 값을 적용합니다.
+- **역할:** 현재 필터 결과의 지정한 측 허용 체크만 일괄 변경합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataTargetSelector.RefreshFilteredCandidates()](#m-0074)
 - **호출 — 외부:** 없음
 
 <a id="m-0076"></a>
 
-### 016. Dialog_RimKataTargetSelector.SetFilteredProfile
+### 020. Dialog_RimKataTargetSelector.SetFilteredProfile
 
 `private void SetFilteredProfile(RimKataStoredProfile profile)` · [L396](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:396)
 
-- **역할:** 현재 검색·종류·시체 여부·사용 여부 필터에 맞는 모든 대상 규칙의 적용 프로필 ID만 선택한 프로필로 바꿉니다.
+- **역할:** 현재 필터 결과의 지정한 측 프로필만 일괄 변경합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataTargetSelector.RefreshFilteredCandidates()](#m-0074)
 - **호출 — 외부:** 없음
 
 <a id="m-0077"></a>
 
-### 017. Dialog_RimKataTargetSelector.ResetSelection
+### 021. Dialog_RimKataTargetSelector.ResetSelection
 
 `private void ResetSelection()` · [L403](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:403)
 
-- **역할:** 현재 대상 카탈로그 전체의 허용 플래그를 끄고 적용 프로필을 현재 프로필로 초기화하며, 보관 중인 비활성 모드 규칙은 유지합니다.
+- **역할:** 목록의 아군·적군 허용을 모두 끄고 양쪽 프로필을 현재 프로필로 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataTargetSelector.FiltersChanged()](#m-0073)
 - **호출 — 외부:** 없음
 
 <a id="m-0078"></a>
 
-### 018. Dialog_RimKataTargetSelector.CategoryLabel
+### 022. Dialog_RimKataTargetSelector.CategoryLabel
 
 `private static string CategoryLabel(int value)` · [L415](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:415)
 
@@ -1531,7 +1571,7 @@
 
 <a id="m-0079"></a>
 
-### 019. Dialog_RimKataTargetSelector.CorpseLabel
+### 023. Dialog_RimKataTargetSelector.CorpseLabel
 
 `private static string CorpseLabel(CorpseFilter value)` · [L428](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:428)
 
@@ -1542,7 +1582,7 @@
 
 <a id="m-0080"></a>
 
-### 020. Dialog_RimKataTargetSelector.UsageLabel
+### 024. Dialog_RimKataTargetSelector.UsageLabel
 
 `private static string UsageLabel(UsageFilter value)` · [L438](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:438)
 
@@ -1553,7 +1593,7 @@
 
 <a id="m-0081"></a>
 
-### 021. Dialog_RimKataTargetSelector.DrawLabel
+### 025. Dialog_RimKataTargetSelector.DrawLabel
 
 `private static void DrawLabel(Rect rect, string text, TextAnchor anchor)` · [L448](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataTargetSelector.cs:448)
 
@@ -1573,20 +1613,20 @@
 
 ### 001. Dialog_RimKataVisualFeatures.DoWindowContents
 
-`public override void DoWindowContents(Rect inRect)` · [L152](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:152)
+`public override void DoWindowContents(Rect inRect)` · [L162](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:162)
 
-- **역할:** 연출 요소의 15개 숫자 항목과 닫기·확인 버튼을 그립니다. 넘어져 있을 시간 바로 아래에 넘어진 동안 오사 방지 0~100% 입력을 배치합니다. 맨 아래에 100%를 넘을 수 있는 비음수 근력 증가량 입력을 표시합니다.
+- **역할:** 연출 요소의 15개 숫자 항목과 닫기·확인 버튼을 그립니다. 넘어져 있을 시간 바로 아래에 넘어진 동안 오사 방지 0~100% 입력을 배치합니다. 맨 아래에 100%를 넘을 수 있는 비음수 근력 증가량 입력을 표시합니다. 슬라이딩 확률 바로 위에 날아 차기 피해 배율을 표시하며 100% 상한을 적용하지 않습니다. 날아 차기 피해량 아래에 발차기 확률 입력을 표시하며 늘어난 행을 창 높이와 스크롤에 포함합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Dialog_RimKataVisualFeatures.DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer)](#m-0055) ×9 · [Dialog_RimKataVisualFeatures.DrawTickRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-0056) ×5 · [Dialog_RimKataVisualFeatures.DrawButtons(UnityEngine.Rect rect)](#m-2429) · [Dialog_RimKataVisualFeatures.DrawHeader(float width, ref float y, string key)](#m-2425) · [Dialog_RimKataVisualFeatures.DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-2426) · [Dialog_RimKataVisualFeatures.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-2427) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
+- **호출 — 프로젝트 내부:** [Dialog_RimKataVisualFeatures.DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer, \[float maximum = 100\])](#m-0055) ×11 · [Dialog_RimKataVisualFeatures.DrawTickRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-0056) ×5 · [Dialog_RimKataVisualFeatures.DrawButtons(UnityEngine.Rect rect)](#m-2429) · [Dialog_RimKataVisualFeatures.DrawHeader(float width, ref float y, string key)](#m-2425) · [Dialog_RimKataVisualFeatures.DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)](#m-2426) · [Dialog_RimKataVisualFeatures.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-2427) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)` ×2 · `Verse.Translator.Translate(string key)` · `Verse.Widgets.BeginScrollView(UnityEngine.Rect outRect, ref UnityEngine.Vector2 scrollPosition, UnityEngine.Rect viewRect, [bool showScrollbars = true])` · `Verse.Widgets.EndScrollView()` · `Verse.Window.Close([bool doCloseSound = true])`
 
 <a id="m-2424"></a>
 
 ### 002. Dialog_RimKataVisualFeatures.PostClose
 
-`public override void PostClose()` · [L194](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:194)
+`public override void PostClose()` · [L206](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:206)
 
-- **역할:** 확인으로 닫은 경우만 임시 편집한 연출 설정과 오사 방지 확률을 반영하고 실제 변경 시 전투 설정 갱신을 요청합니다. 확정된 근력 기본 증가율도 변경 감지와 설정 갱신에 포함합니다.
+- **역할:** 확인으로 닫은 경우만 임시 편집한 연출 설정과 오사 방지 확률을 반영하고 실제 변경 시 전투 설정 갱신을 요청합니다. 확정된 근력 기본 증가율도 변경 감지와 설정 갱신에 포함합니다. 날아 차기 피해 배율도 확인·취소 동작에 포함합니다. 발차기 확률 변경도 확인 시에만 저장하고 변경 알림에 포함합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataMod.ApplyCombatFeatureSettingsChange()](#m-1483) · [RimKataSettingsUiBuffers.SyncFrom(RimKataSettings settings)](#m-1824) · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
 - **호출 — 외부:** `Verse.Window.PostClose()`
@@ -1595,7 +1635,7 @@
 
 ### 003. Dialog_RimKataVisualFeatures.DrawHeader
 
-`private static void DrawHeader(float width, ref float y, string key)` · [L237](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:237)
+`private static void DrawHeader(float width, ref float y, string key)` · [L253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:253)
 
 - **역할:** 연출 구간 제목을 중간 크기 글꼴로 그리고 다음 행 위치를 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -1606,7 +1646,7 @@
 
 ### 004. Dialog_RimKataVisualFeatures.DrawIntRow
 
-`private static void DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L249](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:249)
+`private static void DrawIntRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L265](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:265)
 
 - **역할:** 1~999 범위의 정수 입력칸과 번역 라벨을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -1617,10 +1657,10 @@
 
 ### 005. Dialog_RimKataVisualFeatures.DrawPercentRow
 
-`private static void DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer)` · [L256](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:256)
+`private static void DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer, float maximum = 100f)` · [L272](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:272)
 
-- **역할:** 0~100% 입력칸과 번역 라벨을 그립니다.
-- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 0~100% 입력칸과 번역 라벨을 그립니다. 선택적 최대값으로 일반 확률의 100% 상한과 날아 차기 피해 배율의 상한 없는 입력을 구분합니다.
+- **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [Dialog_RimKataVisualFeatures.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-2427) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)`
 
@@ -1628,7 +1668,7 @@
 
 ### 006. Dialog_RimKataVisualFeatures.DrawTickRow
 
-`private static void DrawTickRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L265](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:265)
+`private static void DrawTickRow(float width, ref float y, string key, ref int value, ref string buffer)` · [L282](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:282)
 
 - **역할:** 기존 자세 시간의 허용 범위를 사용하는 tick 입력칸과 번역 라벨을 그립니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -1639,7 +1679,7 @@
 
 ### 007. Dialog_RimKataVisualFeatures.DrawRowLabel
 
-`private static void DrawRowLabel(Rect rect, string label)` · [L276](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:276)
+`private static void DrawRowLabel(Rect rect, string label)` · [L293](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:293)
 
 - **역할:** 행 라벨을 왼쪽 세로 중앙 정렬로 그리고 이전 정렬을 복원합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -1650,7 +1690,7 @@
 
 ### 008. Dialog_RimKataVisualFeatures.ButtonWidth
 
-`private static float ButtonWidth(string key)` · [L284](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:284)
+`private static float ButtonWidth(string key)` · [L301](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:301)
 
 - **역할:** 번역된 버튼 문구 너비와 여백으로 최소 90픽셀의 버튼 너비를 계산합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -1661,7 +1701,7 @@
 
 ### 009. Dialog_RimKataVisualFeatures.DrawButtons
 
-`private void DrawButtons(Rect rect)` · [L289](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:289)
+`private void DrawButtons(Rect rect)` · [L306](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/Dialog_RimKataVisualFeatures.cs:306)
 
 - **역할:** 창 너비에 맞춰 닫기·확인 버튼을 배치하고 확인 시 저장 플래그를 설정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -3315,7 +3355,7 @@
 
 `public void ExposeData()` · [L49](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:49)
 
-- **역할:** 돌파 참가자·문·경로·단계·시간·공격 재개 시각·보호·문 그림과 임시로 사격 탐색을 보류한 대기 Job ID·원래 허용값을 저장하며 런타임 대기 콜백과 Job 참조는 저장하지 않습니다.
+- **역할:** 돌파 참가자·문·경로·단계·시간·공격 재개 시각·보호·문 그림·조기 정지 후 반전 예약과 임시로 사격 탐색을 보류한 대기 Job ID·원래 허용값을 저장하며 런타임 대기 콜백과 Job 참조는 저장하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×22 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` ×3 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)`
@@ -3324,9 +3364,9 @@
 
 ### 003. RimKataBreachState.Drop
 
-`internal void Drop()` · [L82](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:82)
+`internal void Drop()` · [L88](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:88)
 
-- **역할:** 문 파괴 이후 아직 놓지 않은 문 잔해를 참가자의 현재 셀에 한 번 생성합니다.
+- **역할:** 문 파괴 이후 아직 놓지 않은 문 잔해를 한 번 생성합니다. 운반을 시작했다면 참가자의 현재 셀, 문 셀에 진입하지 못하고 중단했다면 원래 문 셀에 놓습니다.
 - **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataBreachDoorSnapshot.Drop(Verse.Map map, Verse.IntVec3 cell)](#m-2265)
 - **호출 — 외부:** 없음
@@ -3382,7 +3422,7 @@
 `internal static RimKataBreachState Get(Pawn pawn)` · [L195](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:195)
 
 - **역할:** 현재 게임에서 해당 폰의 돌파 상태만 조회합니다.
-- **호출받음:** 직접 **28곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **30곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
@@ -3492,7 +3532,7 @@
 
 `internal static void Publish(RimKataBreachState state)` · [L289](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:289)
 
-- **역할:** 돌파 단계의 각도·방향·보호·문 운반과 무기 대기 입력을 불변 자료로 만들어 공통 몸 연출 참가자 캐시에 게시합니다.
+- **역할:** 현재 돌파 자세·문·보호 자료를 기존 참가자에 게시합니다. 도약이 있으면 돌파 전용 높이·몸 방향·착지 및 무기 회전 보간만 덮어쓰며 날아 차기 전투 상태는 등록하지 않습니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataResponseVisualParticipantCache.PublishBreach(Verse.Pawn pawn, RimKataBreachVisual? visual)](#m-2362)
 - **호출 — 외부:** `UnityEngine.Mathf.DeltaAngle(float current, float target)`
@@ -3633,11 +3673,11 @@
 
 ### 031. JobDriver_RimKataBreach.Tick
 
-`private void Tick()` · [L463](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:463)
+`private void Tick()` · [L470](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:470)
 
-- **역할:** 돌파 작업의 접근·슬라이딩·6틱 기립을 진행하고 기립이 끝나면 바닐라 소집 대기로 즉시 제어를 반환합니다.
+- **역할:** 기존 돌파 진행과 종료 조건을 처리합니다. Run의 도약 나이를 늘리고 Slide의 기존 elapsed로 착지 렌더를 진행하며 이동·슬라이딩·대기 시간은 늘리지 않습니다. 최대 이동 틱 전에 막혀 멈췄다면 기존 6틱 기립 완료 시 실제 폰 방향과 등록 렌더 방향을 진행 방향 반대로 맞춘 후 대기로 인계합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
-- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.Cancel()](#m-2242) ×3 · [JobDriver_RimKataBreach.ResumeNaturalWait()](#m-2239) ×2 · [JobDriver_RimKataBreach.BeginRise()](#m-2241) · [RimKataBreachMovement.StartStraight(Verse.Pawn pawn, RimKataBreachState state, \[bool resume = false\])](#m-2277) · [RimKataBreachMovement.Stop(Verse.Pawn pawn, RimKataBreachState state)](#m-2278) · [RimKataBreachUtility.CanEnter(Verse.Pawn pawn, Verse.IntVec3 cell, RimWorld.Building_Door allowed)](#m-2230) · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
+- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.Cancel()](#m-2242) ×3 · [JobDriver_RimKataBreach.ResumeNaturalWait()](#m-2239) ×2 · [JobDriver_RimKataBreach.BeginRise(\[bool movementStopped = false\])](#m-2241) · [RimKataBreachMovement.StartStraight(Verse.Pawn pawn, RimKataBreachState state, \[bool resume = false\])](#m-2277) · [RimKataBreachMovement.Stop(Verse.Pawn pawn, RimKataBreachState state)](#m-2278) · [RimKataBreachUtility.CanEnter(Verse.Pawn pawn, Verse.IntVec3 cell, RimWorld.Building_Door allowed)](#m-2230) · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
 - **호출 — 외부:** `Verse.AI.JobDriver.EndJobWith(Verse.AI.JobCondition condition)` · `Verse.GridsUtility.GetEdifice(Verse.IntVec3 c, Verse.Map map)` · `Verse.IntVec3.ToVector3Shifted()`
 
 <a id="m-2239"></a>
@@ -3657,7 +3697,7 @@
 
 `internal void BreakDoor()` · [L512](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:512)
 
-- **역할:** 대상 문의 닫힘·파괴 가능 여부를 재확인해 파괴하고, 실제 파괴 완료와 동일 작업·상태 유지를 확인한 뒤에만 슬라이딩과 투사체 직접 명중 무효를 시작하며 파괴 실패 시 취소합니다.
+- **역할:** 기존 문 파괴 성공을 확인한 뒤 현재 도약 자세를 착지 시작값으로 보존하고 Slide 및 기존 보호를 시작합니다. 별도 날아 차기 공격을 호출하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.Cancel()](#m-2242) ×2 · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227)
 - **호출 — 외부:** `Verse.Building.Destroy([Verse.DestroyMode mode = Verse.DestroyMode.Vanish])`
@@ -3666,9 +3706,9 @@
 
 ### 034. JobDriver_RimKataBreach.BeginRise
 
-`internal void BeginRise()` · [L531](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:531)
+`internal void BeginRise(bool movementStopped = false)` · [L549](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:549)
 
-- **역할:** 슬라이딩의 실제 인접 차단물을 기록하고 이동을 멈춘 뒤 현재 각도에서 6틱 기립을 시작하며 현재 셀에 문 잔해를 남깁니다.
+- **역할:** 기존 막힘/슬라이딩 종료에서 경로를 멈추고 문을 내려놓습니다. 도약 착지 중이면 현재 렌더 자세를 보존해 기존 6틱 기립에 이어 붙입니다. 이동 정지이고 문 파괴 후 Slide에서 elapsed < slideTicks인 경우에만 기립 후 반전을 예약하며 정상 틱 만료·0틱 종료는 반전하지 않습니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.Cancel()](#m-2242) · [RimKataBreachMovement.RememberBlocker(RimKataBreachState state)](#m-2437) · [RimKataBreachState.Drop()](#m-2219) · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227)
 - **호출 — 외부:** `Verse.AI.Pawn_PathFollower.StopDead()`
@@ -3699,22 +3739,22 @@
 
 ### 037. JobDriver_RimKataBreach.Notify_PatherArrived
 
-`public override void Notify_PatherArrived()` · [L563](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:563)
+`public override void Notify_PatherArrived()` · [L585](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:585)
 
-- **역할:** 도움닫기 지점 도착은 다음 단계에 맡기고 직선 이동 끝에 도착하면 기립을 시작합니다.
+- **역할:** 도움닫기 지점 도착은 다음 단계에 맡기고 직선 이동 끝에 도착하면 이동 정지를 명시해 기립을 시작합니다. 장애물 앞에서 미리 잘린 경로 끝도 조기 정지 반전 조건으로 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise()](#m-2241)
+- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise(\[bool movementStopped = false\])](#m-2241)
 - **호출 — 외부:** 없음
 
 <a id="m-2245"></a>
 
 ### 038. JobDriver_RimKataBreach.Notify_PatherFailed
 
-`public override void Notify_PatherFailed()` · [L568](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:568)
+`public override void Notify_PatherFailed()` · [L590](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreach.cs:590)
 
-- **역할:** 문 파괴 후 경로 실패는 즉시 기립으로, 파괴 전 실패는 돌파 취소로 처리합니다.
+- **역할:** 문 파괴 후 경로 실패는 이동 정지를 명시해 기립·조기 정지 반전 조건으로 전달하고 파괴 전 실패는 돌파 취소로 처리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise()](#m-2241) · [JobDriver_RimKataBreach.Cancel()](#m-2242)
+- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise(\[bool movementStopped = false\])](#m-2241) · [JobDriver_RimKataBreach.Cancel()](#m-2242)
 - **호출 — 외부:** 없음
 
 
@@ -4314,9 +4354,9 @@
 
 `internal static void Stop(Pawn pawn, RimKataBreachState state)` · [L90](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachMovement.cs:90)
 
-- **역할:** 직선 이동이 막히면 문 파괴 이후에는 기립하고 파괴 이전에는 돌파를 취소합니다.
+- **역할:** 직선 이동이 막히면 문 파괴 이후에는 이동 정지를 명시해 기립·조기 정지 반전 조건으로 전달하고 파괴 이전에는 돌파를 취소합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise()](#m-2241) · [JobDriver_RimKataBreach.Cancel()](#m-2242)
+- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise(\[bool movementStopped = false\])](#m-2241) · [JobDriver_RimKataBreach.Cancel()](#m-2242)
 - **호출 — 외부:** 없음
 
 <a id="m-2437"></a>
@@ -4436,9 +4476,9 @@
 
 `private static void Postfix(Pawn ___pawn, RimKataBreachMovement.CellEntryScope __state)` · [L272](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachMovement.cs:272)
 
-- **역할:** 진입 전 확보한 참가 상태를 재사용하되 작업·단계·등록 변경을 검증하고 문 중심 통과와 이동 시간 0의 즉시 기립을 반영합니다.
+- **역할:** 기존 돌파 셀 진입 범위 안에서 문 2칸 전 도약을 한 번 시작합니다. 문 진입 뒤 운반 표시와 0틱 슬라이딩의 기존 즉시 기립을 처리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise()](#m-2241) · [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227)
+- **호출 — 프로젝트 내부:** [JobDriver_RimKataBreach.BeginRise(\[bool movementStopped = false\])](#m-2241) · [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataBreachUtility.Publish(RimKataBreachState state)](#m-2227)
 - **호출 — 외부:** `Verse.IntVec3.ToVector3Shifted()`
 
 <a id="m-2286"></a>
@@ -4485,7 +4525,7 @@
 
 ### 001. RimKataBreachRender.Clear
 
-`internal static void Clear(Pawn pawn)` · [L57](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:57)
+`internal static void Clear(Pawn pawn)` · [L61](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:61)
 
 - **역할:** 해당 돌파 참가자의 렌더 프레임을 제거합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -4496,7 +4536,7 @@
 
 ### 002. RimKataBreachRender.TryPose
 
-`internal static bool TryPose(Pawn pawn, out RimKataBreachVisual visual)` · [L62](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:62)
+`internal static bool TryPose(Pawn pawn, out RimKataBreachVisual visual)` · [L66](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:66)
 
 - **역할:** 실제 넘어짐·기립 또는 보호가 유지되는 돌파 시각 상태만 조회합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -4507,9 +4547,9 @@
 
 ### 003. RimKataBreachRender.Prepare
 
-`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataBreachVisual visual)` · [L66](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:66)
+`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataBreachVisual visual)` · [L70](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:70)
 
-- **역할:** 병렬 렌더에서 확정된 스냅샷을 읽어 전체 몸·발밑·그림자와 무기 변환을 계산하며 기존 눕기 상태는 변경하지 않습니다.
+- **역할:** 발밑 피벗 회전과 도약 높이로 몸을 변환합니다. 장비는 비행 중 회전된 몸 중심의 위치만 따르며 착지 시 기존 돌파 회전·층·북쪽 보정으로 연결합니다. 그림자는 높이와 분리해 기존 프레임 슬롯에 저장합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)` ×4 · `UnityEngine.Mathf.Max(float a, float b)` ×3 · `UnityEngine.Mathf.Clamp01(float value)` ×2 · `UnityEngine.Matrix4x4.Translate(UnityEngine.Vector3 vector)` ×2 · `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.GetOrAdd(TKey key, System.Func<TKey, TValue> valueFactory)` · `UnityEngine.Mathf.Cos(float f)` · `UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion q)` · `UnityEngine.Quaternion.AngleAxis(float angle, UnityEngine.Vector3 axis)` · `Verse.PawnRenderUtility.AltitudeForLayer(float layer)`
@@ -4518,7 +4558,7 @@
 
 ### 004. RimKataBreachRender.TryReadFrame
 
-`private static bool TryReadFrame(Pawn pawn, out Frame frame)` · [L103](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:103)
+`private static bool TryReadFrame(Pawn pawn, out Frame frame)` · [L107](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:107)
 
 - **역할:** 폰에 등록된 프레임 저장소를 잠금 안에서 읽으며 아직 게시되지 않은 값은 거부합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -4529,7 +4569,7 @@
 
 ### 005. RimKataBreachRender.PushEquipment
 
-`internal static EquipmentScope PushEquipment(Pawn pawn, PawnRenderFlags flags)` · [L115](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:115)
+`internal static EquipmentScope PushEquipment(Pawn pawn, PawnRenderFlags flags)` · [L119](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:119)
 
 - **역할:** 초상화를 제외한 돌파 참가자와 불변 시각 스냅샷을 무기 출력 스코프에 보관하고 중첩 출력의 이전 값을 보존합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -4540,7 +4580,7 @@
 
 ### 006. RimKataBreachRender.PopEquipment
 
-`internal static void PopEquipment(EquipmentScope scope)` · [L144](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:144)
+`internal static void PopEquipment(EquipmentScope scope)` · [L148](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:148)
 
 - **역할:** 무기 출력 후 이전 돌파 참가자와 불변 시각 스냅샷 스코프를 함께 복원합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -4551,7 +4591,7 @@
 
 ### 007. RimKataBreachRender.TryGetEquipmentVisual
 
-`internal static bool TryGetEquipmentVisual(Pawn pawn, out RimKataBreachVisual visual)` · [L162](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:162)
+`internal static bool TryGetEquipmentVisual(Pawn pawn, out RimKataBreachVisual visual)` · [L166](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:166)
 
 - **역할:** 현재 돌파 장비 출력 스코프가 요청한 폰과 일치할 때만 저장된 시각 스냅샷을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -4562,7 +4602,7 @@
 
 ### 008. RimKataBreachRender.TryFrame
 
-`private static bool TryFrame(Pawn pawn, out Frame frame)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:168)
+`private static bool TryFrame(Pawn pawn, out Frame frame)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:172)
 
 - **역할:** 현재 돌파의 실제 눕기 연출 중인 참가자에게만 무기 변환 프레임을 제공합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -4573,7 +4613,7 @@
 
 ### 009. RimKataBreachRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L180](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:180)
+`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L184](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:184)
 
 - **역할:** 돌파 슬라이딩·기립 중 무기와 부속물에 발밑 회전·깊이·북쪽 높이를 적용하고 기립 후 독립 조준은 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -4584,7 +4624,7 @@
 
 ### 010. RimKataBreachRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L183](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:183)
+`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:187)
 
 - **역할:** 돌파 슬라이딩·기립 중 무기와 부속물에 발밑 회전·깊이·북쪽 높이를 적용하고 기립 후 독립 조준은 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -4595,7 +4635,7 @@
 
 ### 011. RimKataBreachRender.TransformEquipment
 
-`internal static void TransformEquipment(ref Vector3 position, ref Quaternion rotation)` · [L192](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:192)
+`internal static void TransformEquipment(ref Vector3 position, ref Quaternion rotation)` · [L196](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:196)
 
 - **역할:** 돌파 슬라이딩·기립 중 무기와 부속물에 발밑 회전·깊이·북쪽 높이를 적용하고 기립 후 독립 조준은 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -4606,7 +4646,7 @@
 
 ### 012. RimKataBreachRender.WeaponsAboveBody
 
-`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:201)
+`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L205](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:205)
 
 - **역할:** 돌파 연출의 무기 스택이 몸 위로 이동 중인지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -4617,7 +4657,7 @@
 
 ### 013. RimKataBreachRender.PlaceShadow
 
-`internal static void PlaceShadow(Pawn pawn, ref Vector3 position)` · [L204](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:204)
+`internal static void PlaceShadow(Pawn pawn, ref Vector3 position)` · [L208](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:208)
 
 - **역할:** 돌파 중 그림자의 평면 좌표를 실제 변환된 몸 중심에 맞춥니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -4628,9 +4668,9 @@
 
 ### 014. RimKataBreachRender.DrawDoor
 
-`internal static void DrawDoor(PawnDrawParms parms)` · [L211](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:211)
+`internal static void DrawDoor(PawnDrawParms parms)` · [L223](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:223)
 
-- **역할:** 파괴된 문 그림을 원래 문 셀 또는 참가자의 발밑에 출력합니다.
+- **역할:** 제압 무기 추가 출력 또는 돌파 문 그림을 그립니다. 셀 진입의 carried 값은 실제 보간된 발밑보다 먼저 바뀔 수 있으므로, 발밑이 진행 방향으로 원래 문 위치에 도달하기 전까지 문은 doorOrigin에 둡니다. 이후 기존 frame.foot를 따릅니다. 이 좌표는 도약 높이·몸 회전을 적용하기 전 발밑 기준이므로 문이 몸과 함께 떠오르지 않습니다. Pawn.DrawPos나 셀 중심으로 대체하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataBreachDoorSnapshot.Draw(UnityEngine.Vector3 location)](#m-2264) · [RimKataBreachRender.TryReadFrame(Verse.Pawn pawn, out RimKataBreachRender.Frame frame)](#m-2440) · [RimKataSubdueWeaponRender.DrawParticipant(Verse.PawnDrawParms parms, RimKataSubdueVisual visual)](#m-2678) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)`
@@ -4639,42 +4679,42 @@
 
 ### 015. Patch_PawnRenderTree_RimKataBreach.Prefix
 
-`internal static void Prefix(ref PawnDrawParms parms, out RimKataBreachRender.BodyScope __state)` · [L234](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:234)
+`internal static void Prefix(ref PawnDrawParms parms, out RimKataBreachRender.BodyScope __state)` · [L238](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:238)
 
-- **역할:** 살아 있는 폰의 사전 그리기에서 등록된 제압·반응·돌파 몸 방향을 준비하는 helper입니다. 전역 Harmony Prefix로 등록하지 않습니다.
+- **역할:** 살아 있는 폰의 사전 그리기에서 등록된 제압·반응·돌파 몸 방향을 준비하는 helper이며 전역 Harmony Prefix로 등록하지 않습니다. 발차기 자료를 우선 적용하고 이어 날아 차기 자료가 있으면 그 시선만 적용하여 다른 특수 자세를 중복 적용하지 않습니다. 일반 발차기와 날아 차기의 남쪽 시각 방향은 각 전용 helper로 동쪽 옆모습을 준비합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.RenderFacing(RimKataFlyingKickVisual visual)](#m-3014) · [RimKataKickRender.RenderFacing(RimKataKickVisual visual)](#m-3013) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
 
 <a id="m-2302"></a>
 
 ### 016. Patch_PawnRenderTree_RimKataBreach.Postfix
 
-`internal static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, RimKataBreachRender.BodyScope __state)` · [L258](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:258)
+`internal static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, RimKataBreachRender.BodyScope __state)` · [L274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:274)
 
-- **역할:** 살아 있는 폰의 사전 그리기가 끝나면 등록된 제압·반응·돌파 몸 행렬을 반영하는 helper입니다. 전역 Harmony Postfix로 등록하지 않습니다.
+- **역할:** 살아 있는 폰의 사전 그리기가 끝나면 등록된 제압·반응·돌파 몸 행렬을 반영하는 helper입니다. 전역 Harmony Postfix로 등록하지 않습니다. 날아 차기 자료는 전용 발 기준 몸 변환으로 넘기고 다른 특수 자세와 배타적으로 처리합니다. 발차기 자료가 있으면 전용 목 중심 회전을 우선 적용하여 다른 특수 몸 변환과 중첩하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataBreachVisual visual)](#m-2291) · [RimKataReactiveRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataReactiveVisual visual)](#m-2548) · [RimKataSubdueRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataSubdueVisual visual)](#m-2668)
+- **호출 — 프로젝트 내부:** [RimKataBreachRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataBreachVisual visual)](#m-2291) · [RimKataFlyingKickRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataFlyingKickVisual visual)](#m-2925) · [RimKataKickRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataKickVisual visual)](#m-2986) · [RimKataReactiveRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataReactiveVisual visual)](#m-2548) · [RimKataSubdueRender.Prepare(Verse.PawnDrawParms parms, System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests, RimKataSubdueVisual visual)](#m-2668)
 - **호출 — 외부:** 없음
 
 <a id="m-2304"></a>
 
 ### 017. Patch_PawnRenderer_RimKataBreachFacing.Prefix
 
-`internal static void Prefix(Pawn ___pawn, DrawPhase phase, ref Vector3 drawLoc, ref Rot4? rotOverride)` · [L273](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:273)
+`internal static void Prefix(Pawn ___pawn, DrawPhase phase, ref Vector3 drawLoc, ref Rot4? rotOverride)` · [L293](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:293)
 
-- **역할:** 살아 있는 폰의 몸·그림자 준비가 호출하는 제압·반응·돌파 방향과 위치 보정 helper입니다. 전역 DynamicDrawPhaseAt 패치로 등록하지 않습니다.
+- **역할:** 살아 있는 폰의 몸·그림자 준비에서 등록된 제압·돌파·반응 방향과 위치를 보정하는 helper이며 전역 DynamicDrawPhaseAt 패치로 등록하지 않습니다. 일반 발차기, 날아 차기 순으로 전달된 자료의 시선을 우선하고 남쪽은 전용 helper의 동쪽 렌더 방향을 사용하여 몸·그림자의 방향을 맞춥니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataReactiveRender.PlaceBody(RimKataReactiveVisual visual, ref UnityEngine.Vector3 drawLoc)](#m-2547) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.RenderFacing(RimKataFlyingKickVisual visual)](#m-3014) · [RimKataKickRender.RenderFacing(RimKataKickVisual visual)](#m-3013) · [RimKataReactiveRender.PlaceBody(RimKataReactiveVisual visual, ref UnityEngine.Vector3 drawLoc)](#m-2547) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
 
 <a id="m-2305"></a>
 
 ### 018. Patch_PawnRenderer_RimKataBreachCache.Prefix
 
-`internal static void Prefix(Pawn ___pawn, ref bool disableCache)` · [L292](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:292)
+`internal static void Prefix(Pawn ___pawn, ref bool disableCache)` · [L314](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:314)
 
-- **역할:** 살아 있는 폰 준비 함수에서 제압·돌파·반응 참가자가 캐시 몸 렌더를 사용하지 않도록 합니다. 전역 Harmony Prefix로 등록하지 않습니다.
+- **역할:** 살아 있는 폰 준비 함수에서 제압·돌파·반응 참가자가 캐시 몸 렌더를 사용하지 않도록 합니다. 전역 Harmony Prefix로 등록하지 않습니다. 진행 중인 날아 차기의 실제 몸 변환도 캐시된 정지 자세로 대체되지 않도록 합니다. 발차기 연출 참가자도 고정 자세 렌더 캐시를 사용하지 않도록 합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
@@ -4683,18 +4723,18 @@
 
 ### 019. Patch_PawnRenderUtility_RimKataBreachEquipment.Prefix
 
-`private static void Prefix(Pawn pawn, Vector3 drawPos, ref Rot4 facing, PawnRenderFlags flags, out RimKataBreachRender.EquipmentScope __state)` · [L303](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:303)
+`private static void Prefix(Pawn pawn, Vector3 drawPos, ref Rot4 facing, PawnRenderFlags flags, out RimKataBreachRender.EquipmentScope __state)` · [L326](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:326)
 
-- **역할:** 특수 장비 입구에서 등록된 돌파·제압·반응 자료를 소비해 무기 문맥과 방향을 적용합니다. 평시 일반 폰의 장비 출력에는 호출되지 않습니다.
+- **역할:** 특수 장비 입구에서 등록된 돌파·제압·반응 자료를 소비해 무기 문맥과 방향을 적용하며 평시 일반 폰의 장비 출력에는 호출되지 않습니다. 일반 발차기와 날아 차기는 각 전용 장비 문맥을 열고 다른 특수 변환과 겹치지 않도록 분리합니다. 두 발차기의 남쪽 장비 렌더는 각 helper로 동쪽 옆모습에 맞추며 실제 조준 대상과 공격 방향은 유지합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.PushEquipment(Verse.Pawn pawn, Verse.PawnRenderFlags flags)](#m-2292) · [RimKataBreachRender.TryGetEquipmentVisual(Verse.Pawn pawn, out RimKataBreachVisual visual)](#m-2329) · [RimKataBreachWeaponRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, bool participant, RimKataBreachVisual visual)](#m-2333) · [RimKataReactiveRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, RimKataReactiveVisual? visual)](#m-2549) · [RimKataSubdueWeaponRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, RimKataSubdueVisual? visual)](#m-2676) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
+- **호출 — 프로젝트 내부:** [RimKataBreachRender.PushEquipment(Verse.Pawn pawn, Verse.PawnRenderFlags flags)](#m-2292) · [RimKataBreachRender.TryGetEquipmentVisual(Verse.Pawn pawn, out RimKataBreachVisual visual)](#m-2329) · [RimKataBreachWeaponRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, bool participant, RimKataBreachVisual visual)](#m-2333) · [RimKataFlyingKickRender.BeginEquipment(Verse.Pawn pawn, Verse.PawnRenderFlags flags, RimKataFlyingKickVisual? visual)](#m-2929) · [RimKataFlyingKickRender.RenderFacing(RimKataFlyingKickVisual visual)](#m-3014) · [RimKataKickRender.BeginEquipment(Verse.Pawn pawn, Verse.PawnRenderFlags flags, RimKataKickVisual? visual)](#m-2991) · [RimKataKickRender.RenderFacing(RimKataKickVisual visual)](#m-3013) · [RimKataReactiveRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, RimKataReactiveVisual? visual)](#m-2549) · [RimKataSubdueWeaponRender.Begin(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.PawnRenderFlags flags, RimKataSubdueVisual? visual)](#m-2676) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
 
 <a id="m-2330"></a>
 
 ### 020. Patch_PawnRenderUtility_RimKataBreachEquipment.Postfix
 
-`private static void Postfix()` · [L325](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:325)
+`private static void Postfix()` · [L356](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:356)
 
 - **역할:** 살아 있는 폰 전용 장비 출력 후 돌파·반응 무기를 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -4705,11 +4745,11 @@
 
 ### 021. Patch_PawnRenderUtility_RimKataBreachEquipment.Finalizer
 
-`private static void Finalizer(RimKataBreachRender.EquipmentScope __state)` · [L332](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:332)
+`private static void Finalizer(RimKataBreachRender.EquipmentScope __state)` · [L363](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachRender.cs:363)
 
-- **역할:** 살아 있는 폰 전용 장비 문맥과 등록 참가자의 보정을 복구합니다.
+- **역할:** 살아 있는 폰 전용 장비 문맥과 등록 참가자의 보정을 복구합니다. 날아 차기의 이전 무기 문맥도 복원합니다. 발차기 장비 문맥도 예외 여부와 관계없이 이전 값으로 복구합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.PopEquipment(RimKataBreachRender.EquipmentScope scope)](#m-2293) · [RimKataBreachWeaponRender.End(RimKataBreachWeaponRender.Scope previous)](#m-2334) · [RimKataReactiveRender.End(RimKataReactiveRender.Scope scope)](#m-2550) · [RimKataSubdueWeaponRender.End(RimKataSubdueWeaponRender.Scope previous)](#m-2677) · [RimKataWorldRenderContext.End(RimKataWorldRenderContext.Scope scope)](#m-2372)
+- **호출 — 프로젝트 내부:** [RimKataBreachRender.PopEquipment(RimKataBreachRender.EquipmentScope scope)](#m-2293) · [RimKataBreachWeaponRender.End(RimKataBreachWeaponRender.Scope previous)](#m-2334) · [RimKataFlyingKickRender.EndEquipment(RimKataFlyingKickRender.EquipmentScope previous)](#m-2930) · [RimKataKickRender.EndEquipment(RimKataKickRender.EquipmentScope previous)](#m-2992) · [RimKataReactiveRender.End(RimKataReactiveRender.Scope scope)](#m-2550) · [RimKataSubdueWeaponRender.End(RimKataSubdueWeaponRender.Scope previous)](#m-2677) · [RimKataWorldRenderContext.End(RimKataWorldRenderContext.Scope scope)](#m-2372)
 - **호출 — 외부:** 없음
 
 
@@ -4791,7 +4831,7 @@
 
 `private static void DrawWeapon(ThingWithComps weapon, bool secondary)` · [L80](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachWeaponRender.cs:80)
 
-- **역할:** 돌파 고정 방향에 맞춰 주·부 위치·깊이·서쪽 메시와 각도를 직접 계산하고 무기 고유 그림·크기에 돌파 전용 변환만 적용해 Unity에 제출합니다. 동서 부무기 깊이 반사축은 전역 Pawn 레이어가 아니라 스코프에 전달된 실제 몸 깊이를 사용합니다.
+- **역할:** 돌파 주·부 무기를 기존 방향·메시로 그립니다. 동서 부 무기는 비행 중 기존 뒤편 깊이를 유지하고 착지의 weaponRotation에 따라 돌파 깊이로 보간합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataBreachRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2296) · [RimKataBreachWeaponRender.SecondaryMesh(bool flipped)](#m-2338)
 - **호출 — 외부:** `Verse.Graphic.MatSingleFor(Verse.Thing thing)` ×2 · `UnityEngine.Graphics.DrawMesh(UnityEngine.Mesh mesh, UnityEngine.Matrix4x4 matrix, UnityEngine.Material material, int layer)` · `UnityEngine.Matrix4x4.TRS(UnityEngine.Vector3 pos, UnityEngine.Quaternion q, UnityEngine.Vector3 s)` · `UnityEngine.Quaternion.AngleAxis(float angle, UnityEngine.Vector3 axis)` · `Verse.Graphic_StackCount.SubGraphicForStackCount(int stackCount, Verse.ThingDef def)`
@@ -5140,7 +5180,7 @@
 
 `private static void Postfix(Pawn __instance)` · [L127](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataColonistBarWeapons.cs:127)
 
-- **역할:** 폰 세력 변경 후 자격·이벤트·정착민 바 무기 표시를 갱신합니다.
+- **역할:** 팩션 변경 시 기존 대상 변경 통지로 자격 및 진영별 프로필을 갱신하고 정착민 무기 표시·기어 사격의 팩션 조건을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataColonistBarWeaponCache.Refresh(Verse.Pawn pawn)](#m-0239) · [RimKataCrawlFireUtility.NotifyFactionChanged(Verse.Pawn pawn)](#m-2448) · [RimKataEligibilityCache.NotifyPawnSpawned(Verse.Pawn pawn)](#m-1172) · [RimKataNeutralTargetInvalidation.Invalidate(Verse.Map map)](#m-1527)
 - **호출 — 외부:** 없음
@@ -7902,7 +7942,7 @@
 
 ## 32. RimKataCombatState.cs
 
-[Source/RimKataCombatState.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs) · 메서드 **157개** · 폰별 전투 상태·주기·시각 스냅샷·맵 이벤트 관리 · [파일 목차](#files)
+[Source/RimKataCombatState.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs) · 메서드 **159개** · 폰별 전투 상태·주기·시각 스냅샷·맵 이벤트 관리 · [파일 목차](#files)
 
 <a id="m-0480"></a>
 
@@ -7955,7 +7995,7 @@
 `internal static bool TryGetOwner(Pawn pawn, out RimKataMapComponent component)` · [L166](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:166)
 
 - **역할:** 폰의 전투 상태 존재 표식에서 현재 맵과 일치하는 소유 컴포넌트를 반환합니다.
-- **호출받음:** 직접 **16곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **18곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
@@ -7985,10 +8025,10 @@
 
 ### 008. RimKataResponseVisualParticipantCache.BodyVisualFor
 
-`internal static BodyVisualEntry BodyVisualFor(Pawn pawn)` · [L244](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:244)
+`internal static BodyVisualEntry BodyVisualFor(Pawn pawn)` · [L246](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:246)
 
 - **역할:** 양수 폰 ID의 분할 페이지에서 게시된 참가 참조를 직접 읽고 객체 동일성을 확인합니다. 비참가 읽기는 자료를 생성하지 않으며 ID 미부여 대상만 기존 사전을 사용합니다.
-- **호출받음:** 직접 **13곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **15곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Threading.Volatile.Read<T>(ref T location)` ×3 · `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `object.ReferenceEquals(object objA, object objB)`
 
@@ -7996,7 +8036,7 @@
 
 ### 009. RimKataResponseVisualParticipantCache.PublishBodySlot
 
-`private static void PublishBodySlot(Pawn pawn, BodyVisualEntry entry)` · [L259](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:259)
+`private static void PublishBodySlot(Pawn pawn, BodyVisualEntry entry)` · [L261](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:261)
 
 - **역할:** 등록·해제 사건의 UpdateLock 안에서 양수 폰 ID의 페이지·항목을 Volatile로 게시합니다. 필요한 페이지는 등록 때만 생성하고, 삭제는 같은 폰의 항목에만 적용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8007,9 +8047,9 @@
 
 ### 010. RimKataResponseVisualParticipantCache.CopyBodyVisual
 
-`private static BodyVisualEntry CopyBodyVisual(Pawn pawn)` · [L285](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:285)
+`private static BodyVisualEntry CopyBodyVisual(Pawn pawn)` · [L287](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:287)
 
-- **역할:** 등록된 참가 자료를 변경용 새 항목으로 복사합니다. 폰·맵·직접 상태 참조와 독립 특수 연출 자료를 보존합니다.
+- **역할:** 등록된 참가 자료를 변경용 새 항목으로 복사합니다. 폰·맵·직접 상태 참조와 독립 특수 연출 자료를 보존합니다. 날아 차기 자료도 기존 게시 항목에서 복사하여 다른 참가 자료를 보존합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.BodyVisualFor(Verse.Pawn pawn)](#m-2359) · [RimKataResponseVisualParticipantCache.CopyBodyVisual(RimKataResponseVisualParticipantCache.BodyVisualEntry old)](#m-2441)
 - **호출 — 외부:** 없음
@@ -8018,10 +8058,10 @@
 
 ### 011. RimKataResponseVisualParticipantCache.CopyBodyVisual
 
-`private static BodyVisualEntry CopyBodyVisual(BodyVisualEntry old)` · [L288](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:288)
+`private static BodyVisualEntry CopyBodyVisual(BodyVisualEntry old)` · [L290](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:290)
 
-- **역할:** 등록된 참가 자료를 변경용 새 항목으로 복사합니다. 폰·맵·직접 상태 참조와 독립 특수 연출 자료를 보존합니다. 사건에서 게시한 근력 유효 그립 값도 복사하여 다른 연출 갱신에서 유실되지 않게 합니다.
-- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 등록된 참가 자료를 변경용 새 항목으로 복사합니다. 폰·맵·직접 상태 참조와 독립 특수 연출 자료를 보존합니다. 사건에서 게시한 근력 유효 그립 값도 복사하여 다른 연출 갱신에서 유실되지 않게 합니다. 날아 차기 자료도 기존 게시 항목에서 복사하여 다른 참가 자료를 보존합니다. 기존 발차기 렌더 자료도 새 참가자 항목에 보존합니다.
+- **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
@@ -8029,10 +8069,10 @@
 
 ### 012. RimKataResponseVisualParticipantCache.StoreBodyVisual
 
-`private static void StoreBodyVisual(Pawn pawn, BodyVisualEntry entry)` · [L300](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:300)
+`private static void StoreBodyVisual(Pawn pawn, BodyVisualEntry entry)` · [L304](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:304)
 
-- **역할:** 등록 자격 또는 활성 연출이 남은 항목만 사전과 직접 슬롯에 보관합니다. 몸 연출 종료는 스냅샷만 해제하고 평시 자격 등록을 지우지 않습니다.
-- **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 등록 자격 또는 활성 연출이 남은 항목만 사전과 직접 슬롯에 보관합니다. 몸 연출 종료는 스냅샷만 해제하고 평시 자격 등록을 지우지 않습니다. 날아 차기 자료만 남아 있는 참가 항목도 연출 종료 전까지 보관합니다. 발차기 자료만 남은 참가자도 그 연출이 끝날 때까지 항목을 유지합니다.
+- **호출받음:** 직접 **10곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.PublishBodySlot(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)](#m-2702) ×2
 - **호출 — 외부:** `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.TryRemove(TKey key, out TValue value)`
 
@@ -8040,7 +8080,7 @@
 
 ### 013. RimKataResponseVisualParticipantCache.TryReadSnapshot
 
-`internal static bool TryReadSnapshot(BodyVisualEntry entry, out RimKataVisualSnapshot snapshot)` · [L321](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:321)
+`internal static bool TryReadSnapshot(BodyVisualEntry entry, out RimKataVisualSnapshot snapshot)` · [L325](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:325)
 
 - **역할:** 등록된 owner/state로 현재 스냅샷을 읽고 비자격 대응 참가자의 본인 회피·눕기 등 다섯 자세 플래그를 차단합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8051,7 +8091,7 @@
 
 ### 014. RimKataResponseVisualParticipantCache.NotifyQualificationChanged
 
-`internal static void NotifyQualificationChanged(Pawn pawn, bool qualified)` · [L338](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:338)
+`internal static void NotifyQualificationChanged(Pawn pawn, bool qualified)` · [L342](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:342)
 
 - **역할:** 자격 획득·상실 사건에서 기존 렌더 슬롯에 독립적인 등록 자격 플래그를 반영합니다. 평시 자격자를 유지하고 일반 쳐내기·제압 참가자는 자격 상실 후에도 해당 연출만 보존합니다. 자격 등록 시 확정된 근력 그립 값도 몸체 문맥에 게시합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8062,7 +8102,7 @@
 
 ### 015. RimKataResponseVisualParticipantCache.NotifyStrengthChanged
 
-`internal static void NotifyStrengthChanged(Pawn pawn, bool enhancedGrip)` · [L356](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:356)
+`internal static void NotifyStrengthChanged(Pawn pawn, bool enhancedGrip)` · [L360](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:360)
 
 - **역할:** 기존 몸체 렌더 등록이 있을 때만 복사본의 근력 유효 그립 값을 변경하여 게시합니다. 새 일반 폰 렌더 등록은 만들지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8073,7 +8113,7 @@
 
 ### 016. RimKataResponseVisualParticipantCache.ResetGame
 
-`internal static void ResetGame()` · [L369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:369)
+`internal static void ResetGame()` · [L373](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:373)
 
 - **역할:** 게임 교체 때 UpdateLock 안에서 대응 참가자·무기·몸 연출 사전과 직접 읽기 페이지를 함께 초기화합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8084,7 +8124,7 @@
 
 ### 017. RimKataResponseVisualParticipantCache.PublishBreach
 
-`internal static void PublishBreach(Pawn pawn, RimKataBreachVisual? visual)` · [L380](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:380)
+`internal static void PublishBreach(Pawn pawn, RimKataBreachVisual? visual)` · [L384](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:384)
 
 - **역할:** 돌파 시각 자료가 기존 값·map과 같으면 재게시하지 않고, 변경된 돌파 항목만 게시하거나 해제합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8095,18 +8135,40 @@
 
 ### 018. RimKataResponseVisualParticipantCache.PublishReactive
 
-`internal static void PublishReactive(Pawn pawn, RimKataReactiveVisual? visual)` · [L396](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:396)
+`internal static void PublishReactive(Pawn pawn, RimKataReactiveVisual? visual)` · [L400](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:400)
 
 - **역할:** 다른 연출 항목을 보존하면서 슬라이딩·떨치기 시각 자료를 게시하거나 해제합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.BodyVisualFor(Verse.Pawn pawn)](#m-2359) · [RimKataResponseVisualParticipantCache.CopyBodyVisual(Verse.Pawn pawn)](#m-2360) · [RimKataResponseVisualParticipantCache.StoreBodyVisual(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)](#m-2361)
 - **호출 — 외부:** 없음
 
+<a id="m-2889"></a>
+
+### 019. RimKataResponseVisualParticipantCache.PublishFlyingKick
+
+`internal static void PublishFlyingKick(Pawn pawn, RimKataFlyingKickVisual? visual)` · [L413](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:413)
+
+- **역할:** 주 스레드 사건에서 날아 차기 연출 값을 기존 참가자 항목의 복사본에 반영해 게시합니다. 렌더에서 자격·전투 상태를 새로 조회하지 않도록 원본 자료를 전달합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.BodyVisualFor(Verse.Pawn pawn)](#m-2359) · [RimKataResponseVisualParticipantCache.CopyBodyVisual(RimKataResponseVisualParticipantCache.BodyVisualEntry old)](#m-2441) · [RimKataResponseVisualParticipantCache.StoreBodyVisual(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)](#m-2361)
+- **호출 — 외부:** 없음
+
+<a id="m-2950"></a>
+
+### 020. RimKataResponseVisualParticipantCache.PublishKick
+
+`internal static void PublishKick(Pawn pawn, RimKataKickVisual? visual)` · [L427](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:427)
+
+- **역할:** 발차기 시작·진행·종료에서 해당 참가자의 임시 발차기 렌더 자료만 게시하거나 제거합니다. 이미 없는 자료를 다시 제거하지 않으며 기존 참가자 항목의 다른 연출 자료는 보존합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.BodyVisualFor(Verse.Pawn pawn)](#m-2359) · [RimKataResponseVisualParticipantCache.CopyBodyVisual(RimKataResponseVisualParticipantCache.BodyVisualEntry old)](#m-2441) · [RimKataResponseVisualParticipantCache.StoreBodyVisual(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)](#m-2361)
+- **호출 — 외부:** 없음
+
 <a id="m-2363"></a>
 
-### 019. RimKataResponseVisualParticipantCache.PublishCrawl
+### 021. RimKataResponseVisualParticipantCache.PublishCrawl
 
-`internal static void PublishCrawl(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target)` · [L409](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:409)
+`internal static void PublishCrawl(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target)` · [L441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:441)
 
 - **역할:** 기면서 사격의 무기·표적 변경을 공통 참가 캐시에 게시하며 같은 값은 재게시하지 않고 다른 연출 항목은 보존합니다. 무기를 게시할 때만 현재 맵을 갱신합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8115,9 +8177,9 @@
 
 <a id="m-2364"></a>
 
-### 020. RimKataResponseVisualParticipantCache.ClearCrawl
+### 022. RimKataResponseVisualParticipantCache.ClearCrawl
 
-`internal static void ClearCrawl(Pawn pawn)` · [L425](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:425)
+`internal static void ClearCrawl(Pawn pawn)` · [L457](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:457)
 
 - **역할:** 해당 폰의 기면서 사격 게시만 해제하고 일반 몸·돌파 등 다른 공통 참가 자료는 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8126,9 +8188,9 @@
 
 <a id="m-2446"></a>
 
-### 021. RimKataResponseVisualParticipantCache.PublishSubdue
+### 023. RimKataResponseVisualParticipantCache.PublishSubdue
 
-`internal static void PublishSubdue(Pawn pawn, Map map, RimKataSubdueVisual? visual)` · [L427](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:427)
+`internal static void PublishSubdue(Pawn pawn, Map map, RimKataSubdueVisual? visual)` · [L459](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:459)
 
 - **역할:** 운반자의 map을 사용해 비생성 운반 대상까지 제압 시각 자료를 게시하며 다른 연출 항목은 보존합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8137,9 +8199,9 @@
 
 <a id="m-0487"></a>
 
-### 022. RimKataResponseVisualParticipantCache.IsParticipant
+### 024. RimKataResponseVisualParticipantCache.IsParticipant
 
-`public static bool IsParticipant(Pawn pawn)` · [L441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:441)
+`public static bool IsParticipant(Pawn pawn)` · [L473](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:473)
 
 - **역할:** 폰이 무기 대응 시각 효과 참여자로 등록되어 있는지 확인합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -8148,9 +8210,9 @@
 
 <a id="m-0488"></a>
 
-### 023. RimKataResponseVisualParticipantCache.IsBodyVisualParticipant
+### 025. RimKataResponseVisualParticipantCache.IsBodyVisualParticipant
 
-`public static bool IsBodyVisualParticipant(Pawn pawn)` · [L446](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:446)
+`public static bool IsBodyVisualParticipant(Pawn pawn)` · [L478](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:478)
 
 - **역할:** 게시 자료의 공용 몸 연출 또는 슬라이딩·떨치기 항목이 있는지 확인합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -8159,9 +8221,9 @@
 
 <a id="m-0489"></a>
 
-### 024. RimKataResponseVisualParticipantCache.TryGetParticipantWeapons
+### 026. RimKataResponseVisualParticipantCache.TryGetParticipantWeapons
 
-`public static bool TryGetParticipantWeapons( Pawn pawn, out ThingWithComps deflectionWeapon, out ThingWithComps responsePoseWeapon, out ThingWithComps spinSecondaryWeapon)` · [L452](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:452)
+`public static bool TryGetParticipantWeapons( Pawn pawn, out ThingWithComps deflectionWeapon, out ThingWithComps responsePoseWeapon, out ThingWithComps spinSecondaryWeapon)` · [L484](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:484)
 
 - **역할:** 폰의 무기 대응 시각 캐시에서 튕김·대응 자세·보조 회전 무기를 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8170,9 +8232,9 @@
 
 <a id="m-0490"></a>
 
-### 025. RimKataResponseVisualParticipantCache.TryGetWeaponOwner
+### 027. RimKataResponseVisualParticipantCache.TryGetWeaponOwner
 
-`public static bool TryGetWeaponOwner( ThingWithComps weapon, out Pawn pawn)` · [L472](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:472)
+`public static bool TryGetWeaponOwner( ThingWithComps weapon, out Pawn pawn)` · [L504](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:504)
 
 - **역할:** 시각 효과 참여 무기의 소유 폰을 역방향 캐시에서 찾습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8181,9 +8243,9 @@
 
 <a id="m-0491"></a>
 
-### 026. RimKataResponseVisualParticipantCache.Refresh
+### 028. RimKataResponseVisualParticipantCache.Refresh
 
-`internal static void Refresh(RimKataPawnCombatState state)` · [L482](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:482)
+`internal static void Refresh(RimKataPawnCombatState state)` · [L514](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:514)
 
 - **역할:** 이미 가진 상태로 몸/대응 자료를 갱신하고 실제 쳐내기·회전·대응 자세의 폰 및 사용 무기를 등록합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -8192,20 +8254,20 @@
 
 <a id="m-0492"></a>
 
-### 027. RimKataResponseVisualParticipantCache.RefreshBodyVisual
+### 029. RimKataResponseVisualParticipantCache.RefreshBodyVisual
 
-`internal static void RefreshBodyVisual( RimKataPawnCombatState state)` · [L524](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:524)
+`internal static void RefreshBodyVisual( RimKataPawnCombatState state)` · [L556](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:556)
 
 - **역할:** 연출 사건에서 공용 몸·눕기·대응 분류와 자격·state/owner를 함께 게시하며 기존 자료와 같으면 갱신을 생략합니다.
-- **호출받음:** 직접 **16곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **17곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataResponseVisualParticipantCache.BodyVisualFor(Verse.Pawn pawn)](#m-2359) · [RimKataResponseVisualParticipantCache.CopyBodyVisual(RimKataResponseVisualParticipantCache.BodyVisualEntry old)](#m-2441) · [RimKataResponseVisualParticipantCache.StoreBodyVisual(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry)](#m-2361)
 - **호출 — 외부:** 없음
 
 <a id="m-0493"></a>
 
-### 028. RimKataResponseVisualParticipantCache.Clear
+### 030. RimKataResponseVisualParticipantCache.Clear
 
-`internal static void Clear(Pawn pawn)` · [L553](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:553)
+`internal static void Clear(Pawn pawn)` · [L585](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:585)
 
 - **역할:** 폰·무기의 대응 등록과 공용 몸 상태 참조를 해제하고 돌파·제압·슬라이딩/떨치기·기면서 사격의 독립 게시를 보존합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8214,9 +8276,9 @@
 
 <a id="m-0494"></a>
 
-### 029. RimKataResponseVisualParticipantCache.ClearForMap
+### 031. RimKataResponseVisualParticipantCache.ClearForMap
 
-`internal static void ClearForMap(Map map, bool allVisuals = true)` · [L575](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:575)
+`internal static void ClearForMap(Map map, bool allVisuals = true)` · [L607](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:607)
 
 - **역할:** UpdateLock 안에서 해당 맵의 대응 참가자를 정리하고 공용 몸 참조를 해제합니다. allVisuals이면 독립 연출을 포함한 항목과 ID 슬롯도 제거하며 다른 폰의 재사용 ID는 보존합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8225,9 +8287,9 @@
 
 <a id="m-0495"></a>
 
-### 030. RimKataResponseVisualParticipantCache.AddWeapon
+### 032. RimKataResponseVisualParticipantCache.AddWeapon
 
-`private static void AddWeapon( ThingWithComps weapon, Pawn pawn)` · [L606](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:606)
+`private static void AddWeapon( ThingWithComps weapon, Pawn pawn)` · [L638](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:638)
 
 - **역할:** 시각 효과에 참여하는 무기와 소유 폰을 연결합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -8236,9 +8298,9 @@
 
 <a id="m-0496"></a>
 
-### 031. RimKataResponseVisualParticipantCache.RemoveEntry
+### 033. RimKataResponseVisualParticipantCache.RemoveEntry
 
-`private static void RemoveEntry(Pawn pawn)` · [L616](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:616)
+`private static void RemoveEntry(Pawn pawn)` · [L648](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:648)
 
 - **역할:** 폰의 무기 대응 시각 항목과 연결된 모든 무기 역방향 인덱스를 제거합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8247,9 +8309,9 @@
 
 <a id="m-0497"></a>
 
-### 032. RimKataResponseVisualParticipantCache.RemoveWeapon
+### 034. RimKataResponseVisualParticipantCache.RemoveWeapon
 
-`private static void RemoveWeapon( ThingWithComps weapon, Pawn pawn)` · [L629](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:629)
+`private static void RemoveWeapon( ThingWithComps weapon, Pawn pawn)` · [L661](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:661)
 
 - **역할:** 지정 폰이 소유한 참여 무기의 역방향 인덱스만 제거합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -8258,31 +8320,31 @@
 
 <a id="m-0498"></a>
 
-### 033. RimKataPawnCombatState.ExposeData
+### 035. RimKataPawnCombatState.ExposeData
 
-`public void ExposeData()` · [L867](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:867)
+`public void ExposeData()` · [L903](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:903)
 
-- **역할:** 폰의 회피·대응·근접전·주보조 공격 주기·대상 요청 상태를 저장·복원하고 구형 저장값을 보정합니다.
+- **역할:** 폰의 회피·대응·근접전·주보조 공격 주기·대상 요청 상태를 저장·복원하고 구형 저장값을 보정합니다. 독립 날아 차기 상태를 깊은 저장 항목으로 포함합니다. 독립 발차기 상태를 깊은 저장 항목으로 포함합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWeaponCycleState.Reset()](#m-0893) ×2 · [RimKataPawnCombatState.ClearDeflectionSpin()](#m-0514)
-- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×58 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` ×11 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)` ×4 · `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×3 · `UnityEngine.Mathf.Max(int a, int b)` ×2 · `Verse.Scribe_TargetInfo.Look(ref Verse.LocalTargetInfo value, string label)` ×2 · `UnityEngine.Mathf.Clamp01(float value)` · `UnityEngine.Mathf.Lerp(float a, float b, float t)`
+- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×58 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` ×11 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)` ×6 · `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×3 · `UnityEngine.Mathf.Max(int a, int b)` ×2 · `Verse.Scribe_TargetInfo.Look(ref Verse.LocalTargetInfo value, string label)` ×2 · `UnityEngine.Mathf.Clamp01(float value)` · `UnityEngine.Mathf.Lerp(float a, float b, float t)`
 
 <a id="m-0499"></a>
 
-### 034. RimKataPawnCombatState.Tick
+### 036. RimKataPawnCombatState.Tick
 
-`public void Tick()` · [L1032](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1032)
+`public void Tick()` · [L1070](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1070)
 
-- **역할:** 전투 타이머·회피·위협·대응 연출을 진행하고 종료 상태를 정리하며 stagger가 끝났으면 떨치기 대기 플래그도 해제합니다.
+- **역할:** 전투 타이머·회피·위협·대응 연출을 진행하고 종료 상태를 정리하며 stagger가 끝났으면 떨치기 대기 플래그도 해제합니다. 진행 중인 날아 차기 상태가 있을 때만 그 상태를 틱 갱신합니다. 이미 존재하는 발차기 상태만 전용 틱 처리에 전달합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataPawnCombatState.DetachDodgeMovementPreservingVisual()](#m-0503) ×2 · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492) ×2 · [RimKataDualWeaponController.UpdateBodyAimStance(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1105) · [RimKataPawnCombatState.CancelCloseCombat()](#m-0521) · [RimKataPawnCombatState.CancelCloseDodge()](#m-0518) · [RimKataPawnCombatState.CancelDeflectionSpin()](#m-0513) · [RimKataPawnCombatState.CancelResponsePose()](#m-0515) · [RimKataPawnCombatState.ClearCloseAttackRequest()](#m-0540) · [RimKataPawnCombatState.ClearDodgeMovementFields()](#m-0509) · [RimKataPawnCombatState.EndDeflection()](#m-0512) · [RimKataPawnCombatState.IsCloseAttackRequestActive()](#m-0542) · [RimKataPawnCombatState.IsIncomingThreatActive()](#m-0541) · [RimKataPawnCombatState.TickDraftedMeleeThreatClear()](#m-0501) · [RimKataPawnCombatState.TryGetLiveCloseCombatTrigger(out Verse.Thing trigger)](#m-0520) · [RimKataPawnCombatState.UpdateDraftedCooldown()](#m-0523)
+- **호출 — 프로젝트 내부:** [RimKataPawnCombatState.DetachDodgeMovementPreservingVisual()](#m-0503) ×2 · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492) ×2 · [RimKataDualWeaponController.UpdateBodyAimStance(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1105) · [RimKataFlyingKick.Tick(RimKataPawnCombatState combat)](#m-2898) · [RimKataKick.Tick(RimKataPawnCombatState combat)](#m-2962) · [RimKataPawnCombatState.CancelCloseCombat()](#m-0521) · [RimKataPawnCombatState.CancelCloseDodge()](#m-0518) · [RimKataPawnCombatState.CancelDeflectionSpin()](#m-0513) · [RimKataPawnCombatState.CancelResponsePose()](#m-0515) · [RimKataPawnCombatState.ClearCloseAttackRequest()](#m-0540) · [RimKataPawnCombatState.ClearDodgeMovementFields()](#m-0509) · [RimKataPawnCombatState.EndDeflection()](#m-0512) · [RimKataPawnCombatState.IsCloseAttackRequestActive()](#m-0542) · [RimKataPawnCombatState.IsIncomingThreatActive()](#m-0541) · [RimKataPawnCombatState.TickDraftedMeleeThreatClear()](#m-0501) · [RimKataPawnCombatState.TryGetLiveCloseCombatTrigger(out Verse.Thing trigger)](#m-0520) · [RimKataPawnCombatState.UpdateDraftedCooldown()](#m-0523)
 - **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)` · `UnityEngine.Mathf.Max(int a, int b)` · `UnityEngine.Mathf.Max(float a, float b)` · `Verse.AI.Pawn_PathFollower.StartPath(Verse.LocalTargetInfo dest, Verse.AI.PathEndMode peMode)`
 
 <a id="m-0500"></a>
 
-### 035. RimKataPawnCombatState.ScheduleDraftedMeleeThreatClear
+### 037. RimKataPawnCombatState.ScheduleDraftedMeleeThreatClear
 
-`public void ScheduleDraftedMeleeThreatClear()` · [L1176](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1176)
+`public void ScheduleDraftedMeleeThreatClear()` · [L1216](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1216)
 
 - **역할:** 징집 폰의 근접 위협 참조 해제를 다음 게임 틱으로 예약합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8291,9 +8353,9 @@
 
 <a id="m-0501"></a>
 
-### 036. RimKataPawnCombatState.TickDraftedMeleeThreatClear
+### 038. RimKataPawnCombatState.TickDraftedMeleeThreatClear
 
-`private void TickDraftedMeleeThreatClear()` · [L1185](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1185)
+`private void TickDraftedMeleeThreatClear()` · [L1225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1225)
 
 - **역할:** 예약 시간이 되면 접근 자격이 유지된 징집 폰의 근접 위협을 해제합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8302,9 +8364,9 @@
 
 <a id="m-0502"></a>
 
-### 037. RimKataPawnCombatState.CancelVisual
+### 039. RimKataPawnCombatState.CancelVisual
 
-`public void CancelVisual()` · [L1204](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1204)
+`public void CancelVisual()` · [L1244](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1244)
 
 - **역할:** 기본 회피·추가 구르기·회피 이동의 시각 상태를 취소하고 참여 캐시를 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8313,9 +8375,9 @@
 
 <a id="m-0503"></a>
 
-### 038. RimKataPawnCombatState.DetachDodgeMovementPreservingVisual
+### 040. RimKataPawnCombatState.DetachDodgeMovementPreservingVisual
 
-`private void DetachDodgeMovementPreservingVisual()` · [L1218](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1218)
+`private void DetachDodgeMovementPreservingVisual()` · [L1258](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1258)
 
 - **역할:** 현재 작업이나 경로에서 회피 이동 소유권을 떼어내되 남은 시각 동작은 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8324,9 +8386,9 @@
 
 <a id="m-0504"></a>
 
-### 039. RimKataPawnCombatState.CancelFailedDodgeMovementStart
+### 041. RimKataPawnCombatState.CancelFailedDodgeMovementStart
 
-`public void CancelFailedDodgeMovementStart()` · [L1240](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1240)
+`public void CancelFailedDodgeMovementStart()` · [L1280](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1280)
 
 - **역할:** 시작 실패한 회피 이동과 기본 회피 시각 상태를 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8335,9 +8397,9 @@
 
 <a id="m-0505"></a>
 
-### 040. RimKataPawnCombatState.HoldDodgeLanding
+### 042. RimKataPawnCombatState.HoldDodgeLanding
 
-`public void HoldDodgeLanding()` · [L1256](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1256)
+`public void HoldDodgeLanding()` · [L1296](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1296)
 
 - **역할:** 회피 이동 종료 후 남은 시각 시간을 유지하면서 착지 상태로 전환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8346,9 +8408,9 @@
 
 <a id="m-0506"></a>
 
-### 041. RimKataPawnCombatState.HoldStandardDodgeLanding
+### 043. RimKataPawnCombatState.HoldStandardDodgeLanding
 
-`public void HoldStandardDodgeLanding()` · [L1277](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1277)
+`public void HoldStandardDodgeLanding()` · [L1317](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1317)
 
 - **역할:** 일반 회피 도착 후 남은 회피 시간 또는 최소 착지 시간을 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8357,9 +8419,9 @@
 
 <a id="m-0507"></a>
 
-### 042. RimKataPawnCombatState.BeginAdditionalTumble
+### 044. RimKataPawnCombatState.BeginAdditionalTumble
 
-`public void BeginAdditionalTumble()` · [L1297](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1297)
+`public void BeginAdditionalTumble()` · [L1337](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1337)
 
 - **역할:** 추가 구르기의 방향·지속 시간을 시작하고 진행 중인 물리 회피에 연결합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8368,9 +8430,9 @@
 
 <a id="m-0508"></a>
 
-### 043. RimKataPawnCombatState.ConvertDodgeMovementToCloseDodge
+### 045. RimKataPawnCombatState.ConvertDodgeMovementToCloseDodge
 
-`public void ConvertDodgeMovementToCloseDodge()` · [L1311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1311)
+`public void ConvertDodgeMovementToCloseDodge()` · [L1351](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1351)
 
 - **역할:** 물리 회피 이동을 끝내고 남은 지속 시간으로 근거리 회피 자세를 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8379,9 +8441,9 @@
 
 <a id="m-0509"></a>
 
-### 044. RimKataPawnCombatState.ClearDodgeMovementFields
+### 046. RimKataPawnCombatState.ClearDodgeMovementFields
 
-`private void ClearDodgeMovementFields()` · [L1322](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1322)
+`private void ClearDodgeMovementFields()` · [L1362](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1362)
 
 - **역할:** 회피 이동의 핵심 상태와 원래 경로·소유 작업 복구 정보를 초기화합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -8390,9 +8452,9 @@
 
 <a id="m-0510"></a>
 
-### 045. RimKataPawnCombatState.ClearDodgeMovementCoreFields
+### 047. RimKataPawnCombatState.ClearDodgeMovementCoreFields
 
-`private void ClearDodgeMovementCoreFields()` · [L1331](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1331)
+`private void ClearDodgeMovementCoreFields()` · [L1371](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1371)
 
 - **역할:** 회피 이동 활성·위치·진행률·방향·실패 비틀거림 값을 초기화합니다. 회피 이동이 끝나면 작업 참가 슬롯도 갱신하며 함께 진행 중인 반응 동작은 보존합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8401,9 +8463,9 @@
 
 <a id="m-0511"></a>
 
-### 046. RimKataPawnCombatState.CancelDeflection
+### 048. RimKataPawnCombatState.CancelDeflection
 
-`public void CancelDeflection()` · [L1348](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1348)
+`public void CancelDeflection()` · [L1388](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1388)
 
 - **역할:** 무기 튕김과 공격자 회전 상태를 함께 취소합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8412,9 +8474,9 @@
 
 <a id="m-0512"></a>
 
-### 047. RimKataPawnCombatState.EndDeflection
+### 049. RimKataPawnCombatState.EndDeflection
 
-`private void EndDeflection()` · [L1354](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1354)
+`private void EndDeflection()` · [L1394](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1394)
 
 - **역할:** 무기 튕김 시간과 무기 참조를 지우고 시각 참여 캐시를 갱신합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8423,9 +8485,9 @@
 
 <a id="m-0513"></a>
 
-### 048. RimKataPawnCombatState.CancelDeflectionSpin
+### 050. RimKataPawnCombatState.CancelDeflectionSpin
 
-`public void CancelDeflectionSpin()` · [L1363](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1363)
+`public void CancelDeflectionSpin()` · [L1403](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1403)
 
 - **역할:** 공격자 튕김 회전을 취소하고 무기 시각 참여 캐시를 갱신합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8434,9 +8496,9 @@
 
 <a id="m-0514"></a>
 
-### 049. RimKataPawnCombatState.ClearDeflectionSpin
+### 051. RimKataPawnCombatState.ClearDeflectionSpin
 
-`private void ClearDeflectionSpin()` · [L1369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1369)
+`private void ClearDeflectionSpin()` · [L1409](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1409)
 
 - **역할:** 튕김 회전의 시간·시작 각도·진행률·방향을 초기화합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8445,9 +8507,9 @@
 
 <a id="m-0515"></a>
 
-### 050. RimKataPawnCombatState.CancelResponsePose
+### 052. RimKataPawnCombatState.CancelResponsePose
 
-`public void CancelResponsePose()` · [L1379](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1379)
+`public void CancelResponsePose()` · [L1419](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1419)
 
 - **역할:** 대응 자세의 시간·각도·시선·무기 참조를 지우고 시각 참여 캐시를 갱신합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -8456,9 +8518,9 @@
 
 <a id="m-0516"></a>
 
-### 051. RimKataPawnCombatState.TryGetLiveResponsePoseFocus
+### 053. RimKataPawnCombatState.TryGetLiveResponsePoseFocus
 
-`public bool TryGetLiveResponsePoseFocus( out LocalTargetInfo focus)` · [L1391](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1391)
+`public bool TryGetLiveResponsePoseFocus( out LocalTargetInfo focus)` · [L1431](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1431)
 
 - **역할:** 현재 대응 자세의 표적이 같은 맵에서 여전히 유효한지 확인하여 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8467,9 +8529,9 @@
 
 <a id="m-0517"></a>
 
-### 052. RimKataPawnCombatState.BeginCloseDodge
+### 054. RimKataPawnCombatState.BeginCloseDodge
 
-`public void BeginCloseDodge(int durationTicks)` · [L1421](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1421)
+`public void BeginCloseDodge(int durationTicks)` · [L1461](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1461)
 
 - **역할:** 현재 기울기에 무작위 좌우 각도를 더해 근거리 회피 자세를 시작합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8478,9 +8540,9 @@
 
 <a id="m-0518"></a>
 
-### 053. RimKataPawnCombatState.CancelCloseDodge
+### 055. RimKataPawnCombatState.CancelCloseDodge
 
-`public void CancelCloseDodge()` · [L1432](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1432)
+`public void CancelCloseDodge()` · [L1472](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1472)
 
 - **역할:** 근거리 회피의 시간·각도를 지우고 신체 시각 참여 캐시를 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8489,9 +8551,9 @@
 
 <a id="m-0519"></a>
 
-### 054. RimKataPawnCombatState.EnterCloseCombat
+### 056. RimKataPawnCombatState.EnterCloseCombat
 
-`public void EnterCloseCombat(Thing trigger)` · [L1441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1441)
+`public void EnterCloseCombat(Thing trigger)` · [L1481](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1481)
 
 - **역할:** 근접전을 유발한 대상 참조를 기록합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -8500,42 +8562,42 @@
 
 <a id="m-0520"></a>
 
-### 055. RimKataPawnCombatState.TryGetLiveCloseCombatTrigger
+### 057. RimKataPawnCombatState.TryGetLiveCloseCombatTrigger
 
-`public bool TryGetLiveCloseCombatTrigger(out Thing trigger)` · [L1447](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1447)
+`public bool TryGetLiveCloseCombatTrigger(out Thing trigger)` · [L1487](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1487)
 
 - **역할:** 근접전 대상의 인접·생존·적대 또는 강제 공격 조건을 검사합니다.
-- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataPawnCombatState.TryGetForcedAttackRequestContext(Verse.Thing target, out bool playerForced, out bool killIncappedTarget)](#m-0539) · [RimKataTargeting.IsAutomaticEnemy(Verse.Pawn pawn, Verse.Thing target)](#m-1957) · [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961)
 - **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
 
 <a id="m-0521"></a>
 
-### 056. RimKataPawnCombatState.CancelCloseCombat
+### 058. RimKataPawnCombatState.CancelCloseCombat
 
-`public void CancelCloseCombat()` · [L1481](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1481)
+`public void CancelCloseCombat()` · [L1521](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1521)
 
-- **역할:** 근접전을 유발한 대상 참조를 제거합니다.
+- **역할:** 근접전을 유발한 대상 참조를 제거합니다. 근접 전투 트리거가 있던 상태의 발차기 관찰·기회만 지우며 이미 시작한 발차기 연출은 유지합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **호출 — 프로젝트 내부:** [RimKataKick.ClearOpportunity(RimKataPawnCombatState combat)](#m-3009)
 - **호출 — 외부:** 없음
 
 <a id="m-0522"></a>
 
-### 057. RimKataPawnCombatState.VisualSnapshot
+### 059. RimKataPawnCombatState.VisualSnapshot
 
-`public RimKataVisualSnapshot VisualSnapshot()` · [L1486](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1486)
+`public RimKataVisualSnapshot VisualSnapshot()` · [L1527](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1527)
 
-- **역할:** 현재 회피·구르기·무기 튕김·대응·근거리 회피를 렌더용 정규화 스냅샷으로 반환합니다. 넘어짐 각도·몸/무기 이동·구르기 방향과 엎드림을 제외한 넘어짐 레이어 여부를 스냅샷에 포함합니다.
+- **역할:** 현재 회피·구르기·무기 튕김·대응·근거리 회피를 렌더용 정규화 스냅샷으로 반환합니다. 넘어짐 각도·몸/무기 이동·구르기 방향과 엎드림을 제외한 넘어짐 레이어 여부를 스냅샷에 포함합니다. 날아 차기 실패의 Fallen 상태에는 보존된 focus도 포함하여 무기별 후보가 비어도 기존 적 조준을 이어갑니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)` ×7 · `UnityEngine.Mathf.Max(float a, float b)`
 
 <a id="m-0523"></a>
 
-### 058. RimKataPawnCombatState.UpdateDraftedCooldown
+### 060. RimKataPawnCombatState.UpdateDraftedCooldown
 
-`public void UpdateDraftedCooldown()` · [L1535](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1535)
+`public void UpdateDraftedCooldown()` · [L1576](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1576)
 
 - **역할:** 실제 경과 게임 틱만큼 징집 사격 대기 시간을 감소시킵니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8544,9 +8606,9 @@
 
 <a id="m-0524"></a>
 
-### 059. RimKataPawnCombatState.CancelDraftedFire
+### 061. RimKataPawnCombatState.CancelDraftedFire
 
-`public void CancelDraftedFire(bool clearCooldown = true)` · [L1564](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1564)
+`public void CancelDraftedFire(bool clearCooldown = true)` · [L1605](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1605)
 
 - **역할:** 징집 사격 계획과 조준 상태를 취소하고 요청에 따라 남은 대기를 유지합니다.
 - **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
@@ -8555,9 +8617,9 @@
 
 <a id="m-0525"></a>
 
-### 060. RimKataPawnCombatState.ClearDraftedMovementSearchTracking
+### 062. RimKataPawnCombatState.ClearDraftedMovementSearchTracking
 
-`public void ClearDraftedMovementSearchTracking()` · [L1585](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1585)
+`public void ClearDraftedMovementSearchTracking()` · [L1626](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1626)
 
 - **역할:** 징집 이동 탐색의 위치·허용·요격 깨우기·연속 사격·비틀거림 검사 기록을 초기화합니다.
 - **호출받음:** 직접 **12곳** · 메서드 그룹 참조 **0곳**.
@@ -8566,9 +8628,9 @@
 
 <a id="m-0526"></a>
 
-### 061. RimKataPawnCombatState.QueueDraftedMovementSearchTrigger
+### 063. RimKataPawnCombatState.QueueDraftedMovementSearchTrigger
 
-`public void QueueDraftedMovementSearchTrigger()` · [L1595](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1595)
+`public void QueueDraftedMovementSearchTrigger()` · [L1636](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1636)
 
 - **역할:** 징집 이동에 따른 새 표적 탐색 요청을 예약합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8577,9 +8639,9 @@
 
 <a id="m-0527"></a>
 
-### 062. RimKataPawnCombatState.ConsumeDraftedMovementSearchTrigger
+### 064. RimKataPawnCombatState.ConsumeDraftedMovementSearchTrigger
 
-`public void ConsumeDraftedMovementSearchTrigger()` · [L1600](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1600)
+`public void ConsumeDraftedMovementSearchTrigger()` · [L1641](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1641)
 
 - **역할:** 징집 이동 표적 탐색 요청을 소비합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -8588,9 +8650,9 @@
 
 <a id="m-0528"></a>
 
-### 063. RimKataPawnCombatState.QueueIdleProjectileSearchTrigger
+### 065. RimKataPawnCombatState.QueueIdleProjectileSearchTrigger
 
-`public void QueueIdleProjectileSearchTrigger()` · [L1605](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1605)
+`public void QueueIdleProjectileSearchTrigger()` · [L1646](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1646)
 
 - **역할:** 유휴 상태에서 폭발 투사체 탐색을 시작할 요청을 예약합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8599,9 +8661,9 @@
 
 <a id="m-0529"></a>
 
-### 064. RimKataPawnCombatState.ConsumeIdleProjectileSearchTrigger
+### 066. RimKataPawnCombatState.ConsumeIdleProjectileSearchTrigger
 
-`public void ConsumeIdleProjectileSearchTrigger()` · [L1610](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1610)
+`public void ConsumeIdleProjectileSearchTrigger()` · [L1651](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1651)
 
 - **역할:** 유휴 상태의 폭발 투사체 탐색 요청을 소비합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8610,9 +8672,9 @@
 
 <a id="m-0530"></a>
 
-### 065. RimKataPawnCombatState.RefreshMovementFireContinuity
+### 067. RimKataPawnCombatState.RefreshMovementFireContinuity
 
-`public void RefreshMovementFireContinuity()` · [L1615](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1615)
+`public void RefreshMovementFireContinuity()` · [L1656](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1656)
 
 - **역할:** 현재 틱을 기준으로 이동 사격 연속성 유지 시간을 연장합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8621,9 +8683,9 @@
 
 <a id="m-0531"></a>
 
-### 066. RimKataPawnCombatState.CancelWeaponCycles
+### 068. RimKataPawnCombatState.CancelWeaponCycles
 
-`public void CancelWeaponCycles()` · [L1626](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1626)
+`public void CancelWeaponCycles()` · [L1667](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1667)
 
 - **역할:** 주·보조 무기 주기와 공통 탐색·교전·근거리 요청·후속 작업 연속성을 초기화합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -8632,9 +8694,9 @@
 
 <a id="m-0532"></a>
 
-### 067. RimKataPawnCombatState.ResetCandidateSaturationExpansion
+### 069. RimKataPawnCombatState.ResetCandidateSaturationExpansion
 
-`public void ResetCandidateSaturationExpansion(bool clearOverrides)` · [L1646](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1646)
+`public void ResetCandidateSaturationExpansion(bool clearOverrides)` · [L1687](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1687)
 
 - **역할:** 후보 포화 확장 사용 상태를 초기화하고 선택적으로 무기별 후보 한도 재정의를 지웁니다.
 - **호출받음:** 직접 **15곳** · 메서드 그룹 참조 **0곳**.
@@ -8643,9 +8705,9 @@
 
 <a id="m-0533"></a>
 
-### 068. RimKataPawnCombatState.QueueDedicatedFollowupJob
+### 070. RimKataPawnCombatState.QueueDedicatedFollowupJob
 
-`public void QueueDedicatedFollowupJob(Thing target, Job sourceJob)` · [L1666](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1666)
+`public void QueueDedicatedFollowupJob(Thing target, Job sourceJob)` · [L1707](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1707)
 
 - **역할:** 현재 작업의 강제 공격·무력화 표적 허용 정보를 보존하여 전용 후속 공격 작업을 예약합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8654,9 +8716,9 @@
 
 <a id="m-0534"></a>
 
-### 069. RimKataPawnCombatState.ClearDedicatedFollowupJobRequest
+### 071. RimKataPawnCombatState.ClearDedicatedFollowupJobRequest
 
-`public void ClearDedicatedFollowupJobRequest()` · [L1692](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1692)
+`public void ClearDedicatedFollowupJobRequest()` · [L1733](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1733)
 
 - **역할:** 전용 후속 공격 작업 예약의 표적·원본 작업·명령 조건을 초기화합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -8665,9 +8727,9 @@
 
 <a id="m-0535"></a>
 
-### 070. RimKataPawnCombatState.NotifyIncomingThreat
+### 072. RimKataPawnCombatState.NotifyIncomingThreat
 
-`public void NotifyIncomingThreat(Pawn attacker)` · [L1702](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1702)
+`public void NotifyIncomingThreat(Pawn attacker)` · [L1743](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1743)
 
 - **역할:** 공격해 오는 폰과 위협 유지 유예 시간을 기록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8676,9 +8738,9 @@
 
 <a id="m-0536"></a>
 
-### 071. RimKataPawnCombatState.RequestCloseAttack
+### 073. RimKataPawnCombatState.RequestCloseAttack
 
-`public void RequestCloseAttack( Thing target, bool fromAttackGizmo = false)` · [L1708](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1708)
+`public void RequestCloseAttack( Thing target, bool fromAttackGizmo = false)` · [L1749](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1749)
 
 - **역할:** 근거리 공격 표적과 명령 출처를 기록하고 근접전 상태로 진입합니다.
 - **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
@@ -8687,9 +8749,9 @@
 
 <a id="m-0537"></a>
 
-### 072. RimKataPawnCombatState.RequestPlayerRush
+### 074. RimKataPawnCombatState.RequestPlayerRush
 
-`public void RequestPlayerRush(Thing target)` · [L1721](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1721)
+`public void RequestPlayerRush(Thing target)` · [L1762](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1762)
 
 - **역할:** 플레이어 돌진 요청의 표적과 공격 명령 출처를 기록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8698,20 +8760,20 @@
 
 <a id="m-0538"></a>
 
-### 073. RimKataPawnCombatState.IsPlayerRushRequestFor
+### 075. RimKataPawnCombatState.IsPlayerRushRequestFor
 
-`public bool IsPlayerRushRequestFor(Thing target)` · [L1727](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1727)
+`public bool IsPlayerRushRequestFor(Thing target)` · [L1768](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1768)
 
 - **역할:** 현재 강제 RimKata 공격 작업이 지정 대상에 대한 플레이어 돌진 요청인지 확인합니다.
-- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
 <a id="m-0539"></a>
 
-### 074. RimKataPawnCombatState.TryGetForcedAttackRequestContext
+### 076. RimKataPawnCombatState.TryGetForcedAttackRequestContext
 
-`public bool TryGetForcedAttackRequestContext( Thing target, out bool playerForced, out bool killIncappedTarget)` · [L1738](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1738)
+`public bool TryGetForcedAttackRequestContext( Thing target, out bool playerForced, out bool killIncappedTarget)` · [L1779](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1779)
 
 - **역할:** 현재 근접·정지 사격·RimKata 공격 작업에서 지정 표적의 강제 공격과 무력화 허용 문맥을 구합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -8720,9 +8782,9 @@
 
 <a id="m-0540"></a>
 
-### 075. RimKataPawnCombatState.ClearCloseAttackRequest
+### 077. RimKataPawnCombatState.ClearCloseAttackRequest
 
-`public void ClearCloseAttackRequest()` · [L1763](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1763)
+`public void ClearCloseAttackRequest()` · [L1804](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1804)
 
 - **역할:** 근거리 공격 요청의 표적과 공격 명령 출처를 지웁니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -8731,9 +8793,9 @@
 
 <a id="m-0541"></a>
 
-### 076. RimKataPawnCombatState.IsIncomingThreatActive
+### 078. RimKataPawnCombatState.IsIncomingThreatActive
 
-`private bool IsIncomingThreatActive()` · [L1769](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1769)
+`private bool IsIncomingThreatActive()` · [L1810](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1810)
 
 - **역할:** 공격자의 유효성·적대·유예 시간·현재 조준과 작업을 검사하여 받은 위협의 유지 여부를 판정합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8742,9 +8804,9 @@
 
 <a id="m-0542"></a>
 
-### 077. RimKataPawnCombatState.IsCloseAttackRequestActive
+### 079. RimKataPawnCombatState.IsCloseAttackRequestActive
 
-`private bool IsCloseAttackRequestActive()` · [L1802](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1802)
+`private bool IsCloseAttackRequestActive()` · [L1843](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1843)
 
 - **역할:** 표적 상태와 현재 강제 돌진·인접 적대 공격 조건으로 근거리 요청의 유효성을 검사합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8753,9 +8815,9 @@
 
 <a id="m-0543"></a>
 
-### 078. RimKataPawnCombatState.CancelOffenseForFire
+### 080. RimKataPawnCombatState.CancelOffenseForFire
 
-`public void CancelOffenseForFire()` · [L1832](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1832)
+`public void CancelOffenseForFire()` · [L1873](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1873)
 
 - **역할:** 화재 상태에서 공격 주기와 이동 복귀를 취소하고 이미 시작된 방어 시각 효과는 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -8764,9 +8826,9 @@
 
 <a id="m-0544"></a>
 
-### 079. RimKataMapComponent.PendingProjectileValidation.ExposeData
+### 081. RimKataMapComponent.PendingProjectileValidation.ExposeData
 
-`public void ExposeData()` · [L1861](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1861)
+`public void ExposeData()` · [L1902](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1902)
 
 - **역할:** 투사체 지연 검증의 예정 틱·회피 대상·회피 여부를 저장·복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -8775,9 +8837,9 @@
 
 <a id="m-0545"></a>
 
-### 080. RimKataMapComponent.NotifyCEProjectileChanged
+### 082. RimKataMapComponent.NotifyCEProjectileChanged
 
-`internal void NotifyCEProjectileChanged()` · [L1925](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1925)
+`internal void NotifyCEProjectileChanged()` · [L1966](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1966)
 
 - **역할:** CE 투사체 변화 시 요격 기능이 켜져 있으면 대기 폰 깨우기 순회를 요청합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8786,9 +8848,9 @@
 
 <a id="m-0546"></a>
 
-### 081. RimKataMapComponent.FinalizeInit
+### 083. RimKataMapComponent.FinalizeInit
 
-`public override void FinalizeInit()` · [L1943](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1943)
+`public override void FinalizeInit()` · [L1984](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1984)
 
 - **역할:** 맵 초기화 시 자격·날씨·전투 및 투사체 인덱스를 복구하고 투사체 사건을 구독합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -8797,20 +8859,20 @@
 
 <a id="m-0547"></a>
 
-### 082. RimKataMapComponent.MapRemoved
+### 084. RimKataMapComponent.MapRemoved
 
-`public override void MapRemoved()` · [L1969](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:1969)
+`public override void MapRemoved()` · [L2010](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2010)
 
-- **역할:** 맵 제거 시 자격·휴면 이동·전투 존재·투사체·시각 참여 등록을 정리합니다. 맵의 실제 상태들을 정리할 때 작업 참가 슬롯도 해제합니다.
+- **역할:** 맵 제거 시 자격·휴면 이동·전투 존재·투사체·시각 참여 등록을 정리합니다. 맵의 실제 상태들을 정리할 때 작업 참가 슬롯도 해제합니다. 맵의 날아 차기 요청·활성 등록·연출 자료도 함께 해제합니다. 맵 제거 시 등록된 발차기 상태와 독립 타격을 함께 정리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataDormantHostileMovementRegistry.NotifyMapRemoved(Verse.Map map)](#m-0861) · [RimKataEligibilityCache.ForgetMap(Verse.Map map)](#m-1175) · [RimKataGroundPoseUtility.ClearMap(Verse.Map map)](#m-1320) · [RimKataMapComponent.ClearProjectileScheduler(\[bool clearPending = true\])](#m-0589) · [RimKataMapComponent.UnsubscribeProjectileEvents()](#m-0572) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataResponseVisualParticipantCache.ClearForMap(Verse.Map map, \[bool allVisuals = true\])](#m-0494)
+- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataDormantHostileMovementRegistry.NotifyMapRemoved(Verse.Map map)](#m-0861) · [RimKataEligibilityCache.ForgetMap(Verse.Map map)](#m-1175) · [RimKataFlyingKick.Clear(RimKataPawnCombatState combat)](#m-2906) · [RimKataGroundPoseUtility.ClearMap(Verse.Map map)](#m-1320) · [RimKataKick.Clear(RimKataPawnCombatState combat)](#m-2964) · [RimKataMapComponent.ClearProjectileScheduler(\[bool clearPending = true\])](#m-0589) · [RimKataMapComponent.UnsubscribeProjectileEvents()](#m-0572) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataResponseVisualParticipantCache.ClearForMap(Verse.Map map, \[bool allVisuals = true\])](#m-0494)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()` ×5 · `System.Collections.Generic.List<T>.Clear()` ×3 · `Verse.MapComponent.MapRemoved()`
 
 <a id="m-0548"></a>
 
-### 083. RimKataMapComponent.ExposeData
+### 085. RimKataMapComponent.ExposeData
 
-`public override void ExposeData()` · [L2002](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2002)
+`public override void ExposeData()` · [L2045](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2045)
 
 - **역할:** 맵의 폰 전투 상태와 투사체 추적·요격·지연 검증을 저장·복원하고 인덱스를 재구성합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -8819,20 +8881,20 @@
 
 <a id="m-0549"></a>
 
-### 084. RimKataMapComponent.MapComponentTick
+### 086. RimKataMapComponent.MapComponentTick
 
-`public override void MapComponentTick()` · [L2072](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2072)
+`public override void MapComponentTick()` · [L2115](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2115)
 
-- **역할:** 매 맵 틱에 투사체와 폰 상태를 갱신하고 무력화·화재·교환 예약·회피 실패·휴면 적대 처리를 진행합니다. 일반 전투 순회에 자세 갱신 분기를 두지 않고 사건으로 등록된 별도 연출 목록만 갱신합니다.
+- **역할:** 매 맵 틱에 투사체와 폰 상태를 갱신하고 무력화·화재·교환 예약·회피 실패·휴면 적대 처리를 진행합니다. 일반 전투 순회에 자세 갱신 분기를 두지 않고 사건으로 등록된 별도 연출 목록만 갱신합니다. 이미 등록된 전투 상태의 당사자가 사망한 경우 발차기 관찰·타격·임시 연출도 정리합니다. 시체 렌더 조회를 추가하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataMapComponent.RemoveStateAt(int index)](#m-0596) ×2 · [RimKataPawnCombatState.CancelCloseCombat()](#m-0521) ×2 · [RimKataPawnCombatState.CancelCloseDodge()](#m-0518) ×2 · [RimKataPawnCombatState.CancelDeflection()](#m-0511) ×2 · [RimKataPawnCombatState.CancelDraftedFire(\[bool clearCooldown = true\])](#m-0524) ×2 · [RimKataPawnCombatState.CancelResponsePose()](#m-0515) ×2 · [RimKataPawnCombatState.CancelVisual()](#m-0502) ×2 · [RimKataPawnCombatState.CancelWeaponCycles()](#m-0531) ×2 · [RimKataPawnCombatState.ClearDraftedMovementSearchTracking()](#m-0525) ×2 · [RimKataDormantHostileMovementRegistry.ProcessPending(Verse.Map map, bool actualCombatActive)](#m-0862) · [RimKataDualWeaponController.CancelOffenseForMentalState(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1047) · [RimKataDualWeaponController.IsActualCombatActive(Verse.Pawn pawn, Verse.JobDef jobDef, RimKataPawnCombatState state)](#m-0965) · [RimKataDualWeaponController.TickIdleCycleTimers(Verse.Pawn pawn)](#m-1044) · [RimKataGroundPoseUtility.Tick(RimKataPawnCombatState state)](#m-1308) · [RimKataMapComponent.TickProjectileScheduler()](#m-0578) · [RimKataMapComponent.TryFinishDodgeMovement(Verse.Pawn pawn, bool failed, \[bool force = false\])](#m-0600) · [RimKataPawnCombatState.CancelOffenseForFire()](#m-0543) · [RimKataPawnCombatState.Tick()](#m-0499) · [RimKataWeaponSlotUtility.PrimaryWeapon(Verse.Pawn pawn)](#m-1686) · [RimKataWeaponSlotUtility.SecondaryWeapon(Verse.Pawn pawn)](#m-1687) · [RimKataWeaponSlotUtility.TrySwapPrimarySecondary(Verse.Pawn pawn)](#m-1709)
+- **호출 — 프로젝트 내부:** [RimKataMapComponent.RemoveStateAt(int index)](#m-0596) ×2 · [RimKataPawnCombatState.CancelCloseCombat()](#m-0521) ×2 · [RimKataPawnCombatState.CancelCloseDodge()](#m-0518) ×2 · [RimKataPawnCombatState.CancelDeflection()](#m-0511) ×2 · [RimKataPawnCombatState.CancelDraftedFire(\[bool clearCooldown = true\])](#m-0524) ×2 · [RimKataPawnCombatState.CancelResponsePose()](#m-0515) ×2 · [RimKataPawnCombatState.CancelVisual()](#m-0502) ×2 · [RimKataPawnCombatState.CancelWeaponCycles()](#m-0531) ×2 · [RimKataPawnCombatState.ClearDraftedMovementSearchTracking()](#m-0525) ×2 · [RimKataDormantHostileMovementRegistry.ProcessPending(Verse.Map map, bool actualCombatActive)](#m-0862) · [RimKataDualWeaponController.CancelOffenseForMentalState(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1047) · [RimKataDualWeaponController.IsActualCombatActive(Verse.Pawn pawn, Verse.JobDef jobDef, RimKataPawnCombatState state)](#m-0965) · [RimKataDualWeaponController.TickIdleCycleTimers(Verse.Pawn pawn)](#m-1044) · [RimKataGroundPoseUtility.Tick(RimKataPawnCombatState state)](#m-1308) · [RimKataKick.Clear(RimKataPawnCombatState combat)](#m-2964) · [RimKataMapComponent.TickProjectileScheduler()](#m-0578) · [RimKataMapComponent.TryFinishDodgeMovement(Verse.Pawn pawn, bool failed, \[bool force = false\])](#m-0600) · [RimKataPawnCombatState.CancelOffenseForFire()](#m-0543) · [RimKataPawnCombatState.Tick()](#m-0499) · [RimKataWeaponSlotUtility.PrimaryWeapon(Verse.Pawn pawn)](#m-1686) · [RimKataWeaponSlotUtility.SecondaryWeapon(Verse.Pawn pawn)](#m-1687) · [RimKataWeaponSlotUtility.TrySwapPrimarySecondary(Verse.Pawn pawn)](#m-1709)
 - **호출 — 외부:** `RimWorld.RestUtility.Awake(Verse.Pawn p)` ×2 · `Verse.AI.Pawn_PathFollower.StopDead()` ×2 · `RimWorld.FireUtility.IsBurning(Verse.Thing t)`
 
 <a id="m-0550"></a>
 
-### 085. RimKataMapComponent.RegisterGroundPose
+### 087. RimKataMapComponent.RegisterGroundPose
 
-`internal void RegisterGroundPose(RimKataPawnCombatState state)` · [L2181](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2181)
+`internal void RegisterGroundPose(RimKataPawnCombatState state)` · [L2225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2225)
 
 - **역할:** 시작 사건의 연출 상태만 별도 갱신 목록에 중복 없이 추가합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8841,9 +8903,9 @@
 
 <a id="m-0551"></a>
 
-### 086. RimKataMapComponent.UnregisterGroundPose
+### 088. RimKataMapComponent.UnregisterGroundPose
 
-`internal void UnregisterGroundPose(RimKataPawnCombatState state)` · [L2186](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2186)
+`internal void UnregisterGroundPose(RimKataPawnCombatState state)` · [L2230](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2230)
 
 - **역할:** 끝난 연출 상태를 별도 갱신 목록에서 제거합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8852,9 +8914,9 @@
 
 <a id="m-0552"></a>
 
-### 087. RimKataMapComponent.RegisterCloseProjectile
+### 089. RimKataMapComponent.RegisterCloseProjectile
 
-`internal void RegisterCloseProjectile(RimKataCloseProjectileState shot)` · [L2189](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2189)
+`internal void RegisterCloseProjectile(RimKataCloseProjectileState shot)` · [L2233](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2233)
 
 - **역할:** 유효한 근거리 발사체의 판정 상태를 목록과 투사체 인덱스에 등록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8863,9 +8925,9 @@
 
 <a id="m-0553"></a>
 
-### 088. RimKataMapComponent.CloseShotFor
+### 090. RimKataMapComponent.CloseShotFor
 
-`internal RimKataCloseProjectileState CloseShotFor(Projectile projectile)` · [L2211](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2211)
+`internal RimKataCloseProjectileState CloseShotFor(Projectile projectile)` · [L2255](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2255)
 
 - **역할:** 투사체에 연결된 근거리 발사 판정 상태를 조회합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8874,9 +8936,9 @@
 
 <a id="m-0554"></a>
 
-### 089. RimKataMapComponent.RebuildCloseProjectileIndex
+### 091. RimKataMapComponent.RebuildCloseProjectileIndex
 
-`private void RebuildCloseProjectileIndex(bool pruneInvalid)` · [L2225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2225)
+`private void RebuildCloseProjectileIndex(bool pruneInvalid)` · [L2269](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2269)
 
 - **역할:** 근거리 발사체 인덱스를 재구성하고 중복·무효 참조를 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8885,9 +8947,9 @@
 
 <a id="m-0555"></a>
 
-### 090. RimKataMapComponent.RegisterLaunchedRangedProjectile
+### 092. RimKataMapComponent.RegisterLaunchedRangedProjectile
 
-`internal void RegisterLaunchedRangedProjectile( Projectile projectile, Pawn target, bool preventDirectHit = false)` · [L2247](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2247)
+`internal void RegisterLaunchedRangedProjectile( Projectile projectile, Pawn target, bool preventDirectHit = false)` · [L2291](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2291)
 
 - **역할:** 발사된 원거리 투사체와 대상을 추적 목록에 등록하거나 직접 명중 차단 상태를 보완합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8896,9 +8958,9 @@
 
 <a id="m-0556"></a>
 
-### 091. RimKataMapComponent.PreventsDirectProjectileHit
+### 093. RimKataMapComponent.PreventsDirectProjectileHit
 
-`internal bool PreventsDirectProjectileHit(Projectile projectile, Pawn target)` · [L2283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2283)
+`internal bool PreventsDirectProjectileHit(Projectile projectile, Pawn target)` · [L2327](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2327)
 
 - **역할:** 특정 투사체가 해당 폰에게 직접 명중하지 못하도록 기록되어 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8907,9 +8969,9 @@
 
 <a id="m-0557"></a>
 
-### 092. RimKataMapComponent.MarkCurrentRangedProjectilesAvoided
+### 094. RimKataMapComponent.MarkCurrentRangedProjectilesAvoided
 
-`internal bool MarkCurrentRangedProjectilesAvoided(Pawn target)` · [L2292](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2292)
+`internal bool MarkCurrentRangedProjectilesAvoided(Pawn target)` · [L2336](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2336)
 
 - **역할:** 추가 회피 시 이미 날아오거나 검증 대기 중인 해당 대상의 투사체들을 회피 처리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8918,9 +8980,9 @@
 
 <a id="m-0558"></a>
 
-### 093. RimKataMapComponent.WasRangedProjectileAvoided
+### 095. RimKataMapComponent.WasRangedProjectileAvoided
 
-`internal bool WasRangedProjectileAvoided(Projectile projectile, Pawn target)` · [L2353](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2353)
+`internal bool WasRangedProjectileAvoided(Projectile projectile, Pawn target)` · [L2397](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2397)
 
 - **역할:** 이미 회피한 탄환과 대상의 일치를 기존 기록을 제거하지 않고 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8929,9 +8991,9 @@
 
 <a id="m-0559"></a>
 
-### 094. RimKataMapComponent.TryConsumeAvoidedRangedProjectile
+### 096. RimKataMapComponent.TryConsumeAvoidedRangedProjectile
 
-`internal bool TryConsumeAvoidedRangedProjectile( Projectile projectile, Pawn target, out bool suppressJobNotification)` · [L2363](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2363)
+`internal bool TryConsumeAvoidedRangedProjectile( Projectile projectile, Pawn target, out bool suppressJobNotification)` · [L2407](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2407)
 
 - **역할:** 해당 투사체와 폰의 기록된 회피 결과를 한 번 소비하고 작업 피해 알림 억제 여부를 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8940,9 +9002,9 @@
 
 <a id="m-0560"></a>
 
-### 095. RimKataMapComponent.NotifyRangedProjectileImpactFinished
+### 097. RimKataMapComponent.NotifyRangedProjectileImpactFinished
 
-`internal void NotifyRangedProjectileImpactFinished( Projectile projectile)` · [L2391](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2391)
+`internal void NotifyRangedProjectileImpactFinished( Projectile projectile)` · [L2435](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2435)
 
 - **역할:** 투사체 충돌 완료 후 근거리·원거리 추적을 정리하되 빗나감 비행이 재개된 직접 명중 차단 기록은 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8951,9 +9013,9 @@
 
 <a id="m-0561"></a>
 
-### 096. RimKataMapComponent.RebuildTrackedRangedProjectileIndex
+### 098. RimKataMapComponent.RebuildTrackedRangedProjectileIndex
 
-`private void RebuildTrackedRangedProjectileIndex(bool pruneInvalid)` · [L2422](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2422)
+`private void RebuildTrackedRangedProjectileIndex(bool pruneInvalid)` · [L2466](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2466)
 
 - **역할:** 원거리 투사체 추적 인덱스를 재구성하고 중복·무효 투사체와 대상을 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8962,9 +9024,9 @@
 
 <a id="m-0562"></a>
 
-### 097. RimKataMapComponent.RemoveTrackedRangedProjectile
+### 099. RimKataMapComponent.RemoveTrackedRangedProjectile
 
-`private void RemoveTrackedRangedProjectile( RimKataTrackedRangedProjectile tracked)` · [L2459](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2459)
+`private void RemoveTrackedRangedProjectile( RimKataTrackedRangedProjectile tracked)` · [L2503](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2503)
 
 - **역할:** 원거리 투사체 추적 객체를 목록과 인덱스에서 제거합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -8973,9 +9035,9 @@
 
 <a id="m-0563"></a>
 
-### 098. RimKataMapComponent.RemoveTrackedRangedProjectileAt
+### 100. RimKataMapComponent.RemoveTrackedRangedProjectileAt
 
-`private void RemoveTrackedRangedProjectileAt(int index)` · [L2471](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2471)
+`private void RemoveTrackedRangedProjectileAt(int index)` · [L2515](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2515)
 
 - **역할:** 지정 인덱스의 원거리 투사체 추적을 목록과 인덱스에서 제거합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8984,9 +9046,9 @@
 
 <a id="m-0564"></a>
 
-### 099. RimKataMapComponent.RegisterInterceptionShot
+### 101. RimKataMapComponent.RegisterInterceptionShot
 
-`internal void RegisterInterceptionShot( Projectile shot, Thing target)` · [L2483](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2483)
+`internal void RegisterInterceptionShot( Projectile shot, Thing target)` · [L2527](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2527)
 
 - **역할:** 요격 발사체와 목표 투사체를 연결하고 발사체·표적 양방향 인덱스를 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -8995,9 +9057,9 @@
 
 <a id="m-0565"></a>
 
-### 100. RimKataMapComponent.TryTakeInterceptionTarget
+### 102. RimKataMapComponent.TryTakeInterceptionTarget
 
-`internal bool TryTakeInterceptionTarget( Projectile shot, out Thing target)` · [L2516](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2516)
+`internal bool TryTakeInterceptionTarget( Projectile shot, out Thing target)` · [L2560](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2560)
 
 - **역할:** 요격 발사체의 목표를 반환하면서 해당 연결을 한 번 소비합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9006,9 +9068,9 @@
 
 <a id="m-0566"></a>
 
-### 101. RimKataMapComponent.RebuildInterceptionShotLinkIndex
+### 103. RimKataMapComponent.RebuildInterceptionShotLinkIndex
 
-`private void RebuildInterceptionShotLinkIndex(bool pruneInvalid)` · [L2541](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2541)
+`private void RebuildInterceptionShotLinkIndex(bool pruneInvalid)` · [L2585](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2585)
 
 - **역할:** 저장된 요격 연결의 양방향 인덱스를 재구성하고 중복·무효 항목을 제거합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9017,9 +9079,9 @@
 
 <a id="m-0567"></a>
 
-### 102. RimKataMapComponent.RemoveInterceptionShotLink
+### 104. RimKataMapComponent.RemoveInterceptionShotLink
 
-`private void RemoveInterceptionShotLink(Projectile shot)` · [L2580](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2580)
+`private void RemoveInterceptionShotLink(Projectile shot)` · [L2624](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2624)
 
 - **역할:** 요격 발사체에 해당하는 연결을 찾아 제거합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9028,9 +9090,9 @@
 
 <a id="m-0568"></a>
 
-### 103. RimKataMapComponent.RemoveInterceptionShotLink
+### 105. RimKataMapComponent.RemoveInterceptionShotLink
 
-`private void RemoveInterceptionShotLink( RimKataInterceptionShotLink link)` · [L2593](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2593)
+`private void RemoveInterceptionShotLink( RimKataInterceptionShotLink link)` · [L2637](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2637)
 
 - **역할:** 요격 연결을 목록과 발사체·표적 양방향 인덱스에서 제거합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -9039,9 +9101,9 @@
 
 <a id="m-0569"></a>
 
-### 104. RimKataMapComponent.RemoveInterceptionLinksForTarget
+### 106. RimKataMapComponent.RemoveInterceptionLinksForTarget
 
-`private void RemoveInterceptionLinksForTarget(Thing target)` · [L2617](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2617)
+`private void RemoveInterceptionLinksForTarget(Thing target)` · [L2661](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2661)
 
 - **역할:** 특정 목표 투사체로 향하는 모든 요격 연결을 제거합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9050,9 +9112,9 @@
 
 <a id="m-0570"></a>
 
-### 105. RimKataMapComponent.AddInterceptionTargetIndex
+### 107. RimKataMapComponent.AddInterceptionTargetIndex
 
-`private void AddInterceptionTargetIndex( RimKataInterceptionShotLink link)` · [L2634](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2634)
+`private void AddInterceptionTargetIndex( RimKataInterceptionShotLink link)` · [L2678](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2678)
 
 - **역할:** 목표 투사체에서 자신을 향하는 요격 연결 목록을 조회할 역방향 인덱스를 추가합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9061,9 +9123,9 @@
 
 <a id="m-0571"></a>
 
-### 106. RimKataMapComponent.SubscribeProjectileEvents
+### 108. RimKataMapComponent.SubscribeProjectileEvents
 
-`private void SubscribeProjectileEvents()` · [L2654](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2654)
+`private void SubscribeProjectileEvents()` · [L2698](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2698)
 
 - **역할:** 맵의 물건 생성·제거 사건에 투사체 추적 알림을 연결합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9072,9 +9134,9 @@
 
 <a id="m-0572"></a>
 
-### 107. RimKataMapComponent.UnsubscribeProjectileEvents
+### 109. RimKataMapComponent.UnsubscribeProjectileEvents
 
-`private void UnsubscribeProjectileEvents()` · [L2666](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2666)
+`private void UnsubscribeProjectileEvents()` · [L2710](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2710)
 
 - **역할:** 맵의 물건 생성·제거 사건에서 투사체 추적 알림을 해제합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9083,9 +9145,9 @@
 
 <a id="m-0573"></a>
 
-### 108. RimKataMapComponent.NotifyThingSpawned
+### 110. RimKataMapComponent.NotifyThingSpawned
 
-`private void NotifyThingSpawned(Thing thing)` · [L2678](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2678)
+`private void NotifyThingSpawned(Thing thing)` · [L2722](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2722)
 
 - **역할:** 폭발 투사체 생성 시 발사 정보가 채워진 다음 틱으로 검증을 예약합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **2곳**.
@@ -9094,9 +9156,9 @@
 
 <a id="m-0574"></a>
 
-### 109. RimKataMapComponent.NotifyThingDespawned
+### 111. RimKataMapComponent.NotifyThingDespawned
 
-`private void NotifyThingDespawned(Thing thing)` · [L2697](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2697)
+`private void NotifyThingDespawned(Thing thing)` · [L2741](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2741)
 
 - **역할:** 투사체 제거 시 요격 연결·검증·활성 목록을 정리하고 충돌 중이 아니면 남은 추적도 제거합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **2곳**.
@@ -9105,9 +9167,9 @@
 
 <a id="m-0575"></a>
 
-### 110. RimKataMapComponent.RegisterLaunchedExplosiveProjectile
+### 112. RimKataMapComponent.RegisterLaunchedExplosiveProjectile
 
-`internal void RegisterLaunchedExplosiveProjectile( Projectile projectile)` · [L2720](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2720)
+`internal void RegisterLaunchedExplosiveProjectile( Projectile projectile)` · [L2764](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2764)
 
 - **역할:** 발사자와 비행 상태가 유효한 폭발 투사체를 활성 요격 목록에 등록하고 탐색 순회를 요청합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9116,9 +9178,9 @@
 
 <a id="m-0576"></a>
 
-### 111. RimKataMapComponent.RegisterExplosiveDodge
+### 113. RimKataMapComponent.RegisterExplosiveDodge
 
-`internal void RegisterExplosiveDodge(Projectile projectile)` · [L2743](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2743)
+`internal void RegisterExplosiveDodge(Projectile projectile)` · [L2787](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2787)
 
 - **역할:** 폭발 투사체의 유효 회피 대상에 대한 다음 틱 회피 판정을 예약합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9127,9 +9189,9 @@
 
 <a id="m-0577"></a>
 
-### 112. RimKataMapComponent.DeferImpactForExplosiveDodge
+### 114. RimKataMapComponent.DeferImpactForExplosiveDodge
 
-`internal bool DeferImpactForExplosiveDodge( Projectile projectile, Thing hitThing, bool blockedByShield)` · [L2758](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2758)
+`internal bool DeferImpactForExplosiveDodge( Projectile projectile, Thing hitThing, bool blockedByShield)` · [L2802](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2802)
 
 - **역할:** 목표에 너무 빨리 도달한 폭발 투사체 충돌을 예약 회피 시점까지 미루고 다른 장애물 충돌은 그대로 둡니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9138,9 +9200,9 @@
 
 <a id="m-0578"></a>
 
-### 113. RimKataMapComponent.TickProjectileScheduler
+### 115. RimKataMapComponent.TickProjectileScheduler
 
-`private void TickProjectileScheduler()` · [L2786](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2786)
+`private void TickProjectileScheduler()` · [L2830](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2830)
 
 - **역할:** 지연 투사체 검증과 이동 감지를 수행하고 요격 기능 상태에 맞춰 폰을 한 틱에 하나씩 깨웁니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9149,9 +9211,9 @@
 
 <a id="m-0579"></a>
 
-### 114. RimKataMapComponent.ValidatePendingProjectiles
+### 116. RimKataMapComponent.ValidatePendingProjectiles
 
-`private void ValidatePendingProjectiles(int currentTick)` · [L2857](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2857)
+`private void ValidatePendingProjectiles(int currentTick)` · [L2901](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2901)
 
 - **역할:** 예약 시간이 된 투사체 회피를 실행하고 유효 폭발 투사체를 활성 요격 추적에 편입합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9160,9 +9222,9 @@
 
 <a id="m-0580"></a>
 
-### 115. RimKataMapComponent.RefreshActiveExplosiveProjectiles
+### 117. RimKataMapComponent.RefreshActiveExplosiveProjectiles
 
-`private void RefreshActiveExplosiveProjectiles()` · [L2913](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2913)
+`private void RefreshActiveExplosiveProjectiles()` · [L2957](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2957)
 
 - **역할:** 맵의 현재 폭발 투사체에서 활성 목록과 위치 기록을 재구성합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9171,9 +9233,9 @@
 
 <a id="m-0581"></a>
 
-### 116. RimKataMapComponent.DetectExplosiveProjectileCellChanges
+### 118. RimKataMapComponent.DetectExplosiveProjectileCellChanges
 
-`private void DetectExplosiveProjectileCellChanges()` · [L2934](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2934)
+`private void DetectExplosiveProjectileCellChanges()` · [L2978](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2978)
 
 - **역할:** 활성 폭발 투사체의 셀 이동을 감지하여 요격 탐색 순회를 요청합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9182,9 +9244,9 @@
 
 <a id="m-0582"></a>
 
-### 117. RimKataMapComponent.RequestProjectileWakeTraversal
+### 119. RimKataMapComponent.RequestProjectileWakeTraversal
 
-`private void RequestProjectileWakeTraversal()` · [L2968](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2968)
+`private void RequestProjectileWakeTraversal()` · [L3012](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3012)
 
 - **역할:** 요격 탐색 순회를 시작하거나 진행 중 순회가 끝난 뒤 다시 돌도록 표시합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -9193,9 +9255,9 @@
 
 <a id="m-0583"></a>
 
-### 118. RimKataMapComponent.StartProjectileWakeTraversal
+### 120. RimKataMapComponent.StartProjectileWakeTraversal
 
-`private void StartProjectileWakeTraversal()` · [L2979](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2979)
+`private void StartProjectileWakeTraversal()` · [L3023](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3023)
 
 - **역할:** 현재 요격으로 깨울 가능성이 있는 폰들을 모아 순회 위치를 초기화합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9204,9 +9266,9 @@
 
 <a id="m-0584"></a>
 
-### 119. RimKataMapComponent.CanPotentiallyWakeForProjectile
+### 121. RimKataMapComponent.CanPotentiallyWakeForProjectile
 
-`private bool CanPotentiallyWakeForProjectile(Pawn pawn)` · [L2997](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:2997)
+`private bool CanPotentiallyWakeForProjectile(Pawn pawn)` · [L3041](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3041)
 
 - **역할:** 폰의 유휴 요격 자격·발사 중 여부·주보조 사거리 안 적대 투사체 존재를 검사합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9215,9 +9277,9 @@
 
 <a id="m-0585"></a>
 
-### 120. RimKataMapComponent.HasHostileProjectileInRange
+### 122. RimKataMapComponent.HasHostileProjectileInRange
 
-`internal bool HasHostileProjectileInRange(Pawn pawn, float rangeSquared)` · [L3040](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3040)
+`internal bool HasHostileProjectileInRange(Pawn pawn, float rangeSquared)` · [L3084](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3084)
 
 - **역할:** 활성 목록에서 지정 범위 안의 유효 적대 폭발 투사체가 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9226,9 +9288,9 @@
 
 <a id="m-0586"></a>
 
-### 121. RimKataMapComponent.PotentialProjectileWakeRange
+### 123. RimKataMapComponent.PotentialProjectileWakeRange
 
-`private static float PotentialProjectileWakeRange( Pawn pawn, ThingWithComps weapon, Verb verb)` · [L3060](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3060)
+`private static float PotentialProjectileWakeRange( Pawn pawn, ThingWithComps weapon, Verb verb)` · [L3104](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3104)
 
 - **역할:** 폰과 무기 Verb의 유휴 요격 깨우기 사거리를 공통 계산에 위임합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9237,9 +9299,9 @@
 
 <a id="m-0587"></a>
 
-### 122. RimKataMapComponent.TryGetValidHostileProjectile
+### 124. RimKataMapComponent.TryGetValidHostileProjectile
 
-`internal bool TryGetValidHostileProjectile( Pawn pawn, Verb verb, float rangeSquared, out Thing candidate)` · [L3071](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3071)
+`internal bool TryGetValidHostileProjectile( Pawn pawn, Verb verb, float rangeSquared, out Thing candidate)` · [L3115](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3115)
 
 - **역할:** 지정 무기로 사거리·사선·예상 궤적 조건을 만족하는 적대 폭발 투사체 하나를 찾습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9248,9 +9310,9 @@
 
 <a id="m-0588"></a>
 
-### 123. RimKataMapComponent.AppendValidHostileProjectiles
+### 125. RimKataMapComponent.AppendValidHostileProjectiles
 
-`internal void AppendValidHostileProjectiles( Pawn pawn, Verb verb, float rangeSquared, List<Thing> destination)` · [L3109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3109)
+`internal void AppendValidHostileProjectiles( Pawn pawn, Verb verb, float rangeSquared, List<Thing> destination)` · [L3153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3153)
 
 - **역할:** 지정 무기로 실제 요격 가능한 적대 폭발 투사체들을 중복 없이 후보 목록에 추가합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9259,9 +9321,9 @@
 
 <a id="m-0589"></a>
 
-### 124. RimKataMapComponent.ClearProjectileScheduler
+### 126. RimKataMapComponent.ClearProjectileScheduler
 
-`private void ClearProjectileScheduler(bool clearPending = true)` · [L3141](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3141)
+`private void ClearProjectileScheduler(bool clearPending = true)` · [L3185](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3185)
 
 - **역할:** 투사체 검증·활성 목록·위치·깨우기 순회 상태를 정리하고 선택적으로 예약 검증을 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9270,9 +9332,9 @@
 
 <a id="m-0590"></a>
 
-### 125. RimKataMapComponent.RefreshWeatherRangeRevision
+### 127. RimKataMapComponent.RefreshWeatherRangeRevision
 
-`internal void RefreshWeatherRangeRevision(bool force = false)` · [L3154](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3154)
+`internal void RefreshWeatherRangeRevision(bool force = false)` · [L3198](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3198)
 
 - **역할:** 틱당 한 번 날씨 사거리 상한 변화를 감지하여 사거리 캐시 리비전을 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -9281,9 +9343,9 @@
 
 <a id="m-0591"></a>
 
-### 126. RimKataMapComponent.ScheduleDraftedMeleeThreatClear
+### 128. RimKataMapComponent.ScheduleDraftedMeleeThreatClear
 
-`public void ScheduleDraftedMeleeThreatClear(Pawn pawn)` · [L3189](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3189)
+`public void ScheduleDraftedMeleeThreatClear(Pawn pawn)` · [L3233](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3233)
 
 - **역할:** 해당 맵의 폰에게 전투 상태를 마련하고 다음 틱 근접 위협 해제를 예약합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9292,9 +9354,9 @@
 
 <a id="m-0592"></a>
 
-### 127. RimKataMapComponent.RequestTemporaryInactivityUpdate
+### 129. RimKataMapComponent.RequestTemporaryInactivityUpdate
 
-`internal void RequestTemporaryInactivityUpdate(Pawn pawn, bool inactive)` · [L3199](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3199)
+`internal void RequestTemporaryInactivityUpdate(Pawn pawn, bool inactive)` · [L3243](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3243)
 
 - **역할:** 기존 폰 전투 상태에 일시 비활성을 반영하고 새 비활성 진입의 공격 정리를 예약합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9303,20 +9365,20 @@
 
 <a id="m-0593"></a>
 
-### 128. RimKataMapComponent.GetState
+### 130. RimKataMapComponent.GetState
 
-`public RimKataPawnCombatState GetState(Pawn pawn, bool createIfMissing)` · [L3221](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3221)
+`public RimKataPawnCombatState GetState(Pawn pawn, bool createIfMissing)` · [L3265](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3265)
 
 - **역할:** 폰의 전투 상태를 조회하고 요청 시 상태·소유자·존재 캐시·비활성 상태를 생성합니다.
-- **호출받음:** 직접 **47곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **51곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Mark(Verse.Pawn pawn, RimKataMapComponent component)](#m-0485) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Generic.List<T>.Add(T item)`
 
 <a id="m-0594"></a>
 
-### 129. RimKataMapComponent.IsDualEngagementActive
+### 131. RimKataMapComponent.IsDualEngagementActive
 
-`internal bool IsDualEngagementActive(Pawn pawn)` · [L3253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3253)
+`internal bool IsDualEngagementActive(Pawn pawn)` · [L3297](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3297)
 
 - **역할:** 해당 맵의 폰이 이중 무기 교전 중인지 기존 상태에서 확인합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -9325,31 +9387,31 @@
 
 <a id="m-0595"></a>
 
-### 130. RimKataMapComponent.RebuildStateIndex
+### 132. RimKataMapComponent.RebuildStateIndex
 
-`private void RebuildStateIndex()` · [L3269](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3269)
+`private void RebuildStateIndex()` · [L3313](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3313)
 
-- **역할:** 저장된 폰 상태로 조회·존재·무기 및 신체 시각 참여 인덱스를 재구성합니다. 저장된 엎드림 참여 등록을 복구합니다. 기존 상태의 작업 슬롯을 참조 일치로 정리하고 불러온 자격 상태의 활성 동작 슬롯을 복원합니다.
+- **역할:** 저장된 폰 상태로 조회·존재·무기 및 신체 시각 참여 인덱스를 재구성합니다. 저장된 엎드림 참여 등록을 복구합니다. 기존 상태의 작업 슬롯을 참조 일치로 정리하고 불러온 자격 상태의 활성 동작 슬롯을 복원합니다. 저장된 날아 차기 활성 등록·프레임·연출 자료도 복구합니다. 로드된 발차기 상태의 관찰 목록과 활성 렌더 연결도 복구합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataCombatStatePresenceCache.Mark(Verse.Pawn pawn, RimKataMapComponent component)](#m-0485) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataGroundPoseUtility.ClearMap(Verse.Map map)](#m-1320) · [RimKataGroundPoseUtility.Rebuild(RimKataPawnCombatState state)](#m-1318) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataMotionJobGate.Refresh(RimKataPawnCombatState state)](#m-2733) · [RimKataResponseVisualParticipantCache.ClearForMap(Verse.Map map, \[bool allVisuals = true\])](#m-0494) · [RimKataResponseVisualParticipantCache.Refresh(RimKataPawnCombatState state)](#m-0491) · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492)
+- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataCombatStatePresenceCache.Mark(Verse.Pawn pawn, RimKataMapComponent component)](#m-0485) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataFlyingKick.Rebuild(RimKataPawnCombatState combat)](#m-2907) · [RimKataGroundPoseUtility.ClearMap(Verse.Map map)](#m-1320) · [RimKataGroundPoseUtility.Rebuild(RimKataPawnCombatState state)](#m-1318) · [RimKataKick.Rebuild(RimKataPawnCombatState combat)](#m-2967) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataMotionJobGate.Refresh(RimKataPawnCombatState state)](#m-2733) · [RimKataResponseVisualParticipantCache.ClearForMap(Verse.Map map, \[bool allVisuals = true\])](#m-0494) · [RimKataResponseVisualParticipantCache.Refresh(RimKataPawnCombatState state)](#m-0491) · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()`
 
 <a id="m-0596"></a>
 
-### 131. RimKataMapComponent.RemoveStateAt
+### 133. RimKataMapComponent.RemoveStateAt
 
-`private void RemoveStateAt(int index)` · [L3302](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3302)
+`private void RemoveStateAt(int index)` · [L3348](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3348)
 
-- **역할:** 지정 폰 상태를 목록에서 제거하고 소유자·조회·존재·시각 참여 등록을 정리합니다. 새 자세와 렌더 참여도 함께 정리합니다. 상태 폐기 시 해당 상태가 소유한 작업 슬롯을 해제합니다.
+- **역할:** 지정 폰 상태를 목록에서 제거하고 소유자·조회·존재·시각 참여 등록을 정리합니다. 새 자세와 렌더 참여도 함께 정리합니다. 상태 폐기 시 해당 상태가 소유한 작업 슬롯을 해제합니다. 제거할 전투 상태에 연결된 날아 차기 요청과 연출 등록도 정리합니다. 전투 상태 제거 전에 발차기 전용 상태를 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataGroundPoseUtility.Clear(RimKataPawnCombatState state)](#m-1317) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataReactiveMotion.Remove(Verse.Pawn pawn, \[bool resume = false\])](#m-2535) · [RimKataResponseVisualParticipantCache.Clear(Verse.Pawn pawn)](#m-0493)
+- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.Clear(Verse.Pawn pawn, Verse.Map map)](#m-0486) · [RimKataFlyingKick.Clear(RimKataPawnCombatState combat)](#m-2906) · [RimKataGroundPoseUtility.Clear(RimKataPawnCombatState state)](#m-1317) · [RimKataKick.Clear(RimKataPawnCombatState combat)](#m-2964) · [RimKataMotionJobGate.Clear(RimKataPawnCombatState state)](#m-2734) · [RimKataReactiveMotion.Remove(Verse.Pawn pawn, \[bool resume = false\])](#m-2535) · [RimKataResponseVisualParticipantCache.Clear(Verse.Pawn pawn)](#m-0493)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.ContainsKey(TKey key)` · `System.Collections.Generic.Dictionary<TKey, TValue>.Remove(TKey key)` · `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Generic.List<T>.RemoveAt(int index)`
 
 <a id="m-0597"></a>
 
-### 132. RimKataMapComponent.BeginRangedDodgeWindow
+### 134. RimKataMapComponent.BeginRangedDodgeWindow
 
-`public void BeginRangedDodgeWindow(Pawn pawn, int durationTicks)` · [L3326](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3326)
+`public void BeginRangedDodgeWindow(Pawn pawn, int durationTicks)` · [L3374](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3374)
 
 - **역할:** 원거리 회피 지연 창을 시작하고 해당 창의 추가 회피 사용 여부를 초기화합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9358,9 +9420,9 @@
 
 <a id="m-0598"></a>
 
-### 133. RimKataMapComponent.BeginOrRestartStandardDodgeVisual
+### 135. RimKataMapComponent.BeginOrRestartStandardDodgeVisual
 
-`public bool BeginOrRestartStandardDodgeVisual( Pawn pawn, int durationTicks, IntVec3 dodgeDirection)` · [L3338](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3338)
+`public bool BeginOrRestartStandardDodgeVisual( Pawn pawn, int durationTicks, IntVec3 dodgeDirection)` · [L3386](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3386)
 
 - **역할:** 지정 시간과 방향으로 일반 회피 시각 상태를 시작하거나 재시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9369,9 +9431,9 @@
 
 <a id="m-0599"></a>
 
-### 134. RimKataMapComponent.BeginDodgeMovement
+### 136. RimKataMapComponent.BeginDodgeMovement
 
-`public bool BeginDodgeMovement( Pawn pawn, IntVec3 destination, IntVec3 combatDirection, bool resumeWasMoving, LocalTargetInfo resumeDestination, PathEndMode resumePathEndMode, Job movementJob, int failureStaggerTicks, float failureStaggerSpeedFactor, int dodgeWindowDurationTicks)` · [L3356](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3356)
+`public bool BeginDodgeMovement( Pawn pawn, IntVec3 destination, IntVec3 combatDirection, bool resumeWasMoving, LocalTargetInfo resumeDestination, PathEndMode resumePathEndMode, Job movementJob, int failureStaggerTicks, float failureStaggerSpeedFactor, int dodgeWindowDurationTicks)` · [L3404](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3404)
 
 - **역할:** 회피 목적지·원래 경로·소유 작업·실패 효과를 기록하고 실제 회피 경로를 시작합니다. 동기 경로 도착·실패 호출 전에 실제 상태와 담당 작업을 작업 슬롯에 등록합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9380,9 +9442,9 @@
 
 <a id="m-0600"></a>
 
-### 135. RimKataMapComponent.TryFinishDodgeMovement
+### 137. RimKataMapComponent.TryFinishDodgeMovement
 
-`public bool TryFinishDodgeMovement(Pawn pawn, bool failed, bool force = false)` · [L3424](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3424)
+`public bool TryFinishDodgeMovement(Pawn pawn, bool failed, bool force = false)` · [L3472](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3472)
 
 - **역할:** 회피 작업과 목적지 소유권을 검증하여 착지·실패 효과를 처리하고 원래 경로를 재개합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -9391,9 +9453,9 @@
 
 <a id="m-0601"></a>
 
-### 136. RimKataMapComponent.CancelFailedDodgeMovementStart
+### 138. RimKataMapComponent.CancelFailedDodgeMovementStart
 
-`public void CancelFailedDodgeMovementStart(Pawn pawn)` · [L3510](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3510)
+`public void CancelFailedDodgeMovementStart(Pawn pawn)` · [L3558](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3558)
 
 - **역할:** 기존 폰 상태에 회피 이동 시작 실패 정리를 요청합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9402,9 +9464,9 @@
 
 <a id="m-0602"></a>
 
-### 137. RimKataMapComponent.IsDodgeMovementActive
+### 139. RimKataMapComponent.IsDodgeMovementActive
 
-`public bool IsDodgeMovementActive(Pawn pawn)` · [L3518](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3518)
+`public bool IsDodgeMovementActive(Pawn pawn)` · [L3566](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3566)
 
 - **역할:** 기존 전투 상태의 작업·경로 소유권을 검사하여 실제 회피 이동 활성 여부를 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -9413,9 +9475,9 @@
 
 <a id="m-0604"></a>
 
-### 138. RimKataMapComponent.IsDodgeMotionBlocking
+### 140. RimKataMapComponent.IsDodgeMotionBlocking
 
-`public bool IsDodgeMotionBlocking(Pawn pawn)` · [L3536](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3536)
+`public bool IsDodgeMotionBlocking(Pawn pawn)` · [L3584](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3584)
 
 - **역할:** 기존 폰 상태의 회피 동작이 작업을 막는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9424,9 +9486,9 @@
 
 <a id="m-0605"></a>
 
-### 139. RimKataMapComponent.IsDodgeVisualLocked
+### 141. RimKataMapComponent.IsDodgeVisualLocked
 
-`public bool IsDodgeVisualLocked(Pawn pawn)` · [L3544](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3544)
+`public bool IsDodgeVisualLocked(Pawn pawn)` · [L3592](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3592)
 
 - **역할:** 기존 폰 상태의 회피 시각 자세 잠금 여부를 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9435,9 +9497,9 @@
 
 <a id="m-0606"></a>
 
-### 140. RimKataMapComponent.IsDodgeMovementStartBlocked
+### 142. RimKataMapComponent.IsDodgeMovementStartBlocked
 
-`public bool IsDodgeMovementStartBlocked(Pawn pawn)` · [L3552](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3552)
+`public bool IsDodgeMovementStartBlocked(Pawn pawn)` · [L3600](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3600)
 
 - **역할:** 현재 회피 상태가 새 물리 회피 시작을 막는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9446,9 +9508,9 @@
 
 <a id="m-0607"></a>
 
-### 141. RimKataMapComponent.IsRangedDodgeDelayActive
+### 143. RimKataMapComponent.IsRangedDodgeDelayActive
 
-`public bool IsRangedDodgeDelayActive(Pawn pawn)` · [L3560](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3560)
+`public bool IsRangedDodgeDelayActive(Pawn pawn)` · [L3608](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3608)
 
 - **역할:** 기존 폰 상태에서 원거리 회피 재시도 지연 창이 활성인지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9457,9 +9519,9 @@
 
 <a id="m-0608"></a>
 
-### 142. RimKataMapComponent.CanTryAdditionalDodge
+### 144. RimKataMapComponent.CanTryAdditionalDodge
 
-`public bool CanTryAdditionalDodge(Pawn pawn)` · [L3568](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3568)
+`public bool CanTryAdditionalDodge(Pawn pawn)` · [L3616](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3616)
 
 - **역할:** 현재 회피 창에 추가 회피 기회가 남아 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9468,9 +9530,9 @@
 
 <a id="m-0609"></a>
 
-### 143. RimKataMapComponent.TryBeginAdditionalDodge
+### 145. RimKataMapComponent.TryBeginAdditionalDodge
 
-`public bool TryBeginAdditionalDodge(Pawn pawn, bool playTumble)` · [L3576](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3576)
+`public bool TryBeginAdditionalDodge(Pawn pawn, bool playTumble)` · [L3624](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3624)
 
 - **역할:** 추가 회피 기회를 소비하고 요청 시 추가 구르기 시각 동작을 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9479,9 +9541,9 @@
 
 <a id="m-0610"></a>
 
-### 144. RimKataMapComponent.BeginImmediateTumble
+### 146. RimKataMapComponent.BeginImmediateTumble
 
-`public void BeginImmediateTumble(Pawn pawn)` · [L3598](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3598)
+`public void BeginImmediateTumble(Pawn pawn)` · [L3646](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3646)
 
 - **역할:** 일반 회피 지연이나 추가 기회 소비 없이 즉시 구르기 시각 동작을 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9490,9 +9552,9 @@
 
 <a id="m-0611"></a>
 
-### 145. RimKataMapComponent.GetVisualSnapshot
+### 147. RimKataMapComponent.GetVisualSnapshot
 
-`public RimKataVisualSnapshot GetVisualSnapshot(Pawn pawn)` · [L3608](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3608)
+`public RimKataVisualSnapshot GetVisualSnapshot(Pawn pawn)` · [L3656](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3656)
 
 - **역할:** 폰의 현재 전투 시각 스냅샷을 반환하고 상태가 없으면 기본값을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9501,9 +9563,9 @@
 
 <a id="m-0612"></a>
 
-### 146. RimKataMapComponent.TryGetActiveVisualSnapshot
+### 148. RimKataMapComponent.TryGetActiveVisualSnapshot
 
-`public bool TryGetActiveVisualSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L3624](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3624)
+`public bool TryGetActiveVisualSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L3672](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3672)
 
 - **역할:** 활성 회피·튕김·회전·대응 자세가 있는 폰의 시각 스냅샷만 반환합니다. 새 자세만 활성인 경우에도 스냅샷을 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -9512,9 +9574,9 @@
 
 <a id="m-2447"></a>
 
-### 147. RimKataMapComponent.TryGetRegisteredVisualSnapshot
+### 149. RimKataMapComponent.TryGetRegisteredVisualSnapshot
 
-`internal bool TryGetRegisteredVisualSnapshot( RimKataPawnCombatState state, out RimKataVisualSnapshot snapshot)` · [L3650](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3650)
+`internal bool TryGetRegisteredVisualSnapshot( RimKataPawnCombatState state, out RimKataVisualSnapshot snapshot)` · [L3698](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3698)
 
 - **역할:** 등록된 state의 owner/map 연결과 활성 연출을 기존 상태 잠금 안에서 확인하여 현재 스냅샷을 반환하며 상태 사전을 다시 검색하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9523,9 +9585,9 @@
 
 <a id="m-0613"></a>
 
-### 148. RimKataMapComponent.TryGetGunReadyTarget
+### 150. RimKataMapComponent.TryGetGunReadyTarget
 
-`public bool TryGetGunReadyTarget(Pawn pawn, out LocalTargetInfo target)` · [L3666](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3666)
+`public bool TryGetGunReadyTarget(Pawn pawn, out LocalTargetInfo target)` · [L3714](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3714)
 
 - **역할:** 수락된 무기 조준·근접전·징집 이동 사격과 사거리 조건에서 총기 준비 자세의 표적을 결정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9534,9 +9596,9 @@
 
 <a id="m-0614"></a>
 
-### 149. RimKataMapComponent.MapComponentUpdate
+### 151. RimKataMapComponent.MapComponentUpdate
 
-`public override void MapComponentUpdate()` · [L3760](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3760)
+`public override void MapComponentUpdate()` · [L3808](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3808)
 
 - **역할:** 개발자 모드에서 현재 맵의 탐색 범위 디버그 표시를 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -9545,9 +9607,9 @@
 
 <a id="m-0615"></a>
 
-### 150. RimKataMapComponent.IsLiveRimKataJobTarget
+### 152. RimKataMapComponent.IsLiveRimKataJobTarget
 
-`private static bool IsLiveRimKataJobTarget( Pawn pawn, Job job, Thing target)` · [L3771](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3771)
+`private static bool IsLiveRimKataJobTarget( Pawn pawn, Job job, Thing target)` · [L3819](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3819)
 
 - **역할:** RimKata 공격 작업의 표적에 맵·생존·적대 또는 강제 공격 조건을 검사합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9556,9 +9618,9 @@
 
 <a id="m-0616"></a>
 
-### 151. RimKataMapComponent.WithinAutomaticMovingFireRange
+### 153. RimKataMapComponent.WithinAutomaticMovingFireRange
 
-`private static bool WithinAutomaticMovingFireRange( Pawn pawn, LocalTargetInfo target)` · [L3793](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3793)
+`private static bool WithinAutomaticMovingFireRange( Pawn pawn, LocalTargetInfo target)` · [L3841](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3841)
 
 - **역할:** 이동 사격 준비 표적이 주·보조 무기의 최대 자동 후보 탐색 반경 안에 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9567,9 +9629,9 @@
 
 <a id="m-0617"></a>
 
-### 152. RimKataMapComponent.BeginDeflection
+### 154. RimKataMapComponent.BeginDeflection
 
-`public void BeginDeflection( Pawn pawn, int durationTicks, int sign, ThingWithComps weapon, bool spin = false, int spinDurationTicks = 8)` · [L3815](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3815)
+`public void BeginDeflection( Pawn pawn, int durationTicks, int sign, ThingWithComps weapon, bool spin = false, int spinDurationTicks = 8)` · [L3863](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3863)
 
 - **역할:** 무기 튕김을 시작·연장하고 선택적 공격자 회전을 현재 각도에서 이어가며 시각 참여를 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9578,9 +9640,9 @@
 
 <a id="m-0618"></a>
 
-### 153. RimKataMapComponent.BeginResponsePose
+### 155. RimKataMapComponent.BeginResponsePose
 
-`public void BeginResponsePose( Pawn pawn, int durationTicks, float maximumAngle, int sign, LocalTargetInfo focus, ThingWithComps weapon, bool lookAtFocus)` · [L3858](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3858)
+`public void BeginResponsePose( Pawn pawn, int durationTicks, float maximumAngle, int sign, LocalTargetInfo focus, ThingWithComps weapon, bool lookAtFocus)` · [L3906](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3906)
 
 - **역할:** 대응 자세의 시간·각도·방향·표적·무기를 설정하고 화재 상태에서는 새 자세를 막습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -9589,9 +9651,9 @@
 
 <a id="m-0619"></a>
 
-### 154. RimKataMapComponent.BeginCloseCombatDodge
+### 156. RimKataMapComponent.BeginCloseCombatDodge
 
-`public void BeginCloseCombatDodge(Pawn pawn, int durationTicks)` · [L3902](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3902)
+`public void BeginCloseCombatDodge(Pawn pawn, int durationTicks)` · [L3950](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3950)
 
 - **역할:** 폰의 전투 상태에 지정 시간의 근거리 회피 자세를 시작합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -9600,9 +9662,9 @@
 
 <a id="m-0620"></a>
 
-### 155. RimKataMapComponent.EnterCloseCombat
+### 157. RimKataMapComponent.EnterCloseCombat
 
-`public void EnterCloseCombat(Pawn pawn, Thing trigger)` · [L3910](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3910)
+`public void EnterCloseCombat(Pawn pawn, Thing trigger)` · [L3958](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3958)
 
 - **역할:** 폰의 전투 상태에 근접전 진입 대상 참조를 기록합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -9611,9 +9673,9 @@
 
 <a id="m-0621"></a>
 
-### 156. RimKataMapComponent.CancelDeflectionSpin
+### 158. RimKataMapComponent.CancelDeflectionSpin
 
-`public void CancelDeflectionSpin(Pawn pawn)` · [L3919](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3919)
+`public void CancelDeflectionSpin(Pawn pawn)` · [L3967](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3967)
 
 - **역할:** 기존 폰 상태에서 진행 중인 공격자 튕김 회전을 취소합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -9622,9 +9684,9 @@
 
 <a id="m-0622"></a>
 
-### 157. RimKataMapComponent.IsCloseCombatActive
+### 159. RimKataMapComponent.IsCloseCombatActive
 
-`public bool IsCloseCombatActive(Pawn pawn)` · [L3933](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3933)
+`public bool IsCloseCombatActive(Pawn pawn)` · [L3981](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatState.cs:3981)
 
 - **역할:** 기존 폰 상태에서 유효한 근접전이 활성인지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -11355,16 +11417,16 @@
 
 `public static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L1419](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1419)
 
-- **역할:** 기본 근접 회피 실패 뒤 받아치기 분기를 삽입하고 성공 시 피해·방어자 비틀거림을 건너뜁니다.
+- **역할:** 기본 근접 회피 실패 뒤 받아치기 분기를 삽입하고 성공 시 피해·방어자 비틀거림을 건너뜁니다. 전용 날아 차기 Verb만 기존 무기 자세의 전신 사용 중 조건에서 분리하도록 연결합니다. 전신 사용 중 판정은 발차기 전용 예외를 포함한 공통 도우미로 연결하여 두 발차기 Verb가 자신의 특수 자세에 막히지 않게 합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
-- **호출 — 외부:** `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` ×5 · `System.Collections.Generic.List<T>.Add(T item)` ×3 · `System.Reflection.Emit.ILGenerator.DefineLabel()` ×3 · `System.Collections.Generic.List<T>.AddRange(System.Collections.Generic.IEnumerable<T> collection)` ×2 · `System.Collections.Generic.List<T>.Clear()` ×2 · `System.Collections.Generic.List<T>.FindIndex(System.Predicate<T> match)` ×2 · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)` ×2 · `Verse.Log.Error(string text)` ×2 · `System.Collections.Generic.List<T>.FindIndex(int startIndex, System.Predicate<T> match)` · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)`
+- **호출 — 외부:** `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` ×6 · `System.Collections.Generic.List<T>.AddRange(System.Collections.Generic.IEnumerable<T> collection)` ×4 · `System.Collections.Generic.List<T>.Add(T item)` ×3 · `System.Reflection.Emit.ILGenerator.DefineLabel()` ×3 · `System.Collections.Generic.List<T>.Clear()` ×2 · `System.Collections.Generic.List<T>.FindIndex(System.Predicate<T> match)` ×2 · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)` ×2 · `Verse.Log.Error(string text)` ×2 · `HarmonyLib.AccessTools.PropertyGetter(System.Type type, string name)` · `HarmonyLib.CodeInstruction.Call(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `System.Collections.Generic.List<T>.FindIndex(int startIndex, System.Predicate<T> match)` · `System.Collections.Generic.List<T>.Insert(int index, T item)` · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)`
 
 <a id="m-0769"></a>
 
 ### 050. Patch_Verb_MeleeAttack_Context.Postfix
 
-`public static void Postfix(Verb_MeleeAttack __instance)` · [L1526](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1526)
+`public static void Postfix(Verb_MeleeAttack __instance)` · [L1537](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1537)
 
 - **역할:** 근접 공격을 받은 징집 RimKata 폰의 근접 위협 해제를 다음 틱에 예약합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -11375,7 +11437,7 @@
 
 ### 051. Patch_Verb_MeleeAttack_Context.Finalizer
 
-`public static Exception Finalizer( Exception __exception, MeleeAttackContextState __state)` · [L1541](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1541)
+`public static Exception Finalizer( Exception __exception, MeleeAttackContextState __state)` · [L1552](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1552)
 
 - **역할:** 근접 공격 종료 또는 예외 시 피해 비틀거림 문맥을 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -11386,7 +11448,7 @@
 
 ### 052. Patch_Verb_MeleeAttack_RimKataDefense.Transpiler
 
-`public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L1565](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1565)
+`public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L1576](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1576)
 
 - **역할:** 기본 근접 회피 계산에 총기 조준 자세 예외와 RimKata 회피 보너스를 삽입합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -11397,7 +11459,7 @@
 
 ### 053. Patch_Verb_MeleeAttack_RimKataDefense.StanceAllowsMeleeDodge
 
-`private static bool StanceAllowsMeleeDodge(VerbProperties props, LocalTargetInfo target)` · [L1612](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1612)
+`private static bool StanceAllowsMeleeDodge(VerbProperties props, LocalTargetInfo target)` · [L1623](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1623)
 
 - **역할:** 근접 자세 또는 자격 있는 총기 조준·RimKata 전투 자세에서 근접 회피를 허용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -11408,7 +11470,7 @@
 
 ### 054. Patch_StaggerHandler_RimKataMeleeDefense.Postfix
 
-`public static void Postfix( StaggerHandler __instance, bool __result)` · [L1638](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1638)
+`public static void Postfix( StaggerHandler __instance, bool __result)` · [L1649](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDefense.cs:1649)
 
 - **역할:** stagger 적용 후 현재 방어 문맥의 전투 사건을 알리고 림카타 전투 참가자의 슬라이딩 굴림·떨치기 대기 처리를 호출합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -13136,7 +13198,7 @@
 `internal static bool IsAutomaticFireJob(JobDef jobDef)` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDraftedFire.cs:193)
 
 - **역할:** 소집 자동 전투를 허용하는 이동·대기·근접 공격 Job인지 판정합니다.
-- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
@@ -14726,16 +14788,16 @@
 
 `public static void NotifyDraftStatusChanged(Pawn pawn)` · [L3543](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3543)
 
-- **역할:** 소집 변경에 따라 이동 감시·미발사 계획·후속 요청을 정리하고 교전 재평가를 허용합니다.
+- **역할:** 소집 변경에 따라 이동 감시·미발사 계획·후속 요청을 정리하고 교전 재평가를 허용합니다. 소집 변경 시 기존 발차기 상태의 관찰·기회만 지우고 진행 중 연출은 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.CancelUnfiredWarmupForDraftChange(RimKataWeaponCycleState cycle)](#m-0987) ×2 · [RimKataDormantHostileMovementRegistry.NotifyDraftStatusChanged(Verse.Pawn pawn)](#m-0857) · [RimKataDualWeaponController.RearmOpeningOwnerIfBothWaiting(RimKataPawnCombatState state)](#m-1081) · [RimKataDualWeaponController.RefreshDualEngagementState(Verse.Pawn pawn, RimKataPawnCombatState state, \[bool? randomAttackEnabled = null\])](#m-0977) · [RimKataDualWeaponController.StateFor(Verse.Pawn pawn, bool create)](#m-1110) · [RimKataGroundPoseUtility.NotifyAimCancelled(Verse.Pawn pawn)](#m-1301) · [RimKataPawnCombatState.CancelDraftedFire(\[bool clearCooldown = true\])](#m-0524) · [RimKataPawnCombatState.ClearDedicatedFollowupJobRequest()](#m-0534) · [RimKataPawnCombatState.ClearDraftedMovementSearchTracking()](#m-0525)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.CancelUnfiredWarmupForDraftChange(RimKataWeaponCycleState cycle)](#m-0987) ×2 · [RimKataDormantHostileMovementRegistry.NotifyDraftStatusChanged(Verse.Pawn pawn)](#m-0857) · [RimKataDualWeaponController.RearmOpeningOwnerIfBothWaiting(RimKataPawnCombatState state)](#m-1081) · [RimKataDualWeaponController.RefreshDualEngagementState(Verse.Pawn pawn, RimKataPawnCombatState state, \[bool? randomAttackEnabled = null\])](#m-0977) · [RimKataDualWeaponController.StateFor(Verse.Pawn pawn, bool create)](#m-1110) · [RimKataGroundPoseUtility.NotifyAimCancelled(Verse.Pawn pawn)](#m-1301) · [RimKataKick.ClearOpportunity(RimKataPawnCombatState combat)](#m-3009) · [RimKataPawnCombatState.CancelDraftedFire(\[bool clearCooldown = true\])](#m-0524) · [RimKataPawnCombatState.ClearDedicatedFollowupJobRequest()](#m-0534) · [RimKataPawnCombatState.ClearDraftedMovementSearchTracking()](#m-0525)
 - **호출 — 외부:** 없음
 
 <a id="m-0987"></a>
 
 ### 113. RimKataDualWeaponController.CancelUnfiredWarmupForDraftChange
 
-`private static void CancelUnfiredWarmupForDraftChange( RimKataWeaponCycleState cycle)` · [L3564](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3564)
+`private static void CancelUnfiredWarmupForDraftChange( RimKataWeaponCycleState cycle)` · [L3565](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3565)
 
 - **역할:** 실행 중인 바닐라 공격은 보존하고 소집 변경 전 미발사 예열·계획·집중 목표를 취소합니다. 취소 경계에서 난사 후보 셀도 정리합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -14746,7 +14808,7 @@
 
 ### 114. RimKataDualWeaponController.QueueDedicatedFollowupJob
 
-`public static void QueueDedicatedFollowupJob(Pawn pawn, Thing target)` · [L3586](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3586)
+`public static void QueueDedicatedFollowupJob(Pawn pawn, Thing target)` · [L3587](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3587)
 
 - **역할:** 보호할 강제 명령과 현재 Job 조건을 확인해 전용 후속 공격 Job을 예약합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -14757,7 +14819,7 @@
 
 ### 115. RimKataDualWeaponController.NotifyDedicatedCombatJobFinished
 
-`public static void NotifyDedicatedCombatJobFinished(Pawn pawn)` · [L3603](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3603)
+`public static void NotifyDedicatedCombatJobFinished(Pawn pawn)` · [L3604](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3604)
 
 - **역할:** 전용 전투 Job 종료 후 요격 복귀 Job 참조를 해제합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14768,7 +14830,7 @@
 
 ### 116. RimKataDualWeaponController.TryConsumePendingDedicatedFollowupJob
 
-`public static void TryConsumePendingDedicatedFollowupJob(Pawn pawn)` · [L3612](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3612)
+`public static void TryConsumePendingDedicatedFollowupJob(Pawn pawn)` · [L3613](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3613)
 
 - **역할:** 전투 상태를 조회해 예약된 후속 Job 소비를 위임합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -14779,7 +14841,7 @@
 
 ### 117. RimKataDualWeaponController.PendingFollowupCanReplaceCurrentNonForcedGoto
 
-`internal static bool PendingFollowupCanReplaceCurrentNonForcedGoto( Pawn pawn)` · [L3619](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3619)
+`internal static bool PendingFollowupCanReplaceCurrentNonForcedGoto( Pawn pawn)` · [L3620](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3620)
 
 - **역할:** 현재 비강제 Goto Job을 유효한 후속 공격 요청으로 교체할 수 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14790,7 +14852,7 @@
 
 ### 118. RimKataDualWeaponController.TryConsumePendingDedicatedFollowupJob
 
-`internal static void TryConsumePendingDedicatedFollowupJob( Pawn pawn, RimKataPawnCombatState state)` · [L3641](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3641)
+`internal static void TryConsumePendingDedicatedFollowupJob( Pawn pawn, RimKataPawnCombatState state)` · [L3642](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3642)
 
 - **역할:** 후속 요청의 시점·출처·권한을 확인하고 요청을 소비해 전용 Job을 시작하거나 요격 예약을 정리합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -14801,7 +14863,7 @@
 
 ### 119. RimKataDualWeaponController.CanStartQueuedProjectileWake
 
-`private static bool CanStartQueuedProjectileWake(Pawn pawn)` · [L3703](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3703)
+`private static bool CanStartQueuedProjectileWake(Pawn pawn)` · [L3704](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3704)
 
 - **역할:** 현재 공격 자세·연사가 없고 요격 깨우기 대상인 Pawn인지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14812,7 +14874,7 @@
 
 ### 120. RimKataDualWeaponController.ClearQueuedInterceptionCandidate
 
-`private static void ClearQueuedInterceptionCandidate( RimKataWeaponCycleState cycle)` · [L3719](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3719)
+`private static void ClearQueuedInterceptionCandidate( RimKataWeaponCycleState cycle)` · [L3720](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3720)
 
 - **역할:** 무기 사이클에 예약된 요격 후보 캐시를 해제합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -14823,7 +14885,7 @@
 
 ### 121. RimKataDualWeaponController.CanConsumePendingDedicatedFollowupRequest
 
-`private static bool CanConsumePendingDedicatedFollowupRequest( Pawn pawn, RimKataPawnCombatState state, int currentTick)` · [L3729](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3729)
+`private static bool CanConsumePendingDedicatedFollowupRequest( Pawn pawn, RimKataPawnCombatState state, int currentTick)` · [L3730](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3730)
 
 - **역할:** 예약된 후속 작업의 수명·출처·대상을 확인하고 돌파 후 공격 지연이 유지되는 동안 자동 후속 작업 소비를 보류합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -14834,7 +14896,7 @@
 
 ### 122. RimKataDualWeaponController.CanConsumeDedicatedFollowupRequest
 
-`private static bool CanConsumeDedicatedFollowupRequest( Pawn pawn, RimKataPawnCombatState state, Job sourceJob, Thing target)` · [L3758](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3758)
+`private static bool CanConsumeDedicatedFollowupRequest( Pawn pawn, RimKataPawnCombatState state, Job sourceJob, Thing target)` · [L3759](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3759)
 
 - **역할:** 강제 명령을 보호하며 현재 Job이 원래 후속 요청을 이어받을 수 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14845,7 +14907,7 @@
 
 ### 123. RimKataDualWeaponController.RefreshPendingDedicatedFollowupAim
 
-`public static void RefreshPendingDedicatedFollowupAim( Pawn pawn, Verb sourceVerb, LocalTargetInfo sourceTarget)` · [L3797](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3797)
+`public static void RefreshPendingDedicatedFollowupAim( Pawn pawn, Verb sourceVerb, LocalTargetInfo sourceTarget)` · [L3798](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3798)
 
 - **역할:** 바닐라 예열·쿨다운 종료 후 아직 유효한 후속 요청의 몸 조준을 복원합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -14856,7 +14918,7 @@
 
 ### 124. RimKataDualWeaponController.TryEnterDedicatedFollowupJob
 
-`private static void TryEnterDedicatedFollowupJob( Pawn pawn, Thing target, bool? playerForcedOverride, bool? killIncappedTargetOverride, ThinkNode counterattackJobGiver, ThinkTreeDef counterattackJobGiverThinkTree, Thing counterattackSourceTarget)` · [L3833](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3833)
+`private static void TryEnterDedicatedFollowupJob( Pawn pawn, Thing target, bool? playerForcedOverride, bool? killIncappedTargetOverride, ThinkNode counterattackJobGiver, ThinkTreeDef counterattackJobGiverThinkTree, Thing counterattackSourceTarget)` · [L3834](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3834)
 
 - **역할:** 유효한 대상 또는 탐색 작업으로 전용 Job을 시작하고 출처 정보·요격 후 복귀를 보존합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14867,7 +14929,7 @@
 
 ### 125. RimKataDualWeaponController.IsProtectedPlayerForcedJob
 
-`private static bool IsProtectedPlayerForcedJob(Job job)` · [L3986](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3986)
+`private static bool IsProtectedPlayerForcedJob(Job job)` · [L3987](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3987)
 
 - **역할:** 플레이어 강제 Job을 후속 전투 교체에서 보호해야 하는지 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -14878,7 +14940,7 @@
 
 ### 126. RimKataDualWeaponController.AllowsDedicatedFollowupSource
 
-`private static bool AllowsDedicatedFollowupSource( Pawn pawn, Job job, RimKataPawnCombatState state)` · [L3991](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3991)
+`private static bool AllowsDedicatedFollowupSource( Pawn pawn, Job job, RimKataPawnCombatState state)` · [L3992](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:3992)
 
 - **역할:** 현재 전투·허용 대기·적 휴면 전환 또는 명시적 요격 인계를 후속 Job 출처로 인정합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -14889,7 +14951,7 @@
 
 ### 127. RimKataDualWeaponController.HandleCounterattackOpening
 
-`public static RimKataCounterattackOpeningResult HandleCounterattackOpening( Pawn pawn, Job sourceJob, ThinkNode jobGiver, out Job convertedJob)` · [L4001](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4001)
+`public static RimKataCounterattackOpeningResult HandleCounterattackOpening( Pawn pawn, Job sourceJob, ThinkNode jobGiver, out Job convertedJob)` · [L4002](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4002)
 
 - **역할:** 설정형 반격 오프닝을 기존 전투의 후보·근접 요청으로 흡수하거나 전용 Job으로 전환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14900,7 +14962,7 @@
 
 ### 128. RimKataDualWeaponController.IsConfigurableCounterattackOpening
 
-`private static bool IsConfigurableCounterattackOpening( Pawn pawn, Job job)` · [L4141](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4141)
+`private static bool IsConfigurableCounterattackOpening( Pawn pawn, Job job)` · [L4142](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4142)
 
 - **역할:** 비소집 Pawn의 공격 대응 정책과 대상·Job 자격이 자동 반격 오프닝에 맞는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -14911,7 +14973,7 @@
 
 ### 129. RimKataDualWeaponController.IsMeleeOnlyCounterattackRushOpening
 
-`private static bool IsMeleeOnlyCounterattackRushOpening( Pawn pawn, Job sourceJob, ThinkNode jobGiver)` · [L4165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4165)
+`private static bool IsMeleeOnlyCounterattackRushOpening( Pawn pawn, Job sourceJob, ThinkNode jobGiver)` · [L4166](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4166)
 
 - **역할:** 근접 무기만 가진 Pawn의 비강제 근접 반격에 돌격 예외를 허용할지 판정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14922,7 +14984,7 @@
 
 ### 130. RimKataDualWeaponController.IsConvertedMeleeCounterattackRushJob
 
-`private static bool IsConvertedMeleeCounterattackRushJob( Pawn pawn, Thing target)` · [L4177](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4177)
+`private static bool IsConvertedMeleeCounterattackRushJob( Pawn pawn, Thing target)` · [L4178](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4178)
 
 - **역할:** 현재 전용 Job이 공격 정책을 유지하는 변환된 근접 반격 돌격인지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -14933,7 +14995,7 @@
 
 ### 131. RimKataDualWeaponController.IsCounterattackJobGiver
 
-`private static bool IsCounterattackJobGiver(ThinkNode jobGiver)` · [L4194](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4194)
+`private static bool IsCounterattackJobGiver(ThinkNode jobGiver)` · [L4195](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4195)
 
 - **역할:** Job 제공자가 설정형 반격 또는 인접 근접 위협 대응인지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -14944,7 +15006,7 @@
 
 ### 132. RimKataDualWeaponController.HasOnlyMeleeCombatWeapons
 
-`private static bool HasOnlyMeleeCombatWeapons(Pawn pawn)` · [L4200](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4200)
+`private static bool HasOnlyMeleeCombatWeapons(Pawn pawn)` · [L4201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4201)
 
 - **역할:** 사용 가능한 주·부무기가 모두 근접 전투 무기인지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14955,10 +15017,10 @@
 
 ### 133. RimKataDualWeaponController.CanRushTarget
 
-`public static bool CanRushTarget(Pawn pawn, Thing target)` · [L4223](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4223)
+`public static bool CanRushTarget(Pawn pawn, Thing target)` · [L4224](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4224)
 
 - **역할:** 현재 림카타 공격 작업의 표적을 추격할 수 있는지 판정합니다. 명시적 플레이어 돌격, 적 AI 돌격 권한, 비소집 반격 정책의 자동 추격을 각 조건에 따라 허용합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961) ×2 · [RimKataDualWeaponController.CanRushEnemyAttackTarget(Verse.Pawn pawn, Verse.Thing target)](#m-1008) · [RimKataDualWeaponController.IsConvertedMeleeCounterattackRushJob(Verse.Pawn pawn, Verse.Thing target)](#m-1004) · [RimKataDualWeaponController.IsCounterattackJobGiver(Verse.AI.ThinkNode jobGiver)](#m-1005) · [RimKataDualWeaponController.StateFor(Verse.Pawn pawn, bool create)](#m-1110) · [RimKataDualWeaponController.TargetWithinAutomaticCandidateCellRadius(Verse.Pawn pawn, Verse.Thing target)](#m-0954) · [RimKataPawnCombatState.IsPlayerRushRequestFor(Verse.Thing target)](#m-0538) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsAutomaticEnemy(Verse.Pawn pawn, Verse.Thing target)](#m-1957)
 - **호출 — 외부:** 없음
 
@@ -14966,7 +15028,7 @@
 
 ### 134. RimKataDualWeaponController.CanRushEnemyAttackTarget
 
-`internal static bool CanRushEnemyAttackTarget(Pawn pawn, Thing target)` · [L4274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4274)
+`internal static bool CanRushEnemyAttackTarget(Pawn pawn, Thing target)` · [L4275](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4275)
 
 - **역할:** 비플레이어 세력의 비소집 자격자가 돌격 설정·자동 탐색 범위·적대 및 표적 상태 조건을 만족하는지 판정합니다. 기존 림카타 작업과 새로 들어오는 AI 공격 작업에서 함께 사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -14977,7 +15039,7 @@
 
 ### 135. RimKataDualWeaponController.TryConvertSecondaryMeleeAttackOrder
 
-`public static bool TryConvertSecondaryMeleeAttackOrder( Pawn pawn, Job job, Verb meleeVerb)` · [L4290](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4290)
+`public static bool TryConvertSecondaryMeleeAttackOrder( Pawn pawn, Job job, Verb meleeVerb)` · [L4291](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4291)
 
 - **역할:** 비소집 Pawn의 강제 부무기 근접 명령을 무기를 보존한 전용 돌격 Job으로 바꿉니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14988,7 +15050,7 @@
 
 ### 136. RimKataDualWeaponController.TryConvertPlayerRushOrder
 
-`public static bool TryConvertPlayerRushOrder(Pawn pawn, Job job)` · [L4343](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4343)
+`public static bool TryConvertPlayerRushOrder(Pawn pawn, Job job)` · [L4344](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4344)
 
 - **역할:** 비소집 플레이어의 근접 공격 명령을 명시적 돌격 요청과 전용 Job으로 전환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -14999,7 +15061,7 @@
 
 ### 137. RimKataDualWeaponController.ResetUnfiredOpeningTimer
 
-`private static void ResetUnfiredOpeningTimer( RimKataWeaponCycleState cycle)` · [L4379](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4379)
+`private static void ResetUnfiredOpeningTimer( RimKataWeaponCycleState cycle)` · [L4380](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4380)
 
 - **역할:** 미발사 오프닝의 계획·예열·후보·시각 대상을 초기화합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15010,7 +15072,7 @@
 
 ### 138. RimKataDualWeaponController.ClearTargetPreservingCycle
 
-`private static void ClearTargetPreservingCycle( RimKataWeaponCycleState cycle)` · [L4396](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4396)
+`private static void ClearTargetPreservingCycle( RimKataWeaponCycleState cycle)` · [L4397](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4397)
 
 - **역할:** 쿨다운 등 사이클 지속 상태를 보존하면서 계획 대상과 관련 오프닝·시각 상태를 해제합니다. 기존 사이클 쿨다운을 보존하면서 난사 후보·계획·시각 조준을 정리합니다.
 - **호출받음:** 직접 **14곳** · 메서드 그룹 참조 **0곳**.
@@ -15021,7 +15083,7 @@
 
 ### 139. RimKataDualWeaponController.RecordFirstFiredWeapon
 
-`private static void RecordFirstFiredWeapon( RimKataPawnCombatState state, ThingWithComps weapon)` · [L4423](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4423)
+`private static void RecordFirstFiredWeapon( RimKataPawnCombatState state, ThingWithComps weapon)` · [L4424](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4424)
 
 - **역할:** 아직 교전 주도 무기가 없으면 처음 공격한 무기를 기록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15032,7 +15094,7 @@
 
 ### 140. RimKataDualWeaponController.ValidCurrentTargetForVerb
 
-`private static bool ValidCurrentTargetForVerb( Pawn pawn, Verb verb, Thing target, bool playerForced, bool killIncappedTarget, bool closeContext)` · [L4435](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4435)
+`private static bool ValidCurrentTargetForVerb( Pawn pawn, Verb verb, Thing target, bool playerForced, bool killIncappedTarget, bool closeContext)` · [L4436](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4436)
 
 - **역할:** Verb 가용성 재사용 정보를 준비해 현재 대상 검증을 위임합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15043,7 +15105,7 @@
 
 ### 141. RimKataDualWeaponController.ValidCurrentTargetForVerb
 
-`private static bool ValidCurrentTargetForVerb( Pawn pawn, Verb verb, Thing target, bool playerForced, bool killIncappedTarget, bool closeContext, ref CycleVerbAvailability availability)` · [L4449](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4449)
+`private static bool ValidCurrentTargetForVerb( Pawn pawn, Verb verb, Thing target, bool playerForced, bool killIncappedTarget, bool closeContext, ref CycleVerbAvailability availability)` · [L4450](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4450)
 
 - **역할:** 현재 대상의 맵·적대 또는 강제 명령·Pawn 상태·Verb 가용성·명중 가능성을 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15054,7 +15116,7 @@
 
 ### 142. RimKataDualWeaponController.CanHitTargetForCombatContext
 
-`private static bool CanHitTargetForCombatContext( Pawn pawn, Verb verb, Thing target, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L4487](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4487)
+`private static bool CanHitTargetForCombatContext( Pawn pawn, Verb verb, Thing target, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L4488](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4488)
 
 - **역할:** 같은 대상·Verb·근접 문맥의 성공한 명중 가능 검사를 재사용합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15065,7 +15127,7 @@
 
 ### 143. RimKataDualWeaponController.CanHitTargetForCombatContext
 
-`private static bool CanHitTargetForCombatContext( Pawn pawn, Verb verb, Thing target, bool closeCombatContext)` · [L4508](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4508)
+`private static bool CanHitTargetForCombatContext( Pawn pawn, Verb verb, Thing target, bool closeCombatContext)` · [L4509](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4509)
 
 - **역할:** 근접 총격은 접촉 도달성으로, 나머지는 Verb의 대상 명중 가능성으로 판정합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15076,9 +15138,9 @@
 
 ### 144. RimKataDualWeaponController.TryTakeVanillaMeleeCooldown
 
-`public static bool TryTakeVanillaMeleeCooldown( Pawn pawn, Verb verb, LocalTargetInfo focus)` · [L4529](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4529)
+`public static bool TryTakeVanillaMeleeCooldown( Pawn pawn, Verb verb, LocalTargetInfo focus)` · [L4530](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4530)
 
-- **역할:** 허용 의류와 무기 조건에 맞는 바닐라 근접 회복을 해당 슬롯에 인계하되, 슬롯 타이머를 기다리지 않는 일반 구조물 근접 작업의 회복 자세는 보존합니다.
+- **역할:** 허용 의류와 무기 조건에 맞는 바닐라 근접 회복을 해당 슬롯에 인계하되, 슬롯 타이머를 기다리지 않는 일반 구조물 근접 작업의 회복 자세는 보존합니다. 전용 날아 차기는 독립 회복 처리를 사용하여 일반 무기 사이클의 회복 값을 바꾸지 않습니다. 발차기 전용 Verb는 일반 무기 슬롯 회복 시간에 합산하지 않고 독립 타격으로 처리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatMath.CooldownTicksForSingleShot(Verse.Verb verb, Verse.Pawn pawn, bool afterSuccessfulResponse)](#m-0472) · [RimKataDualWeaponController.BindCurrentWeapons(Verse.Pawn pawn, RimKataPawnCombatState state, \[bool accessVerified = false\])](#m-1064) · [RimKataDualWeaponController.CycleForWeapon(RimKataPawnCombatState state, Verse.ThingWithComps weapon)](#m-1109) · [RimKataDualWeaponController.StateFor(Verse.Pawn pawn, bool create)](#m-1110) · [RimKataDualWeaponController.UsesVanillaAutomaticTarget(Verse.Pawn pawn, Verse.Thing target, \[RimKataPawnCombatState knownState = null\])](#m-0941) · [RimKataEligibility.HasActiveRimKataAccess(Verse.Pawn pawn)](#m-1149) · [RimKataEquipmentUtility.HasEnabledArmor(Verse.Pawn pawn)](#m-1236) · [RimKataEquipmentUtility.IsWeaponEnabled(Verse.ThingDef def)](#m-1234) · [RimKataNativeAttack.OwnsActiveMelee(Verse.Verb verb)](#m-1507) · [RimKataReactiveAttack.OwnsVerb(Verse.Verb verb)](#m-2484) · [RimKataSharedTargetSearch.Begin(Verse.Pawn pawn, RimKataPawnCombatState combatState, Verse.IntVec3 origin)](#m-1874) · [RimKataSubdueCombat.OwnsAttack(Verse.Pawn pawn, \[Verse.Verb verb = null\])](#m-2604)
 - **호출 — 외부:** `System.Collections.Generic.List<T>.Contains(T item)` · `UnityEngine.Mathf.Max(int a, int b)`
@@ -15087,7 +15149,7 @@
 
 ### 145. RimKataDualWeaponController.TryConvertStructureMeleeJob
 
-`internal static bool TryConvertStructureMeleeJob(Pawn pawn, Job job)` · [L4594](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4594)
+`internal static bool TryConvertStructureMeleeJob(Pawn pawn, Job job)` · [L4596](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4596)
 
 - **역할:** 자격·대상 구조물·허용 무기의 실제 근접 동작을 확인하고 지정 대상을 유지하는 구조물 근접 작업으로 전환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15098,7 +15160,7 @@
 
 ### 146. RimKataDualWeaponController.MeleeSelectionBuffer.SelectionWeight
 
-`private float SelectionWeight(Verb verb)` · [L4626](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4626)
+`private float SelectionWeight(Verb verb)` · [L4628](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4628)
 
 - **역할:** 무기의 사용 가능한 Verb 목록과 최고 초기 가중치로 바닐라 VerbEntry의 현재 대상 선택 가중치를 계산합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
@@ -15109,7 +15171,7 @@
 
 ### 147. RimKataDualWeaponController.ResolveWeaponMeleeVerb
 
-`internal static Verb ResolveWeaponMeleeVerb( Pawn pawn, ThingWithComps weapon, Thing target, bool damageOnly = false)` · [L4632](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4632)
+`internal static Verb ResolveWeaponMeleeVerb( Pawn pawn, ThingWithComps weapon, Thing target, bool damageOnly = false)` · [L4634](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4634)
 
 - **역할:** 허용된 해당 무기의 사용 가능한 근접 Verb만 모아 바닐라 초기·대상별 가중치로 무작위 선택하고 재사용 버퍼를 반환하며, damageOnly이면 피해형 Verb로 제한합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -15120,7 +15182,7 @@
 
 ### 148. RimKataDualWeaponController.TickStructureMelee
 
-`internal static void TickStructureMelee(Pawn pawn, JobDriver_RimKataAttack driver)` · [L4672](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4672)
+`internal static void TickStructureMelee(Pawn pawn, JobDriver_RimKataAttack driver)` · [L4674](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4674)
 
 - **역할:** 지정 구조물까지 접근하고 각 슬롯의 타이머와 근접 사이클만 진행하며 대상 상실·공격 횟수 제한·자격 상실에 맞춰 작업을 종료합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15131,7 +15193,7 @@
 
 ### 149. RimKataDualWeaponController.TickStructureMeleeCycle
 
-`private static void TickStructureMeleeCycle(Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing target, int tick)` · [L4720](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4720)
+`private static void TickStructureMeleeCycle(Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing target, int tick)` · [L4722](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4722)
 
 - **역할:** 해당 슬롯의 실제 근접 Verb를 사용해 기존 조준·실행·쿨다운 사이클을 진행하며 다른 적 자동 탐색과 총의 근접 사격은 시작하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15142,7 +15204,7 @@
 
 ### 150. RimKataDualWeaponController.HasUsableWeapon
 
-`public static bool HasUsableWeapon(Pawn pawn, bool closeCombatContext)` · [L4742](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4742)
+`public static bool HasUsableWeapon(Pawn pawn, bool closeCombatContext)` · [L4744](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4744)
 
 - **역할:** 현재 근접 문맥에 사용할 수 있는 무기가 있는지 전체 자격 검사를 거쳐 조회합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15153,7 +15215,7 @@
 
 ### 151. RimKataDualWeaponController.HasUsableWeapon
 
-`internal static bool HasUsableWeapon( Pawn pawn, bool closeCombatContext, bool attackEligibilityVerified)` · [L4747](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4747)
+`internal static bool HasUsableWeapon( Pawn pawn, bool closeCombatContext, bool attackEligibilityVerified)` · [L4749](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4749)
 
 - **역할:** 공격 자격 결과를 재사용하며 주·부무기의 Verb 사용 가능성을 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15164,7 +15226,7 @@
 
 ### 152. RimKataDualWeaponController.ResolveImmediateCloseTarget
 
-`public static Thing ResolveImmediateCloseTarget( Pawn pawn, Thing assignedTarget, bool playerForced, bool killIncappedTarget)` · [L4781](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4781)
+`public static Thing ResolveImmediateCloseTarget( Pawn pawn, Thing assignedTarget, bool playerForced, bool killIncappedTarget)` · [L4783](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4783)
 
 - **역할:** 전투 상태를 조회해 즉시 근접 대상을 해석합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -15175,7 +15237,7 @@
 
 ### 153. RimKataDualWeaponController.ResolveImmediateCloseTarget
 
-`internal static Thing ResolveImmediateCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool assignedTargetValidated = false, bool assignedTargetInTouchRange = false)` · [L4795](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4795)
+`internal static Thing ResolveImmediateCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool assignedTargetValidated = false, bool assignedTargetInTouchRange = false)` · [L4797](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4797)
 
 - **역할:** 기존 상태와 지정 대상 검증 결과를 재사용해 즉시 근접 대상을 해석합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15186,7 +15248,7 @@
 
 ### 154. RimKataDualWeaponController.TryGetContinuationTarget
 
-`public static bool TryGetContinuationTarget( Pawn pawn, bool playerForced, bool killIncappedTarget, out Thing target)` · [L4814](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4814)
+`public static bool TryGetContinuationTarget( Pawn pawn, bool playerForced, bool killIncappedTarget, out Thing target)` · [L4816](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4816)
 
 - **역할:** 주무기와 부무기 사이클에서 이어서 공격할 유효한 대상을 찾습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15197,7 +15259,7 @@
 
 ### 155. RimKataDualWeaponController.HasContinuationSearchWork
 
-`public static bool HasContinuationSearchWork(Pawn pawn)` · [L4831](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4831)
+`public static bool HasContinuationSearchWork(Pawn pawn)` · [L4833](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4833)
 
 - **역할:** 근접 대상·이동 탐색·공유 탐색·사이클 후보 등 후속 작업이 남았는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15208,7 +15270,7 @@
 
 ### 156. RimKataDualWeaponController.EnsureContinuationSearchBeforeExit
 
-`public static bool EnsureContinuationSearchBeforeExit(Pawn pawn)` · [L4850](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4850)
+`public static bool EnsureContinuationSearchBeforeExit(Pawn pawn)` · [L4852](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4852)
 
 - **역할:** 전투 종료 전에 근접전 종료를 반영하고 필요한 이동·일반 후보 탐색을 시작하거나 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15219,7 +15281,7 @@
 
 ### 157. RimKataDualWeaponController.InitializeEnemyAttackSearch
 
-`internal static void InitializeEnemyAttackSearch(Pawn pawn)` · [L4919](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4919)
+`internal static void InitializeEnemyAttackSearch(Pawn pawn)` · [L4921](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4921)
 
 - **역할:** 적대 AI 자격자의 비강제 림카타 공격 작업 시작 시, 무작위 공격이 켜져 있으면 기존 무기 상태에 첫 표적 후보를 등록하고 공유 탐색을 시작합니다. 돌격 설정과 분리되며 플레이어·소집·강제 작업·무작위 공격 OFF는 제외합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15230,7 +15292,7 @@
 
 ### 158. RimKataDualWeaponController.ImportLegacyPrimaryState
 
-`public static void ImportLegacyPrimaryState( Pawn pawn, int cooldownTicks, int warmupTicks, Thing plannedTarget, bool interception, bool closeAttack, bool closeContext)` · [L4946](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4946)
+`public static void ImportLegacyPrimaryState( Pawn pawn, int cooldownTicks, int warmupTicks, Thing plannedTarget, bool interception, bool closeAttack, bool closeContext)` · [L4948](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4948)
 
 - **역할:** 구형 Job의 주무기 쿨다운·계획·예열을 현재 무기 사이클에 이관합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15241,7 +15303,7 @@
 
 ### 159. RimKataDualWeaponController.TryGetVisualData
 
-`public static bool TryGetVisualData( Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L4979](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4979)
+`public static bool TryGetVisualData( Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L4981](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4981)
 
 - **역할:** 전투 상태와 지정 무기의 사이클을 찾아 조준 시각 데이터를 반환합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -15252,7 +15314,7 @@
 
 ### 160. RimKataDualWeaponController.TryGetVisualData
 
-`private static bool TryGetVisualData( Pawn pawn, RimKataWeaponCycleState cycle, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L4989](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4989)
+`private static bool TryGetVisualData( Pawn pawn, RimKataWeaponCycleState cycle, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L4991](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4991)
 
 - **역할:** 유효한 계획·시각 대상과 예열·쿨다운을 읽어 렌더 구조체를 만들고, 쿨다운 회전이 유효하면 전환 표적·시작각과 전환 시작 시 남은 쿨다운과 24틱 중 짧은 시간에 완료되는 공통 진행률을 공개합니다. 난사 계획·시각·쿨다운 전환 셀을 조준점으로 사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15263,7 +15325,7 @@
 
 ### 161. RimKataDualWeaponController.IsLiveVisualTarget
 
-`internal static bool IsLiveVisualTarget(Pawn pawn, Thing target)` · [L5058](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5058)
+`internal static bool IsLiveVisualTarget(Pawn pawn, Thing target)` · [L5060](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5060)
 
 - **역할:** 같은 맵에 남은 생존 대상 또는 활성 요격 투사체인지 시각 표시용으로 확인합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -15274,7 +15336,7 @@
 
 ### 162. RimKataDualWeaponController.TryGetIndicatorVisualData
 
-`public static bool TryGetIndicatorVisualData( Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData data, out bool claimsVanillaRangedCooldown)` · [L5071](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5071)
+`public static bool TryGetIndicatorVisualData( Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData data, out bool claimsVanillaRangedCooldown)` · [L5073](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5073)
 
 - **역할:** 기존 상태와 바닐라 원거리 쿨다운을 조회해 무기 표시 데이터를 구성합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15285,7 +15347,7 @@
 
 ### 163. RimKataDualWeaponController.MayNeedCombatIndicatorFrame
 
-`internal static bool MayNeedCombatIndicatorFrame(Pawn pawn)` · [L5092](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5092)
+`internal static bool MayNeedCombatIndicatorFrame(Pawn pawn)` · [L5094](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5094)
 
 - **역할:** 림카타 상태 또는 표시 가능한 바닐라 원거리 쿨다운이 있어 표시 프레임이 필요한지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15296,7 +15358,7 @@
 
 ### 164. RimKataDualWeaponController.GetCombatIndicatorFrameData
 
-`internal static RimKataCombatIndicatorFrame GetCombatIndicatorFrameData( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L5104](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5104)
+`internal static RimKataCombatIndicatorFrame GetCombatIndicatorFrameData( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L5106](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5106)
 
 - **역할:** 근접 명령·집중 목표·회피 중단 여부와 양쪽 무기의 전투 표시 프레임을 한 번에 구성합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15307,7 +15369,7 @@
 
 ### 165. RimKataDualWeaponController.GetCombatIndicatorWeaponFrame
 
-`private static RimKataCombatIndicatorWeaponFrame GetCombatIndicatorWeaponFrame( Pawn pawn, RimKataPawnCombatState state, ThingWithComps weapon, Stance_Cooldown vanillaCooldown, bool includeFocusedTarget)` · [L5143](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5143)
+`private static RimKataCombatIndicatorWeaponFrame GetCombatIndicatorWeaponFrame( Pawn pawn, RimKataPawnCombatState state, ThingWithComps weapon, Stance_Cooldown vanillaCooldown, bool includeFocusedTarget)` · [L5145](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5145)
 
 - **역할:** 한 무기의 집중 목표와 예열·쿨다운 표시 여부·남은 시간을 구성합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15318,7 +15380,7 @@
 
 ### 166. RimKataDualWeaponController.TryGetIndicatorVisualData
 
-`private static bool TryGetIndicatorVisualData( Pawn pawn, RimKataPawnCombatState state, ThingWithComps weapon, Stance_Cooldown vanillaCooldown, out RimKataWeaponVisualData data, out bool claimsVanillaRangedCooldown, out Verb verb)` · [L5200](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5200)
+`private static bool TryGetIndicatorVisualData( Pawn pawn, RimKataPawnCombatState state, ThingWithComps weapon, Stance_Cooldown vanillaCooldown, out RimKataWeaponVisualData data, out bool claimsVanillaRangedCooldown, out Verb verb)` · [L5202](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5202)
 
 - **역할:** 림카타 시각 데이터와 같은 무기의 바닐라 원거리 쿨다운을 합쳐 표시 데이터를 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15329,7 +15391,7 @@
 
 ### 167. RimKataDualWeaponController.TryGetPotentialVanillaRangedCooldown
 
-`private static bool TryGetPotentialVanillaRangedCooldown( Pawn pawn, ThingWithComps weapon, out Stance_Cooldown cooldown)` · [L5248](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5248)
+`private static bool TryGetPotentialVanillaRangedCooldown( Pawn pawn, ThingWithComps weapon, out Stance_Cooldown cooldown)` · [L5250](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5250)
 
 - **역할:** 조준 표시를 지원하며 대상과 남은 시간이 유효한 바닐라 원거리 쿨다운을 찾습니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15340,7 +15402,7 @@
 
 ### 168. RimKataDualWeaponController.TryGetNextAim
 
-`public static bool TryGetNextAim( Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)` · [L5272](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5272)
+`public static bool TryGetNextAim( Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)` · [L5274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5274)
 
 - **역할:** 전투 상태에서 다음 몸 조준 사이클을 골라 무기와 목표를 반환합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15351,7 +15413,7 @@
 
 ### 169. RimKataDualWeaponController.TryGetNextAim
 
-`internal static bool TryGetNextAim( Pawn pawn, RimKataPawnCombatState state, out RimKataWeaponCycleState cycle, out LocalTargetInfo target)` · [L5293](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5293)
+`internal static bool TryGetNextAim( Pawn pawn, RimKataPawnCombatState state, out RimKataWeaponCycleState cycle, out LocalTargetInfo target)` · [L5295](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5295)
 
 - **역할:** 이미 확보한 전투 상태에서 우선 몸 조준 사이클과 유효한 시각 목표를 반환합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -15362,7 +15424,7 @@
 
 ### 170. RimKataDualWeaponController.NotifyLoadoutChanged
 
-`public static void NotifyLoadoutChanged(Pawn pawn)` · [L5324](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5324)
+`public static void NotifyLoadoutChanged(Pawn pawn)` · [L5326](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5326)
 
 - **역할:** 장비 변경에서 기존 상태의 공격 지정 무기와 쳐내기·응답 무기 상실을 확인하고, 유지되는 회전의 양손 참가 참조를 사건 시점에 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -15373,7 +15435,7 @@
 
 ### 171. RimKataDualWeaponController.NotifyLoadoutChanged
 
-`internal static void NotifyLoadoutChanged( Pawn pawn, RimKataPawnCombatState state)` · [L5329](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5329)
+`internal static void NotifyLoadoutChanged( Pawn pawn, RimKataPawnCombatState state)` · [L5331](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5331)
 
 - **역할:** 장비 변경에서 기존 상태의 공격 지정 무기와 쳐내기·응답 무기 상실을 확인하고, 유지되는 회전의 양손 참가 참조를 사건 시점에 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15384,7 +15446,7 @@
 
 ### 172. RimKataDualWeaponController.ConsumeLoadoutInvalidatedCombatJob
 
-`public static bool ConsumeLoadoutInvalidatedCombatJob( Pawn pawn, Job job)` · [L5367](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5367)
+`public static bool ConsumeLoadoutInvalidatedCombatJob( Pawn pawn, Job job)` · [L5369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5369)
 
 - **역할:** 전투 상태를 조회해 장비 변경으로 무효해진 Job 표식을 소비합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -15395,7 +15457,7 @@
 
 ### 173. RimKataDualWeaponController.ConsumeLoadoutInvalidatedCombatJob
 
-`private static bool ConsumeLoadoutInvalidatedCombatJob( Pawn pawn, Job job, RimKataPawnCombatState state)` · [L5374](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5374)
+`private static bool ConsumeLoadoutInvalidatedCombatJob( Pawn pawn, Job job, RimKataPawnCombatState state)` · [L5376](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5376)
 
 - **역할:** 현재 Job에 해당하는 무효 표식을 지우고 명령 무기를 여전히 보유하는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15406,7 +15468,7 @@
 
 ### 174. RimKataDualWeaponController.WeaponStillHeld
 
-`private static bool WeaponStillHeld(Pawn pawn, ThingWithComps weapon)` · [L5400](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5400)
+`private static bool WeaponStillHeld(Pawn pawn, ThingWithComps weapon)` · [L5402](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5402)
 
 - **역할:** 무기가 파괴되지 않고 Pawn의 장비 목록에 남아 있는지 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15417,7 +15479,7 @@
 
 ### 175. RimKataDualWeaponController.TickIdleCycleTimers
 
-`public static void TickIdleCycleTimers(Pawn pawn)` · [L5408](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5408)
+`public static void TickIdleCycleTimers(Pawn pawn)` · [L5410](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5410)
 
 - **역할:** 활성 전투 틱이 수행되지 않은 상태에서 바인딩·시각 대상·무기 타이머를 갱신합니다. Hunt 세션이 소유한 주기는 사냥 Toil의 갱신에 맡깁니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15428,7 +15490,7 @@
 
 ### 176. RimKataDualWeaponController.DeactivateNonJobCycleWork
 
-`public static void DeactivateNonJobCycleWork(Pawn pawn)` · [L5438](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5438)
+`public static void DeactivateNonJobCycleWork(Pawn pawn)` · [L5440](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5440)
 
 - **역할:** 전투 상태를 조회해 전용 Job 밖 사이클 정리를 위임합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -15439,7 +15501,7 @@
 
 ### 177. RimKataDualWeaponController.DeactivateNonJobCycleWork
 
-`private static void DeactivateNonJobCycleWork( Pawn pawn, RimKataPawnCombatState state)` · [L5443](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5443)
+`private static void DeactivateNonJobCycleWork( Pawn pawn, RimKataPawnCombatState state)` · [L5445](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5445)
 
 - **역할:** 사용 불가·무효 요격 작업을 정리하고 유효 교전은 후속 Job으로 이어가며 나머지 예열을 해제합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15450,7 +15512,7 @@
 
 ### 178. RimKataDualWeaponController.CancelOffenseForMentalState
 
-`public static void CancelOffenseForMentalState( Pawn pawn, RimKataPawnCombatState state)` · [L5488](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5488)
+`public static void CancelOffenseForMentalState( Pawn pawn, RimKataPawnCombatState state)` · [L5490](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5490)
 
 - **역할:** 공격 중단 상황에서 위협·근접·이동 탐색·계획·조준을 지우고 쿨다운은 보존합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15461,7 +15523,7 @@
 
 ### 179. RimKataDualWeaponController.Reset
 
-`public static void Reset(Pawn pawn, bool clearCooldowns)` · [L5515](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5515)
+`public static void Reset(Pawn pawn, bool clearCooldowns)` · [L5517](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5517)
 
 - **역할:** 교전·근접·탐색·후속 요청과 양쪽 사이클을 초기화하며 선택적으로 쿨다운을 보존합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -15472,7 +15534,7 @@
 
 ### 180. RimKataDualWeaponController.ResetCyclePreservingCooldown
 
-`private static void ResetCyclePreservingCooldown( RimKataWeaponCycleState cycle)` · [L5548](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5548)
+`private static void ResetCyclePreservingCooldown( RimKataWeaponCycleState cycle)` · [L5550](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5550)
 
 - **역할:** 무기와 남은 쿨다운 종류를 보존한 채 사이클의 나머지 상태를 초기화합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15483,7 +15545,7 @@
 
 ### 181. RimKataDualWeaponController.TryGetContinuationTarget
 
-`private static bool TryGetContinuationTarget( Pawn pawn, RimKataWeaponCycleState cycle, bool playerForced, bool killIncappedTarget, out Thing target)` · [L5568](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5568)
+`private static bool TryGetContinuationTarget( Pawn pawn, RimKataWeaponCycleState cycle, bool playerForced, bool killIncappedTarget, out Thing target)` · [L5570](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5570)
 
 - **역할:** 한 사이클의 일반 계획·캐시 대상에서 현재 모드에 유효하고 도달 가능한 후속 대상을 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15494,7 +15556,7 @@
 
 ### 182. RimKataDualWeaponController.CycleHasContinuationSearchWork
 
-`private static bool CycleHasContinuationSearchWork( Pawn pawn, RimKataWeaponCycleState cycle)` · [L5620](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5620)
+`private static bool CycleHasContinuationSearchWork( Pawn pawn, RimKataWeaponCycleState cycle)` · [L5622](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5622)
 
 - **역할:** 사이클에 허용된 일반 후보 또는 캐시·요격 작업이 남아 있는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15505,7 +15567,7 @@
 
 ### 183. RimKataDualWeaponController.HasProjectileOnlySearchWork
 
-`private static bool HasProjectileOnlySearchWork( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget = null)` · [L5633](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5633)
+`private static bool HasProjectileOnlySearchWork( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget = null)` · [L5635](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5635)
 
 - **역할:** 일반 대상 수요 없이 유효한 요격 작업만 남아 있는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15516,7 +15578,7 @@
 
 ### 184. RimKataDualWeaponController.HasNonProjectileSearchDemand
 
-`private static bool HasNonProjectileSearchDemand( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget = null)` · [L5652](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5652)
+`private static bool HasNonProjectileSearchDemand( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget = null)` · [L5654](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5654)
 
 - **역할:** 근접 요청·지정 대상·무기 작업에 투사체 이외의 전투 수요가 있는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15527,7 +15589,7 @@
 
 ### 185. RimKataDualWeaponController.HasNonProjectileCycleWork
 
-`private static bool HasNonProjectileCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L5673](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5673)
+`private static bool HasNonProjectileCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L5675](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5675)
 
 - **역할:** 한 사이클의 일반 집중·캐시·계획 대상이 현재 공격 가능한지 확인합니다. 난사 지정 셀을 일반 무기 작업으로 포함합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15538,7 +15600,7 @@
 
 ### 186. RimKataDualWeaponController.HasActiveInterceptionWork
 
-`private static bool HasActiveInterceptionWork( Pawn pawn, RimKataWeaponCycleState cycle)` · [L5721](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5721)
+`private static bool HasActiveInterceptionWork( Pawn pawn, RimKataWeaponCycleState cycle)` · [L5723](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5723)
 
 - **역할:** 사이클의 요격 계획 또는 캐시 대상이 아직 활성인지 확인합니다.
 - **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
@@ -15549,7 +15611,7 @@
 
 ### 187. RimKataDualWeaponController.IsLiveNonProjectileTarget
 
-`private static bool IsLiveNonProjectileTarget(Pawn pawn, Thing target)` · [L5736](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5736)
+`private static bool IsLiveNonProjectileTarget(Pawn pawn, Thing target)` · [L5738](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5738)
 
 - **역할:** 동일 맵의 비투사체 대상이 공격 가능한 생존 상태인지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15560,7 +15622,7 @@
 
 ### 188. RimKataDualWeaponController.ResolveCloseTarget
 
-`private static Thing ResolveCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool assignedTargetValidated = false, bool assignedTargetInTouchRange = false)` · [L5747](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5747)
+`private static Thing ResolveCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool assignedTargetValidated = false, bool assignedTargetInTouchRange = false)` · [L5749](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5749)
 
 - **역할:** 근접 요청·지정 대상·근접전 계기를 우선순위대로 검사해 즉시 근접 대상을 고릅니다.
 - **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
@@ -15571,7 +15633,7 @@
 
 ### 189. RimKataDualWeaponController.ResolveTickCloseTarget
 
-`private static Thing ResolveTickCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool ordinaryAttackAllowed, Thing resolvedCloseTarget, bool closeTargetResolutionKnown)` · [L5786](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5786)
+`private static Thing ResolveTickCloseTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool ordinaryAttackAllowed, Thing resolvedCloseTarget, bool closeTargetResolutionKnown)` · [L5788](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5788)
 
 - **역할:** 일반 공격 허용 여부와 선행 해석 결과를 반영해 이번 틱의 근접 대상을 정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15582,7 +15644,7 @@
 
 ### 190. RimKataDualWeaponController.IsImmediateCloseTarget
 
-`private static bool IsImmediateCloseTarget( Pawn pawn, Thing target, bool playerForced, bool killIncappedTarget)` · [L5811](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5811)
+`private static bool IsImmediateCloseTarget( Pawn pawn, Thing target, bool playerForced, bool killIncappedTarget)` · [L5813](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5813)
 
 - **역할:** 강제·자동 적 규칙과 Pawn 상태를 만족하며 즉시 접촉 가능한 근접 대상인지 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15593,7 +15655,7 @@
 
 ### 191. RimKataDualWeaponController.HandleCloseCombatTransition
 
-`private static void HandleCloseCombatTransition( Pawn pawn, RimKataPawnCombatState state, bool closeCombatContext, Thing closeTarget, bool allowAutomaticEntryCandidate = true)` · [L5831](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5831)
+`private static void HandleCloseCombatTransition( Pawn pawn, RimKataPawnCombatState state, bool closeCombatContext, Thing closeTarget, bool allowAutomaticEntryCandidate = true)` · [L5833](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5833)
 
 - **역할:** 근접전 진입·대상 변경·이탈에 맞춰 사이클과 후보를 정리하고 원거리 탐색을 다시 시작합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -15604,7 +15666,7 @@
 
 ### 192. RimKataDualWeaponController.SanitizeCycleForCloseCombat
 
-`private static void SanitizeCycleForCloseCombat( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L5891](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5891)
+`private static void SanitizeCycleForCloseCombat( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L5893](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5893)
 
 - **역할:** 근접전 진입 시 기존 Verb·선택 후보·계획·시각 중 근접 문맥에 맞지 않는 상태를 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15615,7 +15677,7 @@
 
 ### 193. RimKataDualWeaponController.IsValidCloseCycleTarget
 
-`private static bool IsValidCloseCycleTarget( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing target)` · [L5963](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5963)
+`private static bool IsValidCloseCycleTarget( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing target)` · [L5965](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5965)
 
 - **역할:** 등록 여부를 포함해 현재 사이클 대상이 근접전의 공유 검증 조건을 만족하는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15626,7 +15688,7 @@
 
 ### 194. RimKataDualWeaponController.ImportLegacyDraftedState
 
-`private static void ImportLegacyDraftedState(RimKataPawnCombatState state)` · [L5976](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5976)
+`private static void ImportLegacyDraftedState(RimKataPawnCombatState state)` · [L5978](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:5978)
 
 - **역할:** 구형 소집 전투의 주무기 타이머·계획을 현재 사이클로 옮기고 구형 필드를 비웁니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15637,7 +15699,7 @@
 
 ### 195. RimKataDualWeaponController.BindCurrentWeapons
 
-`internal static void BindCurrentWeapons( Pawn pawn, RimKataPawnCombatState state, bool accessVerified = false)` · [L6007](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6007)
+`internal static void BindCurrentWeapons( Pawn pawn, RimKataPawnCombatState state, bool accessVerified = false)` · [L6009](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6009)
 
 - **역할:** 설정 버전·슬롯 변화를 확인해 무기별 사이클 소유권을 보존하면서 현재 무기를 연결합니다. 부드러운 조준 전환이 꺼졌으면 두 슬롯의 회전 대상·시간 예약을 정리합니다. 난사가 꺼졌으면 전달된 전투 상태의 두 슬롯에 남은 난사 등록·계획을 정리합니다.
 - **호출받음:** 직접 **27곳** · 메서드 그룹 참조 **0곳**.
@@ -15648,7 +15710,7 @@
 
 ### 196. RimKataDualWeaponController.InvalidateWeaponBindings
 
-`internal static RimKataPawnCombatState InvalidateWeaponBindings(Pawn pawn)` · [L6085](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6085)
+`internal static RimKataPawnCombatState InvalidateWeaponBindings(Pawn pawn)` · [L6087](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6087)
 
 - **역할:** 존재하는 전투 상태의 무기 바인딩을 재계산 대상으로 표시합니다.
 - **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
@@ -15659,7 +15721,7 @@
 
 ### 197. RimKataDualWeaponController.InvalidateProfileSettings
 
-`internal static void InvalidateProfileSettings(Pawn pawn)` · [L6100](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6100)
+`internal static void InvalidateProfileSettings(Pawn pawn)` · [L6102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6102)
 
 - **역할:** 프로필 변경 시 무기 바인딩·공유 탐색·후보 상한 확장을 무효화합니다. 부드러운 조준 전환이 꺼졌으면 두 슬롯의 회전 대상·시간 예약도 정리합니다. 새 프로필에서 난사가 꺼졌으면 두 슬롯의 난사 등록·계획도 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15670,7 +15732,7 @@
 
 ### 198. RimKataDualWeaponController.ResolveWeaponBinding
 
-`private static void ResolveWeaponBinding( Pawn pawn, RimKataWeaponCycleState cycle)` · [L6122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6122)
+`private static void ResolveWeaponBinding( Pawn pawn, RimKataWeaponCycleState cycle)` · [L6124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6124)
 
 - **역할:** 사이클의 Verb·무기 허용 여부를 갱신하고 준비 데이터·로드 후 중단 공격 쿨다운을 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15681,7 +15743,7 @@
 
 ### 199. RimKataDualWeaponController.BoundCombatVerb
 
-`private static Verb BoundCombatVerb(Pawn pawn, RimKataWeaponCycleState cycle)` · [L6165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6165)
+`private static Verb BoundCombatVerb(Pawn pawn, RimKataWeaponCycleState cycle)` · [L6167](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6167)
 
 - **역할:** 연결된 Verb를 반환하고 아직 없으면 현재 무기에서 다시 조회합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -15692,7 +15754,7 @@
 
 ### 200. RimKataDualWeaponController.NormalizeUnavailableCycleWork
 
-`private static bool NormalizeUnavailableCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L6172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6172)
+`private static bool NormalizeUnavailableCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L6174](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6174)
 
 - **역할:** 공통 설정과 Verb 가용성 재사용 정보를 준비해 사용 불가 사이클 정리를 수행합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15703,7 +15765,7 @@
 
 ### 201. RimKataDualWeaponController.IsCycleVerbUsable
 
-`private static bool IsCycleVerbUsable( Pawn pawn, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L6200](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6200)
+`private static bool IsCycleVerbUsable( Pawn pawn, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L6202](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6202)
 
 - **역할:** 동일 Verb·근접 문맥의 사용 가능 판정을 해당 처리 구간에서 재사용합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15714,7 +15776,7 @@
 
 ### 202. RimKataDualWeaponController.NormalizeUnavailableCycleWork
 
-`private static bool NormalizeUnavailableCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, bool randomAttackEnabled, ref CycleVerbAvailability availability)` · [L6218](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6218)
+`private static bool NormalizeUnavailableCycleWork( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, bool randomAttackEnabled, ref CycleVerbAvailability availability)` · [L6220](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6220)
 
 - **역할:** 설정·무기·Verb 가용성에 맞지 않는 일반 작업을 제거하고 유효한 요격 예외는 보존합니다. 일반 무기를 사용할 수 없는 경계에서 난사 등록도 제거합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15725,7 +15787,7 @@
 
 ### 203. RimKataDualWeaponController.TickWeaponCycle
 
-`private static void TickWeaponCycle( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool blockedByStance, out Thing promotedAutomaticTarget, bool allowAutomaticRangedFire, bool randomAttackEnabled, int currentTick, ThingWithComps weaponScopedFocusJobWeapon, ref CycleVerbAvailability availability)` · [L6319](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6319)
+`private static void TickWeaponCycle( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool blockedByStance, out Thing promotedAutomaticTarget, bool allowAutomaticRangedFire, bool randomAttackEnabled, int currentTick, ThingWithComps weaponScopedFocusJobWeapon, ref CycleVerbAvailability availability)` · [L6321](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6321)
 
 - **역할:** 무기별 목표 선택·계획 검증·예열·요격 가능성을 처리해 준비된 바닐라 공격을 예약·시작합니다. Thing 후보와 난사 셀 후보를 같은 기존 발사 준비 경로에 연결합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15736,7 +15798,7 @@
 
 ### 204. RimKataDualWeaponController.NativeAttackStillAllowed
 
-`internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)` · [L6757](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6757)
+`internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)` · [L6759](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6759)
 
 - **역할:** 특수 동작이 본체 전투를 차단하는지 확인한 뒤 사냥 또는 일반 요청의 이동·회피·자세·구조물 공격 횟수 조건을 판정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15747,7 +15809,7 @@
 
 ### 205. RimKataDualWeaponController.CompleteNativeAttack
 
-`internal static void CompleteNativeAttack(RimKataNativeAttack attack, bool acted, bool cancelled)` · [L6769](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6769)
+`internal static void CompleteNativeAttack(RimKataNativeAttack attack, bool acted, bool cancelled)` · [L6771](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6771)
 
 - **역할:** 특수 동작 차단 중에는 본체 완료 처리를 건너뛰고 그 외 발사 결과를 슬롯 쿨다운·후속 후보 및 구조물 공격 횟수에 반영합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15758,7 +15820,7 @@
 
 ### 206. RimKataDualWeaponController.FinishCycleAction
 
-`private static void FinishCycleAction( RimKataNativeAttack attack, bool acted, bool cancelled, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L6795](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6795)
+`private static void FinishCycleAction( RimKataNativeAttack attack, bool acted, bool cancelled, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L6797](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6797)
 
 - **역할:** 완료된 네이티브 공격을 쿨다운·후속 후보·표적 전환에 반영합니다. 부드러운 조준 전환이 허용될 때만 기존 발사 표적이 정리되기 전에 시작각을 캡처하고 쿨다운 중 회전 시간을 기록합니다. 공격 주기는 유지합니다. 마지막 난사 셀을 시각 조준에 남기고 다음 셀 후보도 기존 쿨다운 흐름에서 승격합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15769,7 +15831,7 @@
 
 ### 207. RimKataDualWeaponController.TryPromoteAutomaticJobTarget
 
-`private static bool TryPromoteAutomaticJobTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, Thing primaryCandidate, Thing secondaryCandidate, bool? randomAttackEnabled, out Thing promotedTarget)` · [L6933](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6933)
+`private static bool TryPromoteAutomaticJobTarget( Pawn pawn, RimKataPawnCombatState state, Thing assignedTarget, bool playerForced, Thing primaryCandidate, Thing secondaryCandidate, bool? randomAttackEnabled, out Thing promotedTarget)` · [L6935](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6935)
 
 - **역할:** 현재 자동 Job 대상이 유효 범위를 잃으면 교전 주도 무기의 후속 후보를 우선해 교체합니다. 바닥 난사 작업의 지정 셀을 자동 Thing 작업 표적으로 덮어쓰지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15780,7 +15842,7 @@
 
 ### 208. RimKataDualWeaponController.TryPromoteAutomaticJobCandidate
 
-`private static bool TryPromoteAutomaticJobCandidate( Pawn pawn, JobDriver_RimKataAttack driver, Thing candidate)` · [L6997](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6997)
+`private static bool TryPromoteAutomaticJobCandidate( Pawn pawn, JobDriver_RimKataAttack driver, Thing candidate)` · [L6999](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6999)
 
 - **역할:** 후보가 자동 탐색 반경 안에 있을 때 Job 드라이버의 자동 대상 승격을 요청합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15791,7 +15853,7 @@
 
 ### 209. RimKataDualWeaponController.TryPromoteCachedCandidate
 
-`private static bool TryPromoteCachedCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, bool killIncappedTarget, bool closeCombatContext, bool requestRefill, bool automaticRangeRequired, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L7007](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7007)
+`private static bool TryPromoteCachedCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, bool killIncappedTarget, bool closeCombatContext, bool requestRefill, bool automaticRangeRequired, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L7009](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7009)
 
 - **역할:** 캐시 후보를 일반·요격 계획으로 승격하고 실패한 일반 후보를 축출합니다. 난사 후보 셀을 계획으로 승격하고 쿨다운 중 부드러운 조준 전환 셀을 준비합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15802,7 +15864,7 @@
 
 ### 210. RimKataDualWeaponController.EvictAutomaticCandidate
 
-`private static bool EvictAutomaticCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing target, bool requestRefill)` · [L7109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7109)
+`private static bool EvictAutomaticCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Thing target, bool requestRefill)` · [L7111](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7111)
 
 - **역할:** 자동 후보 축출과 재충전 요청을 공유 탐색에 위임합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -15813,7 +15875,7 @@
 
 ### 211. RimKataDualWeaponController.ResolveOpeningSupportBonus
 
-`private static int ResolveOpeningSupportBonus( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L7124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7124)
+`private static int ResolveOpeningSupportBonus( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L7126](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7126)
 
 - **역할:** 교전 주도 무기 이외의 무기에 첫 공격 지원 지연을 한 번 계산해 부여합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15824,7 +15886,7 @@
 
 ### 212. RimKataDualWeaponController.RearmOpeningOwnerIfBothWaiting
 
-`private static void RearmOpeningOwnerIfBothWaiting( RimKataPawnCombatState state)` · [L7179](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7179)
+`private static void RearmOpeningOwnerIfBothWaiting( RimKataPawnCombatState state)` · [L7181](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7181)
 
 - **역할:** 양쪽 무기가 대기 상태면 교전 주도권과 첫 공격 지원 지연을 다시 준비합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -15835,7 +15897,7 @@
 
 ### 213. RimKataDualWeaponController.PrepareFocusedTarget
 
-`private static bool PrepareFocusedTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7197](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7197)
+`private static bool PrepareFocusedTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7199](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7199)
 
 - **역할:** 무효 집중 목표는 해제하고 유효한 집중 목표를 일반 후보보다 우선해 계획·시각에 반영합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15846,7 +15908,7 @@
 
 ### 214. RimKataDualWeaponController.FocusedTargetUsableNow
 
-`private static bool FocusedTargetUsableNow( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext)` · [L7271](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7271)
+`private static bool FocusedTargetUsableNow( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext)` · [L7273](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7273)
 
 - **역할:** Verb 가용성 재사용 정보를 준비해 집중 목표의 현재 실행 가능성을 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15857,7 +15919,7 @@
 
 ### 215. RimKataDualWeaponController.FocusedTargetUsableNow
 
-`private static bool FocusedTargetUsableNow( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7282](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7282)
+`private static bool FocusedTargetUsableNow( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7284](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7284)
 
 - **역할:** 집중 목표를 강제 대상으로 취급해 현재 Verb·근접 문맥에서의 공격 가능성을 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15868,7 +15930,7 @@
 
 ### 216. RimKataDualWeaponController.PromoteApproachingShotToCloseContext
 
-`private static void PromoteApproachingShotToCloseContext( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext)` · [L7300](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7300)
+`private static void PromoteApproachingShotToCloseContext( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, bool closeCombatContext)` · [L7302](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7302)
 
 - **역할:** 접근해 접촉 범위에 들어온 원거리 계획을 근접 공격 문맥으로 전환합니다. 난사 셀 계획은 Thing 대상의 근접 사격 전환에서 제외합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15879,7 +15941,7 @@
 
 ### 217. RimKataDualWeaponController.SetCandidate
 
-`private static void SetCandidate( Pawn pawn, RimKataWeaponCycleState cycle, Thing target, bool interception, bool closeAttack, bool closeContext, bool updateVisualTarget)` · [L7323](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7323)
+`private static void SetCandidate( Pawn pawn, RimKataWeaponCycleState cycle, Thing target, bool interception, bool closeAttack, bool closeContext, bool updateVisualTarget)` · [L7325](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7325)
 
 - **역할:** 선택 대상을 일반·요격·근접 계획으로 기록하고, 부드러운 조준 전환이 허용된 쿨다운 중 표적 변경 시 최대 24틱의 공통 진행률로 현재 보간각을 이어 받아 남은 쿨다운을 기준으로 새 무기 회전을 예약합니다. Thing 후보 계획을 설정할 때 이전 난사 계획·시각·전환 셀을 정리합니다.
 - **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
@@ -15890,7 +15952,7 @@
 
 ### 218. RimKataDualWeaponController.TrySetKnownTarget
 
-`private static bool TrySetKnownTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool automaticRangeRequired, bool updateVisualTarget, ref CycleVerbAvailability availability)` · [L7373](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7373)
+`private static bool TrySetKnownTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool automaticRangeRequired, bool updateVisualTarget, ref CycleVerbAvailability availability)` · [L7375](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7375)
 
 - **역할:** 알려진 대상의 자격·사거리·명중 가능성을 확인해 무기 공격 계획으로 설정합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15901,7 +15963,7 @@
 
 ### 219. RimKataDualWeaponController.CanAssignInterceptionTarget
 
-`private static bool CanAssignInterceptionTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing target)` · [L7445](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7445)
+`private static bool CanAssignInterceptionTarget( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing target)` · [L7447](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7447)
 
 - **역할:** 기존 집중·공격 작업을 방해하지 않으면서 대상의 요격 계획 배정 가능성을 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15912,7 +15974,7 @@
 
 ### 220. RimKataDualWeaponController.ValidPlan
 
-`private static bool ValidPlan( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7504](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7504)
+`private static bool ValidPlan( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, ref CycleVerbAvailability availability)` · [L7506](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7506)
 
 - **역할:** 실행 직전 요격·명시 목표·Pawn 상태·근접 문맥과 현재 명중 가능성으로 계획을 검증합니다. 난사 셀은 현재 폰 위치와 사거리로 재검증하되 같은 호출의 동일 Verb·셀 확인 결과를 재사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -15923,7 +15985,7 @@
 
 ### 221. RimKataDualWeaponController.PermanentlyInvalidCycleTarget
 
-`private static bool PermanentlyInvalidCycleTarget( Pawn pawn, Thing target, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool interception)` · [L7576](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7576)
+`private static bool PermanentlyInvalidCycleTarget( Pawn pawn, Thing target, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool interception)` · [L7578](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7578)
 
 - **역할:** 대상의 소멸·맵 이탈·적대성·무력화 또는 요격 종료로 영구 무효 상태인지 판정합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -15934,7 +15996,7 @@
 
 ### 222. RimKataDualWeaponController.VerbUsable
 
-`internal static bool VerbUsable(Pawn pawn, Verb verb, bool closeCombatContext)` · [L7613](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7613)
+`internal static bool VerbUsable(Pawn pawn, Verb verb, bool closeCombatContext)` · [L7615](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7615)
 
 - **역할:** 근접·근접 총격·대체 물리 공격·일반 사격별 Verb 사용 가능 조건을 확인합니다.
 - **호출받음:** 직접 **14곳** · 메서드 그룹 참조 **0곳**.
@@ -15945,7 +16007,7 @@
 
 ### 223. RimKataDualWeaponController.UsesPhysicalMeleeAction
 
-`private static bool UsesPhysicalMeleeAction( Pawn pawn, Verb slotVerb, bool closeCombatContext)` · [L7634](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7634)
+`private static bool UsesPhysicalMeleeAction( Pawn pawn, Verb slotVerb, bool closeCombatContext)` · [L7636](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7636)
 
 - **역할:** 근접 총격 설정이나 자유 사격 금지 때문에 원거리 슬롯이 물리 근접 공격을 해야 하는지 판정합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -15956,7 +16018,7 @@
 
 ### 224. RimKataDualWeaponController.IsRangedCycleAction
 
-`internal static bool IsRangedCycleAction( Pawn pawn, RimKataWeaponCycleState cycle, bool closeCombatContext)` · [L7646](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7646)
+`internal static bool IsRangedCycleAction( Pawn pawn, RimKataWeaponCycleState cycle, bool closeCombatContext)` · [L7648](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7648)
 
 - **역할:** 현재 계획된 행동 또는 기존 바인딩 기준으로 사이클의 실제 공격이 원거리인지 판정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -15967,7 +16029,7 @@
 
 ### 225. RimKataDualWeaponController.ResolveCycleActionVerb
 
-`private static Verb ResolveCycleActionVerb( Pawn pawn, RimKataWeaponCycleState cycle, Verb slotVerb, bool closeCombatContext)` · [L7656](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7656)
+`private static Verb ResolveCycleActionVerb( Pawn pawn, RimKataWeaponCycleState cycle, Verb slotVerb, bool closeCombatContext)` · [L7658](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7658)
 
 - **역할:** 근접 무기는 구조물 작업의 선택을 보존하거나 해당 무기의 가중치 선택을 수행하고, 물리 근접으로 전환할 원거리 무기는 기존 대체 Verb 규칙을 적용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15978,7 +16040,7 @@
 
 ### 226. RimKataDualWeaponController.ReadyToAct
 
-`private static bool ReadyToAct(RimKataWeaponCycleState cycle)` · [L7683](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7683)
+`private static bool ReadyToAct(RimKataWeaponCycleState cycle)` · [L7685](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7685)
 
 - **역할:** 무기·계획·쿨다운·예열·바닐라 실행·대응 적용 틱 조건으로 즉시 공격 가능 여부를 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -15989,7 +16051,7 @@
 
 ### 227. RimKataDualWeaponController.HandleInvalidPlanAtExecution
 
-`private static void HandleInvalidPlanAtExecution( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool allowAutomaticRangedFire)` · [L7693](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7693)
+`private static void HandleInvalidPlanAtExecution( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool allowAutomaticRangedFire)` · [L7695](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7695)
 
 - **역할:** 실행 시 무효해진 계획을 정리하고 명시 목표가 아닌 일반 후보는 축출합니다. 난사 계획이 유효하지 않으면 중단 쿨다운을 적용하고 계획을 비웁니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -16000,7 +16062,7 @@
 
 ### 228. RimKataDualWeaponController.ApplyInterruptedBurstCooldown
 
-`private static void ApplyInterruptedBurstCooldown( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)` · [L7729](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7729)
+`private static void ApplyInterruptedBurstCooldown( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)` · [L7731](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7731)
 
 - **역할:** 이미 발사한 바닐라 연사를 중단할 때 최소 무기 쿨다운을 사이클에 반영합니다.
 - **호출받음:** 직접 **10곳** · 메서드 그룹 참조 **0곳**.
@@ -16011,7 +16073,7 @@
 
 ### 229. RimKataDualWeaponController.IsVanillaAutomaticWeaponBusy
 
-`private static bool IsVanillaAutomaticWeaponBusy( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L7742](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7742)
+`private static bool IsVanillaAutomaticWeaponBusy( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L7744](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7744)
 
 - **역할:** 비Pawn 자동 대상의 바닐라 예열·쿨다운·연사가 해당 무기를 소유 중인지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16022,7 +16084,7 @@
 
 ### 230. RimKataDualWeaponController.StanceBlocksRimKata
 
-`private static bool StanceBlocksRimKata(Pawn pawn)` · [L7766](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7766)
+`private static bool StanceBlocksRimKata(Pawn pawn)` · [L7768](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7768)
 
 - **역할:** 기절 또는 바닐라 소방 Verb의 진행 자세를 기존 공격 실행 경계에서 차단합니다. 소방 자세 종료 후 자동으로 해제됩니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -16033,7 +16095,7 @@
 
 ### 231. RimKataDualWeaponController.MovementBlocksFire
 
-`private static bool MovementBlocksFire( Pawn pawn, RimKataPawnCombatState state)` · [L7772](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7772)
+`private static bool MovementBlocksFire( Pawn pawn, RimKataPawnCombatState state)` · [L7774](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7774)
 
 - **역할:** 림카타 회피 이동은 허용하고 이동 사격이 꺼진 일반 이동을 발사 제한으로 판정합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16044,7 +16106,7 @@
 
 ### 232. RimKataDualWeaponController.InterruptMovingFireOutsideAutomaticRange
 
-`private static bool InterruptMovingFireOutsideAutomaticRange( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing target, bool requestRefill, bool? randomAttackEnabled = null)` · [L7786](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7786)
+`private static bool InterruptMovingFireOutsideAutomaticRange( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb verb, Thing target, bool requestRefill, bool? randomAttackEnabled = null)` · [L7788](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7788)
 
 - **역할:** 이동 중 자동 반경을 벗어난 목표의 예외를 확인하고 계획·후보·조준을 정리하며 실제 대기 복귀 시 일반 후보 정리를 알립니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16055,7 +16117,7 @@
 
 ### 233. RimKataDualWeaponController.InterruptCycleForFireBeating
 
-`private static void InterruptCycleForFireBeating(Pawn pawn, RimKataWeaponCycleState cycle)` · [L7863](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7863)
+`private static void InterruptCycleForFireBeating(Pawn pawn, RimKataWeaponCycleState cycle)` · [L7865](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7865)
 
 - **역할:** 소방 시작으로 사격 계획·준비시간·조준 표시를 취소하되 이미 발사한 점사의 쿨다운과 명시 표적·자동 후보·무기 바인딩은 보존합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16066,7 +16128,7 @@
 
 ### 234. RimKataDualWeaponController.InterruptCycleForMovement
 
-`private static void InterruptCycleForMovement( Pawn pawn, RimKataWeaponCycleState cycle)` · [L7875](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7875)
+`private static void InterruptCycleForMovement( Pawn pawn, RimKataWeaponCycleState cycle)` · [L7877](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7877)
 
 - **역할:** 이동으로 공격 계획을 중단하며 발사한 연사의 쿨다운과 미발사 오프닝 초기화를 반영합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16077,7 +16139,7 @@
 
 ### 235. RimKataDualWeaponController.TargetInfo
 
-`private static LocalTargetInfo TargetInfo(RimKataWeaponCycleState cycle)` · [L7899](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7899)
+`private static LocalTargetInfo TargetInfo(RimKataWeaponCycleState cycle)` · [L7901](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7901)
 
 - **역할:** 현재 계획 대상을 실행용 LocalTargetInfo로 변환합니다. 난사 계획은 끝 셀의 LocalTargetInfo로 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16088,7 +16150,7 @@
 
 ### 236. RimKataDualWeaponController.UpdateBodyAimStance
 
-`internal static void UpdateBodyAimStance(Pawn pawn, RimKataPawnCombatState state)` · [L7913](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7913)
+`internal static void UpdateBodyAimStance(Pawn pawn, RimKataPawnCombatState state)` · [L7915](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7915)
 
 - **역할:** 대응 포즈·기절과 우선 조준 사이클을 반영해 림카타 몸 조준 자세를 유지·교체·해제합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -16099,7 +16161,7 @@
 
 ### 237. RimKataDualWeaponController.NotifyBodyAimEnded
 
-`internal static void NotifyBodyAimEnded(Pawn pawn, RimKataPawnCombatState state = null)` · [L7993](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7993)
+`internal static void NotifyBodyAimEnded(Pawn pawn, RimKataPawnCombatState state = null)` · [L7995](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7995)
 
 - **역할:** 몸 조준이 실제 이동 자세로 끝났고 바닐라 공격·다음 조준·공격 가능한 일반 후보가 없으면 두 슬롯의 일반 후보를 정리하고 교전 상태를 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -16110,7 +16172,7 @@
 
 ### 238. RimKataDualWeaponController.HasShootableOrdinaryCandidate
 
-`private static bool HasShootableOrdinaryCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8013](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8013)
+`private static bool HasShootableOrdinaryCandidate( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8015](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8015)
 
 - **역할:** 해당 슬롯의 Pawn 캐시와 일반 후보 중 현재 사격 또는 근접 도달이 가능한 대상이 하나라도 있는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16121,7 +16183,7 @@
 
 ### 239. RimKataDualWeaponController.ClearIdleOrdinaryCandidates
 
-`private static void ClearIdleOrdinaryCandidates( RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8032](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8032)
+`private static void ClearIdleOrdinaryCandidates( RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8034](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8034)
 
 - **역할:** 이전 일반 후보의 탐색 중복 ID와 무기 후보를 지우되 예약된 링·이동 적 후보와 발사체 캐시는 보존합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16132,7 +16194,7 @@
 
 ### 240. RimKataDualWeaponController.ReconcileRimKataAim
 
-`private static bool ReconcileRimKataAim( Pawn pawn, LocalTargetInfo target, Verb verb)` · [L8047](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8047)
+`private static bool ReconcileRimKataAim( Pawn pawn, LocalTargetInfo target, Verb verb)` · [L8049](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8049)
 
 - **역할:** 같은 목표·Verb의 조준 자세를 연장하고 유효한 대체가 없으면 이동 자세로 해제하며 다음 목표가 없을 때 일반 후보 정리를 알립니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -16143,7 +16205,7 @@
 
 ### 241. RimKataDualWeaponController.ChooseBodyAimCycle
 
-`private static RimKataWeaponCycleState ChooseBodyAimCycle( Pawn pawn, RimKataPawnCombatState state)` · [L8075](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8075)
+`private static RimKataWeaponCycleState ChooseBodyAimCycle( Pawn pawn, RimKataPawnCombatState state)` · [L8077](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8077)
 
 - **역할:** 유효한 목표를 가진 양쪽 사이클 중 쿨다운과 예상 예열이 짧은 쪽을 몸 조준 담당으로 고릅니다. 유효한 난사 조준 셀도 몸체 조준 사이클 선택에 포함합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -16154,7 +16216,7 @@
 
 ### 242. RimKataDualWeaponController.HasDirectionalAim
 
-`private static bool HasDirectionalAim(RimKataWeaponCycleState cycle)` · [L8132](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8132)
+`private static bool HasDirectionalAim(RimKataWeaponCycleState cycle)` · [L8134](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8134)
 
 - **역할:** 난사 계획 셀 또는 쿨다운·시각 유지 시간 안의 난사 시각 셀이 존재하는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16165,7 +16227,7 @@
 
 ### 243. RimKataDualWeaponController.CombatVerbForAim
 
-`private static Verb CombatVerbForAim( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8137](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8137)
+`private static Verb CombatVerbForAim( Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)` · [L8139](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8139)
 
 - **역할:** 조준 표시에서 현재 바인딩을 재사용하거나 무기의 전투 Verb를 조회합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -16176,7 +16238,7 @@
 
 ### 244. RimKataDualWeaponController.CycleForWeapon
 
-`private static RimKataWeaponCycleState CycleForWeapon( RimKataPawnCombatState state, ThingWithComps weapon)` · [L8153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8153)
+`private static RimKataWeaponCycleState CycleForWeapon( RimKataPawnCombatState state, ThingWithComps weapon)` · [L8155](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8155)
 
 - **역할:** 지정 무기 참조에 해당하는 주무기 또는 부무기 사이클을 반환합니다.
 - **호출받음:** 직접 **16곳** · 메서드 그룹 참조 **0곳**.
@@ -16187,7 +16249,7 @@
 
 ### 245. RimKataDualWeaponController.StateFor
 
-`private static RimKataPawnCombatState StateFor(Pawn pawn, bool create)` · [L8172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8172)
+`private static RimKataPawnCombatState StateFor(Pawn pawn, bool create)` · [L8174](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8174)
 
 - **역할:** 맵 컴포넌트에서 Pawn의 전투 상태를 조회하거나 생성합니다.
 - **호출받음:** 직접 **61곳** · 메서드 그룹 참조 **0곳**.
@@ -16198,7 +16260,7 @@
 
 ### 246. Patch_Verb_TryStartCastOn_RimKataOpening.Prefix
 
-`public static bool Prefix( Verb __instance, LocalTargetInfo __0, ref bool __result, out RimKataVanillaOpeningAttempt __state)` · [L8193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8193)
+`public static bool Prefix( Verb __instance, LocalTargetInfo __0, ref bool __result, out RimKataVanillaOpeningAttempt __state)` · [L8195](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8195)
 
 - **역할:** Verb 발사 시작 전에 중복 실행을 억제하고 오프닝 인수·단발 준비 데이터를 설정합니다. 등록된 기어 사격 Verb는 전용 스케줄러의 허용 여부로 진입을 결정합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16209,7 +16271,7 @@
 
 ### 247. Patch_Verb_TryStartCastOn_RimKataOpening.Postfix
 
-`public static void Postfix( Verb __instance, LocalTargetInfo __0, bool __result, RimKataVanillaOpeningAttempt __state)` · [L8237](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8237)
+`public static void Postfix( Verb __instance, LocalTargetInfo __0, bool __result, RimKataVanillaOpeningAttempt __state)` · [L8239](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8239)
 
 - **역할:** Verb 발사 시작 성공 시 준비된 오프닝을 확정하고 임시 오프닝 표식을 정리합니다. 기어 사격은 직립 폰의 준비·자세 후처리에 등록하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16220,7 +16282,7 @@
 
 ### 248. Patch_Verb_TryStartCastOn_RimKataOpening.Finalizer
 
-`public static Exception Finalizer( Verb __instance, Exception __exception)` · [L8266](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8266)
+`public static Exception Finalizer( Verb __instance, Exception __exception)` · [L8268](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8268)
 
 - **역할:** 발사 시작 처리에 예외가 나도 임시 오프닝 표식을 정리하고 예외를 보존합니다. 기어 사격은 직립 폰의 발사 문맥 후처리를 통과하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16231,7 +16293,7 @@
 
 ### 249. Patch_PawnDraftController_RimKataCycleReset.Prefix
 
-`public static void Prefix(Pawn_DraftController __instance, out bool __state)` · [L8283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8283)
+`public static void Prefix(Pawn_DraftController __instance, out bool __state)` · [L8285](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8285)
 
 - **역할:** Drafted 변경 전 기존 소집 상태를 저장합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16242,7 +16304,7 @@
 
 ### 250. Patch_PawnDraftController_RimKataCycleReset.Postfix
 
-`public static void Postfix( Pawn_DraftController __instance, bool __0, bool __state)` · [L8288](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8288)
+`public static void Postfix( Pawn_DraftController __instance, bool __0, bool __state)` · [L8290](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8290)
 
 - **역할:** Drafted 값이 실제로 바뀌면 컨트롤러에 소집 변경을 통지합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16253,7 +16315,7 @@
 
 ### 251. Patch_PawnStanceTracker_RimKataCooldown.Prefix
 
-`public static bool Prefix( Stance newStance, Pawn ___pawn)` · [L8303](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8303)
+`public static bool Prefix( Stance newStance, Pawn ___pawn)` · [L8305](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8305)
 
 - **역할:** 림카타가 바닐라 근접 쿨다운을 인수하면 해당 Stance_Cooldown 설정을 막습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16264,7 +16326,7 @@
 
 ### 252. Patch_StanceWarmup_RimKataPendingFollowupAim.Postfix
 
-`public static void Postfix(Stance_Warmup __instance)` · [L8333](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8333)
+`public static void Postfix(Stance_Warmup __instance)` · [L8335](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8335)
 
 - **역할:** 바닐라 예열 자세 완료 후 예약된 전용 후속 Job의 조준을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16275,7 +16337,7 @@
 
 ### 253. Patch_StanceCooldown_RimKataPendingFollowupAim.Postfix
 
-`public static void Postfix(Stance_Busy __instance)` · [L8346](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8346)
+`public static void Postfix(Stance_Busy __instance)` · [L8348](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:8348)
 
 - **역할:** 바닐라 쿨다운 자세 완료 후 예약된 전용 후속 Job의 조준을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -16668,7 +16730,7 @@
 `public static bool IsHostileToPlayerFaction(Pawn pawn)` · [L77](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibility.cs:77)
 
 - **역할:** 폰의 세력이 플레이어 세력에 적대하는지 확인합니다.
-- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.FactionUtility.HostileTo(RimWorld.Faction fac, RimWorld.Faction other)`
 
@@ -16938,18 +17000,18 @@
 
 `internal static void ResetGame()` · [L147](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:147)
 
-- **역할:** 게임 교체 시 연출 참가 캐시를 비우고 맵별 사용자·폰 자격·등록 사용자 캐시와 규칙 revision을 초기화합니다. 작업 제어 참가 슬롯도 함께 초기화합니다. 게임 전환 시 근력 등록 자료도 비웁니다.
+- **역할:** 게임 교체 시 연출 참가 캐시를 비우고 맵별 사용자·폰 자격·등록 사용자 캐시와 규칙 revision을 초기화합니다. 작업 제어 참가 슬롯도 함께 초기화합니다. 게임 전환 시 근력 등록 자료도 비웁니다. 게임 교체 시 날아 차기 활성 등록도 초기화합니다. 발차기 관찰 목록도 게임 전환 시 초기화합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataMotionJobGate.ResetGame()](#m-2736) · [RimKataResponseVisualParticipantCache.ResetGame()](#m-2444) · [RimKataStrengthUtility.ResetGame()](#m-2814)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.ResetGame()](#m-2905) · [RimKataKick.ResetGame()](#m-2966) · [RimKataMotionJobGate.ResetGame()](#m-2736) · [RimKataResponseVisualParticipantCache.ResetGame()](#m-2444) · [RimKataStrengthUtility.ResetGame()](#m-2814)
 - **호출 — 외부:** 없음
 
 <a id="m-1177"></a>
 
 ### 010. RimKataEligibilityCache.RefreshFaction
 
-`internal static void RefreshFaction(Faction faction)` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:158)
+`internal static void RefreshFaction(Faction faction)` · [L160](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:160)
 
-- **역할:** 특정 세력 폰의 효과 허용 설정을 맵 자격 목록에 다시 반영합니다.
+- **역할:** 팩션 관계 변경 사건에서 해당 팩션의 맵 폰에 기존 대상 변경 통지를 전달합니다. 진영 변경으로 새로 허용되는 대상과 이미 자격을 가진 폰의 프로필 변경도 반영하며 평시 반복 조회는 하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataEligibility.FactionEffectsEnabled(Verse.Pawn pawn)](#m-1151) · [RimKataEligibilityCache.SetQualified(Verse.Pawn pawn, RimKataEligibilityCache.Entry entry, RimKataEligibilityCache.MapUsers users, bool qualified)](#m-1181) · [RimKataEligibilityCache.TryGetEntry(Verse.Pawn pawn, out RimKataEligibilityCache.Entry entry)](#m-1200)
 - **호출 — 외부:** `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
@@ -16958,7 +17020,7 @@
 
 ### 011. RimKataEligibilityCache.RefreshPermissions
 
-`internal static void RefreshPermissions()` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:173)
+`internal static void RefreshPermissions()` · [L175](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:175)
 
 - **역할:** 접근 원천이 있는 폰들의 세력별 효과 허용 상태를 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -16969,7 +17031,7 @@
 
 ### 012. RimKataEligibilityCache.RefreshSettings
 
-`internal static void RefreshSettings()` · [L191](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:191)
+`internal static void RefreshSettings()` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:193)
 
 - **역할:** 대상 규칙 변경 시 모든 생성 폰의 자격을 다시 평가하고 그 외에는 세력 허용 상태만 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -16980,7 +17042,7 @@
 
 ### 013. RimKataEligibilityCache.PublishAccess
 
-`private static void PublishAccess(Pawn pawn, bool hasSource)` · [L212](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:212)
+`private static void PublishAccess(Pawn pawn, bool hasSource)` · [L214](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:214)
 
 - **역할:** 접근 원천 또는 대상 예외가 있는 폰을 맵에 등록하고 세력 허용 상태를 적용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -16991,18 +17053,18 @@
 
 ### 014. RimKataEligibilityCache.SetQualified
 
-`private static void SetQualified(Pawn pawn, Entry entry, MapUsers users, bool qualified)` · [L227](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:227)
+`private static void SetQualified(Pawn pawn, Entry entry, MapUsers users, bool qualified)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:229)
 
-- **역할:** 자격 변화가 있는 폰만 등록 목록과 연출 분류를 갱신하고 상실 시 특수 참가를 정리하며 무기 바인딩·이동 감시를 갱신합니다. 자격 상실 이벤트에서 작업 제어 참가 슬롯도 해제합니다. 확정된 자격 변경 값을 근력 갱신에 그대로 전달합니다.
+- **역할:** 자격 변화가 있는 폰만 등록 목록과 연출 분류를 갱신하고 상실 시 특수 참가를 정리하며 무기 바인딩·이동 감시를 갱신합니다. 자격 상실 이벤트에서 작업 제어 참가 슬롯도 해제합니다. 확정된 자격 변경 값을 근력 갱신에 그대로 전달합니다. 자격을 잃는 사건에서 이미 진행 중인 날아 차기를 중단하도록 전달합니다. 자격 상실 사건에서 등록된 발차기 관찰·타격·렌더 상태를 정리합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachUtility.NotifyEligibilityLost(Verse.Pawn pawn)](#m-2323) · [RimKataDormantHostileMovementRegistry.NotifyAccessChanged(Verse.Pawn pawn, bool hasAccess)](#m-0856) · [RimKataDualWeaponController.InvalidateWeaponBindings(Verse.Pawn pawn)](#m-1065) · [RimKataMotionJobGate.Clear(Verse.Pawn pawn)](#m-2735) · [RimKataReactiveMotion.Remove(Verse.Pawn pawn, \[bool resume = false\])](#m-2535) · [RimKataResponseVisualParticipantCache.NotifyQualificationChanged(Verse.Pawn pawn, bool qualified)](#m-2443) · [RimKataStrengthUtility.NotifyQualificationChanged(Verse.Pawn pawn, bool qualified)](#m-2819) · [RimKataSubdueUtility.NotifyEligibilityLost(Verse.Pawn pawn)](#m-2582)
+- **호출 — 프로젝트 내부:** [RimKataBreachUtility.NotifyEligibilityLost(Verse.Pawn pawn)](#m-2323) · [RimKataDormantHostileMovementRegistry.NotifyAccessChanged(Verse.Pawn pawn, bool hasAccess)](#m-0856) · [RimKataDualWeaponController.InvalidateWeaponBindings(Verse.Pawn pawn)](#m-1065) · [RimKataFlyingKick.QualificationLost(Verse.Pawn pawn)](#m-2904) · [RimKataKick.QualificationLost(Verse.Pawn pawn)](#m-2965) · [RimKataMotionJobGate.Clear(Verse.Pawn pawn)](#m-2735) · [RimKataReactiveMotion.Remove(Verse.Pawn pawn, \[bool resume = false\])](#m-2535) · [RimKataResponseVisualParticipantCache.NotifyQualificationChanged(Verse.Pawn pawn, bool qualified)](#m-2443) · [RimKataStrengthUtility.NotifyQualificationChanged(Verse.Pawn pawn, bool qualified)](#m-2819) · [RimKataSubdueUtility.NotifyEligibilityLost(Verse.Pawn pawn)](#m-2582)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Add(TKey key, TValue value)` · `System.Collections.Generic.Dictionary<TKey, TValue>.Remove(TKey key)` · `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Generic.List<T>.Add(T item)` · `System.Collections.Generic.List<T>.RemoveAt(int index)`
 
 <a id="m-1182"></a>
 
 ### 015. RimKataEligibilityCache.RemovePublishedAccess
 
-`private static void RemovePublishedAccess(Pawn pawn, Entry entry)` · [L258](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:258)
+`private static void RemovePublishedAccess(Pawn pawn, Entry entry)` · [L262](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:262)
 
 - **역할:** 폰의 공개 맵 자격과 접근 원천 목록 등록을 해제합니다. 기존 소속 목록이 없더라도 직접 소비 슬롯의 등록 자격이 남지 않도록 해제합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17013,7 +17075,7 @@
 
 ### 016. RimKataEligibilityCache.HasAnyAccessSource
 
-`public static bool HasAnyAccessSource(Pawn pawn)` · [L270](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:270)
+`public static bool HasAnyAccessSource(Pawn pawn)` · [L274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:274)
 
 - **역할:** 등록 사용자와 원천 캐시를 우선 확인하고 필요할 때 접근 원천을 평가하여 저장합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17024,7 +17086,7 @@
 
 ### 017. RimKataEligibilityCache.IsRegisteredUser
 
-`public static bool IsRegisteredUser(Pawn pawn)` · [L311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:311)
+`public static bool IsRegisteredUser(Pawn pawn)` · [L315](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:315)
 
 - **역할:** 폰이 접근 원천을 가진 등록 사용자 집합에 있는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17035,7 +17097,7 @@
 
 ### 018. RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon
 
-`public static bool TryGetRegisteredSecondaryWeapon( Pawn pawn, out ThingWithComps secondaryWeapon)` · [L319](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:319)
+`public static bool TryGetRegisteredSecondaryWeapon( Pawn pawn, out ThingWithComps secondaryWeapon)` · [L323](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:323)
 
 - **역할:** 등록 사용자의 보조 무기 참조를 반환합니다.
 - **호출받음:** 직접 **13곳** · 메서드 그룹 참조 **0곳**.
@@ -17046,7 +17108,7 @@
 
 ### 019. RimKataEligibilityCache.NotifySecondaryWeaponChanged
 
-`public static void NotifySecondaryWeaponChanged( Pawn pawn, ThingWithComps secondaryWeapon, bool accessVerified = false, bool slotVerified = false)` · [L336](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:336)
+`public static void NotifySecondaryWeaponChanged( Pawn pawn, ThingWithComps secondaryWeapon, bool accessVerified = false, bool slotVerified = false)` · [L340](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:340)
 
 - **역할:** 보조 무기 변경으로 무기 바인딩을 무효화하고 등록 참조를 갱신합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -17057,7 +17119,7 @@
 
 ### 020. RimKataEligibilityCache.UpdateRegisteredSecondaryWeapon
 
-`internal static void UpdateRegisteredSecondaryWeapon( Pawn pawn, ThingWithComps secondaryWeapon, bool accessVerified = false, bool slotVerified = false, ThingWithComps heldPairPrimary = null)` · [L346](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:346)
+`internal static void UpdateRegisteredSecondaryWeapon( Pawn pawn, ThingWithComps secondaryWeapon, bool accessVerified = false, bool slotVerified = false, ThingWithComps heldPairPrimary = null)` · [L350](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:350)
 
 - **역할:** 등록 사용자의 보조 무기 참조와 정착민 바 무기 캐시를 갱신합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -17068,7 +17130,7 @@
 
 ### 021. RimKataEligibilityCache.HasActiveDependencyGene
 
-`public static bool HasActiveDependencyGene(Pawn pawn)` · [L365](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:365)
+`public static bool HasActiveDependencyGene(Pawn pawn)` · [L369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:369)
 
 - **역할:** 활성 정신 마비 혈청 의존 유전자가 있는지 캐시를 통해 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17079,7 +17141,7 @@
 
 ### 022. RimKataEligibilityCache.DependencyGene
 
-`public static Gene_MindNumbSerumDependency DependencyGene(Pawn pawn)` · [L380](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:380)
+`public static Gene_MindNumbSerumDependency DependencyGene(Pawn pawn)` · [L384](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:384)
 
 - **역할:** 폰의 정신 마비 혈청 의존 유전자 객체를 캐시에서 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17090,7 +17152,7 @@
 
 ### 023. RimKataEligibilityCache.IsMindNumbed
 
-`public static bool IsMindNumbed(Pawn pawn)` · [L395](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:395)
+`public static bool IsMindNumbed(Pawn pawn)` · [L399](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:399)
 
 - **역할:** 정신 마비 혈청 효과의 현재 존재 여부를 지연 확인하여 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17101,7 +17163,7 @@
 
 ### 024. RimKataEligibilityCache.DependencyOvercomeByBond
 
-`public static bool DependencyOvercomeByBond(Pawn pawn)` · [L417](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:417)
+`public static bool DependencyOvercomeByBond(Pawn pawn)` · [L421](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:421)
 
 - **역할:** 연인 관계나 정신 결속으로 혈청 의존을 극복하는지 지연 확인하여 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17112,7 +17174,7 @@
 
 ### 025. RimKataEligibilityCache.InvalidateGenes
 
-`public static void InvalidateGenes(Pawn pawn)` · [L437](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:437)
+`public static void InvalidateGenes(Pawn pawn)` · [L441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:441)
 
 - **역할:** 유전자 관련 접근·의존 캐시를 무효화하고 자격·보조 무기·프로필을 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17123,7 +17185,7 @@
 
 ### 026. RimKataEligibilityCache.InvalidatePsycast
 
-`public static void InvalidatePsycast(Pawn pawn)` · [L456](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:456)
+`public static void InvalidatePsycast(Pawn pawn)` · [L460](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:460)
 
 - **역할:** 초능력 접근 캐시를 무효화하고 자격과 보조 무기 상태를 재검증합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17134,7 +17196,7 @@
 
 ### 027. RimKataEligibilityCache.InvalidateActivationSources
 
-`internal static void InvalidateActivationSources(Pawn pawn)` · [L472](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:472)
+`internal static void InvalidateActivationSources(Pawn pawn)` · [L476](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:476)
 
 - **역할:** 활성화 원천 설정 변경에 맞춰 모든 접근 원천 캐시를 무효화하고 자격을 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17145,7 +17207,7 @@
 
 ### 028. RimKataEligibilityCache.InvalidateRole
 
-`public static void InvalidateRole(Pawn pawn)` · [L491](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:491)
+`public static void InvalidateRole(Pawn pawn)` · [L495](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:495)
 
 - **역할:** 이념 역할 접근 캐시를 무효화하고 자격과 보조 무기 상태를 재검증합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -17156,7 +17218,7 @@
 
 ### 029. RimKataEligibilityCache.InvalidateRelations
 
-`public static void InvalidateRelations(Pawn pawn)` · [L507](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:507)
+`public static void InvalidateRelations(Pawn pawn)` · [L511](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:511)
 
 - **역할:** 관계 변경으로 혈청 의존 극복 결속 캐시를 무효화합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -17167,7 +17229,7 @@
 
 ### 030. RimKataEligibilityCache.InvalidateHediff
 
-`public static void InvalidateHediff(Pawn pawn, HediffDef changedDef)` · [L518](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:518)
+`public static void InvalidateHediff(Pawn pawn, HediffDef changedDef)` · [L522](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:522)
 
 - **역할:** 변경된 건강 효과에 해당하는 접근·혈청·결속 캐시만 무효화합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17178,7 +17240,7 @@
 
 ### 031. RimKataEligibilityCache.BeginAccessInvalidation
 
-`private static ThingWithComps BeginAccessInvalidation(Pawn pawn)` · [L558](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:558)
+`private static ThingWithComps BeginAccessInvalidation(Pawn pawn)` · [L562](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:562)
 
 - **역할:** 자격 재평가 전에 무기 바인딩을 무효화하고 보조 무기를 보존한 뒤 사용자 등록을 해제합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -17189,7 +17251,7 @@
 
 ### 032. RimKataEligibilityCache.FinishAccessInvalidation
 
-`private static void FinishAccessInvalidation( Pawn pawn, ThingWithComps registeredSecondary)` · [L572](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:572)
+`private static void FinishAccessInvalidation( Pawn pawn, ThingWithComps registeredSecondary)` · [L576](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:576)
 
 - **역할:** 자격 재평가 후 보조 무기 참조를 복구하거나 자격을 잃은 보조 무기를 해제합니다. 맵 밖 폰의 접근 자격 변경에서도 근력 자료를 갱신합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -17200,7 +17262,7 @@
 
 ### 033. RimKataEligibilityCache.TryGetEntry
 
-`private static bool TryGetEntry(Pawn pawn, out Entry entry)` · [L600](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:600)
+`private static bool TryGetEntry(Pawn pawn, out Entry entry)` · [L604](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:604)
 
 - **역할:** 폰에 이미 존재하는 자격 캐시 항목을 조회합니다.
 - **호출받음:** 직접 **12곳** · 메서드 그룹 참조 **0곳**.
@@ -17211,7 +17273,7 @@
 
 ### 034. RimKataEligibilityCache.StoreAccess
 
-`private static bool StoreAccess(Entry entry, bool value)` · [L606](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:606)
+`private static bool StoreAccess(Entry entry, bool value)` · [L610](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:610)
 
 - **역할:** 접근 허용 여부를 확정 캐시 상태로 저장하여 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17222,7 +17284,7 @@
 
 ### 035. RimKataEligibilityCache.ResolveAccess
 
-`private static bool ResolveAccess(Pawn pawn, Entry entry)` · [L614](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:614)
+`private static bool ResolveAccess(Pawn pawn, Entry entry)` · [L618](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:618)
 
 - **역할:** 유전자·앰풀·초능력·이념 역할·의존 유전자 순서로 접근 원천을 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17233,7 +17295,7 @@
 
 ### 036. RimKataEligibilityCache.UpdateRegisteredUser
 
-`private static void UpdateRegisteredUser(Pawn pawn, bool hasAccess)` · [L644](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:644)
+`private static void UpdateRegisteredUser(Pawn pawn, bool hasAccess)` · [L648](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:648)
 
 - **역할:** 접근 원천에 따라 사용자 등록과 보조 무기 참조를 갱신하고 맵 자격을 공개합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -17244,7 +17306,7 @@
 
 ### 037. RimKataEligibilityCache.RemoveRegisteredUser
 
-`private static void RemoveRegisteredUser(Pawn pawn)` · [L666](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:666)
+`private static void RemoveRegisteredUser(Pawn pawn)` · [L670](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:670)
 
 - **역할:** 폰을 접근 원천 사용자 등록에서 제거합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17255,7 +17317,7 @@
 
 ### 038. RimKataEligibilityCache.ResolveRimKataGene
 
-`private static void ResolveRimKataGene(Pawn pawn, Entry entry)` · [L674](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:674)
+`private static void ResolveRimKataGene(Pawn pawn, Entry entry)` · [L678](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:678)
 
 - **역할:** Biotech와 기능 설정을 반영하여 활성 RimKata 유전자 보유 여부를 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17266,7 +17328,7 @@
 
 ### 039. RimKataEligibilityCache.ResolveAmpoule
 
-`private static void ResolveAmpoule(Pawn pawn, Entry entry)` · [L689](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:689)
+`private static void ResolveAmpoule(Pawn pawn, Entry entry)` · [L693](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:693)
 
 - **역할:** 기능 설정과 RimKata 앰풀 효과 보유 여부를 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17277,7 +17339,7 @@
 
 ### 040. RimKataEligibilityCache.ResolvePsycast
 
-`private static void ResolvePsycast(Pawn pawn, Entry entry)` · [L702](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:702)
+`private static void ResolvePsycast(Pawn pawn, Entry entry)` · [L706](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:706)
 
 - **역할:** Royalty와 기능 설정을 반영하여 RimKata 초능력 보유 여부를 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17288,7 +17350,7 @@
 
 ### 041. RimKataEligibilityCache.ResolveRole
 
-`private static void ResolveRole(Pawn pawn, Entry entry)` · [L716](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:716)
+`private static void ResolveRole(Pawn pawn, Entry entry)` · [L720](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:720)
 
 - **역할:** Ideology와 기능 설정을 반영하여 RimKata 이념 역할 보유 여부를 캐시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17299,7 +17361,7 @@
 
 ### 042. RimKataEligibilityCache.ResolveDependencyGene
 
-`private static void ResolveDependencyGene(Pawn pawn, Entry entry)` · [L730](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:730)
+`private static void ResolveDependencyGene(Pawn pawn, Entry entry)` · [L734](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:734)
 
 - **역할:** 의존 기능 설정을 반영하여 정신 마비 혈청 의존 유전자와 활성 상태를 캐시합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -17310,7 +17372,7 @@
 
 ### 043. RimKataEligibilityCache.ScanForOvercomingBond
 
-`private static bool ScanForOvercomingBond(Pawn pawn)` · [L745](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:745)
+`private static bool ScanForOvercomingBond(Pawn pawn)` · [L749](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:749)
 
 - **역할:** 직접·가상 연인 관계와 정신 결속 건강 효과에서 혈청 의존 극복 조건을 찾습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17321,7 +17383,7 @@
 
 ### 044. RimKataEligibilityCache.IsOvercomingRelation
 
-`private static bool IsOvercomingRelation(PawnRelationDef relation)` · [L773](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:773)
+`private static bool IsOvercomingRelation(PawnRelationDef relation)` · [L777](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:777)
 
 - **역할:** 연인·약혼자·배우자 관계가 의존 극복 관계에 해당하는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17332,7 +17394,7 @@
 
 ### 045. RimKataEligibilityCache.ResolveAnomalyDefs
 
-`private static void ResolveAnomalyDefs()` · [L780](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:780)
+`private static void ResolveAnomalyDefs()` · [L784](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:784)
 
 - **역할:** 정신 마비 혈청과 정신 결속 건강 효과 정의를 한 번 조회합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17343,7 +17405,7 @@
 
 ### 046. Patch_PawnDeSpawn_RimKataEligibilityCache.Prefix
 
-`private static void Prefix(Pawn __instance)` · [L796](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:796)
+`private static void Prefix(Pawn __instance)` · [L800](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:800)
 
 - **역할:** 폰 제거 전에 맵의 자격 폰 등록을 해제합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17354,7 +17416,7 @@
 
 ### 047. Patch_PawnGeneTracker_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn)` · [L805](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:805)
+`public static void Postfix(Pawn ___pawn)` · [L809](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:809)
 
 - **역할:** 유전자 변경 후 유전자 기반 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17365,7 +17427,7 @@
 
 ### 048. Patch_PawnMutantTracker_RimKataShamblerAccess.Prepare
 
-`private static bool Prepare()` · [L814](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:814)
+`private static bool Prepare()` · [L818](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:818)
 
 - **역할:** Anomaly가 활성화된 경우에만 샴블러 변이·복귀에 따른 대상 권한 갱신 패치를 등록합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17376,7 +17438,7 @@
 
 ### 049. Patch_PawnMutantTracker_RimKataShamblerAccess.TargetMethods
 
-`private static IEnumerable<System.Reflection.MethodBase> TargetMethods()` · [L816](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:816)
+`private static IEnumerable<System.Reflection.MethodBase> TargetMethods()` · [L820](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:820)
 
 - **역할:** 샴블러 대상 권한 갱신을 연결할 Pawn_MutantTracker의 Turn·Revert 메서드를 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17387,7 +17449,7 @@
 
 ### 050. Patch_PawnMutantTracker_RimKataShamblerAccess.Postfix
 
-`private static void Postfix(Pawn_MutantTracker __instance, Pawn ___pawn)` · [L822](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:822)
+`private static void Postfix(Pawn_MutantTracker __instance, Pawn ___pawn)` · [L826](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:826)
 
 - **역할:** Turn·Revert 완료 후 원래 변이 추적기의 정의가 샴블러이면 대상 변경을 알리고 제한 해제·프로필·자격 캐시를 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17398,7 +17460,7 @@
 
 ### 051. Patch_PawnGeneTracker_SetXenotype_RimKataTargetAccess.Postfix
 
-`private static void Postfix(Pawn ___pawn)` · [L833](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:833)
+`private static void Postfix(Pawn ___pawn)` · [L837](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:837)
 
 - **역할:** 제노타입 지정 후 대상 규칙과 접근 자격을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17409,7 +17471,7 @@
 
 ### 052. Patch_PawnGeneTracker_SetXenotypeDirect_RimKataTargetAccess.Postfix
 
-`private static void Postfix(Pawn ___pawn)` · [L842](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:842)
+`private static void Postfix(Pawn ___pawn)` · [L846](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:846)
 
 - **역할:** 제노타입 직접 지정 후 대상 규칙과 접근 자격을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17420,7 +17482,7 @@
 
 ### 053. Patch_GeneUtility_Reimplant_RimKataTargetAccess.Postfix
 
-`private static void Postfix(Pawn recipient)` · [L852](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:852)
+`private static void Postfix(Pawn recipient)` · [L856](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:856)
 
 - **역할:** 유전자 재이식 후 수혜자의 대상 규칙과 접근 자격을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17431,7 +17493,7 @@
 
 ### 054. Patch_GeneUtility_ImplantItem_RimKataTargetAccess.Postfix
 
-`private static void Postfix(Pawn pawn)` · [L861](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:861)
+`private static void Postfix(Pawn pawn)` · [L865](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:865)
 
 - **역할:** 제노배아 이식 후 폰의 대상 규칙과 접근 자격을 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17442,7 +17504,7 @@
 
 ### 055. Patch_PawnAbilityTracker_Gain_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn, AbilityDef __0)` · [L870](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:870)
+`public static void Postfix(Pawn ___pawn, AbilityDef __0)` · [L874](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:874)
 
 - **역할:** RimKata 초능력을 획득한 뒤 초능력 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17453,7 +17515,7 @@
 
 ### 056. Patch_PawnAbilityTracker_Remove_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn, AbilityDef __0)` · [L882](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:882)
+`public static void Postfix(Pawn ___pawn, AbilityDef __0)` · [L886](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:886)
 
 - **역할:** RimKata 초능력을 잃은 뒤 초능력 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17464,7 +17526,7 @@
 
 ### 057. Patch_PawnIdeoTracker_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn)` · [L894](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:894)
+`public static void Postfix(Pawn ___pawn)` · [L898](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:898)
 
 - **역할:** 이념 변경 후 역할 기반 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17475,7 +17537,7 @@
 
 ### 058. Patch_PreceptRoleMulti_Assign_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Precept_RoleMulti __instance, Pawn p)` · [L903](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:903)
+`public static void Postfix(Precept_RoleMulti __instance, Pawn p)` · [L907](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:907)
 
 - **역할:** RimKata 이념 역할 배정 후 역할 기반 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17486,7 +17548,7 @@
 
 ### 059. Patch_PreceptRoleMulti_Unassign_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Precept_RoleMulti __instance, Pawn p)` · [L915](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:915)
+`public static void Postfix(Precept_RoleMulti __instance, Pawn p)` · [L919](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:919)
 
 - **역할:** RimKata 이념 역할 해제 후 역할 기반 접근 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17497,7 +17559,7 @@
 
 ### 060. Patch_PawnHealthTracker_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L927](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:927)
+`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L931](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:931)
 
 - **역할:** 신체 부위에 연결된 건강 효과 변경 후 전투 Verb 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17508,7 +17570,7 @@
 
 ### 061. Patch_PawnHealthTracker_AddHediff_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L946](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:946)
+`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L950](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:950)
 
 - **역할:** 건강 효과 추가 후 관련 자격 캐시·손 결손 보조 무기를 갱신하고 혈청 투여 시 의존 시간을 초기화합니다. 허용 이식물과 신체 손실의 근력 갱신 사건도 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17519,7 +17581,7 @@
 
 ### 062. Patch_PawnHealthTracker_RemoveHediff_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L966](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:966)
+`public static void Postfix(Pawn ___pawn, Hediff __0)` · [L970](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:970)
 
 - **역할:** 건강 효과 제거 후 해당 효과의 자격·혈청·결속 캐시를 무효화합니다. 제거된 허용 이식물·신체 손실에 따른 근력 갱신 사건도 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17530,7 +17592,7 @@
 
 ### 063. Patch_PawnRelationsTracker_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn)` · [L976](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:976)
+`public static void Postfix(Pawn ___pawn)` · [L980](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:980)
 
 - **역할:** 직접 관계 변경 후 혈청 의존 극복 결속 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17541,7 +17603,7 @@
 
 ### 064. Patch_PawnRelationsTracker_RemoveVirtual_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn)` · [L985](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:985)
+`public static void Postfix(Pawn ___pawn)` · [L989](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:989)
 
 - **역할:** 가상 관계 제거 후 혈청 의존 극복 결속 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17552,7 +17614,7 @@
 
 ### 065. Patch_PawnRelationsTracker_CleanupVirtual_RimKataEligibilityCache.Postfix
 
-`public static void Postfix(Pawn ___pawn)` · [L994](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:994)
+`public static void Postfix(Pawn ___pawn)` · [L998](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEligibilityCache.cs:998)
 
 - **역할:** 가상 관계 정리 후 혈청 의존 극복 결속 캐시를 무효화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17572,7 +17634,7 @@
 
 `internal static void DrawRegisteredEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags, RimKataResponseVisualParticipantCache.BodyVisualEntry entry, float bodyAltitude)` · [L16](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:16)
 
-- **역할:** 진입점이 확보한 등록 자료를 그대로 장비 문맥에 전달합니다. 돌파·제압·반응 동작과 중첩 렌더는 특수 문맥을 열고 종료·예외 후 이전 문맥을 복원합니다. 진입점의 실제 몸 깊이도 같은 문맥으로 전달합니다.
+- **역할:** 진입점이 확보한 등록 자료를 그대로 장비 문맥에 전달합니다. 돌파·제압·반응 동작과 중첩 렌더는 특수 문맥을 열고 종료·예외 후 이전 문맥을 복원합니다. 진입점의 실제 몸 깊이도 같은 문맥으로 전달합니다. 이미 전달된 날아 차기 자료가 있으면 특수 장비 출력 경로로 연결합니다. 이미 전달된 참가자 항목에 발차기 자료가 있으면 특수 장비 렌더 경로를 사용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras(Verse.Pawn pawn, UnityEngine.Vector3 drawPos, Verse.Rot4 facing, Verse.PawnRenderFlags flags)](#m-2713) · [RimKataEquipmentRenderHooks.DrawSpecialEquipmentAndApparelExtras(Verse.Pawn pawn, UnityEngine.Vector3 drawPos, Verse.Rot4 facing, Verse.PawnRenderFlags flags)](#m-2745) · [RimKataWorldRenderContext.BeginRegistered(Verse.Pawn pawn, RimKataResponseVisualParticipantCache.BodyVisualEntry entry, bool portrait, float bodyAltitude)](#m-2747) · [RimKataWorldRenderContext.End(RimKataWorldRenderContext.Scope scope)](#m-2372)
 - **호출 — 외부:** 없음
@@ -17581,7 +17643,7 @@
 
 ### 002. RimKataEquipmentRenderHooks.DrawSpecialEquipmentAndApparelExtras
 
-`internal static void DrawSpecialEquipmentAndApparelExtras( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)` · [L37](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:37)
+`internal static void DrawSpecialEquipmentAndApparelExtras( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)` · [L38](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:38)
 
 - **역할:** 등록된 돌파·제압·슬라이딩·떨치기의 특수 장비 Prefix/Postfix/Finalizer 대상입니다. 평시 자격자의 최상위 장비 출력은 이 경로를 생략합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -17592,7 +17654,7 @@
 
 ### 003. RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras
 
-`internal static void DrawEquipmentAndApparelExtras( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)` · [L44](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:44)
+`internal static void DrawEquipmentAndApparelExtras( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)` · [L45](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:45)
 
 - **역할:** 살아 있는 폰의 네이티브 장비 호출 전용 입구입니다. 이 함수에 림카타 장비 문맥 패치를 붙이고 원래 바닐라 함수와 그 외부 모드 패치를 실행합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17603,7 +17665,7 @@
 
 ### 004. RimKataEquipmentRenderHooks.ReplaceEquipmentCall
 
-`internal static IEnumerable<CodeInstruction> ReplaceEquipmentCall( IEnumerable<CodeInstruction> instructions, ILGenerator generator, bool cached)` · [L51](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:51)
+`internal static IEnumerable<CodeInstruction> ReplaceEquipmentCall( IEnumerable<CodeInstruction> instructions, ILGenerator generator, bool cached)` · [L52](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:52)
 
 - **역할:** 바닐라 장비 호출 앞에 기존 dead 값과 등록 슬롯 분기를 삽입합니다. 일반 폰·시체는 바닐라 출력으로 진행하고 등록 자료는 림카타 장비 문맥에 직접 전달합니다. 중첩 일반 폰은 부모 연출 가림용 빈 문맥만 사용합니다. 등록된 장비 호출에만 바닐라가 계산한 실제 몸 깊이를 추가 전달하여 일반 폰·시체 제외 분기를 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17614,7 +17676,7 @@
 
 ### 005. RimKataEquipmentRenderHooks.LoadBodyAltitude
 
-`private static IEnumerable<CodeInstruction> LoadBodyAltitude(bool cached, FieldInfo results)` · [L116](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:116)
+`private static IEnumerable<CodeInstruction> LoadBodyAltitude(bool cached, FieldInfo results)` · [L117](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:117)
 
 - **역할:** 장비 렌더 진입점의 기존 바닐라 자료에서 몸의 실제 깊이를 읽는 IL을 만듭니다. 캐시 경로는 results.bodyPos.y, 운반 노드 경로는 PawnDrawParms.matrix.m13을 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -17625,7 +17687,7 @@
 
 ### 006. Patch_PawnRenderer_RimKataEquipmentEntry.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L137](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:137)
+`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L138](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:138)
 
 - **역할:** RenderPawnAt의 캐시 장비 호출에 살아 있는 폰 전용 림카타 입구를 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -17636,7 +17698,7 @@
 
 ### 007. Patch_PawnRenderNodeWorker_RimKataEquipmentEntry.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L145](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:145)
+`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L146](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRenderHooks.cs:146)
 
 - **역할:** Carried.PostDraw의 장비 호출에 살아 있는 폰 전용 림카타 입구를 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -18421,6 +18483,623 @@
 - **호출 — 외부:** 없음
 
 
+<a id="file-137"></a>
+
+## 137. RimKataFlyingKick.cs
+
+[Source/RimKataFlyingKick.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs) · 메서드 **25개** · 등록된 자격자의 직선 접근 날아 차기·공격과 연출 단계 분리·발끝 접촉·맨손 한 타격 대체·중단 및 넘어짐 인계 · [파일 목차](#files)
+
+<a id="m-2890"></a>
+
+### 001. RimKataFlyingKickState.ExposeData
+
+`public void ExposeData()` · [L29](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:29)
+
+- **역할:** 날아 차기의 연출 단계·원래 목표·작업·시간·시선·직전 셀·접근 방향·맨손 대체 여부와 공격 확정 결과를 저장합니다. 접촉 시작 여부·보간 시작/끝·진행 시간·발끝 위치도 보존하며 이전 저장의 접촉 단계는 현재 발끝이 튀지 않도록 새 보간 경로로 이관합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseUtility.LieAngle(UnityEngine.Vector3 direction, Verse.Rot4 facing)](#m-1313)
+- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×24 · `System.Math.Max(int val1, int val2)` ×2 · `UnityEngine.Mathf.Clamp01(float value)` ×2 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])`
+
+<a id="m-2891"></a>
+
+### 002. RimKataFlyingKick.CellEntered
+
+`internal static void CellEntered(RimKataResponseVisualParticipantCache.BodyVisualEntry entry, IntVec3 previous)` · [L90](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:90)
+
+- **역할:** 등록된 자격자의 실제 3칸→2칸 직선 접근에서 전투 플래그·프로필별 아군/적군 허용·접근 작업·자세·경로를 확인합니다. 독립 날아 차기 상태를 만든 즉시 접촉 경로를 준비하여 도약 시작부터 전진 연출을 진행하며 실제 이동 경로는 유지합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Distance(Verse.IntVec3 a, Verse.IntVec3 b)](#m-2892) ×2 · [RimKataFlyingKick.ApprovedApproach(Verse.Pawn pawn, Verse.Thing target, ref RimKataPawnCombatState combat)](#m-2893) · [RimKataFlyingKick.BeginContact(RimKataPawnCombatState combat)](#m-2943) · [RimKataFlyingKick.CanStart(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-2894) · [RimKataFlyingKick.HasOtherMotion(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-2895) · [RimKataFlyingKick.LiveTarget(Verse.Pawn pawn, Verse.Thing target)](#m-2896) · [RimKataFlyingKick.Publish(RimKataPawnCombatState combat)](#m-2908) · [RimKataFlyingKick.StraightPath(Verse.Pawn pawn, Verse.IntVec3 destination)](#m-2897) · [RimKataMapComponent.GetState(Verse.Pawn pawn, bool createIfMissing)](#m-0593) · [RimKataSettings.GetFlyingKickAllowed(Verse.Pawn pawn)](#m-2949) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataGroundPoseUtility.LieAngle(UnityEngine.Vector3 direction, Verse.Rot4 facing)](#m-1313)
+- **호출 — 외부:** `System.Math.Sign(int value)` ×2 · `System.Collections.Generic.Dictionary<TKey, TValue>.ContainsKey(TKey key)` · `Verse.Map.GetComponent<T>()` · `Verse.Rot4.FromAngleFlat(float angle)`
+
+<a id="m-2892"></a>
+
+### 003. RimKataFlyingKick.Distance
+
+`internal static int Distance(IntVec3 a, IntVec3 b)` · [L122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:122)
+
+- **역할:** 두 셀의 가로·세로 차이 중 큰 값을 반환하여 8방향 셀 거리를 계산합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Math.Abs(int value)` ×2 · `System.Math.Max(int val1, int val2)`
+
+<a id="m-2893"></a>
+
+### 004. RimKataFlyingKick.ApprovedApproach
+
+`private static bool ApprovedApproach(Pawn pawn, Thing target, ref RimKataPawnCombatState combat)` · [L125](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:125)
+
+- **역할:** 현재 작업의 목표가 실제 접근 대상과 일치하는지 확인하고 명시적 근접 명령·맨손 자동 근접 접근·기존 플레이어 돌격 요청 또는 승인된 자동 돌격만 허용합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.TryGetOwner(Verse.Pawn pawn, out RimKataMapComponent component)](#m-0484) · [RimKataDualWeaponController.CanRushTarget(Verse.Pawn pawn, Verse.Thing target)](#m-1007) · [RimKataMapComponent.GetState(Verse.Pawn pawn, bool createIfMissing)](#m-0593) · [RimKataPawnCombatState.IsPlayerRushRequestFor(Verse.Thing target)](#m-0538)
+- **호출 — 외부:** 없음
+
+<a id="m-2894"></a>
+
+### 005. RimKataFlyingKick.CanStart
+
+`private static bool CanStart(Pawn pawn, RimKataPawnCombatState combat)` · [L139](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:139)
+
+- **역할:** 등록된 접근자가 서 있고 깨어 있으며 stagger·기절·화재·정신이상·다른 특수 동작에 막히지 않고 지원되는 신체 렌더를 가졌는지 확인합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.HasOtherMotion(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-2895) · [RimKataGroundPoseHead.Supports(Verse.Pawn pawn)](#m-1354)
+- **호출 — 외부:** `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `RimWorld.PawnUtility.GetPosture(Verse.Pawn p)` · `RimWorld.RestUtility.Awake(Verse.Pawn p)`
+
+<a id="m-2895"></a>
+
+### 006. RimKataFlyingKick.HasOtherMotion
+
+`private static bool HasOtherMotion(Pawn pawn, RimKataPawnCombatState combat)` · [L146](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:146)
+
+- **역할:** 이미 전달된 전투 상태의 넘어짐·슬라이딩·떨치기·회피·회전과 돌파·제압을 확인하여 날아 차기와 다른 특수 동작이 겹치지 않도록 합니다. 일반 발차기의 활성 연출도 날아 차기를 시작할 수 없는 별도 연출로 취급합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574)
+- **호출 — 외부:** 없음
+
+<a id="m-2896"></a>
+
+### 007. RimKataFlyingKick.LiveTarget
+
+`private static bool LiveTarget(Pawn pawn, Thing target)` · [L153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:153)
+
+- **역할:** 원래 지정한 목표의 생성·맵·적대 관계와 폰 대상 상태를 확인하며 주변 후보를 새로 탐색하지 않습니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataTargeting.IsAutomaticEnemy(Verse.Pawn pawn, Verse.Thing target)](#m-1957) · [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961)
+- **호출 — 외부:** 없음
+
+<a id="m-2897"></a>
+
+### 008. RimKataFlyingKick.StraightPath
+
+`internal static bool StraightPath(Pawn pawn, IntVec3 destination)` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:158)
+
+- **역할:** 현재 셀에서 목표까지 최대 두 칸의 8방향 직선에 대해 대상별 보행 가능성·문·점유와 바닐라 대각 모서리 차단을 확인합니다. 위치 변경이나 전체 경로 탐색은 하지 않습니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Math.Abs(int value)` ×2 · `System.Math.Sign(int value)` ×2 · `Verse.PathUtility.BlocksDiagonalMovement(int x, int z, Verse.AI.PathingContext pc, bool canBashFences)` ×2 · `System.Math.Max(int val1, int val2)` · `Verse.AI.Pathing.For(Verse.Pawn pawn)` · `Verse.GenGrid.InBounds(Verse.IntVec3 c, Verse.Map map)` · `Verse.GenGrid.WalkableBy(Verse.IntVec3 c, Verse.Map map, Verse.Pawn pawn)` · `Verse.GridsUtility.GetDoor(Verse.IntVec3 c, Verse.Map map)` · `Verse.GridsUtility.GetThingList(Verse.IntVec3 c, Verse.Map map)`
+
+<a id="m-2898"></a>
+
+### 009. RimKataFlyingKick.Tick
+
+`internal static void Tick(RimKataPawnCombatState combat)` · [L187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:187)
+
+- **역할:** 활성 날아 차기만 틱당 한 번 진행하며 실제 Touch 타격·결과 보관과 연출을 분리합니다. 도약 시작부터 접촉점까지 발끝을 보간하고 첫 6틱 상승 후 남은 접근 동안 높이를 낮춥니다. 북쪽은 기존 넘어져 쏴에서 구한 접근 반대 방향의 눕는 각도로, 나머지는 기존 발차기 각도로 최고점부터 6틱 동안 전환하며 전진·회전·타격 결과가 모두 준비되면 착지 또는 실패 넘어짐에 인계합니다. 실패 시 날아 차기 상태·렌더 등록을 종료하고 기존 Fallen에 넘기며 시선 인수나 남쪽 옆모습 보정은 인계하지 않습니다. 경로는 실제 셀 변화 때만 재검증합니다. 실패 착지는 실제 approachStep에서 계산한 lieAngle을 그대로 사용합니다. 동서 시선의 ±90도 강제로 대각선 각도를 덮어쓰지 않습니다. 완료 뒤 기존 Fallen 유지/기립으로 인계합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Abort(RimKataPawnCombatState combat)](#m-2903) ×3 · [RimKataFlyingKick.Side(RimKataFlyingKickState flight)](#m-2899) ×3 · [RimKataFlyingKick.Clear(RimKataPawnCombatState combat)](#m-2906) ×2 · [RimKataFlyingKick.ObserveAttackResult(RimKataPawnCombatState combat)](#m-2942) ×2 · [RimKataFlyingKick.BeginContact(RimKataPawnCombatState combat)](#m-2943) · [RimKataFlyingKick.BeginDescent(RimKataFlyingKickState flight, RimKataFlyingKickPhase phase, int ticks)](#m-2945) · [RimKataFlyingKick.HasOtherMotion(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-2895) · [RimKataFlyingKick.LiveTarget(Verse.Pawn pawn, Verse.Thing target)](#m-2896) · [RimKataFlyingKick.Publish(RimKataPawnCombatState combat)](#m-2908) · [RimKataFlyingKick.Strike(RimKataPawnCombatState combat)](#m-2901) · [RimKataFlyingKick.StraightPath(Verse.Pawn pawn, Verse.IntVec3 destination)](#m-2897) · [RimKataFlyingKickRender.NaturalFoot(Verse.Pawn pawn, RimKataFlyingKickVisual visual)](#m-2947) · [RimKataGroundPoseUtility.AcceptFlyingKickFall(RimKataPawnCombatState state, Verse.Thing target, float angle, UnityEngine.Vector3 offset)](#m-2939)
+- **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)` ×5 · `System.Math.Max(int val1, int val2)` ×3 · `UnityEngine.Mathf.Lerp(float a, float b, float t)` ×2 · `UnityEngine.Vector3.Lerp(UnityEngine.Vector3 a, UnityEngine.Vector3 b, float t)` ×2 · `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `RimWorld.RestUtility.Awake(Verse.Pawn p)` · `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
+
+<a id="m-2942"></a>
+
+### 010. RimKataFlyingKick.ObserveAttackResult
+
+`private static void ObserveAttackResult(RimKataPawnCombatState combat)` · [L284](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:284)
+
+- **역할:** 접점에서 직접 실행한 전용 공격 결과를 한 번 보관하고 맨손 대체에 사용할 회복 틱을 계산합니다. 피해 처리를 다음 틱이나 네이티브 완료 콜백까지 기다리지 않습니다. 취소는 중단 하강으로 연결합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Abort(RimKataPawnCombatState combat)](#m-2903)
+- **호출 — 외부:** `System.Math.Max(int val1, int val2)` · `UnityEngine.Mathf.RoundToInt(float f)` · `Verse.VerbProperties.AdjustedCooldownTicks(Verse.Verb ownerVerb, Verse.Pawn attacker)`
+
+<a id="m-2943"></a>
+
+### 011. RimKataFlyingKick.BeginContact
+
+`private static void BeginContact(RimKataPawnCombatState combat)` · [L292](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:292)
+
+- **역할:** 도약 시작 사건에서 현재 발끝·원래 대상 접촉점과 남은 이동 시간을 한 번 준비하며 연출 단계는 바꾸지 않습니다. 상승 6틱과 눕기 6틱을 포함하도록 전체 전진 시간을 최소 12틱으로 잡고, 저장 복구로 중간에 시작하면 현재 발끝 위치가 유지되도록 보간 시작점을 역산합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.ContactDuration(Verse.Pawn pawn, Verse.IntVec3 step)](#m-2944) · [RimKataFlyingKickRender.CaptureContact(Verse.Pawn pawn, Verse.Thing target, RimKataFlyingKickVisual visual, out UnityEngine.Vector3 start, out UnityEngine.Vector3 end)](#m-2948)
+- **호출 — 외부:** `System.Math.Max(int val1, int val2)` · `UnityEngine.Mathf.Clamp01(float value)` · `Verse.IntVec3.ToVector3Shifted()`
+
+<a id="m-2944"></a>
+
+### 012. RimKataFlyingKick.ContactDuration
+
+`private static int ContactDuration(Pawn pawn, IntVec3 step)` · [L311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:311)
+
+- **역할:** 현재 이동의 남은 셀 비용과 바닐라 틱당 이동 비용으로 접촉 연출의 남은 시간을 구합니다. 남은 비용이 없으면 원래 접근 방향의 다음 셀 비용을 사용하며 실제 이동 속도·점유는 바꾸지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)` ×2 · `System.Math.Max(int val1, int val2)` · `UnityEngine.Mathf.CeilToInt(float f)` · `Verse.GenGrid.InBounds(Verse.IntVec3 c, Verse.Map map)`
+- **델리게이트 호출:** `System.Func<T, TResult>.Invoke(T arg)` · `System.Func<T1, T2, TResult>.Invoke(T1 arg1, T2 arg2)`
+
+<a id="m-2945"></a>
+
+### 013. RimKataFlyingKick.BeginDescent
+
+`private static void BeginDescent(RimKataFlyingKickState flight, RimKataFlyingKickPhase phase, int ticks)` · [L327](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:327)
+
+- **역할:** 착지·실패·중단 하강의 단계와 시작 높이·회전·발끝 위치를 보관하고 해당 하강 시간을 설정합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2899"></a>
+
+### 014. RimKataFlyingKick.Side
+
+`private static int Side(RimKataFlyingKickState flight)` · [L337](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:337)
+
+- **역할:** 동서 시선의 기존 준비·타격 기울기 부호를 반환합니다. 남북 준비 기울기는0이며 남북 타격·착지는 실제 접근 반대 방향의 눕는 각도를 사용합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2900"></a>
+
+### 015. RimKataFlyingKick.ExecuteAttack
+
+`private static bool ExecuteAttack(RimKataPawnCombatState combat)` · [L343](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:343)
+
+- **역할:** 현재 자격자의 날아 차기 피해 배율과 기절 확률을 얻어 접점 전용 타격을 즉시 한 번 실행합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickAttack.Execute(Verse.Pawn attacker, Verse.Thing victim, float damageMultiplier, float impactStunChance)](#m-2911) · [RimKataSettings.GetFlyingKickStunChance(Verse.Pawn pawn)](#m-2940) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949)
+- **호출 — 외부:** 없음
+
+<a id="m-2901"></a>
+
+### 016. RimKataFlyingKick.Strike
+
+`private static bool Strike(RimKataPawnCombatState combat)` · [L350](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:350)
+
+- **역할:** 연출이 상승 또는 접촉 중이며 아직 실행되지 않은 접점 타격을 한 번 실행합니다. 본인 상태·원래 작업·대상·Touch 조건을 확인하고 결과를 즉시 소비합니다. 연출 단계는 기존 시간대로 유지하고 실행 불가는 중단 하강으로 연결합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Abort(RimKataPawnCombatState combat)](#m-2903) · [RimKataFlyingKick.ExecuteAttack(RimKataPawnCombatState combat)](#m-2900) · [RimKataFlyingKick.ObserveAttackResult(RimKataPawnCombatState combat)](#m-2942) · [RimKataFlyingKick.LiveTarget(Verse.Pawn pawn, Verse.Thing target)](#m-2896)
+- **호출 — 외부:** 없음
+
+<a id="m-2902"></a>
+
+### 017. RimKataFlyingKick.ReplaceUnarmedAttack
+
+`internal static bool ReplaceUnarmedAttack(Pawn pawn, Thing target, out bool result)` · [L369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:369)
+
+- **역할:** 등록된 날아 차기 참가자가 원래 목표에게 시도하는 맨손 타격을 전용 타격으로 한 번 대체합니다. 상승·접촉 중에도 동일 접점 실행을 사용하며 Completed로 중복 타격을 막습니다. 완료 후 저장된 회복 틱과 공격 시행 결과를 원래 호출자에게 전달합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Strike(RimKataPawnCombatState combat)](#m-2901)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `Verse.Pawn_StanceTracker.SetStance(Verse.Stance newStance)` · `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
+
+<a id="m-2903"></a>
+
+### 018. RimKataFlyingKick.Abort
+
+`internal static void Abort(RimKataPawnCombatState combat)` · [L374](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:374)
+
+- **역할:** 아직 실행하지 않은 날아 차기를 취소하고 공통 하강 시작 처리로 현재 자세에서 정상 자세로 돌아가며 맨손 대체를 해제합니다. 이미 실행한 타격 결과는 덮어쓰지 않습니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.BeginDescent(RimKataFlyingKickState flight, RimKataFlyingKickPhase phase, int ticks)](#m-2945) · [RimKataFlyingKickAttack.Cancel()](#m-2916)
+- **호출 — 외부:** `System.Math.Max(int val1, int val2)` · `System.Math.Min(int val1, int val2)`
+
+<a id="m-2904"></a>
+
+### 019. RimKataFlyingKick.QualificationLost
+
+`internal static void QualificationLost(Pawn pawn)` · [L383](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:383)
+
+- **역할:** 자격 상실 사건에 전달된 폰이 실제 날아 차기 참가자인 경우에만 독립 상태를 중단합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Abort(RimKataPawnCombatState combat)](#m-2903)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
+
+<a id="m-2905"></a>
+
+### 020. RimKataFlyingKick.ResetGame
+
+`internal static void ResetGame()` · [L388](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:388)
+
+- **역할:** 게임 교체 시 날아 차기 활성 참가 등록을 비워 이전 게임의 폰·전투 상태 참조를 남기지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()`
+
+<a id="m-2906"></a>
+
+### 021. RimKataFlyingKick.Clear
+
+`internal static void Clear(RimKataPawnCombatState combat)` · [L390](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:390)
+
+- **역할:** 해당 날아 차기의 공격 요청·상태·활성 등록과 게시된 연출 자료를 함께 정리합니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickAttack.Cancel()](#m-2916) · [RimKataFlyingKickRender.Remove(Verse.Pawn pawn)](#m-2924)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Remove(TKey key)`
+
+<a id="m-2907"></a>
+
+### 022. RimKataFlyingKick.Rebuild
+
+`internal static void Rebuild(RimKataPawnCombatState combat)` · [L399](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:399)
+
+- **역할:** 저장된 날아 차기 상태의 활성 등록과 렌더 프레임 참조를 다시 연결하고 연출 자료를 게시합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKick.Publish(RimKataPawnCombatState combat)](#m-2908)
+- **호출 — 외부:** 없음
+
+<a id="m-2908"></a>
+
+### 023. RimKataFlyingKick.Publish
+
+`private static void Publish(RimKataPawnCombatState combat)` · [L407](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:407)
+
+- **역할:** 활성 날아 차기의 타격 자세 구간 여부와 기존 시각 자료를 등록 참가자에게 게시합니다. 남쪽 무작위 옆모습은 이 구간 표시를 사용하며 도약·실패 하강·착지에서는 적용하지 않습니다. Strike와 Fall 단계의 렌더 플래그를 함께 게시합니다. falling은 단계에서 다시 만들며 별도 저장하지 않습니다. Fall 단계에서만 원래 공격 대상을 aimTarget으로 함께 게시하며 새 탐색이나 공격 명령은 만들지 않습니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Publish(Verse.Pawn pawn, RimKataFlyingKickVisual visual)](#m-2923)
+- **호출 — 외부:** 없음
+
+<a id="m-2909"></a>
+
+### 024. Patch_PathCell_RimKataFlyingKick.Transpiler
+
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L414](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:414)
+
+- **역할:** 바닐라 셀 진입 코드에 등록된 자격자 게이트를 삽입하고 진입 전 셀과 실행 후 결과를 날아 차기에 전달합니다. 일반 폰은 날아 차기 확인 함수에 진입하지 않습니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataRegisteredPawnGate.Branch(System.Reflection.Emit.ILGenerator generator, System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; loadPawn, System.Reflection.Emit.Label absent, bool qualifiedOnly, out System.Reflection.Emit.LocalBuilder entry)](#m-2746) ×2
+- **호출 — 외부:** `HarmonyLib.CodeInstructionExtensions.WithLabels(HarmonyLib.CodeInstruction code, params System.Reflection.Emit.Label[] labels)` ×3 · `System.Reflection.Emit.ILGenerator.DefineLabel()` ×3 · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)` ×2 · `HarmonyLib.AccessTools.Field(System.Type type, string name)` · `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.AccessTools.PropertyGetter(System.Type type, string name)`
+
+<a id="m-2910"></a>
+
+### 025. Patch_MeleeAttempt_RimKataFlyingKick.Transpiler
+
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L453](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKick.cs:453)
+
+- **역할:** 바닐라 근접 공격 시도에서 등록된 자격자이며 날아 차기 연출 자료가 있는 경우만 맨손 타격 대체에 연결합니다. 그 외에는 원래 근접 공격 본문을 유지합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataRegisteredPawnGate.Branch(System.Reflection.Emit.ILGenerator generator, System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; loadPawn, System.Reflection.Emit.Label absent, bool qualifiedOnly, out System.Reflection.Emit.LocalBuilder entry)](#m-2746)
+- **호출 — 외부:** `HarmonyLib.AccessTools.Field(System.Type type, string name)` ×2 · `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.AccessTools.PropertyGetter(System.Type type, string name)` · `HarmonyLib.CodeInstructionExtensions.WithLabels(HarmonyLib.CodeInstruction code, params System.Reflection.Emit.Label[] labels)` · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)` · `System.Reflection.Emit.ILGenerator.DefineLabel()`
+
+
+<a id="file-138"></a>
+
+## 138. RimKataFlyingKickCombat.cs
+
+[Source/RimKataFlyingKickCombat.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs) · 메서드 **9개** · 날아 차기 전용 Verb·접점 단발 실행·최종 방어 결과·상처 출처 표기·고정 시간 기절 · [파일 목차](#files)
+
+<a id="m-2911"></a>
+
+### 001. RimKataFlyingKickAttack.Execute
+
+`internal bool Execute(Pawn attacker, Thing victim, float damageMultiplier, float impactStunChance)` · [L29](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:29)
+
+- **역할:** Completed를 먼저 고정해 접점 타격을 한 번만 실행합니다. 전용 Verb의 실제 명중·방어 결과를 받은 뒤 살아 있고 다운되지 않은 대상에게 설정 확률로 120틱 기절을 직접 적용하며 finally에서 공격 문맥을 복원합니다. 무기 요청·VerbTick 대기·네이티브 완료 콜백은 없습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickAttack.Prepare(Verse.Pawn attacker)](#m-2912) · [Verb_RimKataFlyingKick.Execute(Verse.LocalTargetInfo victim, float power)](#m-2917)
+- **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)` · `UnityEngine.Mathf.Max(float a, float b)` · `Verse.Rand.Chance(float chance)` · `RimWorld.StunHandler.StunFor(...)`
+
+<a id="m-2912"></a>
+
+### 002. RimKataFlyingKickAttack.Prepare
+
+`private bool Prepare(Pawn attacker)` · [L54](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:54)
+
+- **역할:** 바닐라 인간 주먹의 기본 피해·회복·관통 자료를 찾아 보관하고 날아 차기 Maneuver와 ToolCapacity로 독립 Verb를 준비합니다. 일반 근접 공격 후보나 도구 선택을 바꾸지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Collections.Generic.List<T>.Contains(T item)` · `Verse.DefDatabase<T>.GetNamedSilentFail(string defName)` · `Verse.Log.WarningOnce(string text, int key)`
+
+<a id="m-2916"></a>
+
+### 003. RimKataFlyingKickAttack.Cancel
+
+`internal void Cancel()` · [L99](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:99)
+
+- **역할:** 실행 전의 날아 차기만 취소로 확정합니다. 이미 완료한 명중·피해·기절 결과는 유지합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2917"></a>
+
+### 004. Verb_RimKataFlyingKick.Execute
+
+`internal bool Execute(LocalTargetInfo victim, float power)` · [L114](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:114)
+
+- **역할:** 전용 Tool 피해와 대상을 준비하고 TryCastShot을 한 번 직접 호출합니다. 명중·회피·쳐내기·방어구 처리는 기존 경로를 사용하며 모든 후처리 뒤 finally에서 대상을 비웁니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [Verb_RimKataFlyingKick.TryCastShot()](#m-2918)
+- **호출 — 외부:** 없음
+
+<a id="m-2918"></a>
+
+### 005. Verb_RimKataFlyingKick.TryCastShot
+
+`protected override bool TryCastShot()` · [L125](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:125)
+
+- **역할:** 바닐라 근접 공격을 실행한 뒤 실제 피해 경로 진입과 최종 방어 허용 여부를 함께 사용하여 날아 차기의 명중 결과를 확정합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `RimWorld.Verb_MeleeAttack.TryCastShot()`
+
+<a id="m-2919"></a>
+
+### 006. Verb_RimKataFlyingKick.ApplyMeleeDamageToTarget
+
+`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo victim)` · [L132](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:132)
+
+- **역할:** 실제 피해 단계 진입을 기록하고 바닐라 근접 피해 계산·적용을 실행합니다. 이번 결과가 만든 상처만 날아 차기 피해 정의의 출처 이름으로 정리하고 도구·신체 부위 출처 표기는 제거합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `RimWorld.Verb_MeleeAttackDamage.ApplyMeleeDamageToTarget(Verse.LocalTargetInfo target)`
+
+<a id="m-2920"></a>
+
+### 007. Verb_RimKataFlyingKick.RecordDamageDecision
+
+`internal void RecordDamageDecision(Pawn victim, DamageInfo damage, bool allowed)` · [L149](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:149)
+
+- **역할:** 이번 날아 차기의 실제 피해 대상·공격자와 일치하는 양수 피해에서 피해 허용 여부를 기록하여 흡수·방어 성공을 명중과 구분합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2921"></a>
+
+### 008. Verb_RimKataFlyingKick.RecordResolvedDefense
+
+`internal void RecordResolvedDefense(bool allowed)` · [L156](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:156)
+
+- **역할:** 외부 방어 호환 경로가 이미 확정한 이번 날아 차기의 허용 여부를 기록하며 확률을 다시 굴리지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2922"></a>
+
+### 009. Verb_RimKataFlyingKick.FullBodyBusy
+
+`internal static bool FullBodyBusy(Pawn_StanceTracker tracker, Verb_MeleeAttack verb)` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickCombat.cs:158)
+
+- **역할:** 전용 날아 차기 Verb만 기존 무기 자세의 전신 사용 중 판정에서 분리하고 다른 근접 Verb의 원래 판정은 유지합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+
+<a id="file-139"></a>
+
+## 139. RimKataFlyingKickRender.cs
+
+[Source/RimKataFlyingKickRender.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs) · 메서드 **20개** · 날아 차기의 발 기준 몸 회전·상승·지정 대상 접촉점과 장비 변위·그림자·발사 원점 문맥 · [파일 목차](#files)
+
+<a id="m-3014"></a>
+
+### 001. RimKataFlyingKickRender.RenderFacing
+
+`internal static Rot4 RenderFacing(RimKataFlyingKickVisual visual)` · [L55](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:55)
+
+- **역할:** 북쪽은 기존 넘어짐의 FacingAt으로 렌더 방향을 구합니다. 실제 남쪽 날아 차기는 타격 자세 구간에서만 시작 시 무작위 선택한 동쪽/서쪽을 몸·머리에 적용합니다. 도약·착지·실패 하강과 무기에는 남쪽 옆모습 보정을 적용하지 않습니다. 실패 하강은 모든 방향에 기존 FacingAt을 사용합니다. Rot4는 텍스처 선택이고 눕는 실수 각도를 4방향으로 제한하는 값이 아닙니다. 남쪽 무작위 옆모습은 Strike에만 적용합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseState.FacingAt(float headAimAngle, float drawAngle)](#m-3015)
+- **호출 — 외부:** 없음
+
+<a id="m-2923"></a>
+
+### 002. RimKataFlyingKickRender.Publish
+
+`internal static void Publish(Pawn pawn, RimKataFlyingKickVisual visual)` · [L60](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:60)
+
+- **역할:** 날아 차기 연출 값을 기존 참가자 자료에 게시합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.PublishFlyingKick(Verse.Pawn pawn, RimKataFlyingKickVisual? visual)](#m-2889)
+- **호출 — 외부:** 없음
+
+<a id="m-2924"></a>
+
+### 003. RimKataFlyingKickRender.Remove
+
+`internal static void Remove(Pawn pawn)` · [L63](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:63)
+
+- **역할:** 완료·중단된 날아 차기의 게시 자료만 기존 참가자 항목에서 제거합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.PublishFlyingKick(Verse.Pawn pawn, RimKataFlyingKickVisual? visual)](#m-2889)
+- **호출 — 외부:** 없음
+
+<a id="m-2925"></a>
+
+### 004. RimKataFlyingKickRender.Prepare
+
+`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataFlyingKickVisual visual)` · [L66](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:66)
+
+- **역할:** 살아 있는 월드 렌더의 실제 몸·발 기준점을 읽어 프레임에 보관하고 날아 차기 높이·회전·변위를 기존 몸 렌더 요청에 적용합니다. 초상화·시체는 처리하지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Transform(UnityEngine.Vector3 foot, RimKataFlyingKickVisual visual)](#m-2926) · [RimKataGroundPoseGeometry.ObserveBody(Verse.PawnDrawParms parms, UnityEngine.Vector3 foot, UnityEngine.Vector3 anchor, UnityEngine.Vector3 center, float northReach, UnityEngine.Vector3? head)](#m-1344) · [RimKataGroundPoseHead.TryGetHeadMatrix(Verse.PawnDrawParms parms, out UnityEngine.Matrix4x4 matrix)](#m-1358)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)` ×4 · `UnityEngine.Mathf.Max(float a, float b)`
+
+<a id="m-2946"></a>
+
+### 005. RimKataFlyingKickRender.Translation
+
+`private static Vector3 Translation(Vector3 foot, RimKataFlyingKickVisual visual)` · [L102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:102)
+
+- **역할:** 발끝이 고정되기 전에는 상승 높이·변위를, 접촉 시작 후에는 현재 자연스러운 발 위치에서 저장된 발끝 접촉 위치까지의 평면 변위를 반환합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2926"></a>
+
+### 006. RimKataFlyingKickRender.Transform
+
+`private static Matrix4x4 Transform(Vector3 foot, RimKataFlyingKickVisual visual)` · [L108](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:108)
+
+- **역할:** 발 기준 몸 회전과 상승·접촉에 해당하는 평면 변위를 결합해 연출 행렬을 만듭니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Translation(UnityEngine.Vector3 foot, RimKataFlyingKickVisual visual)](#m-2946)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.Translate(UnityEngine.Vector3 vector)` ×3 · `UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion q)` · `UnityEngine.Quaternion.AngleAxis(float angle, UnityEngine.Vector3 axis)`
+
+<a id="m-2927"></a>
+
+### 007. RimKataFlyingKickRender.ReadGeometry
+
+`private static Geometry ReadGeometry(RimKataFlyingKickVisual visual)` · [L114](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:114)
+
+- **역할:** 날아 차기 프레임에 게시된 실제 신체 기준점을 읽고 아직 준비되지 않은 경우 최소 발 기준점을 사용합니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2947"></a>
+
+### 008. RimKataFlyingKickRender.NaturalFoot
+
+`internal static Vector3 NaturalFoot(Pawn pawn, RimKataFlyingKickVisual visual)` · [L122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:122)
+
+- **역할:** 폰의 실제 DrawPos와 이미 준비된 발 기준점을 합쳐 연출 변환 이전의 발 위치를 반환합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927)
+- **호출 — 외부:** 없음
+
+<a id="m-2948"></a>
+
+### 009. RimKataFlyingKickRender.CaptureContact
+
+`internal static bool CaptureContact(Pawn pawn, Thing target, RimKataFlyingKickVisual visual, out Vector3 start, out Vector3 end)` · [L125](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:125)
+
+- **역할:** 도약 시작 사건에서 현재 발끝과 지정한 살아 있는 대상 한 명의 접촉점을 읽습니다. 본인 프레임이 아직 준비되지 않았으면 생애 단계 몸 오프셋을 한 번 더해 초기 발 위치를 맞춥니다. 대상은 마지막 유효 월드 Head 행렬을 사용하고 없으면 바닐라 머리 오프셋으로 보완하며 사망·미생성·폰 아님은 실패로 반환합니다. 일반 폰의 상시 등록·조회는 추가하지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Translation(UnityEngine.Vector3 foot, RimKataFlyingKickVisual visual)](#m-2946)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)` · `Verse.PawnRenderer.BaseHeadOffsetAt(Verse.Rot4 rotation)`
+- **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])` ×2
+
+<a id="m-2928"></a>
+
+### 010. RimKataFlyingKickRender.Displacement
+
+`private static Vector3 Displacement(Vector3 root, RimKataFlyingKickVisual visual, Geometry geometry)` · [L166](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:166)
+
+- **역할:** 실제 DrawPos·준비된 몸/발 기준점·몸 회전과 발끝 접촉 변위로 무기와 조준 원점이 함께 이동할 평면 변위를 계산합니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Translation(UnityEngine.Vector3 foot, RimKataFlyingKickVisual visual)](#m-2946)
+- **호출 — 외부:** `Verse.Vector3Utility.RotatedBy(UnityEngine.Vector3 v3, float angle)`
+
+<a id="m-2929"></a>
+
+### 011. RimKataFlyingKickRender.BeginEquipment
+
+`internal static EquipmentScope BeginEquipment(Pawn pawn, PawnRenderFlags flags, RimKataFlyingKickVisual? visual)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:172)
+
+- **역할:** 전달된 날아 차기 자료가 있는 월드 무기 출력에서 현재 DrawPos와 발끝 접촉 기준의 장비 변위를 준비합니다. 초상화·캐시·비가시 렌더는 제외하고 이전 중첩 문맥을 반환합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Displacement(UnityEngine.Vector3 root, RimKataFlyingKickVisual visual, RimKataFlyingKickRender.Geometry geometry)](#m-2928) · [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927)
+- **호출 — 외부:** 없음
+
+<a id="m-2930"></a>
+
+### 012. RimKataFlyingKickRender.EndEquipment
+
+`internal static void EndEquipment(EquipmentScope previous)` · [L188](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:188)
+
+- **역할:** 무기 렌더가 끝나면 이전 날아 차기 장비 문맥을 복원합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2931"></a>
+
+### 013. RimKataFlyingKickRender.TransformEquipment
+
+`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L190](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:190)
+
+- **역할:** 현재 무기 문맥 또는 전달된 폰의 월드 렌더 자료를 사용하여 상승·발끝 접촉 변위를 장비 좌표에 적용하고 원래 무기 조준은 유지합니다.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2932"></a>
+
+### 014. RimKataFlyingKickRender.TransformEquipment
+
+`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L198](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:198)
+
+- **역할:** 현재 무기 문맥 또는 전달된 폰의 월드 렌더 자료를 사용하여 상승·발끝 접촉 변위를 장비 좌표에 적용하고 원래 무기 조준은 유지합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Displacement(UnityEngine.Vector3 root, RimKataFlyingKickVisual visual, RimKataFlyingKickRender.Geometry geometry)](#m-2928) · [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927) · [RimKataFlyingKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2931) · [RimKataWorldRenderContext.TryFlyingKick(Verse.Pawn pawn, out RimKataFlyingKickVisual visual)](#m-2941)
+- **호출 — 외부:** 없음
+
+<a id="m-2933"></a>
+
+### 015. RimKataFlyingKickRender.TransformEquipment
+
+`internal static void TransformEquipment(ref Vector3 position)` · [L208](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:208)
+
+- **역할:** 현재 무기 문맥 또는 전달된 폰의 월드 렌더 자료를 사용하여 상승·발끝 접촉 변위를 장비 좌표에 적용하고 원래 무기 조준은 유지합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2934"></a>
+
+### 016. RimKataFlyingKickRender.TryGetAimOrigin
+
+`internal static bool TryGetAimOrigin(Pawn pawn, out Vector3 origin)` · [L215](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:215)
+
+- **역할:** 현재 장비 또는 동일 폰의 월드 문맥에 있는 날아 차기 자료로 몸 회전·발끝 접촉 이동을 반영한 조준 원점을 반환합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Displacement(UnityEngine.Vector3 root, RimKataFlyingKickVisual visual, RimKataFlyingKickRender.Geometry geometry)](#m-2928) · [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927) · [RimKataWorldRenderContext.TryFlyingKick(Verse.Pawn pawn, out RimKataFlyingKickVisual visual)](#m-2941)
+- **호출 — 외부:** 없음
+
+<a id="m-2935"></a>
+
+### 017. RimKataFlyingKickRender.PlaceShadow
+
+`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L230](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:230)
+
+- **역할:** 날아 차기로 변환된 몸 중심과 높이를 사용하여 그림자의 지상 위치를 계산합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927) · [RimKataFlyingKickRender.Transform(UnityEngine.Vector3 foot, RimKataFlyingKickVisual visual)](#m-2926) · [RimKataWorldRenderContext.TryFlyingKick(Verse.Pawn pawn, out RimKataFlyingKickVisual visual)](#m-2941)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)`
+
+<a id="m-2936"></a>
+
+### 018. RimKataFlyingKickRender.BeginShot
+
+`internal static ShotScope BeginShot(RimKataNativeAttack request)` · [L241](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:241)
+
+- **역할:** 진행 중인 날아 차기 상태가 전달된 원거리 요청에서만 몸 회전·발끝 접촉 이동을 따라간 조준 원점과 발사 중심 문맥을 엽니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.Displacement(UnityEngine.Vector3 root, RimKataFlyingKickVisual visual, RimKataFlyingKickRender.Geometry geometry)](#m-2928) · [RimKataFlyingKickRender.ReadGeometry(RimKataFlyingKickVisual visual)](#m-2927) · [RimKataGroundPoseGeometry.StandingCenter(Verse.Verb verb, UnityEngine.Vector3 aimOrigin)](#m-1346)
+- **호출 — 외부:** 없음
+
+<a id="m-2937"></a>
+
+### 019. RimKataFlyingKickRender.EndShot
+
+`internal static void EndShot(ShotScope previous)` · [L257](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:257)
+
+- **역할:** 원거리 무기 실행 종료 시 이전 날아 차기 발사 원점 문맥을 복원합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2938"></a>
+
+### 020. RimKataFlyingKickRender.TryGetShotCenter
+
+`internal static bool TryGetShotCenter(Verb verb, out Vector3 center)` · [L259](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataFlyingKickRender.cs:259)
+
+- **역할:** 현재 실행 중인 동일 Verb에 기록된 날아 차기 발사 중심을 반환합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+
 <a id="file-109"></a>
 
 ## 109. RimKataGeneProbability.cs
@@ -18575,24 +19254,35 @@
 
 ## 50. RimKataGroundPose.cs
 
-[Source/RimKataGroundPose.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs) · 메서드 **32개** · 넘어짐·구르기·엎드림의 저장 상태와 사건·시간 관리 · [파일 목차](#files)
+[Source/RimKataGroundPose.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs) · 메서드 **34개** · 넘어짐·구르기·엎드림의 저장 상태와 사건·시간 관리 · [파일 목차](#files)
+
+<a id="m-3015"></a>
+
+### 001. RimKataGroundPoseState.FacingAt
+
+`internal static Rot4 FacingAt(float headAimAngle, float drawAngle)` · [L66](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:66)
+
+- **역할:** 기존 넘어짐의 45도 단위 조준각에서 몸의 현재 회전각을 빼 렌더 방향을 구합니다. 넘어짐과 북쪽 날아 차기가 같은 계산을 사용합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `UnityEngine.Mathf.FloorToInt(float f)` · `UnityEngine.Mathf.Repeat(float t, float length)` ×2 · `Verse.Rot4.FromAngleFlat(float angle)`
 
 <a id="m-1291"></a>
 
-### 001. RimKataGroundPoseState.ExposeData
+### 002. RimKataGroundPoseState.ExposeData
 
-`public void ExposeData()` · [L65](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:65)
+`public void ExposeData()` · [L72](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:72)
 
-- **역할:** 자세와 전환 시작값을 저장하고 구버전 전환 자료를 6틱 기준으로 복구합니다.
+- **역할:** 자세와 전환 시작값을 저장하고 구버전 전환 자료를 6틱 기준으로 복구합니다. 날아 차기 실패에서 인계된 넘어짐 여부도 저장합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseState.RestoreTransitionVersion(int version)](#m-1292)
-- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×21 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` · `Verse.Scribe_TargetInfo.Look(ref Verse.LocalTargetInfo value, string label)`
+- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×22 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` · `Verse.Scribe_TargetInfo.Look(ref Verse.LocalTargetInfo value, string label)`
 
 <a id="m-1292"></a>
 
-### 002. RimKataGroundPoseState.RestoreTransitionVersion
+### 003. RimKataGroundPoseState.RestoreTransitionVersion
 
-`internal void RestoreTransitionVersion(int version)` · [L94](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:94)
+`internal void RestoreTransitionVersion(int version)` · [L102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:102)
 
 - **역할:** 구버전 6틱·8틱 전환의 저장된 진행도와 몸·무기 좌표를 보존하여 현재 6틱 전환으로 이관합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18601,9 +19291,9 @@
 
 <a id="m-1293"></a>
 
-### 003. RimKataGroundPoseState.TickFall
+### 004. RimKataGroundPoseState.TickFall
 
-`internal void TickFall()` · [L114](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:114)
+`internal void TickFall()` · [L122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:122)
 
 - **역할:** 넘어지기·엎드리기·일어서기를 6틱으로 진행하며 구르기는 기존 2틱당 한 면을 유지하고 유지시간을 멈춥니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18612,9 +19302,9 @@
 
 <a id="m-1294"></a>
 
-### 004. RimKataGroundPoseState.BeginRoll
+### 005. RimKataGroundPoseState.BeginRoll
 
-`internal void BeginRoll()` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:158)
+`internal void BeginRoll()` · [L166](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:166)
 
 - **역할:** 옆 구르기를 시작하거나 진행 중 방향을 반대로 바꾸며, 원래 면 복귀와 좌우 0.4 범위 안의 왕복을 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18623,9 +19313,9 @@
 
 <a id="m-1295"></a>
 
-### 005. RimKataGroundPoseState.BeginRise
+### 006. RimKataGroundPoseState.BeginRise
 
-`internal void BeginRise()` · [L178](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:178)
+`internal void BeginRise()` · [L186](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:186)
 
 - **역할:** 현재 기울기·몸과 무기 좌표·구르는 면을 보존하여 6틱 기립을 시작하고 중복 사건은 무시합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -18634,9 +19324,9 @@
 
 <a id="m-1296"></a>
 
-### 006. RimKataGroundPoseUtility.IsProne
+### 007. RimKataGroundPoseUtility.IsProne
 
-`internal static bool IsProne(Pawn pawn)` · [L204](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:204)
+`internal static bool IsProne(Pawn pawn)` · [L212](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:212)
 
 - **역할:** 현재 엎드린 참여자 등록에서 유효한 폰만 확인하며 참여자가 없으면 상태 조회를 생략합니다.
 - **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
@@ -18645,9 +19335,9 @@
 
 <a id="m-2753"></a>
 
-### 007. RimKataGroundPoseUtility.IsFallen
+### 008. RimKataGroundPoseUtility.IsFallen
 
-`internal static bool IsFallen(Pawn pawn)` · [L208](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:208)
+`internal static bool IsFallen(Pawn pawn)` · [L216](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:216)
 
 - **역할:** 사건으로 등록된 Active 상태에서 넘어지는 중·넘어진 상태·넘어졌다 일어나는 중인지 읽습니다. 엎드려 사격·그 자세의 기립·일반 다운은 포함하지 않으며 자격·맵 상태·렌더를 다시 조회하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18656,9 +19346,9 @@
 
 <a id="m-1297"></a>
 
-### 008. RimKataGroundPoseUtility.TryProneMiss
+### 009. RimKataGroundPoseUtility.TryProneMiss
 
-`internal static bool TryProneMiss(Pawn pawn)` · [L218](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:218)
+`internal static bool TryProneMiss(Pawn pawn)` · [L226](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:226)
 
 - **역할:** 현재 엎드린 참여자에게만 프로필의 고정값 또는 사격 레벨·최소값으로 계산한 추가 빗나감 확률을 판정합니다. 일반 회피나 쿨다운을 발생시키지 않습니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -18667,9 +19357,9 @@
 
 <a id="m-1298"></a>
 
-### 009. RimKataGroundPoseUtility.NotifyAttackJob
+### 010. RimKataGroundPoseUtility.NotifyAttackJob
 
-`internal static void NotifyAttackJob(Pawn pawn)` · [L221](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:221)
+`internal static void NotifyAttackJob(Pawn pawn)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:229)
 
 - **역할:** 자격자의 AttackStatic 시작 사건에서 아직 조준이 없는 사거리 밖 정지 명령을 엎드림 조건에 전달합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18678,9 +19368,9 @@
 
 <a id="m-1299"></a>
 
-### 010. RimKataGroundPoseUtility.NotifyAimStarted
+### 011. RimKataGroundPoseUtility.NotifyAimStarted
 
-`internal static void NotifyAimStarted(Pawn pawn, Verb verb, LocalTargetInfo target, bool knownInsideCandidateRange = false, RimKataPawnCombatState knownState = null)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:229)
+`internal static void NotifyAimStarted(Pawn pawn, Verb verb, LocalTargetInfo target, bool knownInsideCandidateRange = false, RimKataPawnCombatState knownState = null)` · [L237](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:237)
 
 - **역할:** 성공한 원거리 조준 또는 새 슬롯 조준에서만 자격·거리·엄폐·머리·재진입 시점을 검사하고 엎드리기나 기립을 시작합니다. 돌파 진행 또는 보호 상태가 있으면 일반 엎드림 진입을 막아 몸 변환이 중복되지 않게 합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -18689,20 +19379,20 @@
 
 <a id="m-1300"></a>
 
-### 011. RimKataGroundPoseUtility.NotifyMovement
+### 012. RimKataGroundPoseUtility.NotifyMovement
 
-`internal static void NotifyMovement(Pawn pawn)` · [L275](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:275)
+`internal static void NotifyMovement(Pawn pawn)` · [L283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:283)
 
-- **역할:** 이동 사건에서 이미 누운 참여자만 찾아 8틱 기립을 시작합니다.
+- **역할:** 이동 사건에서 이미 누운 참여자만 찾아 8틱 기립을 시작합니다. 날아 차기 실패로 완성된 Fallen 자세는 이동 알림만으로 즉시 일으키지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseConditions.HasMovementJob(Verse.Pawn pawn)](#m-1321) · [RimKataGroundPoseUtility.BeginRise(RimKataPawnCombatState state)](#m-1304)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
 <a id="m-1301"></a>
 
-### 012. RimKataGroundPoseUtility.NotifyAimCancelled
+### 013. RimKataGroundPoseUtility.NotifyAimCancelled
 
-`internal static void NotifyAimCancelled(Pawn pawn)` · [L283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:283)
+`internal static void NotifyAimCancelled(Pawn pawn)` · [L292](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:292)
 
 - **역할:** 사격 허용 해제·소집 전환에서 실제 엎드린 참여자만 기립시킵니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -18711,9 +19401,9 @@
 
 <a id="m-1302"></a>
 
-### 013. RimKataGroundPoseUtility.NotifyJobChanged
+### 014. RimKataGroundPoseUtility.NotifyJobChanged
 
-`internal static void NotifyJobChanged(Pawn pawn)` · [L289](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:289)
+`internal static void NotifyJobChanged(Pawn pawn)` · [L298](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:298)
 
 - **역할:** 새 작업 사건에서 이동 상태를 확인하고 난사로 전환한 기존 참여자의 엎드림을 정리합니다. 일반 작업에서는 공격 의도 종료를 확인하여 이미 엎드린 참여자의 기립을 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18722,9 +19412,9 @@
 
 <a id="m-2848"></a>
 
-### 014. RimKataGroundPoseUtility.ClearDirectionalFireProne
+### 015. RimKataGroundPoseUtility.ClearDirectionalFireProne
 
-`private static bool ClearDirectionalFireProne(RimKataPawnCombatState state)` · [L300](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:300)
+`private static bool ClearDirectionalFireProne(RimKataPawnCombatState state)` · [L309](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:309)
 
 - **역할:** 현재 난사 작업인 기존 참여자에게 엎드림 또는 엎드림에서 기립 중인 자세가 남아 있으면 기존 Clear 경로로 자세·렌더·참가 등록을 정리합니다. 그 외 넘어짐 상태는 변경하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -18733,9 +19423,9 @@
 
 <a id="m-1303"></a>
 
-### 015. RimKataGroundPoseUtility.NotifyLoadoutChanged
+### 016. RimKataGroundPoseUtility.NotifyLoadoutChanged
 
-`internal static void NotifyLoadoutChanged(Pawn pawn)` · [L311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:311)
+`internal static void NotifyLoadoutChanged(Pawn pawn)` · [L320](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:320)
 
 - **역할:** 장비 변경 사건에서 엎드림에 사용한 총이 장비에서 빠졌다면 기립을 시작합니다. 장비 이동 규칙은 바꾸지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18744,9 +19434,9 @@
 
 <a id="m-1304"></a>
 
-### 016. RimKataGroundPoseUtility.BeginRise
+### 017. RimKataGroundPoseUtility.BeginRise
 
-`private static void BeginRise(RimKataPawnCombatState state)` · [L320](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:320)
+`private static void BeginRise(RimKataPawnCombatState state)` · [L329](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:329)
 
 - **역할:** 연출의 연속 기립을 시작하고 엎드림 방어·표적 이동 구독을 해제합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
@@ -18755,20 +19445,20 @@
 
 <a id="m-1305"></a>
 
-### 017. RimKataGroundPoseUtility.SetFocus
+### 018. RimKataGroundPoseUtility.SetFocus
 
-`private static void SetFocus(Pawn pawn, RimKataGroundPoseState pose, LocalTargetInfo target)` · [L327](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:327)
+`private static void SetFocus(Pawn pawn, RimKataGroundPoseState pose, LocalTargetInfo target)` · [L336](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:336)
 
 - **역할:** 현재 연출 표적을 갱신하고 해당 표적의 셀 이동 사건을 받을 참여자만 등록합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseUtility.Unwatch(Verse.Pawn pawn, Verse.Thing target)](#m-1306)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Generic.List<T>.Add(T item)` · `System.Collections.Generic.List<T>.Contains(T item)` · `Verse.LocalTargetInfo.Equals(Verse.LocalTargetInfo other)`
 
 <a id="m-1306"></a>
 
-### 018. RimKataGroundPoseUtility.Unwatch
+### 019. RimKataGroundPoseUtility.Unwatch
 
-`private static void Unwatch(Pawn pawn, Thing target)` · [L338](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:338)
+`private static void Unwatch(Pawn pawn, Thing target)` · [L347](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:347)
 
 - **역할:** 연출 참여자의 표적 이동 구독을 제거하며 비면 표적 등록도 제거합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -18777,31 +19467,31 @@
 
 <a id="m-1307"></a>
 
-### 019. RimKataGroundPoseUtility.NotifyTargetMoved
+### 020. RimKataGroundPoseUtility.NotifyTargetMoved
 
-`internal static void NotifyTargetMoved(Pawn target)` · [L345](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:345)
+`internal static void NotifyTargetMoved(Pawn target)` · [L354](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:354)
 
-- **역할:** 셀 이동한 표적을 지켜보는 활성 연출만 거리 조건을 재검사합니다. 다른 폰과 비활성 자세는 검사하지 않습니다.
+- **역할:** 셀 이동한 표적을 지켜보는 활성 연출만 거리 조건을 재검사합니다. 다른 폰과 비활성 자세는 검사하지 않습니다. 날아 차기 실패 후에는 목표 이동 알림으로 후보 재탐색과 즉시 기립을 수행하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseConditions.HasAttackableOpponent(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1322) · [RimKataGroundPoseUtility.BeginRise(RimKataPawnCombatState state)](#m-1304) · [RimKataGroundPoseUtility.NotifyAimStarted(Verse.Pawn pawn, Verse.Verb verb, Verse.LocalTargetInfo target, \[bool knownInsideCandidateRange = false\], \[RimKataPawnCombatState knownState = null\])](#m-1299) · [RimKataWeaponSlotUtility.PrimaryVerb(Verse.ThingWithComps weapon)](#m-1690)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` ×2
 
 <a id="m-1308"></a>
 
-### 020. RimKataGroundPoseUtility.Tick
+### 021. RimKataGroundPoseUtility.Tick
 
-`internal static void Tick(RimKataPawnCombatState state)` · [L362](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:362)
+`internal static void Tick(RimKataPawnCombatState state)` · [L371](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:371)
 
-- **역할:** 이미 시작된 자세만 시간·조준·표적 생존을 갱신합니다. 엎드림 기립 완료 시 별도 맵 사전에 재진입 시점을 남기고 전투 상태를 놓아줍니다.
+- **역할:** 이미 시작된 자세만 시간·조준·표적 생존을 갱신합니다. 엎드림 기립 완료 시 별도 맵 사전에 재진입 시점을 남기고 전투 상태를 놓아줍니다. 날아 차기 실패 자세는 원래 목표·머리 각도를 유지하고 설정된 넘어짐 유지시간을 진행합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseUtility.Clear(RimKataPawnCombatState state)](#m-1317) ×2 · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataGroundPoseConditions.HeadAimAngle(Verse.Pawn pawn, \[RimKataPawnCombatState state = null\])](#m-1326) · [RimKataGroundPoseConditions.TryGetAttackableOpponent(Verse.Pawn pawn, RimKataPawnCombatState state, out Verse.LocalTargetInfo target)](#m-1323) · [RimKataGroundPoseState.TickFall()](#m-1293) · [RimKataGroundPoseUtility.BeginRise(RimKataPawnCombatState state)](#m-1304) · [RimKataGroundPoseUtility.NotifyAimStarted(Verse.Pawn pawn, Verse.Verb verb, Verse.LocalTargetInfo target, \[bool knownInsideCandidateRange = false\], \[RimKataPawnCombatState knownState = null\])](#m-1299) · [RimKataGroundPoseUtility.SetFocus(Verse.Pawn pawn, RimKataGroundPoseState pose, Verse.LocalTargetInfo target)](#m-1305) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961) · [RimKataWeaponSlotUtility.PrimaryVerb(Verse.ThingWithComps weapon)](#m-1690)
 - **호출 — 외부:** `RimWorld.RestUtility.Awake(Verse.Pawn p)`
 
 <a id="m-1309"></a>
 
-### 021. RimKataGroundPoseUtility.NotifyAvoidance
+### 022. RimKataGroundPoseUtility.NotifyAvoidance
 
-`internal static void NotifyAvoidance(Pawn defender, Thing attacker, bool melee)` · [L401](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:401)
+`internal static void NotifyAvoidance(Pawn defender, Thing attacker, bool melee)` · [L411](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:411)
 
 - **역할:** 근접 회피만 넘어짐·구르기로 연결하고 원거리 회피는 엎드림의 기립만 시작합니다. 넘어진 상태의 기존 원거리 기울임은 유지합니다.
 - **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
@@ -18810,9 +19500,9 @@
 
 <a id="m-1310"></a>
 
-### 022. RimKataGroundPoseUtility.NotifyMiss
+### 023. RimKataGroundPoseUtility.NotifyMiss
 
-`internal static void NotifyMiss(Pawn defender, Thing attacker, bool melee)` · [L415](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:415)
+`internal static void NotifyMiss(Pawn defender, Thing attacker, bool melee)` · [L425](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:425)
 
 - **역할:** 근접 빗나감만 기존 자격자 상태의 넘어짐·구르기 판정에 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -18821,9 +19511,9 @@
 
 <a id="m-1311"></a>
 
-### 023. RimKataGroundPoseUtility.StateFor
+### 024. RimKataGroundPoseUtility.StateFor
 
-`private static RimKataPawnCombatState StateFor(Pawn pawn)` · [L423](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:423)
+`private static RimKataPawnCombatState StateFor(Pawn pawn)` · [L433](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:433)
 
 - **역할:** 살아 있고 다운되지 않은 자격자의 이미 존재하는 전투 상태만 조회합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -18832,42 +19522,53 @@
 
 <a id="m-1312"></a>
 
-### 024. RimKataGroundPoseUtility.TryFallOrRoll
+### 025. RimKataGroundPoseUtility.TryFallOrRoll
 
-`private static void TryFallOrRoll(RimKataPawnCombatState state, Thing attacker, bool melee)` · [L431](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:431)
+`private static void TryFallOrRoll(RimKataPawnCombatState state, Thing attacker, bool melee)` · [L441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:441)
 
-- **역할:** 넘어짐 시작에만 단일 근접 후보 조건과 프로필 확률을 적용하고 이미 넘어진 동안은 후보 수와 무관하게 근접 회피·빗나감으로 구르기를 시작·반전합니다.
+- **역할:** 넘어짐 시작에만 단일 근접 후보 조건과 프로필 확률을 적용하고 이미 넘어진 동안은 후보 수와 무관하게 근접 회피·빗나감으로 구르기를 시작·반전합니다. 날아 차기 진행 중에는 별도 넘어짐·구르기 확률을 굴리지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseConditions.HasSingleCloseOpponent(Verse.Pawn pawn, RimKataPawnCombatState state, Verse.Thing attacker)](#m-1328) · [RimKataGroundPoseConditions.HeadAimAngle(Verse.Pawn pawn, \[RimKataPawnCombatState state = null\])](#m-1326) · [RimKataGroundPoseHead.Supports(Verse.Pawn pawn)](#m-1354) · [RimKataGroundPoseState.BeginRoll()](#m-1294) · [RimKataGroundPoseUtility.LieAngle(UnityEngine.Vector3 direction, Verse.Rot4 facing)](#m-1313) · [RimKataGroundPoseUtility.Register(RimKataPawnCombatState state)](#m-1319) · [RimKataGroundPoseUtility.SetFocus(Verse.Pawn pawn, RimKataGroundPoseState pose, Verse.LocalTargetInfo target)](#m-1305) · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949)
 - **호출 — 외부:** `UnityEngine.Vector3.Normalize()` · `Verse.IntVec3.ToVector3()` · `Verse.Rand.Chance(float chance)`
 
+<a id="m-2939"></a>
+
+### 026. RimKataGroundPoseUtility.AcceptFlyingKickFall
+
+`internal static void AcceptFlyingKickFall(RimKataPawnCombatState state, Thing target, float angle, Vector3 offset)` · [L477](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:477)
+
+- **역할:** 날아 차기 렌더 종료 후 원래 목표·최종 회전·변위를 기존 Fallen에 인계합니다. 날아 차기 시선 인수를 받지 않고 기존 넘어짐의 조준 방향·몸 회전 계산을 사용합니다. 넘어짐 유지시간과 대상 등록은 유지합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseUtility.Register(RimKataPawnCombatState state)](#m-1319) · [RimKataGroundPoseUtility.SetFocus(Verse.Pawn pawn, RimKataGroundPoseState pose, Verse.LocalTargetInfo target)](#m-1305) · [RimKataResponseVisualParticipantCache.RefreshBodyVisual(RimKataPawnCombatState state)](#m-0492) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949)
+- **호출 — 외부:** `UnityEngine.Mathf.Repeat(float t, float length)`
+
 <a id="m-1313"></a>
 
-### 025. RimKataGroundPoseUtility.LieAngle
+### 027. RimKataGroundPoseUtility.LieAngle
 
-`private static float LieAngle(Vector3 direction, Rot4 facing)` · [L466](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:466)
+`internal static float LieAngle(Vector3 direction, Rot4 facing)` · [L494](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:494)
 
 - **역할:** 공격 반대 또는 조준 벡터의 전체 각도를 계산하여 남북과 대각선까지 발밑 기준 눕기 방향을 정합니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Atan2(float y, float x)` · `Verse.IntVec3.ToVector3()`
 
 <a id="m-1314"></a>
 
-### 026. RimKataGroundPoseUtility.TryGetShotCenter
+### 028. RimKataGroundPoseUtility.TryGetShotCenter
 
-`internal static bool TryGetShotCenter(Verb verb, out Vector3 center, bool headCentered = false)` · [L474](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:474)
+`internal static bool TryGetShotCenter(Verb verb, out Vector3 center, bool headCentered = false)` · [L502](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:502)
 
-- **역할:** 발사 무기의 상대 렌더 좌표를 복원하며 바닐라·CE·Muzzle Flash 모두 확정된 머리 중심 총기 배치를 선택합니다. 실행 중인 슬라이딩 공격은 직접 등록된 좌표를 우선 사용하여 기존 투사체·CE·Muzzle Flash 소비 경로에 전달합니다.
+- **역할:** 발사 무기의 상대 렌더 좌표를 복원하며 바닐라·CE·Muzzle Flash 모두 확정된 머리 중심 총기 배치를 선택합니다. 실행 중인 슬라이딩 공격은 직접 등록된 좌표를 우선 사용하여 기존 투사체·CE·Muzzle Flash 소비 경로에 전달합니다. 현재 날아 차기 발사 문맥이 있으면 이동한 발사 중심을 우선 반환합니다. 발차기 중 원거리 발사 중심 문맥을 먼저 확인하여 이동한 몸 위치에서 발사가 표현되게 합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataGroundPoseGeometry.AimOrigin(Verse.Pawn pawn, RimKataGroundPoseState pose)](#m-1349) · [RimKataGroundPoseGeometry.Displacement(Verse.Pawn pawn, UnityEngine.Vector3 center, RimKataGroundPoseState pose, \[bool headCentered = false\])](#m-1352) · [RimKataGroundPoseGeometry.StandingCenter(Verse.Verb verb, UnityEngine.Vector3 aimOrigin)](#m-1346) · [RimKataGroundPoseUtility.TryGetShotState(Verse.Verb verb, out RimKataPawnCombatState state)](#m-1316) · [RimKataSlidingAttackOrigin.TryGet(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2706)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TryGetShotCenter(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2938) · [RimKataGroundPoseGeometry.AimOrigin(Verse.Pawn pawn, RimKataGroundPoseState pose)](#m-1349) · [RimKataGroundPoseGeometry.Displacement(Verse.Pawn pawn, UnityEngine.Vector3 center, RimKataGroundPoseState pose, \[bool headCentered = false\])](#m-1352) · [RimKataGroundPoseGeometry.StandingCenter(Verse.Verb verb, UnityEngine.Vector3 aimOrigin)](#m-1346) · [RimKataGroundPoseUtility.TryGetShotState(Verse.Verb verb, out RimKataPawnCombatState state)](#m-1316) · [RimKataKickRender.TryGetShotCenter(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-3000) · [RimKataSlidingAttackOrigin.TryGet(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2706)
 - **호출 — 외부:** 없음
 
 <a id="m-1315"></a>
 
-### 027. RimKataGroundPoseUtility.TryGetResponseCenter
+### 029. RimKataGroundPoseUtility.TryGetResponseCenter
 
-`internal static bool TryGetResponseCenter(Pawn pawn, ThingWithComps weapon, LocalTargetInfo focus, out Vector3 center)` · [L486](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:486)
+`internal static bool TryGetResponseCenter(Pawn pawn, ThingWithComps weapon, LocalTargetInfo focus, out Vector3 center)` · [L516](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:516)
 
 - **역할:** 누운 총기의 쳐내기 표적을 머리 원점에서 바라본 각도로 상대 무기 좌표를 복원하여 방어 이펙트 중심을 구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18876,9 +19577,9 @@
 
 <a id="m-1316"></a>
 
-### 028. RimKataGroundPoseUtility.TryGetShotState
+### 030. RimKataGroundPoseUtility.TryGetShotState
 
-`private static bool TryGetShotState(Verb verb, out RimKataPawnCombatState state)` · [L504](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:504)
+`private static bool TryGetShotState(Verb verb, out RimKataPawnCombatState state)` · [L534](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:534)
 
 - **역할:** 활성 자세 등록·생존·장착 원거리·식별 가능한 머리와 유효한 무기 좌표를 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18887,9 +19588,9 @@
 
 <a id="m-1317"></a>
 
-### 029. RimKataGroundPoseUtility.Clear
+### 031. RimKataGroundPoseUtility.Clear
 
-`internal static void Clear(RimKataPawnCombatState state)` · [L518](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:518)
+`internal static void Clear(RimKataPawnCombatState state)` · [L548](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:548)
 
 - **역할:** 자세 종료 시 소유 맵의 연출 목록·활성 조회·방어·표적 구독·렌더 등록을 제거합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -18898,9 +19599,9 @@
 
 <a id="m-1318"></a>
 
-### 030. RimKataGroundPoseUtility.Rebuild
+### 032. RimKataGroundPoseUtility.Rebuild
 
-`internal static void Rebuild(RimKataPawnCombatState state)` · [L530](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:530)
+`internal static void Rebuild(RimKataPawnCombatState state)` · [L560](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:560)
 
 - **역할:** 난사 작업에 남아 있는 엎드림은 복구 전에 정리합니다. 그 외에는 구버전 재진입 타이머를 별도 맵 사전으로 옮기고 활성 자세·엎드림 방어·표적 이동 구독을 복구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -18909,20 +19610,20 @@
 
 <a id="m-1319"></a>
 
-### 031. RimKataGroundPoseUtility.Register
+### 033. RimKataGroundPoseUtility.Register
 
-`private static void Register(RimKataPawnCombatState state)` · [L563](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:563)
+`private static void Register(RimKataPawnCombatState state)` · [L593](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:593)
 
 - **역할:** 넘어짐·엎드림 시작 또는 저장 복구 사건에서 활성 조회와 소유 맵의 연출 갱신 목록에 등록합니다.
-- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataMapComponent.RegisterGroundPose(RimKataPawnCombatState state)](#m-0550)
 - **호출 — 외부:** 없음
 
 <a id="m-1320"></a>
 
-### 032. RimKataGroundPoseUtility.ClearMap
+### 034. RimKataGroundPoseUtility.ClearMap
 
-`internal static void ClearMap(Map map)` · [L569](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:569)
+`internal static void ClearMap(Map map)` · [L599](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPose.cs:599)
 
 - **역할:** 해당 맵의 활성 자세·표적 구독·엎드림 방어·렌더 프레임을 정리합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19232,7 +19933,7 @@
 `internal static void ObserveBody(PawnDrawParms parms, Vector3 foot, Vector3 anchor, Vector3 center, float northReach, Vector3? head)` · [L72](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseGeometry.cs:72)
 
 - **역할:** 실제 발밑·장비 기준점·몸체 중심·머리 위치와 높이를 폰 상대 좌표로 보관합니다.
-- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Vector3Utility.Yto0(UnityEngine.Vector3 v3)` ×4 · `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.GetValue(TKey key, System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.CreateValueCallback createValueCallback)`
 
@@ -19276,7 +19977,7 @@
 `internal static Vector3 StandingCenter(Verb verb, Vector3 aimOrigin)` · [L110](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseGeometry.cs:110)
 
 - **역할:** 전달된 조준 원점과 실제 표적 좌표 또는 조준각으로 상대 무기 중심을 복원하고 관측 전 총기는 고유 장비 거리값을 사용합니다.
-- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseGeometry.StandingCenter(Verse.Pawn pawn, Verse.ThingWithComps weapon, float aim)](#m-1347)
 - **호출 — 외부:** `UnityEngine.Mathf.Atan2(float y, float x)` · `Verse.IntVec3.ToVector3()` · `Verse.IntVec3.ToVector3Shifted()`
 
@@ -19371,7 +20072,7 @@
 `internal static bool Supports(Pawn pawn)` · [L59](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseHead.cs:59)
 
 - **역할:** 머리와 몸이 분리된 실제 렌더 그래프를 루트 변경 시 확인하고 지원 여부를 캐시합니다.
-- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseHead.CollectHeadNodes(Verse.PawnRenderNode node, System.Collections.Generic.HashSet&lt;Verse.PawnRenderNode&gt; nodes)](#m-1356)
 - **호출 — 외부:** `Verse.PawnRenderTree.EnsureInitialized(Verse.PawnRenderFlags defaultRenderFlagsNow)` ×2 · `Verse.PawnRenderTree.TryGetNodeByTag(Verse.PawnRenderNodeTagDef tag, out Verse.PawnRenderNode node)` ×2 · `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.GetValue(TKey key, System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.CreateValueCallback createValueCallback)` · `System.Threading.Volatile.Read<T>(ref T location)` · `System.Threading.Volatile.Write<T>(ref T location, T value)`
 
@@ -19415,7 +20116,7 @@
 `internal static bool TryGetHeadMatrix(PawnDrawParms parms, out Matrix4x4 matrix)` · [L109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseHead.cs:109)
 
 - **역할:** 현재 렌더 파라미터에서 분리된 머리의 실제 변환 행렬을 얻습니다.
-- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseHead.CachedGraph(Verse.Pawn pawn, out RimKataGroundPoseHead.Entry entry)](#m-1357)
 - **호출 — 외부:** `Verse.PawnRenderTree.TryGetMatrix(Verse.PawnRenderNode node, Verse.PawnDrawParms parms, out UnityEngine.Matrix4x4 matrix)`
 
@@ -19448,7 +20149,7 @@
 `internal static bool TryGetBodyMatrix(PawnDrawParms parms, out Matrix4x4 matrix)` · [L180](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseHead.cs:180)
 
 - **역할:** 식별된 실제 몸체 노드의 현재 렌더 행렬을 읽어 셀 중심 대신 몸체 중심을 제공합니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseHead.CachedGraph(Verse.Pawn pawn, out RimKataGroundPoseHead.Entry entry)](#m-1357)
 - **호출 — 외부:** `Verse.PawnRenderTree.TryGetMatrix(Verse.PawnRenderNode node, Verse.PawnDrawParms parms, out UnityEngine.Matrix4x4 matrix)`
 
@@ -19619,7 +20320,7 @@
 
 `private static FrameEntry EntryFor(Pawn pawn)` · [L122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:122)
 
-- **역할:** 공용 자료에 등록된 눕기 참가자만 선별하고 현재 장비 문맥 또는 게시 완료된 프레임 저장소를 반환합니다.
+- **역할:** 공용 자료에 등록된 눕기 참가자만 선별하고 현재 장비 문맥 또는 게시 완료된 프레임 저장소를 반환합니다. 이미 전달된 날아 차기 자료가 있으면 이전 지면 자세 프레임을 사용하지 않습니다. 발차기 자료가 있는 경우 눕기 자료를 사용하지 않아 몸 변환을 중복 적용하지 않습니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
@@ -19628,7 +20329,7 @@
 
 ### 007. RimKataGroundPoseRender.ReadFrame
 
-`private static Frame ReadFrame(Pawn pawn, FrameEntry entry)` · [L129](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:129)
+`private static Frame ReadFrame(Pawn pawn, FrameEntry entry)` · [L131](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:131)
 
 - **역할:** 동일 폰의 현재 장비 프레임을 우선 사용하고 그 외에는 저장소 잠금 안에서 값 스냅샷을 읽습니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -19639,9 +20340,9 @@
 
 ### 008. RimKataGroundPoseRender.WeaponsAboveBody
 
-`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L135](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:135)
+`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L137](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:137)
 
-- **역할:** 현재 장비 렌더 문맥 또는 지정 폰의 기존 렌더 프레임에서 넘어짐 전용 레이어 보정 여부를 읽습니다. 엎드림에서는 false이며 전투 상태를 조회하거나 갱신하지 않습니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다.
+- **역할:** 현재 장비 렌더 문맥 또는 지정 폰의 기존 렌더 프레임에서 넘어짐 전용 레이어 보정 여부를 읽습니다. 엎드림에서는 false이며 전투 상태를 조회하거나 갱신하지 않습니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다. 날아 차기 무기 문맥에서는 이전 특수 자세의 몸 위 무기 배치를 적용하지 않습니다. 발차기 장비 문맥에서는 눕기 전용 무기 높이 보정을 적용하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataBreachRender.WeaponsAboveBody(\[Verse.Pawn pawn = null\])](#m-2298) · [RimKataGroundPoseRender.EntryFor(Verse.Pawn pawn)](#m-2477) · [RimKataGroundPoseRender.ReadFrame(Verse.Pawn pawn, RimKataGroundPoseRender.FrameEntry entry)](#m-2478) · [RimKataReactiveRender.WeaponsAboveBody(\[Verse.Pawn pawn = null\])](#m-2556)
 - **호출 — 외부:** 없음
@@ -19650,7 +20351,7 @@
 
 ### 009. RimKataGroundPoseRender.TryGetWeaponCenter
 
-`internal static bool TryGetWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)` · [L144](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:144)
+`internal static bool TryGetWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)` · [L147](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:147)
 
 - **역할:** 공통 분류와 현재 장비 문맥에서 눕기 프레임을 얻고 해당 무기의 이번 화면 출력 중심만 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -19661,7 +20362,7 @@
 
 ### 010. RimKataGroundPoseRender.PlaceShadow
 
-`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L160](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:160)
+`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L163](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:163)
 
 - **역할:** 공통 분류의 눕기 참가 프레임에서 최종 몸 중심을 읽어 그림자의 평면 좌표만 보정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -19672,7 +20373,7 @@
 
 ### 011. RimKataGroundPoseRender.TryGetRangedAimOrigin
 
-`internal static bool TryGetRangedAimOrigin(Pawn pawn, ThingWithComps weapon, out Vector3 origin)` · [L170](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:170)
+`internal static bool TryGetRangedAimOrigin(Pawn pawn, ThingWithComps weapon, out Vector3 origin)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:173)
 
 - **역할:** 원거리 무기의 눕기 참가 프레임과 머리 중심이 있는 경우 공통 문맥의 프레임을 재사용해 무기 조준 원점을 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19683,9 +20384,9 @@
 
 ### 012. RimKataGroundPoseRender.AdjustWeaponAim
 
-`internal static void AdjustWeaponAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle, in RimKataDualWeaponRenderUtility.AimPreparation prepared)` · [L188](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:188)
+`internal static void AdjustWeaponAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle, in RimKataDualWeaponRenderUtility.AimPreparation prepared)` · [L191](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:191)
 
-- **역할:** 머리 원점에서 무기 조준을 보정하고 예약 표적 쿨다운에는 슬롯별 연속 전환각을 사용합니다. 대응 조준과 깊이를 보존하고 기본 메시·좌우 반전 선택 전에 총구와 궤도를 함께 돌립니다.
+- **역할:** 머리 원점에서 무기 조준을 보정하고 예약 표적 쿨다운에는 슬롯별 연속 전환각을 사용합니다. 대응 조준과 깊이를 보존하고 기본 메시·좌우 반전 선택 전에 총구와 궤도를 함께 돌립니다. 무기별 조준과 대응 표적이 없으면 이미 열린 장비 문맥의 날아 차기 낙상 표적을 사용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponController.TryGetVisualData(Verse.Pawn pawn, Verse.ThingWithComps weapon, out RimKataWeaponVisualData data)](#m-1028) · [RimKataDualWeaponRenderUtility.VisualAimAngle(Verse.Pawn pawn, Verse.ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)](#m-2173) · [RimKataGroundPoseRender.TryGetRangedAimOrigin(Verse.Pawn pawn, Verse.ThingWithComps weapon, out UnityEngine.Vector3 origin)](#m-1374) · [RimKataVisualUtility.TryGetCachedActiveSnapshot(Verse.Pawn pawn, out RimKataVisualSnapshot snapshot)](#m-1994) · [RimKataVisualUtility.TryGetLiveResponseFocus(Verse.Pawn pawn, RimKataVisualSnapshot snapshot, out Verse.LocalTargetInfo focus)](#m-2003)
 - **호출 — 외부:** `Verse.Vector3Utility.AngleFlat(UnityEngine.Vector3 v)` ×2 · `UnityEngine.Mathf.DeltaAngle(float current, float target)` · `Verse.IntVec3.ToVector3Shifted()` · `Verse.Vector3Utility.RotatedBy(UnityEngine.Vector3 v3, float angle)` · `Verse.Vector3Utility.Yto0(UnityEngine.Vector3 v3)`
@@ -19694,9 +20395,9 @@
 
 ### 013. RimKataGroundPoseRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L235](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:235)
+`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L238](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:238)
 
-- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다.
+- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다. 날아 차기 자료가 있으면 전용 장비 변위만 적용하여 이전 지면 자세·돌파·회전 변환과 겹치지 않도록 합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseRender.TransformEquipment(in RimKataGroundPoseRender.Frame frame, UnityEngine.Matrix4x4 matrix, \[bool externalPrimary = false\])](#m-1379)
 - **호출 — 외부:** 없음
@@ -19705,9 +20406,9 @@
 
 ### 014. RimKataGroundPoseRender.TransformExternalEquipment
 
-`internal static Matrix4x4 TransformExternalEquipment(Matrix4x4 matrix)` · [L238](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:238)
+`internal static Matrix4x4 TransformExternalEquipment(Matrix4x4 matrix)` · [L241](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:241)
 
-- **역할:** 자동 추적한 외부 무기 제출에도 무기 종류와 무관하게 머리 중심·거리 보정을 한 번 적용하며 부 슬롯 없는 주 무기도 현재 장비 문맥으로 식별합니다. 손·부품 제출에는 이 대체 식별을 적용하지 않습니다. 넘어짐이면 무기에 공통 레이어 높이를 더합니다.
+- **역할:** 자동 추적한 외부 무기 제출에도 무기 종류와 무관하게 머리 중심·거리 보정을 한 번 적용하며 부 슬롯 없는 주 무기도 현재 장비 문맥으로 식별합니다. 손·부품 제출에는 이 대체 식별을 적용하지 않습니다. 넘어짐이면 무기에 공통 레이어 높이를 더합니다. 활성 날아 차기 무기 문맥은 전용 위치 변위만 외부 장비에 적용합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseRender.TransformEquipment(in RimKataGroundPoseRender.Frame frame, UnityEngine.Matrix4x4 matrix, \[bool externalPrimary = false\])](#m-1379)
 - **호출 — 외부:** 없음
@@ -19716,40 +20417,40 @@
 
 ### 015. RimKataGroundPoseRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L241](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:241)
+`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L244](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:244)
 
-- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다.
+- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다. 날아 차기 자료가 있으면 전용 장비 변위만 적용하여 이전 지면 자세·돌파·회전 변환과 겹치지 않도록 합니다. 발차기 자료나 장비 문맥이 있으면 목 회전에 따른 장비 변위를 우선 적용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataGroundPoseRender.TransformEquipment(in RimKataGroundPoseRender.Frame frame, UnityEngine.Matrix4x4 matrix, \[bool externalPrimary = false\])](#m-1379) ×2 · [RimKataBreachRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2296) · [RimKataGroundPoseRender.EntryFor(Verse.Pawn pawn)](#m-2477) · [RimKataGroundPoseRender.ReadFrame(Verse.Pawn pawn, RimKataGroundPoseRender.FrameEntry entry)](#m-2478) · [RimKataReactiveRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2554)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2932) ×2 · [RimKataGroundPoseRender.TransformEquipment(in RimKataGroundPoseRender.Frame frame, UnityEngine.Matrix4x4 matrix, \[bool externalPrimary = false\])](#m-1379) ×2 · [RimKataBreachRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2296) · [RimKataGroundPoseRender.EntryFor(Verse.Pawn pawn)](#m-2477) · [RimKataGroundPoseRender.ReadFrame(Verse.Pawn pawn, RimKataGroundPoseRender.FrameEntry entry)](#m-2478) · [RimKataKickRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2994) · [RimKataReactiveRender.TransformEquipment(Verse.Pawn pawn, UnityEngine.Matrix4x4 matrix)](#m-2554) · [RimKataWorldRenderContext.TryFlyingKick(Verse.Pawn pawn, out RimKataFlyingKickVisual visual)](#m-2941) · [RimKataWorldRenderContext.TryKick(Verse.Pawn pawn, out RimKataKickVisual visual)](#m-3006)
 - **호출 — 외부:** 없음
 
 <a id="m-1379"></a>
 
 ### 016. RimKataGroundPoseRender.TransformEquipment
 
-`private static Matrix4x4 TransformEquipment(in Frame frame, Matrix4x4 matrix, bool externalPrimary = false)` · [L251](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:251)
+`private static Matrix4x4 TransformEquipment(in Frame frame, Matrix4x4 matrix, bool externalPrimary = false)` · [L259](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:259)
 
-- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다. 최종 무기 중심과 프레임을 표시 캐시에 기록하며 기어 사격은 그 전용 중심만 기록합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다.
+- **역할:** 근접·원거리·특수 무기 모두 확정된 머리 중심과 공통 거리 배율로 위치를 보정하며 원래 무기 회전과 공격 모션을 유지합니다. 넘어짐일 때만 공통 높이를 더해 무기를 폰 위에 표시하고 엎드림의 레이어는 유지합니다. 최종 무기 중심과 프레임을 표시 캐시에 기록하며 기어 사격은 그 전용 중심만 기록합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다. 날아 차기 자료가 있으면 전용 장비 변위만 적용하여 이전 지면 자세·돌파·회전 변환과 겹치지 않도록 합니다. 발차기 자료나 장비 문맥이 있으면 목 회전에 따른 장비 변위를 우선 적용합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2295) · [RimKataCrawlFireRender.ObserveWeaponCenter(UnityEngine.Vector3 center)](#m-2166) · [RimKataGroundPoseRender.Frame.PlaceWeapon(UnityEngine.Vector3 center)](#m-1369) · [RimKataGroundPoseRender.ObserveIndicatorCenter(in RimKataGroundPoseRender.Frame frame, Verse.ThingWithComps weapon, UnityEngine.Vector3 center)](#m-2169) · [RimKataGroundPoseRender.ObserveWeapon(in RimKataGroundPoseRender.Frame frame, UnityEngine.Vector3 center, \[bool externalPrimary = false\])](#m-1381) · [RimKataReactiveRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2553)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2931) ×2 · [RimKataBreachRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2295) · [RimKataCrawlFireRender.ObserveWeaponCenter(UnityEngine.Vector3 center)](#m-2166) · [RimKataGroundPoseRender.Frame.PlaceWeapon(UnityEngine.Vector3 center)](#m-1369) · [RimKataGroundPoseRender.ObserveIndicatorCenter(in RimKataGroundPoseRender.Frame frame, Verse.ThingWithComps weapon, UnityEngine.Vector3 center)](#m-2169) · [RimKataGroundPoseRender.ObserveWeapon(in RimKataGroundPoseRender.Frame frame, UnityEngine.Vector3 center, \[bool externalPrimary = false\])](#m-1381) · [RimKataKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2993) · [RimKataReactiveRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2553)
 - **호출 — 외부:** 없음
 
 <a id="m-1380"></a>
 
 ### 017. RimKataGroundPoseRender.TransformExternalEquipment
 
-`internal static void TransformExternalEquipment(ref Vector3 position, ref Quaternion rotation)` · [L268](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:268)
+`internal static void TransformExternalEquipment(ref Vector3 position, ref Quaternion rotation)` · [L281](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:281)
 
-- **역할:** 자동 추적한 외부 무기 제출에도 무기 종류와 무관하게 머리 중심·거리 보정을 한 번 적용하며 부 슬롯 없는 주 무기도 현재 장비 문맥으로 식별합니다. 손·부품 제출에는 이 대체 식별을 적용하지 않습니다. 넘어짐이면 무기에 공통 레이어 높이를 더합니다. 최종 무기 중심과 프레임을 표시 캐시에 기록하며 기어 사격은 그 전용 중심만 기록합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다.
+- **역할:** 자동 추적한 외부 무기 제출에도 무기 종류와 무관하게 머리 중심·거리 보정을 한 번 적용하며 부 슬롯 없는 주 무기도 현재 장비 문맥으로 식별합니다. 손·부품 제출에는 이 대체 식별을 적용하지 않습니다. 넘어짐이면 무기에 공통 레이어 높이를 더합니다. 최종 무기 중심과 프레임을 표시 캐시에 기록하며 기어 사격은 그 전용 중심만 기록합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다. 활성 날아 차기 무기 문맥은 전용 위치 변위만 외부 장비에 적용합니다. 외부 모드의 장비 좌표도 발차기 문맥을 우선 사용하며 원래 조준은 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.TransformEquipment(ref UnityEngine.Vector3 position, ref UnityEngine.Quaternion rotation)](#m-2297) · [RimKataCrawlFireRender.ObserveWeaponCenter(UnityEngine.Vector3 center)](#m-2166) · [RimKataGroundPoseRender.Frame.PlaceWeapon(UnityEngine.Vector3 center)](#m-1369) · [RimKataGroundPoseRender.ObserveIndicatorCenter(in RimKataGroundPoseRender.Frame frame, Verse.ThingWithComps weapon, UnityEngine.Vector3 center)](#m-2169) · [RimKataGroundPoseRender.ObserveWeapon(in RimKataGroundPoseRender.Frame frame, UnityEngine.Vector3 center, \[bool externalPrimary = false\])](#m-1381) · [RimKataReactiveRender.TransformEquipment(ref UnityEngine.Vector3 position)](#m-2555)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TransformEquipment(ref UnityEngine.Vector3 position)](#m-2933) ×2 · [RimKataBreachRender.TransformEquipment(ref UnityEngine.Vector3 position, ref UnityEngine.Quaternion rotation)](#m-2297) · [RimKataCrawlFireRender.ObserveWeaponCenter(UnityEngine.Vector3 center)](#m-2166) · [RimKataGroundPoseRender.Frame.PlaceWeapon(UnityEngine.Vector3 center)](#m-1369) · [RimKataGroundPoseRender.ObserveIndicatorCenter(in RimKataGroundPoseRender.Frame frame, Verse.ThingWithComps weapon, UnityEngine.Vector3 center)](#m-2169) · [RimKataGroundPoseRender.ObserveWeapon(in RimKataGroundPoseRender.Frame frame, UnityEngine.Vector3 center, \[bool externalPrimary = false\])](#m-1381) · [RimKataKickRender.TransformEquipment(ref UnityEngine.Vector3 position)](#m-2995) · [RimKataReactiveRender.TransformEquipment(ref UnityEngine.Vector3 position)](#m-2555)
 - **호출 — 외부:** 없음
 
 <a id="m-2169"></a>
 
 ### 018. RimKataGroundPoseRender.ObserveIndicatorCenter
 
-`private static void ObserveIndicatorCenter(in Frame frame, ThingWithComps weapon, Vector3 center)` · [L283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:283)
+`private static void ObserveIndicatorCenter(in Frame frame, ThingWithComps weapon, Vector3 center)` · [L307](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:307)
 
 - **역할:** 엎드림 최종 무기 중심과 제출 프레임을 무기별로 기록하고 임시 탐색·검집 제출은 표시 좌표에서 제외합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19760,7 +20461,7 @@
 
 ### 019. RimKataGroundPoseRender.SetIndicatorCenter
 
-`private static void SetIndicatorCenter(ref Frame frame, ThingWithComps weapon, Vector3 center)` · [L295](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:295)
+`private static void SetIndicatorCenter(ref Frame frame, ThingWithComps weapon, Vector3 center)` · [L319](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:319)
 
 - **역할:** 현재 프레임의 첫째 또는 둘째 무기 중심과 출력 프레임 번호를 기록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19771,7 +20472,7 @@
 
 ### 020. RimKataGroundPoseRender.ObserveWeapon
 
-`private static ThingWithComps ObserveWeapon(in Frame frame, Vector3 center, bool externalPrimary = false)` · [L311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:311)
+`private static ThingWithComps ObserveWeapon(in Frame frame, Vector3 center, bool externalPrimary = false)` · [L335](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:335)
 
 - **역할:** 현재 제출 무기의 상대 조준 좌표를 기록하며 외부 무기 제출에 한해 탐색 프레임 없는 단독 주 무기를 동일 폰의 장비 그리기 범위에서 보완합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19782,18 +20483,18 @@
 
 ### 021. RimKataGroundPoseRender.TransformAccessory
 
-`internal static Matrix4x4 TransformAccessory(Matrix4x4 matrix)` · [L330](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:330)
+`internal static Matrix4x4 TransformAccessory(Matrix4x4 matrix)` · [L354](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:354)
 
-- **역할:** 검집 등 부속물을 자세에 따라 옮기되 총 발사 중심으로 기록하지 않습니다. 넘어짐이면 무기와 같은 레이어 높이를 더해 검·검집 순서를 유지합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다.
+- **역할:** 검집 등 부속물을 자세에 따라 옮기되 총 발사 중심으로 기록하지 않습니다. 넘어짐이면 무기와 같은 레이어 높이를 더해 검·검집 순서를 유지합니다. 돌파 참가자는 별도의 렌더 변환에 연결합니다. 날아 차기 중 부속 렌더도 전용 위치 변위만 따라가도록 합니다. 장비 부속물도 발차기 몸 변위를 우선 적용해 본체 무기와 분리되지 않게 합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2295) · [RimKataReactiveRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2553)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2931) ×2 · [RimKataBreachRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2295) · [RimKataKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2993) · [RimKataReactiveRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2553)
 - **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)`
 
 <a id="m-1383"></a>
 
 ### 022. RimKataGroundPoseRender.BeginWeapon
 
-`internal static WeaponScope BeginWeapon(Thing weapon, float aim)` · [L342](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:342)
+`internal static WeaponScope BeginWeapon(Thing weapon, float aim)` · [L371](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:371)
 
 - **역할:** 장비 조준 제출 범위에서 실제 무기와 조준 각도를 보관하고 이전 중첩 문맥을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -19804,7 +20505,7 @@
 
 ### 023. RimKataGroundPoseRender.EndWeapon
 
-`internal static void EndWeapon(WeaponScope previous)` · [L350](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:350)
+`internal static void EndWeapon(WeaponScope previous)` · [L379](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:379)
 
 - **역할:** 장비 조준 제출 종료 시 이전 무기 문맥을 복원합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -19815,7 +20516,7 @@
 
 ### 024. RimKataGroundPoseRender.DrawPrimaryMesh
 
-`internal static void DrawPrimaryMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer)` · [L352](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:352)
+`internal static void DrawPrimaryMesh(Mesh mesh, Matrix4x4 matrix, Material material, int layer)` · [L381](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:381)
 
 - **역할:** 기본 주 무기 제출에서 활성 새 자세 변환을 적용하며 비활성 때는 원래 행렬로 제출합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -19826,7 +20527,7 @@
 
 ### 025. RimKataGroundPoseRender.Clear
 
-`internal static void Clear(Pawn pawn)` · [L355](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:355)
+`internal static void Clear(Pawn pawn)` · [L384](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:384)
 
 - **역할:** 폰의 머리 그래프 캐시와 눕기 렌더 프레임 저장소를 제거합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -19837,7 +20538,7 @@
 
 ### 026. RimKataGroundPoseRender.ClearMap
 
-`internal static void ClearMap(Map map)` · [L361](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:361)
+`internal static void ClearMap(Map map)` · [L390](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:390)
 
 - **역할:** 해당 맵 및 사라진 폰의 렌더 전용 프레임을 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -19848,7 +20549,7 @@
 
 ### 027. Patch_PawnRenderUtility_RimKataGroundPoseWeapon.Prefix
 
-`private static void Prefix(Thing eq, float aimAngle, out RimKataGroundPoseRender.WeaponScope __state)` · [L372](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:372)
+`private static void Prefix(Thing eq, float aimAngle, out RimKataGroundPoseRender.WeaponScope __state)` · [L401](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:401)
 
 - **역할:** 무기 렌더 입구에서 위치 관측용 장비 문맥을 엽니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -19859,7 +20560,7 @@
 
 ### 028. Patch_PawnRenderUtility_RimKataGroundPoseWeapon.Finalizer
 
-`private static void Finalizer(RimKataGroundPoseRender.WeaponScope __state)` · [L376](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:376)
+`private static void Finalizer(RimKataGroundPoseRender.WeaponScope __state)` · [L405](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataGroundPoseRender.cs:405)
 
 - **역할:** 예외를 포함한 장비 제출 종료 시 이전 무기 문맥을 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20061,7 +20762,7 @@
 
 ### 001. RimKataInkCombatCompat.Apply
 
-`internal static void Apply()` · [L74](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:74)
+`internal static void Apply()` · [L76](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:76)
 
 - **역할:** 설치된 Ink Combat 방어 API를 검증하고 Ink 판정 우선·실패 시 림카타 회피/쳐내기 후속 판정 어댑터를 등록합니다. DAC가 있으면 기존 방어 기록 함수를 연결하며, 등록 실패 시 이 어댑터만 해제하고 경고합니다. 일반 폰·바닐라 작업·AI·쿨다운·공격 도구 선택은 변경하지 않으며 작업 중단의 직접 원인은 이 호환으로 확정된 것이 아닙니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -20072,7 +20773,7 @@
 
 ### 002. RimKataInkCombatCompat.Patch
 
-`private static HarmonyMethod Patch(string name, int priority = Priority.Normal)` · [L113](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:113)
+`private static HarmonyMethod Patch(string name, int priority = Priority.Normal)` · [L115](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:115)
 
 - **역할:** Ink 방어 어댑터 내부 메서드 이름과 우선순위로 Harmony 등록 정보를 만듭니다.
 - **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
@@ -20083,7 +20784,7 @@
 
 ### 003. RimKataInkCombatCompat.Validate
 
-`private static void Validate(MethodInfo method, Type result, params Type[] parameters)` · [L116](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:116)
+`private static void Validate(MethodInfo method, Type result, params Type[] parameters)` · [L118](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:118)
 
 - **역할:** Ink 대상 메서드의 존재·static 여부·반환형·매개변수형이 확인한 호환 API와 일치하는지 등록 시 검증하고 불일치하면 예외를 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -20094,9 +20795,9 @@
 
 ### 004. RimKataInkCombatCompat.MeleePrefix
 
-`private static void MeleePrefix(Verb_MeleeAttack __instance, out MeleeState __state)` · [L128](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:128)
+`private static void MeleePrefix(Verb_MeleeAttack __instance, out MeleeState __state)` · [L130](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:130)
 
-- **역할:** 실제 근접 Verb 실행의 공격자·현재 피해 대상과 기존 중첩 문맥을 보관하고 이번 공격의 방어 확률·판정·일지·보류 연출 문맥을 초기화합니다.
+- **역할:** 실제 근접 Verb 실행의 공격자·현재 피해 대상과 기존 중첩 문맥을 보관하고 이번 공격의 방어 확률·판정·일지·보류 연출 문맥을 초기화합니다. 날아 차기 전용 Verb 참조도 현재 공격 문맥에 보관합니다. 발차기 전용 Verb도 Ink 방어 결과를 돌려줄 공격 문맥에 보관합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
@@ -20105,7 +20806,7 @@
 
 ### 005. RimKataInkCombatCompat.MeleeFinalizer
 
-`private static Exception MeleeFinalizer(Exception __exception, MeleeState __state)` · [L139](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:139)
+`private static Exception MeleeFinalizer(Exception __exception, MeleeState __state)` · [L143](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:143)
 
 - **역할:** 근접 Verb Prefix가 실제 진입한 경우에만 완료·예외 경계에서 이전 중첩 문맥을 복원하고 원래 예외를 그대로 반환합니다. 앞선 패치가 Prefix를 생략한 경우 외부 문맥을 덮어쓰지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20116,7 +20817,7 @@
 
 ### 006. RimKataInkCombatCompat.DodgePrefix
 
-`private static void DodgePrefix(Verb_MeleeAttack __instance, LocalTargetInfo __0, out DodgeState __state)` · [L145](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:145)
+`private static void DodgePrefix(Verb_MeleeAttack __instance, LocalTargetInfo __0, out DodgeState __state)` · [L149](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:149)
 
 - **역할:** 바닐라 GetDodgeChance가 받은 실제 대상 인수와 Verb를 이번 회피 판정 문맥으로 보관하고 이전 중첩 문맥을 저장합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20127,7 +20828,7 @@
 
 ### 007. RimKataInkCombatCompat.DodgeFinalizer
 
-`private static Exception DodgeFinalizer(Exception __exception, DodgeState __state)` · [L151](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:151)
+`private static Exception DodgeFinalizer(Exception __exception, DodgeState __state)` · [L155](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:155)
 
 - **역할:** 회피 확률 Prefix가 실제 진입한 경우에만 계산 완료·예외 경계에서 이전 중첩 문맥을 복원하고 원래 예외를 그대로 반환합니다. 앞선 패치가 Prefix를 생략한 경우 외부 문맥을 덮어쓰지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20138,7 +20839,7 @@
 
 ### 008. RimKataInkCombatCompat.RecordDodgeEligibility
 
-`private static void RecordDodgeEligibility(Pawn target)` · [L157](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:157)
+`private static void RecordDodgeEligibility(Pawn target)` · [L161](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:161)
 
 - **역할:** 실제 GetDodgeChance 대상이 기존 ApplyConfiguredMeleeDodgeBonus 경로를 통과했을 때만 이번 회피 판정의 림카타 자격 검증 통과를 기록합니다. 동일 Verb·피해 대상의 근접 실행 문맥에도 표시를 전달하며 자격을 다시 조회하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20149,7 +20850,7 @@
 
 ### 009. RimKataInkCombatCompat.IsCurrentAttack
 
-`private static bool IsCurrentAttack(Verb verb)` · [L165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:165)
+`private static bool IsCurrentAttack(Verb verb)` · [L169](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:169)
 
 - **역할:** 요청 Verb가 현재 Ink 어댑터 실행 문맥과 기존 림카타 TryCastShot 문맥 모두에 일치하는지 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -20160,7 +20861,7 @@
 
 ### 010. RimKataInkCombatCompat.DeferDodge
 
-`private static void DeferDodge(Verb_MeleeAttack __instance, ref float __result)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:168)
+`private static void DeferDodge(Verb_MeleeAttack __instance, ref float __result)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:172)
 
 - **역할:** 이미 검증된 실제 대상·현재 공격의 바닐라 회피 확률을 보관하고 앞선 회피 굴림에는 0을 반환하여 Ink 방어 실패 뒤 후속 판정으로 미룹니다. 후속 판정 재진입 중에는 적용하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20171,7 +20872,7 @@
 
 ### 011. RimKataInkCombatCompat.DeferParry
 
-`private static bool DeferParry(Pawn defender, Pawn attacker, Verb attackingVerb, bool defenseEligibilityVerified, ref bool __result)` · [L176](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:176)
+`private static bool DeferParry(Pawn defender, Pawn attacker, Verb attackingVerb, bool defenseEligibilityVerified, ref bool __result)` · [L180](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:180)
 
 - **역할:** 기존 defenseEligibilityVerified와 현재 공격자·방어자·Verb가 일치하면 앞선 림카타 쳐내기 판정을 보류합니다. Ink 실패 뒤 같은 private 판정을 재사용하는 동안에는 원본 실행을 허용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20182,7 +20883,7 @@
 
 ### 012. RimKataInkCombatCompat.KeepResolvedDodge
 
-`private static bool KeepResolvedDodge(Verb_MeleeAttack __0)` · [L186](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:186)
+`private static bool KeepResolvedDodge(Verb_MeleeAttack __0)` · [L190](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:190)
 
 - **역할:** 실제 검증 대상·현재 공격 Verb가 일치할 때만 Ink의 바닐라 회피 확률 덮어쓰기를 생략하여 후속 림카타 판정에 보관할 확률을 유지합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20193,7 +20894,7 @@
 
 ### 013. RimKataInkCombatCompat.MatchesDamage
 
-`private static bool MatchesDamage(Pawn defender, DamageInfo damage)` · [L190](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:190)
+`private static bool MatchesDamage(Pawn defender, DamageInfo damage)` · [L194](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:194)
 
 - **역할:** 기존 림카타 방어 검증을 통과한 현재 공격 문맥에서 방어자·피해 instigator가 일치하고 양수 피해인지 확인하여 해당 공격의 직접 피해만 연결합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -20204,7 +20905,7 @@
 
 ### 014. RimKataInkCombatCompat.ReuseDefense
 
-`private static bool ReuseDefense(Pawn __0, ref DamageInfo __1, ref bool __2, ref bool __result)` · [L195](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:195)
+`private static bool ReuseDefense(Pawn __0, ref DamageInfo __1, ref bool __2, ref bool __result)` · [L199](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:199)
 
 - **역할:** 같은 공격의 후속 DamageInfo에는 최초 Ink/림카타 방어 결과와 피해 진행 여부를 재사용하고 확률을 다시 굴리지 않습니다. 성공한 방어는 흡수 플래그로 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20215,11 +20916,11 @@
 
 ### 015. RimKataInkCombatCompat.ResolveAfterInk
 
-`private static void ResolveAfterInk(Pawn __0, ref DamageInfo __1, ref bool __2, ref bool __result)` · [L203](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:203)
+`private static void ResolveAfterInk(Pawn __0, ref DamageInfo __1, ref bool __2, ref bool __result)` · [L207](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:207)
 
-- **역할:** 같은 공격의 첫 양수 직접 피해에서 Ink의 결과를 먼저 확정합니다. Ink 방어가 실패했을 때만 보관한 native 회피 확률을 굴리고, 회피도 실패하면 검증을 재사용한 기존 private 쳐내기를 호출합니다. 최초 성공·실패와 피해 허용 여부를 기록하고 최종 결정을 DAC 기록 경로에도 한 번 전달합니다.
+- **역할:** 같은 공격의 첫 양수 직접 피해에서 Ink의 결과를 먼저 확정합니다. Ink 방어가 실패했을 때만 보관한 native 회피 확률을 굴리고, 회피도 실패하면 검증을 재사용한 기존 private 쳐내기를 호출합니다. 최초 성공·실패와 피해 허용 여부를 기록하고 최종 결정을 DAC 기록 경로에도 한 번 전달합니다. 날아 차기 피해의 실제 허용·흡수 결과를 전용 Verb에 전달합니다. Ink의 최종 피해 허용 여부를 발차기 전용 타격 결과에도 반영합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataInkCombatCompat.PublishDefense()](#m-2880) ×2 · [RimKataGroundPoseUtility.NotifyAvoidance(Verse.Pawn defender, Verse.Thing attacker, bool melee)](#m-1309) · [RimKataInkCombatCompat.MatchesDamage(Verse.Pawn defender, Verse.DamageInfo damage)](#m-2877)
+- **호출 — 프로젝트 내부:** [RimKataInkCombatCompat.PublishDefense()](#m-2880) ×2 · [RimKataGroundPoseUtility.NotifyAvoidance(Verse.Pawn defender, Verse.Thing attacker, bool melee)](#m-1309) · [RimKataInkCombatCompat.MatchesDamage(Verse.Pawn defender, Verse.DamageInfo damage)](#m-2877) · [Verb_RimKataFlyingKick.RecordDamageDecision(Verse.Pawn victim, Verse.DamageInfo damage, bool allowed)](#m-2920) · [Verb_RimKataKick.RecordDamageDecision(Verse.Pawn victim, Verse.DamageInfo damage, bool allowed)](#m-2978)
 - **호출 — 외부:** `RimWorld.MoteMaker.ThrowText(UnityEngine.Vector3 loc, Verse.Map map, string text, [float timeBeforeStartFadeout = -1])` · `Verse.Rand.Chance(float chance)` · `Verse.Translator.Translate(string key)`
 - **델리게이트 호출:** `System.Func<T1, T2, T3, T4, TResult>.Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4)`
 
@@ -20227,11 +20928,11 @@
 
 ### 016. RimKataInkCombatCompat.PublishDefense
 
-`private static void PublishDefense()` · [L242](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:242)
+`private static void PublishDefense()` · [L250](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:250)
 
-- **역할:** DAC가 설치되어 연결된 경우 현재 공격의 최종 방어 성공·쳐내기 결과를 기존 RecordDefense 경로에 전달합니다.
+- **역할:** DAC가 설치되어 연결된 경우 현재 공격의 최종 방어 성공·쳐내기 결과를 기존 RecordDefense 경로에 전달합니다. 이미 확정된 날아 차기 방어 결과도 전용 Verb에 전달하며 확률을 다시 굴리지 않습니다. 후속 방어의 최종 허용 여부도 발차기 결과에 누적합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **호출 — 프로젝트 내부:** [Verb_RimKataFlyingKick.RecordResolvedDefense(bool allowed)](#m-2921) · [Verb_RimKataKick.RecordResolvedDefense(bool allowed)](#m-2979)
 - **호출 — 외부:** 없음
 - **델리게이트 호출:** `System.Action<T1, T2, T3>.Invoke(T1 arg1, T2 arg2, T3 arg3)`
 
@@ -20239,7 +20940,7 @@
 
 ### 017. RimKataInkCombatCompat.MeleeTranspiler
 
-`private static IEnumerable<CodeInstruction> MeleeTranspiler(IEnumerable<CodeInstruction> instructions)` · [L245](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:245)
+`private static IEnumerable<CodeInstruction> MeleeTranspiler(IEnumerable<CodeInstruction> instructions)` · [L259](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:259)
 
 - **역할:** 근접 원본의 stagger·소리·명중 일지·Mote/Fleck·피해 호출과 반환 경계에 선택적 후속 방어 처리를 연결합니다. 피해 후 연출을 확정하고 모든 Postfix 전에 후속 방어 성공 반환값을 반영하며 예상 호출 배치가 다르면 등록을 실패시킵니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20250,9 +20951,9 @@
 
 ### 018. RimKataInkCombatCompat.DeferImpactMote
 
-`private static Mote DeferImpactMote(Vector3 location, Map map, ThingDef def, float scale, bool overrideVisibility, float rotation)` · [L309](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:309)
+`private static Mote DeferImpactMote(Vector3 location, Map map, ThingDef def, float scale, bool overrideVisibility, float rotation)` · [L323](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:323)
 
-- **역할:** 후속 방어 대상 공격이 아직 미판정이면 원래 명중 Mote 인수를 보관하고 생성을 미룹니다. 그 외 호출은 원래 인수로 즉시 출력합니다.
+- **역할:** 후속 방어 대상 공격이 아직 미판정이면 원래 명중 Mote 인수를 보관하고 생성을 미룹니다. 그 외 호출은 원래 인수로 즉시 출력합니다. 날아 차기 역시 최종 방어가 결정되기 전의 명중 모트를 보류합니다. 발차기의 최종 방어 결과가 미정이면 타격 모트도 결과 확정까지 보류합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.MoteMaker.MakeStaticMote(UnityEngine.Vector3 loc, Verse.Map map, Verse.ThingDef moteDef, [float scale = 1], [bool makeOffscreen = false], [float exactRot = 0])`
@@ -20261,9 +20962,9 @@
 
 ### 019. RimKataInkCombatCompat.DeferImpactFleck
 
-`private static void DeferImpactFleck(Vector3 location, Map map, FleckDef def, float scale)` · [L322](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:322)
+`private static void DeferImpactFleck(Vector3 location, Map map, FleckDef def, float scale)` · [L336](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:336)
 
-- **역할:** 후속 방어 대상 공격이 아직 미판정이면 원래 명중 Fleck 인수를 보관하고 생성을 미룹니다. 그 외 호출은 원래 인수로 즉시 출력합니다.
+- **역할:** 후속 방어 대상 공격이 아직 미판정이면 원래 명중 Fleck 인수를 보관하고 생성을 미룹니다. 그 외 호출은 원래 인수로 즉시 출력합니다. 날아 차기 역시 최종 방어가 결정되기 전의 명중 Fleck을 보류합니다. 발차기의 최종 방어 결과가 미정이면 타격 플렉도 결과 확정까지 보류합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.FleckMaker.Static(UnityEngine.Vector3 loc, Verse.Map map, Verse.FleckDef fleckDef, [float scale = 1])`
@@ -20272,9 +20973,9 @@
 
 ### 020. RimKataInkCombatCompat.FlushImpactEffects
 
-`private static DamageWorker.DamageResult FlushImpactEffects(DamageWorker.DamageResult result)` · [L332](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:332)
+`private static DamageWorker.DamageResult FlushImpactEffects(DamageWorker.DamageResult result)` · [L346](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:346)
 
-- **역할:** 실제 피해 처리 뒤 보류한 명중 연출 요청을 비우고 림카타 후속 회피·쳐내기가 성공하지 않은 경우에만 원래 인수로 출력합니다. 성공했다면 보류 연출을 폐기하고 원래 피해 결과는 그대로 반환합니다.
+- **역할:** 실제 피해 처리 뒤 보류한 명중 연출 요청을 비우고 림카타 후속 회피·쳐내기가 성공하지 않은 경우에만 원래 인수로 출력합니다. 성공했다면 보류 연출을 폐기하고 원래 피해 결과는 그대로 반환합니다. 날아 차기의 최종 결과가 방어되었으면 보류한 명중 효과를 재생하지 않습니다. 발차기가 최종 차단된 경우 보류된 성공 타격 효과를 내보내지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.FleckMaker.Static(UnityEngine.Vector3 loc, Verse.Map map, Verse.FleckDef fleckDef, [float scale = 1])` · `RimWorld.MoteMaker.MakeStaticMote(UnityEngine.Vector3 loc, Verse.Map map, Verse.ThingDef moteDef, [float scale = 1], [bool makeOffscreen = false], [float exactRot = 0])`
@@ -20283,9 +20984,9 @@
 
 ### 021. RimKataInkCombatCompat.CaptureLog
 
-`private static BattleLogEntry_MeleeCombat CaptureLog(BattleLogEntry_MeleeCombat log)` · [L349](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:349)
+`private static BattleLogEntry_MeleeCombat CaptureLog(BattleLogEntry_MeleeCombat log)` · [L363](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:363)
 
-- **역할:** 기존 방어 검증을 통과했으나 아직 결과가 나지 않은 공격의 명중 일지를 보관하여 반환 경계의 회피 변환·중복 쳐내기 일지 정리에 사용합니다.
+- **역할:** 기존 방어 검증을 통과했으나 아직 결과가 나지 않은 공격의 명중 일지를 보관하여 반환 경계의 회피 변환·중복 쳐내기 일지 정리에 사용합니다. 날아 차기 공격의 아직 확정되지 않은 명중 기록도 보관합니다. 발차기 타격 로그도 최종 방어 결과와 일치하도록 보류 대상에 포함합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
@@ -20294,7 +20995,7 @@
 
 ### 022. RimKataInkCombatCompat.ApplyStagger
 
-`private static bool ApplyStagger(StaggerHandler handler, int ticks, float speed)` · [L355](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:355)
+`private static bool ApplyStagger(StaggerHandler handler, int ticks, float speed)` · [L369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:369)
 
 - **역할:** 이번 림카타 후속 쳐내기가 성공한 동일 방어자에게만 원본 stagger를 막고, 회피와 그 밖의 공격에는 기존 stagger 처리를 유지합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20305,9 +21006,9 @@
 
 ### 023. RimKataInkCombatCompat.PlaySound
 
-`private static void PlaySound(SoundDef sound, SoundInfo info)` · [L359](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:359)
+`private static void PlaySound(SoundDef sound, SoundInfo info)` · [L373](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:373)
 
-- **역할:** 림카타 후속 회피 성공은 원래 타격 소리를 해당 Verb의 회피 소리로 바꾸고, 쳐내기 성공은 중복 타격 소리를 생략하며 그 밖에는 원래 소리를 출력합니다.
+- **역할:** 림카타 후속 회피 성공은 원래 타격 소리를 해당 Verb의 회피 소리로 바꾸고, 쳐내기 성공은 중복 타격 소리를 생략하며 그 밖에는 원래 소리를 출력합니다. 외부 방어로 막힌 날아 차기의 명중 소리는 재생하지 않습니다. 최종 차단된 발차기는 성공 타격 소리를 재생하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Sound.SoundStarter.PlayOneShot(Verse.SoundDef soundDef, Verse.Sound.SoundInfo info)`
@@ -20317,9 +21018,9 @@
 
 ### 024. RimKataInkCombatCompat.FinishResult
 
-`private static bool FinishResult(bool result, Verb_MeleeAttack verb)` · [L369](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:369)
+`private static bool FinishResult(bool result, Verb_MeleeAttack verb)` · [L384](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataInkCombatCompat.cs:384)
 
-- **역할:** 현재 공격의 림카타 후속 방어가 성공하면 모든 Postfix 이전에 native 반환값을 false로 바꿉니다. 회피는 보관한 명중 일지를 회피 규칙으로 수정하고, 쳐내기는 이미 생성된 방어 일지와 중복되는 명중 일지를 제거합니다.
+- **역할:** 현재 공격의 림카타 후속 방어가 성공하면 모든 Postfix 이전에 native 반환값을 false로 바꿉니다. 회피는 보관한 명중 일지를 회피 규칙으로 수정하고, 쳐내기는 이미 생성된 방어 일지와 중복되는 명중 일지를 제거합니다. 방어된 날아 차기는 실패로 반환하고 해당 전용 방어 기록으로 교체합니다. 차단된 발차기는 성공 결과를 취소하고 전용 차단 로그로 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.BattleLog.RemoveEntry(Verse.LogEntry log)`
@@ -20598,6 +21299,632 @@
 - **호출 — 외부:** `double.IsInfinity(double d)` · `double.IsNaN(double d)`
 
 
+<a id="file-140"></a>
+
+## 140. RimKataKick.cs
+
+[Source/RimKataKick.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs) · 메서드 **22개** · 등록 자격자의 stagger 종료 후 일회 발차기 기회·재사용 우선 판단·원래 대상 인계·독립 연출 수명과 정리 · [파일 목차](#files)
+
+<a id="m-2951"></a>
+
+### 001. RimKataKickState.ExposeData
+
+`public void ExposeData()` · [L24](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:24)
+
+- **역할:** 발차기의 stagger 관찰·일회 기회·연출 여부·공격 확정 여부·재사용 시각·진행 틱·원래 작업과 타격 대상·근접 전투 대상·피해 배율·시선을 저장합니다. 로드 후 저장된 진행 각도와 임시 렌더 프레임을 복구합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.AngleAt(int age, float targetAngle)](#m-2961)
+- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×10 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` ×2
+
+<a id="m-2952"></a>
+
+### 002. RimKataKick.StaggerApplied
+
+`internal static void StaggerApplied(Entry entry, bool wasStaggered)` · [L54](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:54)
+
+- **역할:** 등록 게이트를 통과한 자격자의 stagger 적용 사건에서 이전 기회·관찰만 지우고 진행 중 발차기 연출은 유지합니다. 재사용 중이 아니며 기립·근접 조건을 만족하면 종료 관찰을 시작합니다. 무기 없는 소집 대기도 기존 meleeThreat 하나를 Touch·적대 확인하여 근접 대상으로 보존하며 새 후보를 탐색하지 않습니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataMapComponent.GetState(Verse.Pawn pawn, bool createIfMissing)](#m-0593) ×2 · [RimKataCombatStatePresenceCache.TryGetOwner(Verse.Pawn pawn, out RimKataMapComponent component)](#m-0484) · [RimKataDraftedFireController.IsAutomaticFireJob(Verse.JobDef jobDef)](#m-0849) · [RimKataKick.ClearOpportunity(RimKataPawnCombatState combat)](#m-3009) · [RimKataKick.CloseTarget(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-3007) · [RimKataKick.InTouch(Verse.Pawn pawn, Verse.Thing target)](#m-3008) · [RimKataKick.ReadyPawn(Verse.Pawn pawn)](#m-2954) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsAutomaticEnemy(Verse.Pawn pawn, Verse.Thing target)](#m-1957)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `Verse.Map.GetComponent<T>()`
+
+<a id="m-3007"></a>
+
+### 003. RimKataKick.CloseTarget
+
+`private static Thing CloseTarget(Pawn pawn, RimKataPawnCombatState combat)` · [L88](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:88)
+
+- **역할:** 이미 보유한 근접 전투 트리거, Touch 범위의 명시적 근접 공격 작업 대상, 자동 사격/대기 작업에서 보존한 근접 대상 순서로 현재 대상을 반환합니다. 무기 유무와 무기 사이클 없이 맨손 근접 전투도 인정하고 주변 후보 탐색은 하지 않습니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.InTouch(Verse.Pawn pawn, Verse.Thing target)](#m-3008) ×2 · [RimKataDraftedFireController.IsAutomaticFireJob(Verse.JobDef jobDef)](#m-0849) · [RimKataPawnCombatState.TryGetLiveCloseCombatTrigger(out Verse.Thing trigger)](#m-0520)
+- **호출 — 외부:** 없음
+
+<a id="m-3008"></a>
+
+### 004. RimKataKick.InTouch
+
+`private static bool InTouch(Pawn pawn, Thing target)` · [L100](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:100)
+
+- **역할:** 이미 지정된 대상 하나가 같은 맵의 유효 공격 대상이고 즉시 Touch 가능한지 확인합니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.LiveTarget(Verse.Pawn pawn, Verse.Thing target)](#m-2960)
+- **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
+
+<a id="m-3009"></a>
+
+### 005. RimKataKick.ClearOpportunity
+
+`internal static void ClearOpportunity(RimKataPawnCombatState combat)` · [L103](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:103)
+
+- **역할:** 기존 발차기 상태의 stagger 관찰과 일회 기회만 지웁니다. 진행 중 연출·전용 공격 요청·재사용 시각은 유지하며 재stagger·근접 종료·소집 변경 사건에서 함께 사용합니다.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2954"></a>
+
+### 006. RimKataKick.ReadyPawn
+
+`private static bool ReadyPawn(Pawn pawn)` · [L109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:109)
+
+- **역할:** 발차기 기회를 관찰하거나 새 발차기를 시작할 당사자가 맵에서 생존·기립·각성 중이며 다운·정신 이상·화재·기절 상태가 아니고 근접 공격할 수 있는지 확인합니다. 이미 시작한 연출의 지속 조건으로 사용하지 않습니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `RimWorld.PawnUtility.GetPosture(Verse.Pawn p)` · `RimWorld.RestUtility.Awake(Verse.Pawn p)`
+
+<a id="m-2955"></a>
+
+### 007. RimKataKick.OtherMotion
+
+`private static bool OtherMotion(Pawn pawn, RimKataPawnCombatState combat)` · [L115](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:115)
+
+- **역할:** 발차기 당사자의 눕기·날아 차기·슬라이딩/떨치기·회피·쳐내기 회전·돌파·제압 등 다른 연출을 확인하여 새 발차기의 확률 굴림만 보류합니다. 관찰·기회·이미 시작한 발차기 연출은 이 조건으로 지우지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574)
+- **호출 — 외부:** 없음
+
+<a id="m-3010"></a>
+
+### 008. RimKataKick.StaggerEnded
+
+`internal static void StaggerEnded(Entry entry)` · [L121](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:121)
+
+- **역할:** stagger 만료 분기의 등록 게이트가 전달한 자격자 항목으로 이미 등록된 발차기 상태만 찾아 종료 통지로 넘깁니다. 상태를 새로 만들거나 자격·소유자를 재조회하지 않습니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.StaggerEnded(RimKataPawnCombatState combat)](#m-3011)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
+
+<a id="m-3011"></a>
+
+### 009. RimKataKick.StaggerEnded
+
+`internal static void StaggerEnded(RimKataPawnCombatState combat)` · [L126](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:126)
+
+- **역할:** 전달받은 발차기 상태가 해당 stagger 구간을 관찰 중일 때만 관찰 표시를 끝내고, 대기시간이 지났으며 기존 근접 대상이 유효하면 일회 기회를 만듭니다. 바닐라 만료 사건·슬라이딩의 직접 해제·로드 시 한 번 보정에서 사용하며 연출이나 확률 굴림은 시작하지 않습니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.CloseTarget(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-3007)
+- **호출 — 외부:** 없음
+
+<a id="m-2957"></a>
+
+### 010. RimKataKick.AttackStarting
+
+`internal static void AttackStarting(RimKataNativeAttack request)` · [L135](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:135)
+
+- **역할:** 일반 네이티브 공격 요청이 가진 발차기 상태와 실제 공격 대상을 그대로 전달하여 발차기 시작을 판단합니다. 다른 연출 중에는 기회 소비·확률 굴림을 보류하고 상태가 없는 요청은 추가 조회 없이 반환합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.TryStart(RimKataPawnCombatState combat, Verse.Thing target)](#m-2959)
+- **호출 — 외부:** 없음
+
+<a id="m-2958"></a>
+
+### 011. RimKataKick.NativeMeleeStarting
+
+`internal static void NativeMeleeStarting(Entry entry, Verb_MeleeAttack verb)` · [L141](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:141)
+
+- **역할:** 등록 게이트를 통과한 바닐라 근접 공격에서 이미 관찰 중인 자격자만 찾아 실제 공격 대상을 보존하고 발차기 시작 판단에 전달합니다. 맨손 자동 공격도 같은 경로를 사용합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.TryStart(RimKataPawnCombatState combat, Verse.Thing target)](#m-2959)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
+
+<a id="m-2959"></a>
+
+### 012. RimKataKick.TryStart
+
+`private static void TryStart(RimKataPawnCombatState combat, Thing target)` · [L148](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:148)
+
+- **역할:** 재사용·진행 중 연출·일회 기회를 먼저 확인하고 다른 연출 중에는 기회를 보존한 채 반환합니다. 근접 종료는 기회만 지우며, 기립·현재 stagger 해제·Touch·목 좌표 준비를 통과한 일반 공격에서만 기회를 소비하고 확률을 굴립니다. 종료 시각을 이 함수에서 다시 관찰하지 않으며 성공하면 원래 대상·작업·피해 배율로 독립 12틱 연출과 재사용 시간을 시작합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.ClearOpportunity(RimKataPawnCombatState combat)](#m-3009) · [RimKataKick.CloseTarget(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-3007) · [RimKataKick.InTouch(Verse.Pawn pawn, Verse.Thing target)](#m-3008) · [RimKataKick.OtherMotion(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-2955) · [RimKataKick.ReadyPawn(Verse.Pawn pawn)](#m-2954) · [RimKataKickRender.Publish(Verse.Pawn pawn, RimKataKickVisual visual)](#m-2984) · [RimKataKickRender.TryInitialize(Verse.Pawn pawn, Verse.Thing target, Verse.Rot4 facing, Verse.Rot4 renderFacing, RimKataKickRender.FrameSlot frame, out float targetAngle)](#m-2982) · [RimKataSettings.GetKickCooldownTicks(Verse.Pawn pawn)](#m-3003) · [RimKataSettings.GetKickDamageMultiplier(Verse.Pawn pawn)](#m-3004) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949)
+- **호출 — 외부:** `Verse.Rand.Chance(float chance)`
+
+<a id="m-2960"></a>
+
+### 013. RimKataKick.LiveTarget
+
+`private static bool LiveTarget(Pawn pawn, Thing target)` · [L182](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:182)
+
+- **역할:** 기존 공격 대상의 생성·맵·파괴 상태를 확인하고 폰이면 공용 공격 가능 상태 판정을 사용합니다. 공격 가능한 기어다니기 대상도 기존 기준대로 허용합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961)
+- **호출 — 외부:** 없음
+
+<a id="m-2961"></a>
+
+### 014. RimKataKick.AngleAt
+
+`internal static float AngleAt(int age, float targetAngle)` · [L186](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:186)
+
+- **역할:** 앞 6틱에는 지정 각도로 회전하고 다음 6틱에는 원래 각도로 돌아오도록 발차기 진행 각도를 구합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)`
+
+<a id="m-2962"></a>
+
+### 015. RimKataKick.Tick
+
+`internal static void Tick(RimKataPawnCombatState combat)` · [L189](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:189)
+
+- **역할:** 발차기 상태를 틱당 한 번 진행합니다. 이미 시작한 12틱 연출은 새 stagger·다른 연출·기회 삭제로 중단하지 않고, 6틱 이후 원래 작업·대상·Touch를 확인해 독립 타격을 한 번 예약합니다. 타격 콜백으로 상태가 바뀌면 반환하며 연출 완료 뒤 재사용은 유지합니다. stagger 종료는 관찰하지 않고, 관찰 중이거나 기회가 남은 상태의 기존 근접 대상 유효성 검사와 만료 상태 정리만 유지합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.EndMotion(RimKataPawnCombatState combat)](#m-2963) ×2 · [RimKataKick.AngleAt(int age, float targetAngle)](#m-2961) · [RimKataKick.Clear(RimKataPawnCombatState combat)](#m-2964) · [RimKataKick.ClearOpportunity(RimKataPawnCombatState combat)](#m-3009) · [RimKataKick.CloseTarget(Verse.Pawn pawn, RimKataPawnCombatState combat)](#m-3007) · [RimKataKick.LiveTarget(Verse.Pawn pawn, Verse.Thing target)](#m-2960) · [RimKataKickAttack.Queue(Verse.Pawn attacker, Verse.Thing victim, Verse.AI.Job attackJob, float damageMultiplier)](#m-2969) · [RimKataKickAttack.Tick()](#m-2971) · [RimKataKickRender.Publish(Verse.Pawn pawn, RimKataKickVisual visual)](#m-2984) · [RimKataKickRender.TryInitialize(Verse.Pawn pawn, Verse.Thing target, Verse.Rot4 facing, Verse.Rot4 renderFacing, RimKataKickRender.FrameSlot frame, out float targetAngle)](#m-2982)
+- **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
+
+<a id="m-2963"></a>
+
+### 016. RimKataKick.EndMotion
+
+`private static void EndMotion(RimKataPawnCombatState combat)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:229)
+
+- **역할:** 전용 공격 요청을 취소하고 현재 발차기 연출·대상·임시 렌더 자료만 종료합니다. 재사용 시각과 관찰 상태의 수명은 상위 상태 처리에 맡깁니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickAttack.Cancel()](#m-2974) · [RimKataKickRender.Remove(Verse.Pawn pawn)](#m-2985)
+- **호출 — 외부:** 없음
+
+<a id="m-2964"></a>
+
+### 017. RimKataKick.Clear
+
+`internal static void Clear(RimKataPawnCombatState combat)` · [L238](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:238)
+
+- **역할:** 진행 중 연출과 독립 공격을 종료하고 전투 상태의 발차기 자료 및 관찰 목록 등록을 제거합니다.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.EndMotion(RimKataPawnCombatState combat)](#m-2963)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Remove(TKey key)`
+
+<a id="m-2965"></a>
+
+### 018. RimKataKick.QualificationLost
+
+`internal static void QualificationLost(Pawn pawn)` · [L246](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:246)
+
+- **역할:** 자격을 잃은 폰이 이미 발차기 관찰 목록에 있을 때만 해당 상태를 정리합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.Clear(RimKataPawnCombatState combat)](#m-2964)
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
+
+<a id="m-2966"></a>
+
+### 019. RimKataKick.ResetGame
+
+`internal static void ResetGame()` · [L251](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:251)
+
+- **역할:** 게임 전환 시 발차기 관찰 목록을 비웁니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()`
+
+<a id="m-2967"></a>
+
+### 020. RimKataKick.Rebuild
+
+`internal static void Rebuild(RimKataPawnCombatState combat)` · [L253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:253)
+
+- **역할:** 로드한 발차기 상태를 등록 목록에 다시 연결합니다. 저장된 관찰 표시가 남았지만 stagger가 이미 끝난 경우만 한 번 종료 사건으로 보정하며, 실제 연출 중인 상태만 임시 렌더 자료를 재게시합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.StaggerEnded(RimKataPawnCombatState combat)](#m-3011) · [RimKataKickRender.Publish(Verse.Pawn pawn, RimKataKickVisual visual)](#m-2984)
+- **호출 — 외부:** 없음
+
+<a id="m-2968"></a>
+
+### 021. Patch_Stagger_RimKataKick.Transpiler
+
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L269](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:269)
+
+- **역할:** 바닐라 StaggerFor 내부에 등록 자격자 게이트를 넣어 일반 폰은 림카타 메서드를 호출하지 않습니다. 자격자의 적용 전 stagger 여부만 보관하고 바닐라 적용 성공 뒤 발차기 관찰 사건을 전달합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataRegisteredPawnGate.Branch(System.Reflection.Emit.ILGenerator generator, System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; loadPawn, System.Reflection.Emit.Label absent, bool qualifiedOnly, out System.Reflection.Emit.LocalBuilder entry)](#m-2746)
+- **호출 — 외부:** `HarmonyLib.CodeInstructionExtensions.WithLabels(HarmonyLib.CodeInstruction code, params System.Reflection.Emit.Label[] labels)` ×3 · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)` ×3 · `System.Reflection.Emit.ILGenerator.DefineLabel()` ×3 · `HarmonyLib.AccessTools.Field(System.Type type, string name)` · `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.AccessTools.PropertyGetter(System.Type type, string name)`
+
+<a id="m-3012"></a>
+
+### 022. Patch_StaggerEnded_RimKataKick.Transpiler
+
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L307](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKick.cs:307)
+
+- **역할:** 바닐라 StaggerHandlerTick에서 stagger 시간이 만료되어 이동 속도를 복원한 분기 바로 뒤에 등록 게이트를 삽입합니다. 만료 전이나 이미 0인 틱에는 추가 등록 조회가 없고, 만료 순간 등록된 자격자만 발차기 종료 통지로 전달합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataRegisteredPawnGate.Branch(System.Reflection.Emit.ILGenerator generator, System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; loadPawn, System.Reflection.Emit.Label absent, bool qualifiedOnly, out System.Reflection.Emit.LocalBuilder entry)](#m-2746)
+- **호출 — 외부:** `System.Collections.Generic.List<T>.Add(T item)` ×3 · `HarmonyLib.AccessTools.Field(System.Type type, string name)` ×2 · `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.CodeInstructionExtensions.WithLabels(HarmonyLib.CodeInstruction code, params System.Reflection.Emit.Label[] labels)` · `System.Collections.Generic.List<T>.FindIndex(System.Predicate<T> match)` · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)` · `object.Equals(object objA, object objB)` · `System.Reflection.Emit.ILGenerator.DefineLabel()` · `Verse.Log.Error(string text)`
+
+
+<a id="file-141"></a>
+
+## 141. RimKataKickCombat.cs
+
+[Source/RimKataKickCombat.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs) · 메서드 **13개** · 발차기 전용 인간 주먹 기반 Verb·독립 네이티브 타격 요청·최종 방어 결과·상처 출처 표기 · [파일 목차](#files)
+
+<a id="m-2969"></a>
+
+### 001. RimKataKickAttack.Queue
+
+`internal bool Queue(Pawn attacker, Thing victim, Job attackJob, float damageMultiplier)` · [L40](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:40)
+
+- **역할:** 바닐라 인간 주먹 정의와 설정 배율로 전용 발차기 Verb를 준비하고 원래 대상·작업을 독립 네이티브 요청에 담습니다. 예약한 틱에는 VerbTick을 실행하지 않아 실제 처리 완료를 같은 호출에서 기다리지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickAttack.Prepare(Verse.Pawn attacker)](#m-2970) · [RimKataNativeAttack.ClearCompletedReferences()](#m-1519) · [RimKataNativeAttack.Queue()](#m-1499) · [Verb_RimKataKick.Prepare(float power)](#m-2975)
+- **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)`
+
+<a id="m-2970"></a>
+
+### 002. RimKataKickAttack.Prepare
+
+`private bool Prepare(Pawn attacker)` · [L65](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:65)
+
+- **역할:** 인간 왼손의 둔격 주먹 도구 정의를 한 번 찾아 피해 기준·관통력·회복 시간을 재사용하고 공격자별 발차기 전용 Verb·도구·Maneuver를 준비합니다. 필요한 정의가 없으면 경고를 한 번 남기고 실패합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `System.Collections.Generic.List<T>.Contains(T item)` · `Verse.DefDatabase<T>.GetNamedSilentFail(string defName)` · `Verse.Log.WarningOnce(string text, int key)`
+
+<a id="m-2971"></a>
+
+### 003. RimKataKickAttack.Tick
+
+`internal void Tick()` · [L110](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:110)
+
+- **역할:** 예약한 틱이 지난 독립 발차기 요청만 바닐라 VerbTick으로 진행하고 요청이 끝난 경우 완료 상태를 기록합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `Verse.Verb.VerbTick()`
+
+<a id="m-2972"></a>
+
+### 004. RimKataKickAttack.CanContinue
+
+`internal bool CanContinue()` · [L122](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:122)
+
+- **역할:** 발차기 전용 요청의 공격자 생존·생성·다운·정신 상태·기절·원래 작업 유지 및 대상의 맵·공격 가능 상태·Touch를 확인합니다. 재stagger만으로 이미 예약한 발차기를 취소하지 않으며 이 공격 판정은 몸 연출 수명과 분리합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataTargeting.IsPawnTargetStateValid(Verse.Pawn pawn, \[bool allowIncapacitated = false\])](#m-1961)
+- **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
+
+<a id="m-2973"></a>
+
+### 005. RimKataKickAttack.Complete
+
+`internal void Complete(bool cancelled)` · [L130](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:130)
+
+- **역할:** 독립 발차기 요청의 취소 여부와 실제 Verb 타격 결과를 보관하고 완료로 표시합니다. Completed로 중복 완료를 차단하고 실제 Hit이면 대상에게 밀어 차기를 한 번 적용합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataPushKick.Apply(Verse.Pawn attacker, Verse.Pawn target, Verse.DamageDef damageDef)](#m-3017)
+- **호출 — 외부:** 없음
+
+<a id="m-2974"></a>
+
+### 006. RimKataKickAttack.Cancel
+
+`internal void Cancel()` · [L137](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:137)
+
+- **역할:** 발차기 결과를 취소·빗맞음·완료로 기록하고 연결된 네이티브 요청을 취소합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511)
+- **호출 — 외부:** 없음
+
+<a id="m-2975"></a>
+
+### 007. Verb_RimKataKick.Prepare
+
+`internal void Prepare(float power)` · [L153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:153)
+
+- **역할:** 이번 발차기의 주먹 배율 피해량을 도구에 설정하고 피해 단계 진입·방어 허용·최종 타격 결과를 초기화합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2976"></a>
+
+### 008. Verb_RimKataKick.TryCastShot
+
+`protected override bool TryCastShot()` · [L161](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:161)
+
+- **역할:** 바닐라 근접 명중·피해 처리를 실행한 뒤 실제 피해 단계 진입과 최종 방어 허용까지 반영해 발차기 타격 결과를 확정합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `RimWorld.Verb_MeleeAttack.TryCastShot()`
+
+<a id="m-2977"></a>
+
+### 009. Verb_RimKataKick.ApplyMeleeDamageToTarget
+
+`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo victim)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:168)
+
+- **역할:** 피해 단계 진입을 기록하고 바닐라 근접 피해 계산·적용을 실행합니다. 이번 타격이 만든 상처만 발차기 피해 정의의 출처 이름으로 정리하며 도구·신체 부위 출처 표기는 제거합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `RimWorld.Verb_MeleeAttackDamage.ApplyMeleeDamageToTarget(Verse.LocalTargetInfo target)`
+
+<a id="m-2978"></a>
+
+### 010. Verb_RimKataKick.RecordDamageDecision
+
+`internal void RecordDamageDecision(Pawn victim, DamageInfo damage, bool allowed)` · [L185](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:185)
+
+- **역할:** 현재 발차기의 대상·공격자·양수 피해가 일치하는 피해 판정만 누적해 방어로 무효화된 결과를 보관합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2979"></a>
+
+### 011. Verb_RimKataKick.RecordResolvedDefense
+
+`internal void RecordResolvedDefense(bool allowed)` · [L192](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:192)
+
+- **역할:** Ink 등 외부 방어가 확정한 허용 여부를 기존 발차기 피해 허용값과 결합하여 나중 판정이 차단을 되돌리지 않게 합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2980"></a>
+
+### 012. Verb_RimKataKick.FullBodyBusy
+
+`internal static bool FullBodyBusy(Pawn_StanceTracker tracker, Verb_MeleeAttack verb)` · [L194](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:194)
+
+- **역할:** 발차기 전용 Verb만 자신의 특수 자세로 인한 전신 사용 중 판정을 무시합니다. 그 외에는 날아 차기 전용 분기와 바닐라 판정을 그대로 따릅니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [Verb_RimKataFlyingKick.FullBodyBusy(Verse.Pawn_StanceTracker tracker, RimWorld.Verb_MeleeAttack verb)](#m-2922)
+- **호출 — 외부:** 없음
+
+<a id="m-2981"></a>
+
+### 013. Patch_MeleeAttempt_RimKataKick.Transpiler
+
+`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickCombat.cs:201)
+
+- **역할:** 바닐라 근접 공격의 명중 굴림 직전 실제 공격자 로컬에 등록 자격자 게이트를 삽입하고 발차기 시작 사건을 전달합니다. 기대한 삽입 지점을 찾지 못하면 예외로 알리며 일반 폰은 림카타 호출에 진입하지 않습니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataRegisteredPawnGate.Branch(System.Reflection.Emit.ILGenerator generator, System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; loadPawn, System.Reflection.Emit.Label absent, bool qualifiedOnly, out System.Reflection.Emit.LocalBuilder entry)](#m-2746)
+- **호출 — 외부:** `System.Collections.Generic.List<T>.Add(T item)` ×4 · `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` ×2 · `System.Collections.Generic.List<T>.FindIndex(System.Predicate<T> match)` ×2 · `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.AccessTools.PropertyGetter(System.Type type, string name)` · `HarmonyLib.CodeInstruction.Call(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.CodeInstructionExtensions.MoveBlocksFrom(HarmonyLib.CodeInstruction code, HarmonyLib.CodeInstruction other)` · `HarmonyLib.CodeInstructionExtensions.MoveLabelsFrom(HarmonyLib.CodeInstruction code, HarmonyLib.CodeInstruction other)` · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)` · `System.Reflection.Emit.ILGenerator.DefineLabel()`
+
+
+<a id="file-142"></a>
+
+## 142. RimKataKickRender.cs
+
+[Source/RimKataKickRender.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs) · 메서드 **20개** · 발차기의 목 기준 몸 회전·원래 무기 조준 유지·몸 변위를 따르는 무기/그림자/발사 중심 문맥 · [파일 목차](#files)
+
+<a id="m-3013"></a>
+
+### 001. RimKataKickRender.RenderFacing
+
+`internal static Rot4 RenderFacing(RimKataKickVisual visual)` · [L47](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:47)
+
+- **역할:** 남쪽 발차기의 몸·머리에만 해당 발차기 시작 시 선택하고 저장한 동쪽/서쪽 시선을 적용합니다. 다른 방향은 원래 시선을 사용하며 무기는 이 보정을 사용하지 않습니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2982"></a>
+
+### 002. RimKataKickRender.TryInitialize
+
+`internal static bool TryInitialize(Pawn pawn, Thing target, Rot4 facing, Rot4 renderFacing, FrameSlot frame, out float targetAngle)` · [L49](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:49)
+
+- **역할:** 발차기 원래 시선의 목·발과 지목한 대상으로 타격 회전각을 구합니다. 몸 표시 방향이 다른 경우 선택한 옆모습의 목·몸 좌표를 초기 frame에 저장합니다. 무기 조준 방향은 바꾸지 않습니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseHead.TryGetBodyMatrix(Verse.PawnDrawParms parms, out UnityEngine.Matrix4x4 matrix)](#m-1361) ×2 · [RimKataGroundPoseHead.TryGetHeadMatrix(Verse.PawnDrawParms parms, out UnityEngine.Matrix4x4 matrix)](#m-1358) ×2 · [RimKataGroundPoseGeometry.ObserveBody(Verse.PawnDrawParms parms, UnityEngine.Vector3 foot, UnityEngine.Vector3 anchor, UnityEngine.Vector3 center, float northReach, UnityEngine.Vector3? head)](#m-1344) · [RimKataGroundPoseHead.Supports(Verse.Pawn pawn)](#m-1354) · [RimKataKickRender.Angle(UnityEngine.Vector3 from, UnityEngine.Vector3 toward)](#m-2983) · [RimKataKickRender.RenderFacing(RimKataKickVisual visual)](#m-3013) · [RimKataKickRender.Store(RimKataKickRender.FrameSlot frame, UnityEngine.Vector3 root, UnityEngine.Vector3 anchor, UnityEngine.Vector3 foot, UnityEngine.Vector3 neck, UnityEngine.Vector3 body)](#m-2987)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)` ×6 · `UnityEngine.Mathf.Max(float a, float b)` · `UnityEngine.Matrix4x4.Translate(UnityEngine.Vector3 vector)` · `Verse.IntVec3.ToVector3Shifted()` · `Verse.PawnDrawParms.DefaultFor(Verse.Pawn pawn)`
+
+<a id="m-2983"></a>
+
+### 003. RimKataKickRender.Angle
+
+`private static float Angle(Vector3 from, Vector3 toward)` · [L87](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:87)
+
+- **역할:** 현재 발 방향과 목표 방향의 평면 벡터로 최소 회전 각도 차를 계산합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `UnityEngine.Mathf.Atan2(float y, float x)` ×2 · `UnityEngine.Mathf.DeltaAngle(float current, float target)`
+
+<a id="m-2984"></a>
+
+### 004. RimKataKickRender.Publish
+
+`internal static void Publish(Pawn pawn, RimKataKickVisual visual)` · [L91](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:91)
+
+- **역할:** 현재 발차기 렌더 자료를 기존 임시 참가자 경로에 게시합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.PublishKick(Verse.Pawn pawn, RimKataKickVisual? visual)](#m-2950)
+- **호출 — 외부:** 없음
+
+<a id="m-2985"></a>
+
+### 005. RimKataKickRender.Remove
+
+`internal static void Remove(Pawn pawn)` · [L94](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:94)
+
+- **역할:** 해당 참가자의 발차기 렌더 자료를 기존 게시 경로로 제거합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataResponseVisualParticipantCache.PublishKick(Verse.Pawn pawn, RimKataKickVisual? visual)](#m-2950)
+- **호출 — 외부:** 없음
+
+<a id="m-2986"></a>
+
+### 006. RimKataKickRender.Prepare
+
+`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataKickVisual visual)` · [L97](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:97)
+
+- **역할:** 살아 있는 월드 렌더의 실제 몸·머리 행렬에서 목·발·몸 기준점을 갱신하고 목 중심 회전을 각 렌더 요청에 적용합니다. 초상화·바닐라 dead 렌더는 제외합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseGeometry.ObserveBody(Verse.PawnDrawParms parms, UnityEngine.Vector3 foot, UnityEngine.Vector3 anchor, UnityEngine.Vector3 center, float northReach, UnityEngine.Vector3? head)](#m-1344) · [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988) · [RimKataKickRender.Store(RimKataKickRender.FrameSlot frame, UnityEngine.Vector3 root, UnityEngine.Vector3 anchor, UnityEngine.Vector3 foot, UnityEngine.Vector3 neck, UnityEngine.Vector3 body)](#m-2987) · [RimKataKickRender.Transform(UnityEngine.Vector3 neck, float angle)](#m-2989)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)` ×4 · `UnityEngine.Mathf.Max(float a, float b)`
+
+<a id="m-2987"></a>
+
+### 007. RimKataKickRender.Store
+
+`private static void Store(FrameSlot frame, Vector3 root, Vector3 anchor, Vector3 foot, Vector3 neck, Vector3 body)` · [L130](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:130)
+
+- **역할:** 발차기 프레임에 발·목·몸 기준점과 상대 오프셋을 잠금 안에서 저장하고 준비 완료로 표시합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2988"></a>
+
+### 008. RimKataKickRender.ReadGeometry
+
+`private static Geometry ReadGeometry(RimKataKickVisual visual)` · [L141](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:141)
+
+- **역할:** 전달된 발차기 프레임에서 이미 준비된 몸·목 오프셋을 잠금 안에서 읽고 자료가 없으면 기본 구조를 반환합니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2989"></a>
+
+### 009. RimKataKickRender.Transform
+
+`private static Matrix4x4 Transform(Vector3 neck, float angle)` · [L149](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:149)
+
+- **역할:** 목 기준점을 중심으로 몸을 회전시키는 변환 행렬을 만듭니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `UnityEngine.Matrix4x4.Translate(UnityEngine.Vector3 vector)` ×2 · `UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion q)` · `UnityEngine.Quaternion.AngleAxis(float angle, UnityEngine.Vector3 axis)`
+
+<a id="m-2990"></a>
+
+### 010. RimKataKickRender.Displacement
+
+`private static Vector3 Displacement(RimKataKickVisual visual, Geometry geometry)` · [L154](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:154)
+
+- **역할:** 목 중심 회전으로 몸 기준점이 이동한 평면 변위를 계산하여 무기·조준 원점·발사 중심을 같은 위치로 옮길 수 있게 합니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `Verse.Vector3Utility.RotatedBy(UnityEngine.Vector3 v3, float angle)`
+
+<a id="m-2991"></a>
+
+### 011. RimKataKickRender.BeginEquipment
+
+`internal static EquipmentScope BeginEquipment(Pawn pawn, PawnRenderFlags flags, RimKataKickVisual? visual)` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:158)
+
+- **역할:** 전달된 발차기 자료가 있는 월드 무기 렌더에서만 현재 몸 변위를 준비하고 중첩 장비 문맥을 엽니다. 초상화·캐시·비가시 출력은 제외합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickRender.Displacement(RimKataKickVisual visual, RimKataKickRender.Geometry geometry)](#m-2990) · [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988)
+- **호출 — 외부:** 없음
+
+<a id="m-2992"></a>
+
+### 012. RimKataKickRender.EndEquipment
+
+`internal static void EndEquipment(EquipmentScope previous)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:173)
+
+- **역할:** 발차기 장비 렌더가 끝나면 이전 중첩 문맥을 복구합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2993"></a>
+
+### 013. RimKataKickRender.TransformEquipment
+
+`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L175](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:175)
+
+- **역할:** 현재 장비 문맥 또는 같은 폰의 월드 문맥에 저장된 발차기 변위를 무기 좌표에 적용합니다. 원래 무기 조준 각도는 유지합니다.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2994"></a>
+
+### 014. RimKataKickRender.TransformEquipment
+
+`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L183](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:183)
+
+- **역할:** 현재 장비 문맥 또는 같은 폰의 월드 문맥에 저장된 발차기 변위를 무기 좌표에 적용합니다. 원래 무기 조준 각도는 유지합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickRender.Displacement(RimKataKickVisual visual, RimKataKickRender.Geometry geometry)](#m-2990) · [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988) · [RimKataKickRender.TransformEquipment(UnityEngine.Matrix4x4 matrix)](#m-2993) · [RimKataWorldRenderContext.TryKick(Verse.Pawn pawn, out RimKataKickVisual visual)](#m-3006)
+- **호출 — 외부:** 없음
+
+<a id="m-2995"></a>
+
+### 015. RimKataKickRender.TransformEquipment
+
+`internal static void TransformEquipment(ref Vector3 position)` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:193)
+
+- **역할:** 현재 장비 문맥 또는 같은 폰의 월드 문맥에 저장된 발차기 변위를 무기 좌표에 적용합니다. 원래 무기 조준 각도는 유지합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-2996"></a>
+
+### 016. RimKataKickRender.TryGetAimOrigin
+
+`internal static bool TryGetAimOrigin(Pawn pawn, out Vector3 origin)` · [L200](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:200)
+
+- **역할:** 현재 장비 문맥 또는 같은 폰의 월드 발차기 자료에서 목 회전으로 이동한 조준 원점을 구합니다. 별도의 자격·전투 상태 조회는 추가하지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickRender.Displacement(RimKataKickVisual visual, RimKataKickRender.Geometry geometry)](#m-2990) · [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988) · [RimKataWorldRenderContext.TryKick(Verse.Pawn pawn, out RimKataKickVisual visual)](#m-3006)
+- **호출 — 외부:** 없음
+
+<a id="m-2997"></a>
+
+### 017. RimKataKickRender.PlaceShadow
+
+`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L214](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:214)
+
+- **역할:** 현재 발차기 자료의 몸 중심과 목 회전을 사용하여 그림자가 이동한 몸 위치를 따라가도록 조정합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988) · [RimKataKickRender.Transform(UnityEngine.Vector3 neck, float angle)](#m-2989) · [RimKataWorldRenderContext.TryKick(Verse.Pawn pawn, out RimKataKickVisual visual)](#m-3006)
+- **호출 — 외부:** `UnityEngine.Matrix4x4.MultiplyPoint3x4(UnityEngine.Vector3 point)`
+
+<a id="m-2998"></a>
+
+### 018. RimKataKickRender.BeginShot
+
+`internal static ShotScope BeginShot(RimKataNativeAttack request)` · [L225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:225)
+
+- **역할:** 진행 중 발차기 상태를 이미 가진 원거리 요청에서만 몸 이동을 반영한 발사 중심 문맥을 엽니다. 독립 발차기 근접 요청에는 적용하지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataGroundPoseGeometry.StandingCenter(Verse.Verb verb, UnityEngine.Vector3 aimOrigin)](#m-1346) · [RimKataKickRender.Displacement(RimKataKickVisual visual, RimKataKickRender.Geometry geometry)](#m-2990) · [RimKataKickRender.ReadGeometry(RimKataKickVisual visual)](#m-2988)
+- **호출 — 외부:** 없음
+
+<a id="m-2999"></a>
+
+### 019. RimKataKickRender.EndShot
+
+`internal static void EndShot(ShotScope previous)` · [L240](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:240)
+
+- **역할:** 발차기 중 원거리 발사가 끝나면 이전 중첩 발사 중심 문맥을 복구합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-3000"></a>
+
+### 020. RimKataKickRender.TryGetShotCenter
+
+`internal static bool TryGetShotCenter(Verb verb, out Vector3 center)` · [L242](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataKickRender.cs:242)
+
+- **역할:** 현재 발차기 발사 문맥의 Verb가 요청한 Verb와 같을 때만 준비된 발사 중심을 반환합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+
 <a id="file-125"></a>
 
 ## 125. RimKataLivingRenderPreparation.cs
@@ -20621,16 +21948,16 @@
 
 `internal static void PrepareShadow(Pawn pawn, ref Vector3 drawLoc, bool adjustWorldPosition)` · [L70](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:70)
 
-- **역할:** 살아 있는 폰의 그림자에 기존 월드 위치·눕는 자세·돌파·반응 보정을 반영하고 문맥을 예외에도 닫습니다.
+- **역할:** 살아 있는 폰의 그림자에 기존 월드 위치·눕는 자세·돌파·반응 보정을 반영하고 문맥을 예외에도 닫습니다. 살아 있는 렌더 참가자의 날아 차기 그림자 위치도 준비된 자료로 조정합니다. 이미 준비된 살아 있는 참가자의 발차기 그림자 변위도 적용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [Patch_PawnRenderer_RimKataBreachFacing.Prefix(Verse.Pawn ___pawn, Verse.DrawPhase phase, ref UnityEngine.Vector3 drawLoc, ref Verse.Rot4? rotOverride)](#m-2304) · [Patch_PawnRenderer_RimKataDodgeOffset.Prefix(Verse.Pawn ___pawn, Verse.DrawPhase phase, ref UnityEngine.Vector3 drawLoc, ref Verse.Rot4? rotOverride, out RimKataWorldRenderContext.Scope __state)](#m-2050) · [RimKataBreachRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 position)](#m-2299) · [RimKataGroundPoseRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-1373) · [RimKataReactiveRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-2558) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.End(RimKataWorldRenderContext.Scope scope)](#m-2372)
+- **호출 — 프로젝트 내부:** [Patch_PawnRenderer_RimKataBreachFacing.Prefix(Verse.Pawn ___pawn, Verse.DrawPhase phase, ref UnityEngine.Vector3 drawLoc, ref Verse.Rot4? rotOverride)](#m-2304) · [Patch_PawnRenderer_RimKataDodgeOffset.Prefix(Verse.Pawn ___pawn, Verse.DrawPhase phase, ref UnityEngine.Vector3 drawLoc, ref Verse.Rot4? rotOverride, out RimKataWorldRenderContext.Scope __state)](#m-2050) · [RimKataBreachRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 position)](#m-2299) · [RimKataFlyingKickRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-2935) · [RimKataGroundPoseRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-1373) · [RimKataKickRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-2997) · [RimKataReactiveRender.PlaceShadow(Verse.Pawn pawn, ref UnityEngine.Vector3 drawLoc)](#m-2558) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.End(RimKataWorldRenderContext.Scope scope)](#m-2372)
 - **호출 — 외부:** 없음
 
 <a id="m-2721"></a>
 
 ### 003. Patch_PawnRenderer_RimKataLivingPreparation.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase original)` · [L98](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:98)
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase original)` · [L100](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:100)
 
 - **역할:** ParallelGetPreRenderResults가 기존 parms를 저장한 직후 dead 필드로 Prepare 호출을 분기합니다. Pawn.Dead 조회나 시체 문맥은 추가하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20641,7 +21968,7 @@
 
 ### 004. Patch_PawnRenderer_RimKataLivingShadow.TargetMethods
 
-`private static IEnumerable<MethodBase> TargetMethods()` · [L150](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:150)
+`private static IEnumerable<MethodBase> TargetMethods()` · [L152](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:152)
 
 - **역할:** 월드 폰 렌더와 그림자 단독 출력 함수를 패치 대상으로 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -20652,7 +21979,7 @@
 
 ### 005. Patch_PawnRenderer_RimKataLivingShadow.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase original)` · [L156](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:156)
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator, MethodBase original)` · [L158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataLivingRenderPreparation.cs:158)
 
 - **역할:** 원래 그림자 호출 직전에 위치 보정을 삽입합니다. 월드 출력은 기존 parms.dead, 단독 출력은 바닐라 Standing 분기 안에서만 실행합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -21780,13 +23107,13 @@
 
 ## 64. RimKataNativeAttack.cs
 
-[Source/RimKataNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs) · 메서드 **31개** · 실제 Verb 소유자에게 전달하는 림카타 발사 요청 · [파일 목차](#files)
+[Source/RimKataNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs) · 메서드 **33개** · 실제 Verb 소유자에게 전달하는 림카타 발사 요청 · [파일 목차](#files)
 
 <a id="m-1498"></a>
 
 ### 001. RimKataNativeAttack.Bind
 
-`internal static void Bind(Verb verb)` · [L90](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:90)
+`internal static void Bind(Verb verb)` · [L95](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:95)
 
 - **역할:** Verb의 단발 준비 데이터를 바인딩하고 기존 대기 요청과 설정이 어긋나면 안전하게 취소합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -21797,10 +23124,10 @@
 
 ### 002. RimKataNativeAttack.Queue
 
-`internal bool Queue()` · [L106](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:106)
+`internal bool Queue()` · [L111](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:111)
 
-- **역할:** 공격 요청을 실제 Verb의 다음 native 틱에 등록하며 특수 요청은 한 발로 제한하고 사냥 요청의 비표적·아군 오사 규칙을 보존합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 공격 요청을 실제 Verb의 다음 native 틱에 등록하며 특수 요청은 한 발로 제한하고 사냥 요청의 비표적·아군 오사 규칙을 보존합니다. 날아 차기는 이 요청 경로를 사용하지 않습니다. 발차기 전용 요청은 일반 슬롯 바인딩을 거치지 않으며 요청별 발차기 기회 전달 여부를 초기화합니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataNativeAttack.Bind(Verse.Verb verb)](#m-1498) · [RimKataNativeAttack.LimitToSingleShot()](#m-2482) · [RimKataPreparedWeaponData.Bind(Verse.Verb verb)](#m-1544) · [RimKataPreparedWeaponData.IsCurrent(Verse.Verb verb)](#m-1547)
 - **호출 — 외부:** `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.GetOrCreateValue(TKey key)` · `Verse.Verb.Reset()`
 - **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])` ×6
@@ -21809,7 +23136,7 @@
 
 ### 003. RimKataNativeAttack.BeginReactiveAttack
 
-`internal void BeginReactiveAttack(RimKataReactiveMotionState motion)` · [L144](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:144)
+`internal void BeginReactiveAttack(RimKataReactiveMotionState motion)` · [L150](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:150)
 
 - **역할:** 진행 중 공격 요청을 떨치기의 첫 타격으로 인계하고 발사 결과를 초기화하며 남은 공격을 한 발로 제한합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -21821,7 +23148,7 @@
 
 ### 004. RimKataNativeAttack.LimitToSingleShot
 
-`private void LimitToSingleShot()` · [L153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:153)
+`private void LimitToSingleShot()` · [L159](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:159)
 
 - **역할:** 기존 점사 횟수를 보관하고 현재 요청만 한 발로 제한하며 특수 요청 계수를 갱신합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -21833,7 +23160,7 @@
 
 ### 005. RimKataNativeAttack.ReactiveRequest
 
-`internal static RimKataNativeAttack ReactiveRequest(Verb verb)` · [L162](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:162)
+`internal static RimKataNativeAttack ReactiveRequest(Verb verb)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:168)
 
 - **역할:** 특수 요청이 있을 때만 Verb 바인딩을 조회하여 진행 중인 슬라이딩·떨치기 공격 요청을 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -21844,7 +23171,7 @@
 
 ### 006. RimKataNativeAttack.WaitingForNativeTick
 
-`internal static bool WaitingForNativeTick(Verb verb)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:168)
+`internal static bool WaitingForNativeTick(Verb verb)` · [L174](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:174)
 
 - **역할:** Verb에 실행 전 상태의 대기 중인 RimKata 공격 요청이 있는지 조회합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -21855,7 +23182,7 @@
 
 ### 007. RimKataNativeAttack.CanBeginNativeTick
 
-`internal static bool CanBeginNativeTick(Verb verb)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:172)
+`internal static bool CanBeginNativeTick(Verb verb)` · [L178](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:178)
 
 - **역할:** 등록 요청의 지속 조건과 Verb 상태를 확인하고 슬라이딩·떨치기는 예정 시각 이후에만 native 실행을 준비합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -21866,20 +23193,20 @@
 
 ### 008. RimKataNativeAttack.CanContinue
 
-`private bool CanContinue()` · [L187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:187)
+`private bool CanContinue()` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:193)
 
-- **역할:** 슬라이딩/떨치기·제압 요청은 각 전용 지속 판정에 위임하고 일반·사냥 요청은 작업·장비·표적·공격 권한과 거리 조건을 확인합니다. Thing 없는 난사 예약은 방향 등록과 현재 계획 셀이 예약 표적과 일치하는지도 확인합니다.
+- **역할:** 슬라이딩/떨치기·제압 요청은 각 전용 지속 판정에 위임하고 일반·사냥 요청은 작업·장비·표적·공격 권한과 거리 조건을 확인합니다. Thing 없는 난사 예약은 방향 등록과 현재 계획 셀이 예약 표적과 일치하는지도 확인합니다. 날아 차기 요청은 전용 공격의 작업·대상·Touch 조건으로 계속 가능 여부를 확인합니다. 발차기 전용 요청은 독립 발차기 작업·대상·Touch 검증을 사용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.NativeAttackStillAllowed(RimKataNativeAttack attack)](#m-1073) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataReactiveAttack.CanContinue(RimKataNativeAttack request)](#m-2487) · [RimKataSubdueCombat.CanContinueAttack(RimKataNativeAttack request)](#m-2628) · [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) · [RimKataTargeting.IsInterceptionTargetActive(Verse.Thing projectile)](#m-1969)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.NativeAttackStillAllowed(RimKataNativeAttack attack)](#m-1073) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataKickAttack.CanContinue()](#m-2972) · [RimKataReactiveAttack.CanContinue(RimKataNativeAttack request)](#m-2487) · [RimKataSubdueCombat.CanContinueAttack(RimKataNativeAttack request)](#m-2628) · [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) · [RimKataTargeting.IsInterceptionTargetActive(Verse.Thing projectile)](#m-1969)
 - **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
 
 <a id="m-1503"></a>
 
 ### 009. RimKataNativeAttack.PrepareShot
 
-`internal bool PrepareShot()` · [L215](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:215)
+`internal bool PrepareShot()` · [L223](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:223)
 
-- **역할:** 제압 공격 시작을 검증하고 근접 사격 명중·방어 문맥을 준비한 뒤, 발동 조건이 맞으면 현재 공격을 떨치기 0틱 타격으로 인계합니다.
+- **역할:** 제압 공격 시작을 검증하고 근접 사격 명중·방어 문맥을 준비한 뒤, 발동 조건이 맞으면 현재 공격을 떨치기 0틱 타격으로 인계합니다. 독립 날아 차기 자체 타격은 슬라이딩·떨치기의 공격 시작 처리를 다시 열지 않습니다. 발차기 전용 타격에서 슬라이딩/떨치기 시작 처리를 재진입하지 않습니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511) ×3 · [RimKataNativeAttack.CompleteRequest(bool resetNative)](#m-1510) ×2 · [RimKataCombatMath.RollCloseRangedNonMiss(Verse.Pawn attacker, Verse.Verb verb, Verse.LocalTargetInfo target)](#m-0460) · [RimKataDefenseUtility.PrecheckCloseGunfire(Verse.Pawn attacker, Verse.Thing target, Verse.Verb attackingVerb, bool meleeHit)](#m-0736) · [RimKataProjectileUtility.FindCloseMissCell(Verse.Pawn shooter, Verse.Thing target, Verse.Map map)](#m-1262) · [RimKataReactiveMotion.AttackStarting(RimKataNativeAttack request)](#m-2517) · [RimKataSubdueCombat.AttackStarting(RimKataNativeAttack request)](#m-2629)
 - **호출 — 외부:** 없음
@@ -21889,7 +23216,7 @@
 
 ### 010. RimKataNativeAttack.BeginNativeCast
 
-`internal static RimKataNativeAttack BeginNativeCast(Verb verb)` · [L273](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:273)
+`internal static RimKataNativeAttack BeginNativeCast(Verb verb)` · [L281](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:281)
 
 - **역할:** Verb 조준 완료에 연결된 대기 요청을 실행 중 상태와 발사 문맥으로 전환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -21900,7 +23227,7 @@
 
 ### 011. RimKataNativeAttack.TryBeginBurstShot
 
-`internal static bool TryBeginBurstShot(Verb verb, out RimKataNativeAttack scope)` · [L286](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:286)
+`internal static bool TryBeginBurstShot(Verb verb, out RimKataNativeAttack scope)` · [L294](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:294)
 
 - **역할:** 연사 후속탄의 지속 조건을 확인하고 해당 탄의 RimKata 발사 문맥을 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -21911,75 +23238,97 @@
 
 ### 012. RimKataNativeAttack.BeginExecution
 
-`private void BeginExecution()` · [L314](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:314)
+`private void BeginExecution()` · [L322](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:322)
 
-- **역할:** 발사 문맥·조준·이동 사격을 준비하고 사냥·특수 공격의 원래 자세와 제압 방향 및 실행 문맥을 보관합니다. 공격 실행 범위에서 슬라이딩 전용 좌표 문맥과 난사 Verb·끝 셀 문맥을 시작합니다.
+- **역할:** 발사 문맥·조준·이동 사격을 준비하고 사냥·특수 공격의 원래 자세와 제압 방향 및 실행 문맥을 보관합니다. 공격 실행 범위에서 슬라이딩 전용 좌표 문맥과 난사 Verb·끝 셀 문맥을 시작합니다. 독립 날아 차기의 기존 자세를 보관하고 날아 차기 중 원거리 무기의 발사 원점 문맥도 연결합니다. 발차기 전용 타격 자세를 유지하고 발차기 중 원거리 공격에는 이동한 발사 중심 문맥을 엽니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.BeginNativeExecution(RimKataNativeAttack request)](#m-2840) · [RimKataFireContext.Begin(Verse.Verb verb, Verse.Pawn shooter, Verse.Thing closeTarget, bool movingShot, bool closeShot, bool interceptionShot, Verse.Thing interceptionTarget, bool closeMeleeResolution, bool closeMeleeHit, RimKataCloseDefensePrecheck closeDefensePrecheck)](#m-1253) · [RimKataSlidingAttackOrigin.Begin(RimKataNativeAttack request)](#m-2703) · [RimKataSubdueCombat.BeginNativeExecution(RimKataSubdueState state)](#m-2607)
+- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.BeginNativeExecution(RimKataNativeAttack request)](#m-2840) · [RimKataFireContext.Begin(Verse.Verb verb, Verse.Pawn shooter, Verse.Thing closeTarget, bool movingShot, bool closeShot, bool interceptionShot, Verse.Thing interceptionTarget, bool closeMeleeResolution, bool closeMeleeHit, RimKataCloseDefensePrecheck closeDefensePrecheck)](#m-1253) · [RimKataFlyingKickRender.BeginShot(RimKataNativeAttack request)](#m-2936) · [RimKataKickRender.BeginShot(RimKataNativeAttack request)](#m-2998) · [RimKataSlidingAttackOrigin.Begin(RimKataNativeAttack request)](#m-2703) · [RimKataSubdueCombat.BeginNativeExecution(RimKataSubdueState state)](#m-2607)
 - **호출 — 외부:** `Verse.Pawn_RotationTracker.FaceCell(Verse.IntVec3 c)`
 
 <a id="m-1507"></a>
 
 ### 013. RimKataNativeAttack.OwnsActiveMelee
 
-`internal static bool OwnsActiveMelee(Verb verb)` · [L335](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:335)
+`internal static bool OwnsActiveMelee(Verb verb)` · [L345](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:345)
 
 - **역할:** 지정 Verb의 RimKata 공격 요청이 현재 실행 문맥을 소유하고 있는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
+<a id="m-3001"></a>
+
+### 014. RimKataNativeAttack.NotifyMeleeAttackStarting
+
+`internal static void NotifyMeleeAttackStarting( RimKataResponseVisualParticipantCache.BodyVisualEntry entry, RimWorld.Verb_MeleeAttack verb)` · [L349](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:349)
+
+- **역할:** 등록 게이트를 통과한 일반 근접 Verb만 발차기 기회 처리에 연결합니다. 실행 중인 네이티브 요청은 그 상태를 사용하고 그 외에는 이미 관찰 중인 바닐라 근접 공격자를 전달하며 두 발차기 전용 Verb는 제외합니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.NativeMeleeStarting(RimKataResponseVisualParticipantCache.BodyVisualEntry entry, RimWorld.Verb_MeleeAttack verb)](#m-2958) · [RimKataNativeAttack.NotifyKickAttackStarting()](#m-3002)
+- **호출 — 외부:** `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
+
+<a id="m-3002"></a>
+
+### 015. RimKataNativeAttack.NotifyKickAttackStarting
+
+`private void NotifyKickAttackStarting()` · [L359](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:359)
+
+- **역할:** 일반 네이티브 요청마다 한 번만 실제 대상을 발차기 시작 처리에 전달합니다. 날아 차기·발차기·슬라이딩/떨치기·제압·사냥 요청은 제외합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataKick.AttackStarting(RimKataNativeAttack request)](#m-2957)
+- **호출 — 외부:** 없음
+
 <a id="m-1508"></a>
 
-### 014. RimKataNativeAttack.FinishNativeCast
+### 016. RimKataNativeAttack.FinishNativeCast
 
-`internal void FinishNativeCast(Exception exception)` · [L339](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:339)
+`internal void FinishNativeCast(Exception exception)` · [L367](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:367)
 
-- **역할:** native 발사 결과와 제압 실행 문맥을 정리하고 자세를 복원한 뒤 연사 지속 또는 요청 완료를 결정합니다. FireContext 종료 뒤 슬라이딩 좌표 문맥을 복원하며 CE의 조준 연기 분기보다 먼저 해제합니다. 결과 처리와 연사·CE 조준 연기 분기 전에 난사 발사 문맥도 복원합니다.
+- **역할:** native 발사 결과와 제압 실행 문맥을 정리하고 자세를 복원한 뒤 연사 지속 또는 요청 완료를 결정합니다. FireContext 종료 뒤 슬라이딩 좌표 문맥을 복원하며 CE의 조준 연기 분기보다 먼저 해제합니다. 결과 처리와 연사·CE 조준 연기 분기 전에 난사 발사 문맥도 복원합니다. 네이티브 공격 실행이 끝나면 날아 차기 발사 원점 문맥도 복원합니다. 발차기 발사 중심 문맥도 복구하며 실제 원거리 발사 성공을 기록한 일반 요청에서만 발차기 기회를 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.EndNativeExecution(RimKataDirectionalFire.ExecutionScope previous)](#m-2841) · [RimKataFireContext.End(Verse.Verb ownerVerb, RimKataFireContext.ScopeState previous)](#m-1254) · [RimKataNativeAttack.CompleteRequest(bool resetNative)](#m-1510) · [RimKataNativeAttack.RestoreAimAfterShot()](#m-1509) · [RimKataSlidingAttackOrigin.End(RimKataSlidingAttackOrigin.Scope previous)](#m-2704) · [RimKataSubdueCombat.EndNativeExecution(RimKataSubdueCombat.ExecutionScope scope)](#m-2608)
+- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.EndNativeExecution(RimKataDirectionalFire.ExecutionScope previous)](#m-2841) · [RimKataFireContext.End(Verse.Verb ownerVerb, RimKataFireContext.ScopeState previous)](#m-1254) · [RimKataFlyingKickRender.EndShot(RimKataFlyingKickRender.ShotScope previous)](#m-2937) · [RimKataKickRender.EndShot(RimKataKickRender.ShotScope previous)](#m-2999) · [RimKataNativeAttack.CompleteRequest(bool resetNative)](#m-1510) · [RimKataNativeAttack.NotifyKickAttackStarting()](#m-3002) · [RimKataNativeAttack.RestoreAimAfterShot()](#m-1509) · [RimKataSlidingAttackOrigin.End(RimKataSlidingAttackOrigin.Scope previous)](#m-2704) · [RimKataSubdueCombat.EndNativeExecution(RimKataSubdueCombat.ExecutionScope scope)](#m-2608)
 - **호출 — 외부:** 없음
 
 <a id="m-1509"></a>
 
-### 015. RimKataNativeAttack.RestoreAimAfterShot
+### 017. RimKataNativeAttack.RestoreAimAfterShot
 
-`internal void RestoreAimAfterShot()` · [L363](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:363)
+`internal void RestoreAimAfterShot()` · [L397](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:397)
 
-- **역할:** 유효한 같은 작업의 사냥·특수 요청은 저장 자세를 복원하고 제압 방향을 유지하며 일반 요청은 기존 림카타 조준 복원 규칙을 사용합니다.
+- **역할:** 유효한 같은 작업의 사냥·특수 요청은 저장 자세를 복원하고 제압 방향을 유지하며 일반 요청은 기존 림카타 조준 복원 규칙을 사용합니다. 독립 날아 차기 전용 타격도 기존 작업의 특수 자세를 보존합니다. 발차기 전용 타격은 일반 무기 조준 복구로 특수 자세를 덮어쓰지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataAutomaticCastSuppression.Pop(RimKataAutomaticCastSuppressionState state)](#m-1248) · [RimKataAutomaticCastSuppression.Push(Verse.Pawn pawn)](#m-1247) · [RimKataSubdueUtility.Get(Verse.Pawn pawn)](#m-2573)
 - **호출 — 외부:** `Verse.Pawn_StanceTracker.SetStance(Verse.Stance newStance)`
 
 <a id="m-1510"></a>
 
-### 016. RimKataNativeAttack.CompleteRequest
+### 018. RimKataNativeAttack.CompleteRequest
 
-`private void CompleteRequest(bool resetNative)` · [L391](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:391)
+`private void CompleteRequest(bool resetNative)` · [L425](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:425)
 
-- **역할:** 요청을 분리한 뒤 슬라이딩/떨치기·제압·일반 사이클별 완료 처리에 결과를 전달하고 준비 자료와 참조를 정리합니다.
+- **역할:** 요청을 분리한 뒤 슬라이딩/떨치기·제압·일반 사이클별 완료 처리에 결과를 전달하고 준비 자료와 참조를 정리합니다. 날아 차기 요청의 완료는 전용 결과 처리로 전달하고 일반 무기 사이클의 완료·결합 정리에 섞지 않습니다. 발차기 전용 요청 결과를 독립 타격 객체에 전달하고 일반 무기 슬롯 사이클 완료 처리를 적용하지 않습니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.CompleteNativeAttack(RimKataNativeAttack attack, bool acted, bool cancelled)](#m-1074) · [RimKataNativeAttack.Detach()](#m-1517) · [RimKataNativeAttack.ReleaseReferences()](#m-1518) · [RimKataPreparedWeaponData.Restore(Verse.Verb verb)](#m-1548) · [RimKataReactiveMotion.AttackCompleted(RimKataNativeAttack request)](#m-2529) · [RimKataSubdueCombat.AttackCompleted(RimKataNativeAttack request)](#m-2630)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.CompleteNativeAttack(RimKataNativeAttack attack, bool acted, bool cancelled)](#m-1074) · [RimKataKickAttack.Complete(bool cancelled)](#m-2973) · [RimKataNativeAttack.Detach()](#m-1517) · [RimKataNativeAttack.ReleaseReferences()](#m-1518) · [RimKataPreparedWeaponData.Restore(Verse.Verb verb)](#m-1548) · [RimKataReactiveMotion.AttackCompleted(RimKataNativeAttack request)](#m-2529) · [RimKataSubdueCombat.AttackCompleted(RimKataNativeAttack request)](#m-2630)
 - **호출 — 외부:** `Verse.Verb.Reset()`
 - **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])`
 
 <a id="m-1511"></a>
 
-### 017. RimKataNativeAttack.Cancel
+### 019. RimKataNativeAttack.Cancel
 
-`internal void Cancel()` · [L415](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:415)
+`internal void Cancel()` · [L452](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:452)
 
 - **역할:** 대기 요청을 취소하되 실행 중인 네이티브 호출은 반환될 때까지 초기화를 미룹니다.
-- **호출받음:** 직접 **19곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **21곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataNativeAttack.Detach()](#m-1517) · [RimKataNativeAttack.ReleaseReferences()](#m-1518)
 - **호출 — 외부:** `Verse.Verb.Reset()`
 - **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])`
 
 <a id="m-1512"></a>
 
-### 018. RimKataNativeAttack.ForgetBinding
+### 020. RimKataNativeAttack.ForgetBinding
 
-`internal void ForgetBinding()` · [L428](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:428)
+`internal void ForgetBinding()` · [L465](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:465)
 
 - **역할:** 공격을 취소하고 실행 중이 아니면 Verb 바인딩 캐시를 해제합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -21988,9 +23337,9 @@
 
 <a id="m-1513"></a>
 
-### 019. RimKataNativeAttack.NotifyReset
+### 021. RimKataNativeAttack.NotifyReset
 
-`internal static void NotifyReset(Verb verb)` · [L436](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:436)
+`internal static void NotifyReset(Verb verb)` · [L473](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:473)
 
 - **역할:** 기본 Verb 초기화에 맞춰 연결된 요청을 취소하고 대기 상태를 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -22000,9 +23349,9 @@
 
 <a id="m-1514"></a>
 
-### 020. RimKataNativeAttack.NotifyEquipmentLost
+### 022. RimKataNativeAttack.NotifyEquipmentLost
 
-`internal static void NotifyEquipmentLost(Verb verb)` · [L451](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:451)
+`internal static void NotifyEquipmentLost(Verb verb)` · [L488](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:488)
 
 - **역할:** Verb가 장비를 잃으면 연결 요청을 취소하고 준비된 속성을 원본으로 돌립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -22011,9 +23360,9 @@
 
 <a id="m-1515"></a>
 
-### 021. RimKataNativeAttack.ExposeData
+### 023. RimKataNativeAttack.ExposeData
 
-`internal static void ExposeData(Verb verb)` · [L462](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:462)
+`internal static void ExposeData(Verb verb)` · [L499](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:499)
 
 - **역할:** 저장 중 대기·부분 연사 상태를 기록하고 불러오기 뒤 임시 공격 문맥을 안전하게 초기화합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -22023,9 +23372,9 @@
 
 <a id="m-1516"></a>
 
-### 022. RimKataNativeAttack.ConsumeInterruptedBurstAfterLoad
+### 024. RimKataNativeAttack.ConsumeInterruptedBurstAfterLoad
 
-`internal static bool ConsumeInterruptedBurstAfterLoad(Verb verb)` · [L488](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:488)
+`internal static bool ConsumeInterruptedBurstAfterLoad(Verb verb)` · [L525](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:525)
 
 - **역할:** 불러오기 때문에 중단된 부분 연사 표시를 한 번 읽고 제거합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -22034,9 +23383,9 @@
 
 <a id="m-1517"></a>
 
-### 023. RimKataNativeAttack.Detach
+### 025. RimKataNativeAttack.Detach
 
-`private void Detach()` · [L499](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:499)
+`private void Detach()` · [L536](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:536)
 
 - **역할:** Verb 요청 연결과 실행 상태를 해제하고 임시 단발 제한의 원래 점사 횟수 및 특수 요청 계수를 복구합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -22046,31 +23395,31 @@
 
 <a id="m-1518"></a>
 
-### 024. RimKataNativeAttack.ReleaseReferences
+### 026. RimKataNativeAttack.ReleaseReferences
 
-`private void ReleaseReferences()` · [L513](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:513)
+`private void ReleaseReferences()` · [L550](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:550)
 
-- **역할:** 특수 연출에 연결된 공격을 해제하고 폰·무기·표적·작업·사냥·제압·슬라이딩/떨치기·저장 자세 참조를 비웁니다. 보관된 슬라이딩 좌표 문맥 참조도 비웁니다.
+- **역할:** 특수 연출에 연결된 공격을 해제하고 폰·무기·표적·작업·사냥·제압·슬라이딩/떨치기·저장 자세 참조를 비웁니다. 보관된 슬라이딩 좌표 문맥 참조도 비웁니다. 미완료 날아 차기는 취소 완료를 알린 뒤 요청 참조를 해제합니다. 미완료 발차기를 취소하고 전용 요청 참조·기회 전달 표시를 비웁니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataReactiveMotion.ReleaseAttack(RimKataNativeAttack request)](#m-2532)
+- **호출 — 프로젝트 내부:** [RimKataKickAttack.Complete(bool cancelled)](#m-2973) · [RimKataReactiveMotion.ReleaseAttack(RimKataNativeAttack request)](#m-2532)
 - **호출 — 외부:** 없음
 
 <a id="m-1519"></a>
 
-### 025. RimKataNativeAttack.ClearCompletedReferences
+### 027. RimKataNativeAttack.ClearCompletedReferences
 
-`internal void ClearCompletedReferences()` · [L541](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:541)
+`internal void ClearCompletedReferences()` · [L585](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:585)
 
 - **역할:** 완료된 공격 요청의 남은 참조를 공통 정리 메서드로 해제합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataNativeAttack.ReleaseReferences()](#m-1518)
 - **호출 — 외부:** 없음
 
 <a id="m-1520"></a>
 
-### 026. Patch_VerbTick_RimKataNativeAttack.Transpiler
+### 028. Patch_VerbTick_RimKataNativeAttack.Transpiler
 
-`internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L547](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:547)
+`internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L591](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:591)
 
 - **역할:** 기본 Verb 틱 앞에 준비된 RimKata 공격 시작을 삽입하고 같은 틱의 연사 중복 진행을 막습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22079,9 +23428,9 @@
 
 <a id="m-1521"></a>
 
-### 027. Patch_VerbNextBurstShot_RimKataNativeAttack.Prefix
+### 029. Patch_VerbNextBurstShot_RimKataNativeAttack.Prefix
 
-`private static bool Prefix(Verb __instance, out RimKataNativeAttack __state)` · [L591](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:591)
+`private static bool Prefix(Verb __instance, out RimKataNativeAttack __state)` · [L635](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:635)
 
 - **역할:** 기본 후속 연사탄 실행 전에 연결된 RimKata 요청의 발사 문맥을 준비합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22090,9 +23439,9 @@
 
 <a id="m-1522"></a>
 
-### 028. Patch_VerbNextBurstShot_RimKataNativeAttack.Finalizer
+### 030. Patch_VerbNextBurstShot_RimKataNativeAttack.Finalizer
 
-`private static Exception Finalizer(Exception __exception, RimKataNativeAttack __state)` · [L594](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:594)
+`private static Exception Finalizer(Exception __exception, RimKataNativeAttack __state)` · [L638](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:638)
 
 - **역할:** 후속 연사탄 실행 종료 시 연결된 요청의 발사 결과와 예외를 마무리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22101,9 +23450,9 @@
 
 <a id="m-1523"></a>
 
-### 029. Patch_VerbReset_RimKataNativeAttack.Prefix
+### 031. Patch_VerbReset_RimKataNativeAttack.Prefix
 
-`private static void Prefix(Verb __instance)` · [L604](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:604)
+`private static void Prefix(Verb __instance)` · [L648](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:648)
 
 - **역할:** 기본 Verb 초기화를 RimKata 요청 상태에 알립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22112,9 +23461,9 @@
 
 <a id="m-1524"></a>
 
-### 030. Patch_VerbExposeData_RimKataNativeAttack.Postfix
+### 032. Patch_VerbExposeData_RimKataNativeAttack.Postfix
 
-`private static void Postfix(Verb __instance)` · [L610](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:610)
+`private static void Postfix(Verb __instance)` · [L654](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:654)
 
 - **역할:** Verb 저장·불러오기 과정에 RimKata의 임시 공격 및 부분 연사 복원 처리를 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22123,9 +23472,9 @@
 
 <a id="m-1525"></a>
 
-### 031. Patch_VerbEquipmentLost_RimKataNativeAttack.Prefix
+### 033. Patch_VerbEquipmentLost_RimKataNativeAttack.Prefix
 
-`private static void Prefix(Verb __instance)` · [L620](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:620)
+`private static void Prefix(Verb __instance)` · [L664](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:664)
 
 - **역할:** 기본 장비 상실 이벤트를 RimKata 공격 요청에 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22787,7 +24136,7 @@
 
 `public void DeleteCurrent(RimKataSettings settings)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataProfileStore.cs:173)
 
-- **역할:** 현재 프로필 파일을 제거하고 남은 프로필로 전환합니다.
+- **역할:** 현재 프로필 삭제 시 대상 규칙의 아군·적군 프로필 참조를 각각 대체 프로필로 옮기고 기존 삭제/선택 갱신을 수행합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataProfileStore.RequireInitialized(RimKataSettings settings)](#m-1578) · [RimKataSettingsProfile.ApplyTo(RimKataSettings settings)](#m-1781)
 - **호출 — 외부:** `System.Collections.Generic.List<T>.IndexOf(T item)` · `System.Collections.Generic.List<T>.RemoveAt(int index)` · `System.IO.File.Delete(string path)`
@@ -23732,9 +25081,9 @@
 
 `internal static void StaggerApplied(Pawn pawn)` · [L187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:187)
 
-- **역할:** 림카타 전투 중 stagger 발생 시 슬라이딩을 굴리고 성공하면 stagger를 해제하며 실패하면 떨치기를 준비합니다.
+- **역할:** 림카타 전투 중 stagger 발생 시 슬라이딩을 굴리고 성공하면 stagger를 해제하며 실패하면 떨치기를 준비합니다. 슬라이딩의 직접 stagger 해제는 이미 보유한 발차기 상태가 있을 때 그 상태를 종료 사건으로 전달하고 추가 폰·소유자 조회는 하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataDodgeMovementUtility.TryChooseDestination(Verse.Pawn pawn, Verse.IntVec3 combatDirection, out Verse.IntVec3 destination)](#m-0790) · [RimKataDodgeMovementUtility.TryGetCurrentMovementDirection(Verse.Pawn pawn, out Verse.IntVec3 direction)](#m-0788) · [RimKataReactiveMotion.BeginSlide(Verse.Pawn pawn, RimKataPawnCombatState combat, Verse.Thing target, Verse.IntVec3 destination)](#m-2521) · [RimKataReactiveMotion.BlocksCombat(RimKataPawnCombatState state)](#m-2513) · [RimKataReactiveMotion.CurrentTarget(RimKataPawnCombatState combat)](#m-2518) · [RimKataReactiveMotion.ExistingCombat(Verse.Pawn pawn)](#m-2511) · [RimKataReactiveMotion.IsFighting(RimKataPawnCombatState state)](#m-2512) · [RimKataReactiveMotion.Sector(float angle)](#m-2519) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
+- **호출 — 프로젝트 내부:** [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataDodgeMovementUtility.TryChooseDestination(Verse.Pawn pawn, Verse.IntVec3 combatDirection, out Verse.IntVec3 destination)](#m-0790) · [RimKataDodgeMovementUtility.TryGetCurrentMovementDirection(Verse.Pawn pawn, out Verse.IntVec3 direction)](#m-0788) · [RimKataKick.StaggerEnded(RimKataPawnCombatState combat)](#m-3011) · [RimKataReactiveMotion.BeginSlide(Verse.Pawn pawn, RimKataPawnCombatState combat, Verse.Thing target, Verse.IntVec3 destination)](#m-2521) · [RimKataReactiveMotion.BlocksCombat(RimKataPawnCombatState state)](#m-2513) · [RimKataReactiveMotion.CurrentTarget(RimKataPawnCombatState combat)](#m-2518) · [RimKataReactiveMotion.ExistingCombat(Verse.Pawn pawn)](#m-2511) · [RimKataReactiveMotion.IsFighting(RimKataPawnCombatState state)](#m-2512) · [RimKataReactiveMotion.Sector(float angle)](#m-2519) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
 - **호출 — 외부:** `Verse.Rand.Chance(float chance)`
 - **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])` ×2
 
@@ -23742,9 +25091,9 @@
 
 ### 014. RimKataReactiveMotion.AttackStarting
 
-`internal static void AttackStarting(RimKataNativeAttack request)` · [L216](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:216)
+`internal static void AttackStarting(RimKataNativeAttack request)` · [L217](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:217)
 
-- **역할:** stagger 중 준비된 일반 공격을 확률에 따라 떨치기 첫 공격으로 전환하고 반대편 무기 공격도 예약합니다.
+- **역할:** stagger 중 준비된 일반 공격을 확률에 따라 떨치기 첫 공격으로 전환하고 반대편 무기 공격도 예약합니다. 떨치기 설치와 유효성 확인에 성공한 직후 stagger 남은 시간을 0으로, 이동속도 보정을 기본값으로 복원하고 기존 발차기 stagger 종료 통지를 보냅니다. 발동 실패 경로는 해제하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataReactiveMotion.Get(Verse.Pawn pawn)](#m-2509) ×2 · [RimKataReactiveMotion.Sector(float angle)](#m-2519) ×2 · [RimKataBreachUtility.Get(Verse.Pawn pawn)](#m-2223) · [RimKataNativeAttack.BeginReactiveAttack(RimKataReactiveMotionState motion)](#m-2481) · [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataReactiveAttack.HasAmmo(Verse.Verb verb, Verse.ThingWithComps weapon)](#m-2490) · [RimKataReactiveMotion.BlocksCombat(RimKataPawnCombatState state)](#m-2513) · [RimKataReactiveMotion.Create(Verse.Pawn pawn, RimKataPawnCombatState combat, Verse.Thing target)](#m-2520) · [RimKataReactiveMotion.EnemyAt(RimKataReactiveMotionState state, Verse.IntVec3 cell)](#m-2523) · [RimKataReactiveMotion.Install(RimKataReactiveMotionState state, \[RimKataNativeAttack originatingRequest = null\])](#m-2522) · [RimKataReactiveMotion.IsFighting(RimKataPawnCombatState state)](#m-2512) · [RimKataReactiveMotion.QueueHit(RimKataReactiveMotionState state, bool secondary, int dueTick)](#m-2526) · [RimKataReactiveMotion.Remove(Verse.Pawn pawn, \[bool resume = false\])](#m-2535) · [RimKataReactiveMotion.SetPending(RimKataReactiveMotionState state, bool secondary, Verse.Thing target, int dueTick)](#m-2527) · [RimKataReactiveMotion.UpdateAngles(RimKataReactiveMotionState state, int elapsed)](#m-2533) · [RimKataReactiveMotion.Valid(RimKataReactiveMotionState state)](#m-2515) · [RimKataReactiveRender.Publish(RimKataReactiveMotionState state)](#m-2544) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTemporaryInactivity.IsInactive(Verse.Pawn pawn)](#m-1972)
 - **호출 — 외부:** `Verse.Rand.Chance(float chance)`
@@ -23753,7 +25102,7 @@
 
 ### 015. RimKataReactiveMotion.CurrentTarget
 
-`private static Thing CurrentTarget(RimKataPawnCombatState combat)` · [L259](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:259)
+`private static Thing CurrentTarget(RimKataPawnCombatState combat)` · [L260](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:260)
 
 - **역할:** 다음 조준 대상부터 무기 계획·직전 공격·근접 대상·작업 목표 순으로 기준 대상을 찾습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23764,7 +25113,7 @@
 
 ### 016. RimKataReactiveMotion.Sector
 
-`internal static int Sector(float angle)` · [L272](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:272)
+`internal static int Sector(float angle)` · [L273](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:273)
 
 - **역할:** 각도를 45도 간격의 8방향 번호로 변환합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -23775,7 +25124,7 @@
 
 ### 017. RimKataReactiveMotion.Create
 
-`private static RimKataReactiveMotionState Create(Pawn pawn, RimKataPawnCombatState combat, Thing target)` · [L273](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:273)
+`private static RimKataReactiveMotionState Create(Pawn pawn, RimKataPawnCombatState combat, Thing target)` · [L274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:274)
 
 - **역할:** 작업·위치·무기·대상·이동 재개 정보를 담은 특수 연출 상태를 만듭니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23787,7 +25136,7 @@
 
 ### 018. RimKataReactiveMotion.BeginSlide
 
-`private static bool BeginSlide(Pawn pawn, RimKataPawnCombatState combat, Thing target, IntVec3 destination)` · [L288](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:288)
+`private static bool BeginSlide(Pawn pawn, RimKataPawnCombatState combat, Thing target, IntVec3 destination)` · [L289](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:289)
 
 - **역할:** 이동 방향 양옆의 공격 대상을 배정하고 목적 셀 진입 성공 후 참가자·렌더를 등록하며 출발 주변 추격 경로를 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23798,7 +25147,7 @@
 
 ### 019. RimKataReactiveMotion.Install
 
-`private static void Install(RimKataReactiveMotionState state, RimKataNativeAttack originatingRequest = null)` · [L317](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:317)
+`private static void Install(RimKataReactiveMotionState state, RimKataNativeAttack originatingRequest = null)` · [L318](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:318)
 
 - **역할:** 특수 참가자를 등록하고 떨치기 대기·기존 공격 계획·눕는 자세·이동을 정리합니다. 실제 combat/반응 상태 연결 직후 담당 작업 제어 슬롯을 등록합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23809,7 +25158,7 @@
 
 ### 020. RimKataReactiveMotion.EnemyAt
 
-`private static Thing EnemyAt(RimKataReactiveMotionState state, IntVec3 cell)` · [L333](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:333)
+`private static Thing EnemyAt(RimKataReactiveMotionState state, IntVec3 cell)` · [L334](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:334)
 
 - **역할:** 지정 셀의 유효한 적대 폰을 찾습니다. 떨치기는 일반 자동 후보 등록·무작위 공격 설정과 독립적으로 선택하고, 슬라이딩은 기존 후보 확인 및 등록 경로를 유지합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -23820,7 +25169,7 @@
 
 ### 021. RimKataReactiveMotion.PrepareShakeOffHits
 
-`internal static void PrepareShakeOffHits(RimKataReactiveMotionState state)` · [L351](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:351)
+`internal static void PrepareShakeOffHits(RimKataReactiveMotionState state)` · [L352](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:352)
 
 - **역할:** 등록된 떨치기 시전자에게만 3·6·…·24틱의 현재 방향 셀을 확인하고 같은 틱 무기 VerbTick용 공격을 예약합니다. 없는 슬롯은 조사하지 않고 24틱의 기존 대상 우선과 콜백 취소를 보존합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23831,7 +25180,7 @@
 
 ### 022. RimKataReactiveMotion.Tick
 
-`internal static void Tick(RimKataReactiveMotionState state)` · [L375](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:375)
+`internal static void Tick(RimKataReactiveMotionState state)` · [L376](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:376)
 
 - **역할:** 등록 반응 참가자의 타이머·슬라이딩 공격·기립·떨치기 종료·렌더를 진행합니다. 떨치기 공격 방향의 셀 검사는 이 컴포넌트 틱에서 미리 하지 않고 참가자 작업 틱에서 해당 틱에 처리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23842,7 +25191,7 @@
 
 ### 023. RimKataReactiveMotion.LiveTarget
 
-`private static bool LiveTarget(RimKataReactiveMotionState state, Thing target)` · [L433](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:433)
+`private static bool LiveTarget(RimKataReactiveMotionState state, Thing target)` · [L434](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:434)
 
 - **역할:** 공격 대상이 같은 맵의 유효한 폰인지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23853,7 +25202,7 @@
 
 ### 024. RimKataReactiveMotion.QueueHit
 
-`private static void QueueHit(RimKataReactiveMotionState state, bool secondary, int dueTick)` · [L436](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:436)
+`private static void QueueHit(RimKataReactiveMotionState state, bool secondary, int dueTick)` · [L437](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:437)
 
 - **역할:** 해당 무기에 유효 대상과 빈 예약이 있으면 타격 예정 틱을 기록하고 특수 공격을 예약합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -23864,7 +25213,7 @@
 
 ### 025. RimKataReactiveMotion.SetPending
 
-`private static void SetPending(RimKataReactiveMotionState state, bool secondary, Thing target, int dueTick)` · [L446](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:446)
+`private static void SetPending(RimKataReactiveMotionState state, bool secondary, Thing target, int dueTick)` · [L447](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:447)
 
 - **역할:** 주·부 무기의 대기 대상과 예정 틱이 바뀔 때 저장하고 공격 상태 버전을 갱신합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -23875,7 +25224,7 @@
 
 ### 026. RimKataReactiveMotion.RestorePendingAttacks
 
-`internal static void RestorePendingAttacks(RimKataReactiveMotionState state)` · [L463](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:463)
+`internal static void RestorePendingAttacks(RimKataReactiveMotionState state)` · [L464](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:464)
 
 - **역할:** 저장된 주·부 무기의 미완료 공격을 다시 예약하고 실패한 예약 기록을 비웁니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23886,7 +25235,7 @@
 
 ### 027. RimKataReactiveMotion.AttackCompleted
 
-`internal static void AttackCompleted(RimKataNativeAttack request)` · [L473](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:473)
+`internal static void AttackCompleted(RimKataNativeAttack request)` · [L474](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:474)
 
 - **역할:** 완료된 특수 공격의 무기 쿨다운·조준 정보를 갱신하고 슬라이딩 또는 마지막 떨치기 대상의 후속 탐색을 요청합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23897,7 +25246,7 @@
 
 ### 028. RimKataReactiveMotion.RequestContinuationSearch
 
-`private static void RequestContinuationSearch(RimKataReactiveMotionState state)` · [L499](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:499)
+`private static void RequestContinuationSearch(RimKataReactiveMotionState state)` · [L500](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:500)
 
 - **역할:** 특수 연출 상태당 한 번만 현재 위치에서 본체의 후속 후보 탐색을 시작합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -23908,7 +25257,7 @@
 
 ### 029. RimKataReactiveMotion.Complete
 
-`private static void Complete(RimKataReactiveMotionState state)` · [L506](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:506)
+`private static void Complete(RimKataReactiveMotionState state)` · [L507](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:507)
 
 - **역할:** 후속 후보 탐색을 보장한 뒤 특수 상태를 제거하고 이전 전투·이동으로 복귀합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23919,7 +25268,7 @@
 
 ### 030. RimKataReactiveMotion.ReleaseAttack
 
-`internal static void ReleaseAttack(RimKataNativeAttack request)` · [L512](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:512)
+`internal static void ReleaseAttack(RimKataNativeAttack request)` · [L513](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:513)
 
 - **역할:** 완료·취소된 무기 예약을 비우고 실패한 떨치기 첫 공격이면 특수 상태를 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -23930,7 +25279,7 @@
 
 ### 031. RimKataReactiveMotion.UpdateAngles
 
-`private static void UpdateAngles(RimKataReactiveMotionState state, int elapsed)` · [L528](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:528)
+`private static void UpdateAngles(RimKataReactiveMotionState state, int elapsed)` · [L529](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:529)
 
 - **역할:** 떨치기의 양손 회전각과 슬라이딩 중 근접 베기·원거리 조준각을 계산합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -23941,7 +25290,7 @@
 
 ### 032. RimKataReactiveMotion.Aim
 
-`private static float Aim(Thing target, Vector3 center, float fallback)` · [L544](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:544)
+`private static float Aim(Thing target, Vector3 center, float fallback)` · [L545](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:545)
 
 - **역할:** 살아 있는 대상의 렌더 위치를 향한 각도를 구하고 없으면 기준 각도를 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23952,7 +25301,7 @@
 
 ### 033. RimKataReactiveMotion.Remove
 
-`internal static void Remove(Pawn pawn, bool resume = false)` · [L546](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:546)
+`internal static void Remove(Pawn pawn, bool resume = false)` · [L547](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:547)
 
 - **역할:** 참가자 사전·전투 연결·예약 공격·렌더를 해제하고 요청된 경우 이전 이동을 재개합니다. 반응 참조를 제거한 뒤 작업 슬롯을 갱신하며 별도 회피 이동이 남으면 보존합니다.
 - **호출받음:** 직접 **17곳** · 메서드 그룹 참조 **0곳**.
@@ -23963,7 +25312,7 @@
 
 ### 034. RimKataReactiveMotion.CancelAttacks
 
-`private static void CancelAttacks(RimKataReactiveMotionState state)` · [L558](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:558)
+`private static void CancelAttacks(RimKataReactiveMotionState state)` · [L559](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:559)
 
 - **역할:** 해당 특수 상태에 소속된 주·부 무기 공격 요청을 취소합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -23974,7 +25323,7 @@
 
 ### 035. RimKataReactiveMotion.Resume
 
-`private static void Resume(RimKataReactiveMotionState state, bool allowCombatHandoff = true)` · [L563](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:563)
+`private static void Resume(RimKataReactiveMotionState state, bool allowCombatHandoff = true)` · [L564](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveMotion.cs:564)
 
 - **역할:** 같은 작업이 유지되는 경우 자동 공격의 도달 불가 목표를 재검토하거나 저장한 이동 목적지로 복귀합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -24090,7 +25439,7 @@
 
 `internal static bool Owns(Pawn pawn)` · [L98](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:98)
 
-- **역할:** 현재 렌더 문맥 또는 참가자 캐시에서 특수 연출이 해당 폰의 무기 렌더를 담당하는지 확인합니다.
+- **역할:** 현재 렌더 문맥 또는 참가자 캐시에서 특수 연출이 해당 폰의 무기 렌더를 담당하는지 확인합니다. 현재 무기 문맥 밖에서 날아 차기 자료가 함께 전달된 프레임이면 이전 슬라이딩·떨치기의 무기 소유 자료를 사용하지 않습니다. 월드 문맥의 발차기 자료가 있으면 슬라이딩/떨치기 장비 소유 판단을 가려 변환 중첩을 방지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
@@ -24099,7 +25448,7 @@
 
 ### 004. RimKataReactiveRender.PlaceBody
 
-`internal static void PlaceBody(RimKataReactiveVisual visual, ref Vector3 drawLoc)` · [L102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:102)
+`internal static void PlaceBody(RimKataReactiveVisual visual, ref Vector3 drawLoc)` · [L106](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:106)
 
 - **역할:** 슬라이딩·떨치기 몸 렌더의 수평 위치를 특수 연출 위치로 바꿉니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24110,7 +25459,7 @@
 
 ### 005. RimKataReactiveRender.Prepare
 
-`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataReactiveVisual visual)` · [L109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:109)
+`internal static void Prepare(PawnDrawParms parms, List<PawnGraphicDrawRequest> requests, RimKataReactiveVisual visual)` · [L113](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:113)
 
 - **역할:** 넘어짐·기립 몸 렌더 요청을 발 기준으로 회전시키고 무기 층·높이·그림자 변환을 캐시에 기록합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24121,7 +25470,7 @@
 
 ### 006. RimKataReactiveRender.Begin
 
-`internal static Scope Begin(Pawn pawn, Vector3 root, PawnRenderFlags flags, RimKataReactiveVisual? visual)` · [L145](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:145)
+`internal static Scope Begin(Pawn pawn, Vector3 root, PawnRenderFlags flags, RimKataReactiveVisual? visual)` · [L149](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:149)
 
 - **역할:** 초상화·캐시·비가시 렌더를 제외한 특수 참가자의 렌더 문맥을 열고 필요한 몸 변환 프레임을 읽습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24132,7 +25481,7 @@
 
 ### 007. RimKataReactiveRender.End
 
-`internal static void End(Scope scope)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:172)
+`internal static void End(Scope scope)` · [L176](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:176)
 
 - **역할:** 특수 렌더 문맥을 종료하고 중첩 이전 문맥을 복원합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24143,7 +25492,7 @@
 
 ### 008. RimKataReactiveRender.TryReadFrame
 
-`private static bool TryReadFrame(Pawn pawn, out Frame frame)` · [L177](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:177)
+`private static bool TryReadFrame(Pawn pawn, out Frame frame)` · [L181](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:181)
 
 - **역할:** 지정 참가자의 준비된 몸·무기·그림자 변환 프레임을 잠금 안에서 읽습니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -24154,7 +25503,7 @@
 
 ### 009. RimKataReactiveRender.SuppressNative
 
-`internal static bool SuppressNative(Thing weapon)` · [L188](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:188)
+`internal static bool SuppressNative(Thing weapon)` · [L192](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:192)
 
 - **역할:** 렌더 탐색 중이 아니며 특수 연출이 그리는 주·부 무기이면 기존 무기 출력을 억제합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24165,7 +25514,7 @@
 
 ### 010. RimKataReactiveRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:193)
+`internal static Matrix4x4 TransformEquipment(Matrix4x4 matrix)` · [L197](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:197)
 
 - **역할:** 현재 특수 프레임의 무기 행렬에서 위치만 몸 변환에 맞추고 조준 회전은 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -24176,7 +25525,7 @@
 
 ### 011. RimKataReactiveRender.TransformEquipment
 
-`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:201)
+`internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)` · [L205](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:205)
 
 - **역할:** 지정 폰의 현재 문맥 또는 캐시된 특수 프레임을 사용해 무기 행렬의 위치만 보정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24187,7 +25536,7 @@
 
 ### 012. RimKataReactiveRender.TransformEquipment
 
-`internal static void TransformEquipment(ref Vector3 position)` · [L211](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:211)
+`internal static void TransformEquipment(ref Vector3 position)` · [L215](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:215)
 
 - **역할:** 현재 특수 프레임이 있으면 무기 위치 벡터에 몸 변환 보정을 적용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24198,7 +25547,7 @@
 
 ### 013. RimKataReactiveRender.WeaponsAboveBody
 
-`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L216](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:216)
+`internal static bool WeaponsAboveBody(Pawn pawn = null)` · [L220](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:220)
 
 - **역할:** 넘어짐·기립 변환에서 무기를 몸 위로 올리는 층 보정이 활성화됐는지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24209,7 +25558,7 @@
 
 ### 014. RimKataReactiveRender.PlaceWeapon
 
-`private static Vector3 PlaceWeapon(Vector3 position, in Frame frame)` · [L223](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:223)
+`private static Vector3 PlaceWeapon(Vector3 position, in Frame frame)` · [L227](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:227)
 
 - **역할:** 무기 위치에 몸 변환과 몸 위 층·북쪽 높이 보정을 적용합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -24220,7 +25569,7 @@
 
 ### 015. RimKataReactiveRender.PlaceShadow
 
-`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L231](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:231)
+`internal static void PlaceShadow(Pawn pawn, ref Vector3 drawLoc)` · [L235](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:235)
 
 - **역할:** 넘어짐·기립 참가자의 그림자를 변환된 몸 위치에 맞춥니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24231,7 +25580,7 @@
 
 ### 016. RimKataReactiveRender.Draw
 
-`internal static void Draw()` · [L239](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:239)
+`internal static void Draw()` · [L243](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:243)
 
 - **역할:** 현재 특수 렌더 문맥에서 양손 무기를 한 번씩 그리고 부 무기의 특수 렌더 부가 요소를 연결합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -24242,7 +25591,7 @@
 
 ### 017. RimKataReactiveRender.DrawWeapon
 
-`private static void DrawWeapon(ThingWithComps weapon, float aim, bool secondary)` · [L251](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:251)
+`private static void DrawWeapon(ThingWithComps weapon, float aim, bool secondary)` · [L255](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataReactiveRender.cs:255)
 
 - **역할:** 특수 연출의 조준점·회전·좌우 반전으로 무기 위치를 계산하고 특수 렌더 또는 기본 그래픽을 그립니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -24358,7 +25707,7 @@
 `internal static List<CodeInstruction> Branch(ILGenerator generator, IEnumerable<CodeInstruction> loadPawn, Label absent, bool qualifiedOnly, out LocalBuilder entry)` · [L11](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataRegisteredPawnGate.cs:11)
 
 - **역할:** 설치 시 기존 등록 페이지를 직접 읽는 네이티브 분기를 생성합니다. Pawn 참조를 확인하고 필요하면 등록 자격자만 통과시키며, 일반 폰의 자격·전투 상태 조회 함수는 호출하지 않습니다.
-- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `HarmonyLib.AccessTools.Field(System.Type type, string name)` ×5 · `System.Reflection.Emit.ILGenerator.DeclareLocal(System.Type localType)` ×5 · `System.Collections.Generic.List<T>.AddRange(System.Collections.Generic.IEnumerable<T> collection)` ×2 · `System.Reflection.FieldInfo.GetRawConstantValue()`
 
@@ -26066,7 +27415,7 @@
 
 ## 80. RimKataSettings.cs
 
-[Source/RimKataSettings.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs) · 메서드 **53개** · 공통·프로필 설정 값과 저장·마이그레이션 · [파일 목차](#files)
+[Source/RimKataSettings.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs) · 메서드 **58개** · 공통·프로필 설정 값과 저장·마이그레이션 · [파일 목차](#files)
 
 <a id="m-1777"></a>
 
@@ -26204,18 +27553,29 @@
 
 ### 013. RimKataSettings.GetCrawlFireDefaultAllowed
 
-`public bool GetCrawlFireDefaultAllowed(Pawn pawn)` · [L693](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:693)
+`public bool GetCrawlFireDefaultAllowed(Pawn pawn)` · [L729](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:729)
 
 - **역할:** 플레이어 기준 적대 분류에 따라 아군 또는 적군의 기면서 사격 허용 기본값을 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataEligibility.IsHostileToPlayerFaction(Verse.Pawn pawn)](#m-1152)
 - **호출 — 외부:** 없음
 
+<a id="m-2949"></a>
+
+### 014. RimKataSettings.GetFlyingKickAllowed
+
+`public bool GetFlyingKickAllowed(Pawn pawn)` · [L733](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:733)
+
+- **역할:** 기면서 쏴와 같은 플레이어 팩션 적대 분류를 사용하여 현재 프로필의 아군 또는 적군 날아 차기 허용값을 반환합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataEligibility.IsHostileToPlayerFaction(Verse.Pawn pawn)](#m-1152)
+- **호출 — 외부:** 없음
+
 <a id="m-1788"></a>
 
-### 014. RimKataSettings.GetRangedDodgeDurationTicks
+### 015. RimKataSettings.GetRangedDodgeDurationTicks
 
-`public int GetRangedDodgeDurationTicks(Pawn pawn)` · [L697](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:697)
+`public int GetRangedDodgeDurationTicks(Pawn pawn)` · [L737](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:737)
 
 - **역할:** 고정/성장 모드와 기술 수준으로 원거리 회피 유지 시간을 계산합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26224,20 +27584,64 @@
 
 <a id="m-2563"></a>
 
-### 015. RimKataSettings.GetSubdueMassMultiplier
+### 016. RimKataSettings.GetSubdueMassMultiplier
 
-`public float GetSubdueMassMultiplier(Pawn pawn)` · [L713](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:713)
+`public float GetSubdueMassMultiplier(Pawn pawn)` · [L753](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:753)
 
 - **역할:** 고정값 또는 격투 성장 설정을 적용해 본인 질량 대비 제압 가능 질량 배율을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettings.MultiplierFromPercent(float percent)](#m-1817) · [RimKataSettings.ResolvePercent(Verse.Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, RimWorld.SkillDef skill)](#m-1814)
 - **호출 — 외부:** 없음
 
+<a id="m-2940"></a>
+
+### 017. RimKataSettings.GetFlyingKickStunChance
+
+`public float GetFlyingKickStunChance(Pawn pawn)` · [L757](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:757)
+
+- **역할:** 날아 차기 기절 확률을 고정값 또는 최소값과 격투 레벨당 증가량의 합으로 계산하고 실제 확률 범위로 제한합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataSettings.ChanceFromPercent(float percent)](#m-1816) · [RimKataSettings.ResolvePercent(Verse.Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, RimWorld.SkillDef skill)](#m-1814)
+- **호출 — 외부:** 없음
+
+<a id="m-3003"></a>
+
+### 018. RimKataSettings.GetKickCooldownTicks
+
+`public int GetKickCooldownTicks(Pawn pawn)` · [L763](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:763)
+
+- **역할:** 현재 프로필의 발차기 재사용 시간을 고정 틱 또는 기본 틱에서 격투 레벨별 감소량을 뺀 성장값으로 구합니다. 반올림 뒤 0부터 정수 최댓값 사이로 제한합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataSettings.SkillLevel(Verse.Pawn pawn, RimWorld.SkillDef skill)](#m-1815)
+- **호출 — 외부:** `System.Math.Max(double val1, double val2)` · `System.Math.Min(double val1, double val2)` · `System.Math.Round(double a)`
+
+<a id="m-3004"></a>
+
+### 019. RimKataSettings.GetKickDamageMultiplier
+
+`public float GetKickDamageMultiplier(Pawn pawn)` · [L767](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:767)
+
+- **역할:** 현재 프로필의 고정 피해율 또는 최소 피해율에 격투 레벨별 증가량을 더한 성장값을 배율로 반환합니다. 100% 초과를 허용합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataSettings.MultiplierFromPercent(float percent)](#m-1817) · [RimKataSettings.ResolvePercent(Verse.Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, RimWorld.SkillDef skill)](#m-1814)
+- **호출 — 외부:** 없음
+
+<a id="m-3016"></a>
+
+### 020. RimKataSettings.GetPushKickMassMultiplier
+
+`public float GetPushKickMassMultiplier(Pawn pawn)` · [L780](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:780)
+
+- **역할:** 밀어 차기 무게 설정의 고정250% 또는 성장80%+격투당10%를 배율로 반환합니다. 근력 보너스는 명중 후 밀기 처리에서 더합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataSettings.MultiplierFromPercent(float percent)](#m-1817) · [RimKataSettings.ResolvePercent(Verse.Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, RimWorld.SkillDef skill)](#m-1814)
+- **호출 — 외부:** 없음
+
 <a id="m-1789"></a>
 
-### 016. RimKataSettings.GetRangedDodgeChance
+### 021. RimKataSettings.GetRangedDodgeChance
 
-`public float GetRangedDodgeChance(Pawn pawn)` · [L717](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:717)
+`public float GetRangedDodgeChance(Pawn pawn)` · [L773](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:773)
 
 - **역할:** 현재 기술·최소·성장·고정 설정에서 원거리 회피 확률을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26246,9 +27650,9 @@
 
 <a id="m-1790"></a>
 
-### 017. RimKataSettings.GetMeleeResponseChance
+### 022. RimKataSettings.GetMeleeResponseChance
 
-`public float GetMeleeResponseChance(Pawn pawn)` · [L720](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:720)
+`public float GetMeleeResponseChance(Pawn pawn)` · [L776](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:776)
 
 - **역할:** 현재 설정과 기술 수준에서 쳐내기 확률을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26257,9 +27661,9 @@
 
 <a id="m-1791"></a>
 
-### 018. RimKataSettings.GetMeleeResponseBonusMultiplier
+### 023. RimKataSettings.GetMeleeResponseBonusMultiplier
 
-`public float GetMeleeResponseBonusMultiplier(Pawn pawn)` · [L723](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:723)
+`public float GetMeleeResponseBonusMultiplier(Pawn pawn)` · [L779](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:779)
 
 - **역할:** 쳐내기 확률 보너스를 곱셈 계수로 변환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26268,9 +27672,9 @@
 
 <a id="m-1792"></a>
 
-### 019. RimKataSettings.GetResponseDisarmChance
+### 024. RimKataSettings.GetResponseDisarmChance
 
-`public float GetResponseDisarmChance(Pawn pawn)` · [L726](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:726)
+`public float GetResponseDisarmChance(Pawn pawn)` · [L782](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:782)
 
 - **역할:** 현재 설정과 기술 수준에서 무장 해제 확률을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26279,9 +27683,9 @@
 
 <a id="m-1793"></a>
 
-### 020. RimKataSettings.GetMeleeDodgeChance
+### 025. RimKataSettings.GetMeleeDodgeChance
 
-`public float GetMeleeDodgeChance(Pawn pawn)` · [L729](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:729)
+`public float GetMeleeDodgeChance(Pawn pawn)` · [L785](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:785)
 
 - **역할:** 현재 설정과 기술 수준에서 근접 회피 확률을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26290,9 +27694,9 @@
 
 <a id="m-1794"></a>
 
-### 021. RimKataSettings.GetMeleeDodgeBonusMultiplier
+### 026. RimKataSettings.GetMeleeDodgeBonusMultiplier
 
-`public float GetMeleeDodgeBonusMultiplier(Pawn pawn)` · [L732](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:732)
+`public float GetMeleeDodgeBonusMultiplier(Pawn pawn)` · [L788](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:788)
 
 - **역할:** 근접 회피 보너스를 곱셈 계수로 변환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26301,9 +27705,9 @@
 
 <a id="m-1795"></a>
 
-### 022. RimKataSettings.GetInterceptionAccuracyBonusMultiplier
+### 027. RimKataSettings.GetInterceptionAccuracyBonusMultiplier
 
-`public float GetInterceptionAccuracyBonusMultiplier(Pawn pawn)` · [L735](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:735)
+`public float GetInterceptionAccuracyBonusMultiplier(Pawn pawn)` · [L791](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:791)
 
 - **역할:** 폭발체 요격 명중 보너스를 곱셈 계수로 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26312,9 +27716,9 @@
 
 <a id="m-1796"></a>
 
-### 023. RimKataSettings.GetInterceptionCriticalChance
+### 028. RimKataSettings.GetInterceptionCriticalChance
 
-`public float GetInterceptionCriticalChance(Pawn pawn)` · [L738](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:738)
+`public float GetInterceptionCriticalChance(Pawn pawn)` · [L794](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:794)
 
 - **역할:** 현재 설정과 기술 수준에서 폭발체 즉시 처리 확률을 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -26323,9 +27727,9 @@
 
 <a id="m-1797"></a>
 
-### 024. RimKataSettings.GetMovingAccuracyMultiplier
+### 029. RimKataSettings.GetMovingAccuracyMultiplier
 
-`public float GetMovingAccuracyMultiplier(Pawn pawn)` · [L741](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:741)
+`public float GetMovingAccuracyMultiplier(Pawn pawn)` · [L797](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:797)
 
 - **역할:** 이동 사격 명중률 배율을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26334,9 +27738,9 @@
 
 <a id="m-1798"></a>
 
-### 025. RimKataSettings.GetArmorCooldownFactor
+### 030. RimKataSettings.GetArmorCooldownFactor
 
-`public float GetArmorCooldownFactor(Pawn pawn)` · [L744](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:744)
+`public float GetArmorCooldownFactor(Pawn pawn)` · [L800](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:800)
 
 - **역할:** 허용 방어구의 재사용 대기시간 감소를 최종 계수로 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -26345,9 +27749,9 @@
 
 <a id="m-1799"></a>
 
-### 026. RimKataSettings.GetResponseCooldownFactor
+### 031. RimKataSettings.GetResponseCooldownFactor
 
-`public float GetResponseCooldownFactor(Pawn pawn)` · [L747](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:747)
+`public float GetResponseCooldownFactor(Pawn pawn)` · [L803](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:803)
 
 - **역할:** 쳐내기 성공에 따른 재사용 대기시간 감소 계수를 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26356,9 +27760,9 @@
 
 <a id="m-1800"></a>
 
-### 027. RimKataSettings.GetSerumDodgeMultiplier
+### 032. RimKataSettings.GetSerumDodgeMultiplier
 
-`public float GetSerumDodgeMultiplier(Pawn pawn)` · [L750](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:750)
+`public float GetSerumDodgeMultiplier(Pawn pawn)` · [L806](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:806)
 
 - **역할:** 감정마비 상태의 회피 배율을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26367,9 +27771,9 @@
 
 <a id="m-1801"></a>
 
-### 028. RimKataSettings.GetSerumResponseMultiplier
+### 033. RimKataSettings.GetSerumResponseMultiplier
 
-`public float GetSerumResponseMultiplier(Pawn pawn)` · [L753](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:753)
+`public float GetSerumResponseMultiplier(Pawn pawn)` · [L809](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:809)
 
 - **역할:** 감정마비 상태의 쳐내기 배율을 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -26378,9 +27782,9 @@
 
 <a id="m-1802"></a>
 
-### 029. RimKataSettings.GetSerumInterceptionMultiplier
+### 034. RimKataSettings.GetSerumInterceptionMultiplier
 
-`public float GetSerumInterceptionMultiplier(Pawn pawn)` · [L756](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:756)
+`public float GetSerumInterceptionMultiplier(Pawn pawn)` · [L812](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:812)
 
 - **역할:** 감정마비 상태의 폭발체 요격 배율을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26389,9 +27793,9 @@
 
 <a id="m-2161"></a>
 
-### 030. RimKataSettings.GetProneMissChance
+### 035. RimKataSettings.GetProneMissChance
 
-`public float GetProneMissChance(Pawn pawn)` · [L763](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:763)
+`public float GetProneMissChance(Pawn pawn)` · [L819](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:819)
 
 - **역할:** 엎드린 추가 빗나감의 고정값 또는 최소값+사격 레벨별 성장값을 계산하고 0~1 확률로 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26400,9 +27804,9 @@
 
 <a id="m-2162"></a>
 
-### 031. RimKataSettings.GetProneHuntingStealthBonus
+### 036. RimKataSettings.GetProneHuntingStealthBonus
 
-`public float GetProneHuntingStealthBonus(Pawn pawn)` · [L766](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:766)
+`public float GetProneHuntingStealthBonus(Pawn pawn)` · [L822](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:822)
 
 - **역할:** 엎드린 사냥 은폐 보너스의 고정값 또는 최소값+사격 레벨별 성장값을 계산하고 0~1 보너스로 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26411,31 +27815,31 @@
 
 <a id="m-1803"></a>
 
-### 032. RimKataSettings.ExposeData
+### 037. RimKataSettings.ExposeData
 
-`public override void ExposeData()` · [L788](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:788)
+`public override void ExposeData()` · [L844](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:844)
 
-- **역할:** 전체 설정과 인종별 유전자 규칙을 저장·복원하고 구형 값 이행 및 범위 정리를 수행하며 기면서 사격 기본값은 아군·적군 항목으로 승계합니다. 근력 기본 증가율과 공유 의류·이식물 규칙을 저장·복원합니다. 난사 플래그와 근력 기본 갑옷의 일회 이행 완료 여부도 저장·복원합니다.
+- **역할:** 전체 설정과 인종별 유전자 규칙을 저장·복원하고 구형 값 이행 및 범위 정리를 수행하며 기면서 사격 기본값은 아군·적군 항목으로 승계합니다. 근력 기본 증가율과 공유 의류·이식물 규칙을 저장·복원합니다. 난사 플래그와 근력 기본 갑옷의 일회 이행 완료 여부도 저장·복원합니다. 날아 차기의 활성·기절 고정값/성장값·피해 배율을 저장하며 누락값에 새 기본값을 적용합니다. 날아 차기 아군·적군 허용은 각각 true·false를 누락 기본값으로 저장합니다. 발차기 허용·고정/성장 재사용 틱·고정/성장 피해율·확률을 각각 누락 기본값과 함께 저장합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettings.LookFixedMode(ref bool value, string key, bool defaultValue, string scalarKey, \[string legacyScalarKey = null\])](#m-1822) ×14 · [RimKataSettings.LookRenamedFloat(ref float value, string key, string legacyKey, float defaultValue)](#m-1821) ×4 · [RimKataSettings.SanitizeDefNames(System.Collections.Generic.List&lt;string&gt; source)](#m-1823) ×4 · [RimKataSettings.SanitizePercent(float value, float defaultValue)](#m-1819) ×3 · [RimKataSettings.CreateNormalProfileDefaults()](#m-1812) ×2 · [RimKataSettings.CreateOpProfileDefaults()](#m-1813) ×2 · [RimKataSettingsProfile.FillMissingFrom(RimKataSettingsProfile defaults)](#m-1782) ×2 · [RimKataSettings.SanitizeGeneProbabilityRules()](#m-2564) · [RimKataSettings.SanitizeModFeatures()](#m-1804) · [RimKataSettings.SanitizeNonNegative(float value, float defaultValue)](#m-1820) · [RimKataSettings.SanitizeStrengthRules()](#m-2802)
-- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×110 · `Verse.Scribe_Collections.Look<T>(ref System.Collections.Generic.List<T> list, string label, [Verse.LookMode lookMode = Verse.LookMode.Undefined], params object[] ctorArgs)` ×7 · `string.IsNullOrEmpty(string value)` ×3 · `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×3 · `float.IsInfinity(float f)` ×2 · `float.IsNaN(float f)` ×2 · `UnityEngine.Mathf.Clamp(float value, float min, float max)` ×2 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)` ×2 · `System.Enum.IsDefined(System.Type enumType, object value)` · `System.Linq.Enumerable.GroupBy<TSource, TKey>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, TKey> keySelector, System.Collections.Generic.IEqualityComparer<TKey> comparer)` · `System.Linq.Enumerable.Last<TSource>(System.Collections.Generic.IEnumerable<TSource> source)` · `System.Linq.Enumerable.Select<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, TResult> selector)` · `System.Linq.Enumerable.ToList<TSource>(System.Collections.Generic.IEnumerable<TSource> source)` · `System.Linq.Enumerable.Where<TSource>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, bool> predicate)`
+- **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×128 · `Verse.Scribe_Collections.Look<T>(ref System.Collections.Generic.List<T> list, string label, [Verse.LookMode lookMode = Verse.LookMode.Undefined], params object[] ctorArgs)` ×7 · `string.IsNullOrEmpty(string value)` ×3 · `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×3 · `float.IsInfinity(float f)` ×2 · `float.IsNaN(float f)` ×2 · `UnityEngine.Mathf.Clamp(float value, float min, float max)` ×2 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)` ×2 · `System.Enum.IsDefined(System.Type enumType, object value)` · `System.Linq.Enumerable.GroupBy<TSource, TKey>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, TKey> keySelector, System.Collections.Generic.IEqualityComparer<TKey> comparer)` · `System.Linq.Enumerable.Last<TSource>(System.Collections.Generic.IEnumerable<TSource> source)` · `System.Linq.Enumerable.Select<TSource, TResult>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, TResult> selector)` · `System.Linq.Enumerable.ToList<TSource>(System.Collections.Generic.IEnumerable<TSource> source)` · `System.Linq.Enumerable.Where<TSource>(System.Collections.Generic.IEnumerable<TSource> source, System.Func<TSource, bool> predicate)`
 
 <a id="m-1804"></a>
 
-### 033. RimKataSettings.SanitizeModFeatures
+### 038. RimKataSettings.SanitizeModFeatures
 
-`internal void SanitizeModFeatures()` · [L1042](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1042)
+`internal void SanitizeModFeatures()` · [L1116](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1116)
 
-- **역할:** 모드·연출 요소와 제압 질량·기절·슬라이딩/떨치기 확률 및 눕기 수치를 허용 범위로 정리합니다. 근력 기본 증가율을 100% 상한 없이 유한 비음수로 정리합니다.
+- **역할:** 모드·연출 요소와 제압 질량·기절·슬라이딩/떨치기 확률 및 눕기 수치를 허용 범위로 정리합니다. 근력 기본 증가율을 100% 상한 없이 유한 비음수로 정리합니다. 날아 차기 기절 확률은 확률 범위로 정리하고 피해 배율은 100% 상한 없이 음수만 제한합니다. 발차기 재사용·피해율은 음수만 막고 피해율 100% 초과를 허용하며 확률은 0~100%로 제한합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataSettings.SanitizePercent(float value, float defaultValue)](#m-1819) ×14 · [RimKataSettings.SanitizeNonNegative(float value, float defaultValue)](#m-1820) ×3 · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
-- **호출 — 외부:** `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×10
+- **호출 — 프로젝트 내부:** [RimKataSettings.SanitizePercent(float value, float defaultValue)](#m-1819) ×18 · [RimKataSettings.SanitizeNonNegative(float value, float defaultValue)](#m-1820) ×8 · [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
+- **호출 — 외부:** `UnityEngine.Mathf.Clamp(int value, int min, int max)` ×10 · `System.Math.Max(int val1, int val2)` ×2
 
 <a id="m-2802"></a>
 
-### 034. RimKataSettings.SanitizeStrengthRules
+### 039. RimKataSettings.SanitizeStrengthRules
 
-`internal void SanitizeStrengthRules()` · [L1075](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1075)
+`internal void SanitizeStrengthRules()` · [L1160](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1160)
 
 - **역할:** 근력 규칙의 누락 이름·잘못된 종류·중복 종류/이름을 정리하고 증가율을 유한 비음수로 정규화합니다. 구형 설정에 기본 갑옷 규칙이 없으면 한 번만 추가하며 기존 비활성·개별 수치와 이행 이후 초기화 결과를 보존합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26444,9 +27848,9 @@
 
 <a id="m-2844"></a>
 
-### 035. RimKataSettings.CreateDefaultStrengthRules
+### 040. RimKataSettings.CreateDefaultStrengthRules
 
-`internal static List<RimKataStrengthRule> CreateDefaultStrengthRules()` · [L1102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1102)
+`internal static List<RimKataStrengthRule> CreateDefaultStrengthRules()` · [L1187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1187)
 
 - **역할:** 기본 보호구 10종을 허용하고 개별 증가량은 지정하지 않은 새 근력 규칙 목록을 만듭니다. 설정 최초 생성·기존 저장의 일회 이행과 근력 편집 창의 전체/필터 초기화가 같은 기본 목록을 사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26455,9 +27859,9 @@
 
 <a id="m-2564"></a>
 
-### 036. RimKataSettings.SanitizeGeneProbabilityRules
+### 041. RimKataSettings.SanitizeGeneProbabilityRules
 
-`internal void SanitizeGeneProbabilityRules()` · [L1112](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1112)
+`internal void SanitizeGeneProbabilityRules()` · [L1197](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1197)
 
 - **역할:** 빈 키·중복 규칙을 제거하고 기능 활성 여부와 확률 범위를 정규화한 뒤 유전자 확률 설정 캐시를 무효화합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26466,20 +27870,20 @@
 
 <a id="m-1807"></a>
 
-### 037. RimKataSettings.ResetNumericDefaults
+### 042. RimKataSettings.ResetNumericDefaults
 
-`public void ResetNumericDefaults()` · [L1129](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1129)
+`public void ResetNumericDefaults()` · [L1214](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1214)
 
-- **역할:** 수치와 전투·연출 플래그, 아군·적군 기면서 사격 기본값을 정해진 기본값으로 복원하며 공통 인종별 유전자 규칙은 유지합니다. 근력 기본 증가율을 0%로 되돌립니다. 난사는 기본 활성 상태로 복원하며 공유 근력 허용 규칙은 유지합니다.
+- **역할:** 수치와 전투·연출 플래그, 아군·적군 기면서 사격 기본값을 정해진 기본값으로 복원하며 공통 인종별 유전자 규칙은 유지합니다. 근력 기본 증가율을 0%로 되돌립니다. 난사는 기본 활성 상태로 복원하며 공유 근력 허용 규칙은 유지합니다. 날아 차기 기절 확률 70%, 성장 최소 10%와 레벨당 3%, 피해 배율 200%를 기본값으로 복구합니다. 날아 차기 아군 허용 true·적군 허용 false도 복구합니다. 발차기 허용 true, 재사용 고정 300틱/성장 500-격투×10틱, 피해 고정 250%/성장 80+격투×10%, 확률 20%와 성장 기본 선택을 복구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
 <a id="m-1808"></a>
 
-### 038. RimKataSettings.GetLegacyNormalProfile
+### 043. RimKataSettings.GetLegacyNormalProfile
 
-`internal RimKataSettingsProfile GetLegacyNormalProfile()` · [L1241](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1241)
+`internal RimKataSettingsProfile GetLegacyNormalProfile()` · [L1344](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1344)
 
 - **역할:** 이전 일반 프로필의 설정을 가져오거나 현재 기본 프로필을 만듭니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26488,9 +27892,9 @@
 
 <a id="m-1809"></a>
 
-### 039. RimKataSettings.GetLegacyOpProfile
+### 044. RimKataSettings.GetLegacyOpProfile
 
-`internal RimKataSettingsProfile GetLegacyOpProfile()` · [L1248](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1248)
+`internal RimKataSettingsProfile GetLegacyOpProfile()` · [L1351](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1351)
 
 - **역할:** 이전 강화 프로필의 설정을 가져오거나 현재 강화 기본 프로필을 만듭니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26499,9 +27903,9 @@
 
 <a id="m-1810"></a>
 
-### 040. RimKataSettings.CompleteProfileMigration
+### 045. RimKataSettings.CompleteProfileMigration
 
-`internal void CompleteProfileMigration(string id)` · [L1255](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1255)
+`internal void CompleteProfileMigration(string id)` · [L1358](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1358)
 
 - **역할:** 이전 프로필 데이터의 이관 완료 상태를 정리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26510,9 +27914,9 @@
 
 <a id="m-1811"></a>
 
-### 041. RimKataSettings.ApplyOpProfileDefaults
+### 046. RimKataSettings.ApplyOpProfileDefaults
 
-`private void ApplyOpProfileDefaults()` · [L1263](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1263)
+`private void ApplyOpProfileDefaults()` · [L1366](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1366)
 
 - **역할:** 강화 프로필의 기본 수치들을 설정 객체에 적용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26521,9 +27925,9 @@
 
 <a id="m-1812"></a>
 
-### 042. RimKataSettings.CreateNormalProfileDefaults
+### 047. RimKataSettings.CreateNormalProfileDefaults
 
-`private static RimKataSettingsProfile CreateNormalProfileDefaults()` · [L1333](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1333)
+`private static RimKataSettingsProfile CreateNormalProfileDefaults()` · [L1436](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1436)
 
 - **역할:** 일반 기본 설정으로 새 프로필 스냅샷을 만듭니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26532,9 +27936,9 @@
 
 <a id="m-1813"></a>
 
-### 043. RimKataSettings.CreateOpProfileDefaults
+### 048. RimKataSettings.CreateOpProfileDefaults
 
-`private static RimKataSettingsProfile CreateOpProfileDefaults()` · [L1338](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1338)
+`private static RimKataSettingsProfile CreateOpProfileDefaults()` · [L1441](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1441)
 
 - **역할:** 강화 기본 설정으로 새 프로필 스냅샷을 만듭니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26543,53 +27947,53 @@
 
 <a id="m-1814"></a>
 
-### 044. RimKataSettings.ResolvePercent
+### 049. RimKataSettings.ResolvePercent
 
-`private static float ResolvePercent(Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, SkillDef skill)` · [L1345](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1345)
+`private static float ResolvePercent(Pawn pawn, bool fixedValue, float fixedPercent, float minimumPercent, float growthPerLevelPercent, SkillDef skill)` · [L1448](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1448)
 
 - **역할:** 고정값 또는 기술별 최소값·성장값으로 최종 퍼센트를 계산합니다.
-- **호출받음:** 직접 **17곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **19곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettings.SkillLevel(Verse.Pawn pawn, RimWorld.SkillDef skill)](#m-1815)
 - **호출 — 외부:** 없음
 
 <a id="m-1815"></a>
 
-### 045. RimKataSettings.SkillLevel
+### 050. RimKataSettings.SkillLevel
 
-`private static int SkillLevel(Pawn pawn, SkillDef skill)` · [L1352](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1352)
+`private static int SkillLevel(Pawn pawn, SkillDef skill)` · [L1455](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1455)
 
 - **역할:** 지정 폰의 관련 기술 수준을 읽습니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.Pawn_SkillTracker.GetSkill(RimWorld.SkillDef skillDef)`
 
 <a id="m-1816"></a>
 
-### 046. RimKataSettings.ChanceFromPercent
+### 051. RimKataSettings.ChanceFromPercent
 
-`private static float ChanceFromPercent(float percent)` · [L1357](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1357)
+`private static float ChanceFromPercent(float percent)` · [L1460](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1460)
 
 - **역할:** 퍼센트를 0~1 확률로 변환합니다.
-- **호출받음:** 직접 **25곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **27곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)`
 
 <a id="m-1817"></a>
 
-### 047. RimKataSettings.MultiplierFromPercent
+### 052. RimKataSettings.MultiplierFromPercent
 
-`private static float MultiplierFromPercent(float percent)` · [L1358](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1358)
+`private static float MultiplierFromPercent(float percent)` · [L1461](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1461)
 
 - **역할:** 퍼센트를 음수가 없는 곱셈 배율로 변환합니다.
-- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)`
 
 <a id="m-1818"></a>
 
-### 048. RimKataSettings.BonusMultiplierFromPercent
+### 053. RimKataSettings.BonusMultiplierFromPercent
 
-`private static float BonusMultiplierFromPercent(float percent)` · [L1359](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1359)
+`private static float BonusMultiplierFromPercent(float percent)` · [L1462](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1462)
 
 - **역할:** 보너스 퍼센트를 기본 1에 더한 배율로 변환합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -26598,31 +28002,31 @@
 
 <a id="m-1819"></a>
 
-### 049. RimKataSettings.SanitizePercent
+### 054. RimKataSettings.SanitizePercent
 
-`private static float SanitizePercent(float value, float defaultValue)` · [L1361](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1361)
+`private static float SanitizePercent(float value, float defaultValue)` · [L1464](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1464)
 
 - **역할:** 비정상 확률 값을 기본값으로 대체하고 0~100으로 제한합니다.
-- **호출받음:** 직접 **17곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **21곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `float.IsInfinity(float f)` · `float.IsNaN(float f)` · `UnityEngine.Mathf.Clamp(float value, float min, float max)`
 
 <a id="m-1820"></a>
 
-### 050. RimKataSettings.SanitizeNonNegative
+### 055. RimKataSettings.SanitizeNonNegative
 
-`private static float SanitizeNonNegative(float value, float defaultValue)` · [L1368](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1368)
+`private static float SanitizeNonNegative(float value, float defaultValue)` · [L1471](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1471)
 
 - **역할:** 비정상 수치를 기본값으로 대체하고 음수를 제거합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `float.IsInfinity(float f)` · `float.IsNaN(float f)` · `UnityEngine.Mathf.Max(float a, float b)`
 
 <a id="m-1821"></a>
 
-### 051. RimKataSettings.LookRenamedFloat
+### 056. RimKataSettings.LookRenamedFloat
 
-`private static void LookRenamedFloat(ref float value, string key, string legacyKey, float defaultValue)` · [L1375](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1375)
+`private static void LookRenamedFloat(ref float value, string key, string legacyKey, float defaultValue)` · [L1478](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1478)
 
 - **역할:** 이름이 바뀐 float 설정 키를 이전 저장 형식과 호환하여 읽습니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -26631,9 +28035,9 @@
 
 <a id="m-1822"></a>
 
-### 052. RimKataSettings.LookFixedMode
+### 057. RimKataSettings.LookFixedMode
 
-`private static void LookFixedMode( ref bool value, string key, bool defaultValue, string scalarKey, string legacyScalarKey = null)` · [L1381](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1381)
+`private static void LookFixedMode( ref bool value, string key, bool defaultValue, string scalarKey, string legacyScalarKey = null)` · [L1484](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1484)
 
 - **역할:** 고정값 모드 설정을 이전 저장 형식과 호환하여 읽고 씁니다.
 - **호출받음:** 직접 **14곳** · 메서드 그룹 참조 **0곳**.
@@ -26642,9 +28046,9 @@
 
 <a id="m-1823"></a>
 
-### 053. RimKataSettings.SanitizeDefNames
+### 058. RimKataSettings.SanitizeDefNames
 
-`private static List<string> SanitizeDefNames(List<string> source)` · [L1396](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1396)
+`private static List<string> SanitizeDefNames(List<string> source)` · [L1499](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettings.cs:1499)
 
 - **역할:** 설정의 정의 이름 목록에서 빈 항목과 중복을 정리합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -26656,24 +28060,24 @@
 
 ## 81. RimKataSettingsDrawer.cs
 
-[Source/RimKataSettingsDrawer.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs) · 메서드 **29개** · 메인 설정 창의 가변 너비·수치 입력·섹션 표시 · [파일 목차](#files)
+[Source/RimKataSettingsDrawer.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs) · 메서드 **30개** · 메인 설정 창의 가변 너비·수치 입력·섹션 표시 · [파일 목차](#files)
 
 <a id="m-1824"></a>
 
 ### 001. RimKataSettingsUiBuffers.SyncFrom
 
-`public void SyncFrom(RimKataSettings settings)` · [L63](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:63)
+`public void SyncFrom(RimKataSettings settings)` · [L72](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:72)
 
-- **역할:** 설정 수치들을 텍스트 입력 버퍼로 동기화합니다. 메인 전투 구역의 엎드린 추가 빗나감·사냥 은폐 보너스도 고정값·성장값·최소값별로 반영합니다.
+- **역할:** 설정 수치들을 텍스트 입력 버퍼로 동기화합니다. 메인 전투 구역의 엎드린 추가 빗나감·사냥 은폐 보너스도 고정값·성장값·최소값별로 반영합니다. 날아 차기 기절·피해 배율의 편집 문자열도 설정에서 동기화합니다. 발차기 재사용 시간과 피해율의 고정·성장 입력 문자열도 현재 프로필에서 동기화합니다.
 - **호출받음:** 직접 **14곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
-- **호출 — 외부:** `float.ToString()` ×48 · `int.ToString()` ×3 · `float.ToString(string format)`
+- **호출 — 외부:** `float.ToString()` ×55 · `int.ToString()` ×5 · `float.ToString(string format)`
 
 <a id="m-1825"></a>
 
 ### 002. RimKataSettingsDrawer.HeaderColumnWidth
 
-`private static float HeaderColumnWidth(string key, float minimumWidth)` · [L138](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:138)
+`private static float HeaderColumnWidth(string key, float minimumWidth)` · [L156](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:156)
 
 - **역할:** 번역된 필드 제목에 필요한 열 너비를 계산합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26684,7 +28088,7 @@
 
 ### 003. RimKataSettingsDrawer.RecommendedWindowSize
 
-`public static Vector2 RecommendedWindowSize()` · [L147](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:147)
+`public static Vector2 RecommendedWindowSize()` · [L165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:165)
 
 - **역할:** 번역 길이와 성장 열 표시 여부에 맞는 메인 창 크기를 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26695,18 +28099,18 @@
 
 ### 004. RimKataSettingsDrawer.Draw
 
-`public static void Draw( Rect inRect, RimKataSettings settings, RimKataSettingsUiBuffers buffers, ref Vector2 scrollPosition)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:173)
+`public static void Draw( Rect inRect, RimKataSettings settings, RimKataSettingsUiBuffers buffers, ref Vector2 scrollPosition)` · [L191](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:191)
 
-- **역할:** 메인 설정의 전투 수치·제압 질량 배율·프로필과 장비·활성·유전자·전투·모드·연출 요소 창 연결 버튼을 표시합니다. 활성 요소·유전자 확률과 같은 줄 오른쪽에 근력 강화 편집 버튼을 추가합니다.
+- **역할:** 메인 설정의 전투 수치·제압 질량 배율·프로필과 장비·활성·유전자·전투·모드·연출 요소 창 연결 버튼을 표시합니다. 활성 요소·유전자 확률과 같은 줄 오른쪽에 근력 강화 편집 버튼을 표시합니다. 원거리 회피 연출 시간 뒤 발차기 재사용 대기시간·발차기 피해량·날아 차기 기절 확률·제압 가능한 무게 순으로 배치합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawFloatRow(float width, ref float y, string labelKey, RimWorld.SkillDef skill, ref bool fixedValue, ref float fixedPercent, ref string fixedBuffer, ref float growthPercent, ref string growthBuffer, ref float minimumPercent, ref string minimumBuffer, float fixedMaximum, float minimumMaximum, bool showMinimum, \[float growthMaximum = 1000\])](#m-1840) ×15 · [RimKataSettingsUiBuffers.SyncFrom(RimKataSettings settings)](#m-1824) ×4 · [RimKataSettingsDrawer.DrawSectionHeader(float width, ref float y, string translationKey, System.Action reset)](#m-1837) ×3 · [RimKataSettingsDrawer.FinishSection(float width, ref float y)](#m-1850) ×3 · [RimKataEquipmentUtility.LoadedSelectionCount(System.Collections.Generic.IEnumerable&lt;string&gt; defNames, RimKataDefSelectionKind kind)](#m-1237) ×2 · [RimKataColonistBarWeaponCache.RefreshAll()](#m-0241) · [RimKataConfirmationDialog.Show(Verse.TaggedString message, System.Action confirmedAction)](#m-0623) · [RimKataEligibilityCache.RefreshPermissions()](#m-1178) · [RimKataMod.ApplyCombatFeatureSettingsChange()](#m-1483) · [RimKataProfileMenu.Open(RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1565) · [RimKataSettings.ResetNumericDefaults()](#m-1807) · [RimKataSettingsDrawer.CalculateContentHeight()](#m-1851) · [RimKataSettingsDrawer.DrawCandidateRangeRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1833) · [RimKataSettingsDrawer.DrawColumnHeaders(float width, ref float y, bool showMinimum)](#m-1838) · [RimKataSettingsDrawer.DrawDurationRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)](#m-1839) · [RimKataSettingsDrawer.DrawGeneralSettings(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1828) · [RimKataSettingsDrawer.HasAnyGrowth(RimKataSettings settings)](#m-1852) · [RimKataSettingsDrawer.ResetCombat(RimKataSettings settings)](#m-1854) · [RimKataSettingsDrawer.ResetModifiers(RimKataSettings settings)](#m-1855) · [RimKataSettingsDrawer.ResetSerum(RimKataSettings settings)](#m-1856)
+- **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawFloatRow(float width, ref float y, string labelKey, RimWorld.SkillDef skill, ref bool fixedValue, ref float fixedPercent, ref string fixedBuffer, ref float growthPercent, ref string growthBuffer, ref float minimumPercent, ref string minimumBuffer, float fixedMaximum, float minimumMaximum, bool showMinimum, \[float growthMaximum = 1000\])](#m-1840) ×17 · [RimKataSettingsUiBuffers.SyncFrom(RimKataSettings settings)](#m-1824) ×4 · [RimKataSettingsDrawer.DrawSectionHeader(float width, ref float y, string translationKey, System.Action reset)](#m-1837) ×3 · [RimKataSettingsDrawer.FinishSection(float width, ref float y)](#m-1850) ×3 · [RimKataEquipmentUtility.LoadedSelectionCount(System.Collections.Generic.IEnumerable&lt;string&gt; defNames, RimKataDefSelectionKind kind)](#m-1237) ×2 · [RimKataColonistBarWeaponCache.RefreshAll()](#m-0241) · [RimKataConfirmationDialog.Show(Verse.TaggedString message, System.Action confirmedAction)](#m-0623) · [RimKataEligibilityCache.RefreshPermissions()](#m-1178) · [RimKataMod.ApplyCombatFeatureSettingsChange()](#m-1483) · [RimKataProfileMenu.Open(RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1565) · [RimKataSettings.ResetNumericDefaults()](#m-1807) · [RimKataSettingsDrawer.CalculateContentHeight()](#m-1851) · [RimKataSettingsDrawer.DrawCandidateRangeRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1833) · [RimKataSettingsDrawer.DrawColumnHeaders(float width, ref float y, bool showMinimum)](#m-1838) · [RimKataSettingsDrawer.DrawDurationRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)](#m-1839) · [RimKataSettingsDrawer.DrawGeneralSettings(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)](#m-1828) · [RimKataSettingsDrawer.DrawKickCooldownRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)](#m-3005) · [RimKataSettingsDrawer.HasAnyGrowth(RimKataSettings settings)](#m-1852) · [RimKataSettingsDrawer.ResetCombat(RimKataSettings settings)](#m-1854) · [RimKataSettingsDrawer.ResetModifiers(RimKataSettings settings)](#m-1855) · [RimKataSettingsDrawer.ResetSerum(RimKataSettings settings)](#m-1856)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` ×14 · `UnityEngine.Mathf.Max(float a, float b)` ×10 · `Verse.Widgets.ButtonText(UnityEngine.Rect rect, string label, [bool drawBackground = true], [bool doMouseoverSound = true], [bool active = true], [UnityEngine.TextAnchor? overrideTextAnchor = null])` ×10 · `Verse.WindowStack.Add(Verse.Window window)` ×8 · `Verse.Text.CalcSize(string text)` ×6 · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1)` ×3 · `Verse.Widgets.CheckboxLabeled(UnityEngine.Rect rect, string label, ref bool checkOn, [bool disabled = false], [UnityEngine.Texture2D texChecked = null], [UnityEngine.Texture2D texUnchecked = null], [bool placeCheckboxNearText = false], [bool paintable = false])` ×2 · `Verse.Widgets.DrawLineHorizontal(float x, float y, float length)` ×2 · `Verse.GenUI.ContractedBy(UnityEngine.Rect rect, float margin)` · `Verse.Widgets.BeginScrollView(UnityEngine.Rect outRect, ref UnityEngine.Vector2 scrollPosition, UnityEngine.Rect viewRect, [bool showScrollbars = true])` · `Verse.Widgets.DrawLineHorizontal(float x, float y, float length, UnityEngine.Color color)` · `Verse.Widgets.EndScrollView()` · `Verse.Widgets.Label(UnityEngine.Rect rect, Verse.TaggedString label)`
 
 <a id="m-1828"></a>
 
 ### 005. RimKataSettingsDrawer.DrawGeneralSettings
 
-`private static void DrawGeneralSettings( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)` · [L426](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:426)
+`private static void DrawGeneralSettings( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)` · [L455](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:455)
 
 - **역할:** 크립조이너 전용 확률 행 없이 AI 보조 무기 확률 등 일반 설정과 관련 활성 설정을 표시합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26717,7 +28121,7 @@
 
 ### 006. RimKataSettingsDrawer.DrawCandidateRangeRow
 
-`private static void DrawCandidateRangeRow( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)` · [L443](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:443)
+`private static void DrawCandidateRangeRow( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers)` · [L472](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:472)
 
 - **역할:** 자동 표적 탐색 거리의 제한 없음·프리셋·사용자 지정 설정을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26728,7 +28132,7 @@
 
 ### 007. RimKataSettingsDrawer.CandidateRangeModeLabel
 
-`private static string CandidateRangeModeLabel(RimKataCandidateRangeMode mode)` · [L534](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:534)
+`private static string CandidateRangeModeLabel(RimKataCandidateRangeMode mode)` · [L563](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:563)
 
 - **역할:** 자동 표적 탐색 거리 모드의 번역 라벨을 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26739,7 +28143,7 @@
 
 ### 008. RimKataSettingsDrawer.CustomRangeSeed
 
-`private static float CustomRangeSeed()` · [L558](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:558)
+`private static float CustomRangeSeed()` · [L587](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:587)
 
 - **역할:** 사용자 지정 거리 입력을 시작할 초기값을 고릅니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -26750,7 +28154,7 @@
 
 ### 009. RimKataSettingsDrawer.RangePresetWidth
 
-`private static float RangePresetWidth()` · [L566](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:566)
+`private static float RangePresetWidth()` · [L595](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:595)
 
 - **역할:** 거리 모드 드롭다운의 표시 문자열에 필요한 너비를 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -26761,7 +28165,7 @@
 
 ### 010. RimKataSettingsDrawer.DrawSectionHeader
 
-`private static void DrawSectionHeader(float width, ref float y, string translationKey, System.Action reset)` · [L577](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:577)
+`private static void DrawSectionHeader(float width, ref float y, string translationKey, System.Action reset)` · [L606](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:606)
 
 - **역할:** 설정 구간 제목과 해당 구간 초기화 버튼을 그립니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26772,7 +28176,7 @@
 
 ### 011. RimKataSettingsDrawer.DrawColumnHeaders
 
-`private static void DrawColumnHeaders(float width, ref float y, bool showMinimum)` · [L604](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:604)
+`private static void DrawColumnHeaders(float width, ref float y, bool showMinimum)` · [L633](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:633)
 
 - **역할:** 설정 수치 열의 필드 제목을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26783,29 +28187,40 @@
 
 ### 012. RimKataSettingsDrawer.DrawDurationRow
 
-`private static void DrawDurationRow( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)` · [L623](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:623)
+`private static void DrawDurationRow( float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)` · [L652](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:652)
 
 - **역할:** 틱 시간 설정의 고정·최소·성장 입력 행을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawIntField(UnityEngine.Rect rect, ref int value, ref string buffer, int minimum, int maximum, string unit)](#m-1847) ×2 · [RimKataSettingsDrawer.DrawFixedCheckbox(UnityEngine.Rect rect, ref bool value)](#m-1845) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) · [RimKataSettingsDrawer.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-1844) · [RimKataSettingsDrawer.SplitRow(UnityEngine.Rect row, bool showMinimum, out UnityEngine.Rect labelRect, out UnityEngine.Rect valueRect, out UnityEngine.Rect minimumRect, out UnityEngine.Rect fixedRect)](#m-1843)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1, Verse.NamedArgument arg2)`
 
+<a id="m-3005"></a>
+
+### 013. RimKataSettingsDrawer.DrawKickCooldownRow
+
+`private static void DrawKickCooldownRow(float width, ref float y, RimKataSettings settings, RimKataSettingsUiBuffers buffers, bool showMinimum)` · [L687](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:687)
+
+- **역할:** 발차기 재사용 대기시간의 고정 틱·격투당 감소 틱·성장 기준 틱 입력과 고정/성장 전환을 표시합니다. 감소량 입력은 양수로 받고 기존 성장 수식 라벨로 빼기를 표현합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawIntField(UnityEngine.Rect rect, ref int value, ref string buffer, int minimum, int maximum, string unit)](#m-1847) ×2 · [RimKataSettingsDrawer.DrawFixedCheckbox(UnityEngine.Rect rect, ref bool value)](#m-1845) · [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) · [RimKataSettingsDrawer.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-1844) · [RimKataSettingsDrawer.SplitRow(UnityEngine.Rect row, bool showMinimum, out UnityEngine.Rect labelRect, out UnityEngine.Rect valueRect, out UnityEngine.Rect minimumRect, out UnityEngine.Rect fixedRect)](#m-1843)
+- **호출 — 외부:** `Verse.Translator.Translate(string key)` · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1, Verse.NamedArgument arg2)`
+
 <a id="m-1840"></a>
 
-### 013. RimKataSettingsDrawer.DrawFloatRow
+### 014. RimKataSettingsDrawer.DrawFloatRow
 
-`private static void DrawFloatRow( float width, ref float y, string labelKey, SkillDef skill, ref bool fixedValue, ref float fixedPercent, ref string fixedBuffer, ref float growthPercent, ref string growthBuffer, ref float minimumPercent, ref string minimumBuffer, float fixedMaximum, float minimumMaximum, bool showMinimum, float growthMaximum = MaximumMultiplierPercent)` · [L658](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:658)
+`private static void DrawFloatRow( float width, ref float y, string labelKey, SkillDef skill, ref bool fixedValue, ref float fixedPercent, ref string fixedBuffer, ref float growthPercent, ref string growthBuffer, ref float minimumPercent, ref string minimumBuffer, float fixedMaximum, float minimumMaximum, bool showMinimum, float growthMaximum = MaximumMultiplierPercent)` · [L710](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:710)
 
 - **역할:** 확률·배율 설정의 고정·최소·성장 입력 행을 그립니다.
-- **호출받음:** 직접 **15곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **17곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawFloatField(UnityEngine.Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, \[bool bold = false\])](#m-1846) ×3 · [RimKataSettingsDrawer.DrawFixedCheckbox(UnityEngine.Rect rect, ref bool value)](#m-1845) · [RimKataSettingsDrawer.DrawRowLabel(UnityEngine.Rect rect, string label)](#m-1844) · [RimKataSettingsDrawer.SplitRow(UnityEngine.Rect row, bool showMinimum, out UnityEngine.Rect labelRect, out UnityEngine.Rect valueRect, out UnityEngine.Rect minimumRect, out UnityEngine.Rect fixedRect)](#m-1843)
 - **호출 — 외부:** `Verse.Translator.Translate(string key)` · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1, Verse.NamedArgument arg2)`
 
 <a id="m-1841"></a>
 
-### 014. RimKataSettingsDrawer.DrawSimpleFloatRow
+### 015. RimKataSettingsDrawer.DrawSimpleFloatRow
 
-`private static void DrawSimpleFloatRow( float width, ref float y, string labelKey, ref float value, ref string buffer, float minimum, float maximum, string unit)` · [L698](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:698)
+`private static void DrawSimpleFloatRow( float width, ref float y, string labelKey, ref float value, ref string buffer, float minimum, float maximum, string unit)` · [L750](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:750)
 
 - **역할:** 단일 float 값의 라벨과 입력칸을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26814,9 +28229,9 @@
 
 <a id="m-1842"></a>
 
-### 015. RimKataSettingsDrawer.DrawSimpleIntRow
+### 016. RimKataSettingsDrawer.DrawSimpleIntRow
 
-`private static void DrawSimpleIntRow( float width, ref float y, string labelKey, ref int value, ref string buffer, int minimum, int maximum, string unit)` · [L715](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:715)
+`private static void DrawSimpleIntRow( float width, ref float y, string labelKey, ref int value, ref string buffer, int minimum, int maximum, string unit)` · [L767](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:767)
 
 - **역할:** 단일 정수 값의 라벨과 입력칸을 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -26825,64 +28240,64 @@
 
 <a id="m-1843"></a>
 
-### 016. RimKataSettingsDrawer.SplitRow
+### 017. RimKataSettingsDrawer.SplitRow
 
-`private static void SplitRow( Rect row, bool showMinimum, out Rect labelRect, out Rect valueRect, out Rect minimumRect, out Rect fixedRect)` · [L732](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:732)
+`private static void SplitRow( Rect row, bool showMinimum, out Rect labelRect, out Rect valueRect, out Rect minimumRect, out Rect fixedRect)` · [L784](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:784)
 
 - **역할:** 설정 행을 번역 길이에 맞춘 라벨·고정 플래그·수치 열로 나눕니다.
-- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Max(float a, float b)`
 
 <a id="m-1844"></a>
 
-### 017. RimKataSettingsDrawer.DrawRowLabel
+### 018. RimKataSettingsDrawer.DrawRowLabel
 
-`private static void DrawRowLabel(Rect rect, string label)` · [L748](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:748)
+`private static void DrawRowLabel(Rect rect, string label)` · [L800](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:800)
 
 - **역할:** 행 라벨을 지정 영역에 정렬해 표시합니다.
-- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Widgets.Label(UnityEngine.Rect rect, string label)`
 
 <a id="m-1845"></a>
 
-### 018. RimKataSettingsDrawer.DrawFixedCheckbox
+### 019. RimKataSettingsDrawer.DrawFixedCheckbox
 
-`private static void DrawFixedCheckbox(Rect rect, ref bool value)` · [L756](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:756)
+`private static void DrawFixedCheckbox(Rect rect, ref bool value)` · [L808](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:808)
 
 - **역할:** 고정값 사용 플래그를 해당 열 중앙에 그립니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Widgets.Checkbox(UnityEngine.Vector2 topLeft, ref bool checkOn, [float size = 24], [bool disabled = false], [bool paintable = false], [UnityEngine.Texture2D texChecked = null], [UnityEngine.Texture2D texUnchecked = null])`
 
 <a id="m-1846"></a>
 
-### 019. RimKataSettingsDrawer.DrawFloatField
+### 020. RimKataSettingsDrawer.DrawFloatField
 
-`internal static void DrawFloatField( Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, bool bold = false)` · [L761](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:761)
+`internal static void DrawFloatField( Rect rect, ref float value, ref string buffer, float minimum, float maximum, string unit, bool bold = false)` · [L813](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:813)
 
 - **역할:** 숫자와 단위를 기존 입력 경로로 그립니다. 굵은 표시 요청 때만 텍스트 필드와 단위 폭 계산의 스타일을 변경하고 finally에서 복원하여 편집 버퍼와 다른 컨트롤에 서식이 전파되지 않게 합니다.
-- **호출받음:** 직접 **11곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **12곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawNumericUnit(UnityEngine.Rect fieldRect, string displayedNumber, string unit)](#m-1849) ×2 · [RimKataSettingsDrawer.NumericFieldHasFocus(UnityEngine.Rect rect)](#m-1848) ×2
 - **호출 — 외부:** `float.ToString()` ×2 · `Verse.GenText.NullOrEmpty(string str)` ×2 · `Verse.Widgets.TextFieldNumeric<T>(UnityEngine.Rect rect, ref T val, ref string buffer, [float min = 0], [float max = 1E+09])` ×2
 
 <a id="m-1847"></a>
 
-### 020. RimKataSettingsDrawer.DrawIntField
+### 021. RimKataSettingsDrawer.DrawIntField
 
-`internal static void DrawIntField( Rect rect, ref int value, ref string buffer, int minimum, int maximum, string unit)` · [L796](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:796)
+`internal static void DrawIntField( Rect rect, ref int value, ref string buffer, int minimum, int maximum, string unit)` · [L848](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:848)
 
 - **역할:** 정수 입력칸과 단위를 그리고 포커스에 맞춰 표시를 조정합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSettingsDrawer.DrawNumericUnit(UnityEngine.Rect fieldRect, string displayedNumber, string unit)](#m-1849) · [RimKataSettingsDrawer.NumericFieldHasFocus(UnityEngine.Rect rect)](#m-1848)
 - **호출 — 외부:** `int.ToString()` · `Verse.GenText.NullOrEmpty(string str)` · `Verse.Widgets.TextFieldNumeric<T>(UnityEngine.Rect rect, ref T val, ref string buffer, [float min = 0], [float max = 1E+09])`
 
 <a id="m-1848"></a>
 
-### 021. RimKataSettingsDrawer.NumericFieldHasFocus
+### 022. RimKataSettingsDrawer.NumericFieldHasFocus
 
-`private static bool NumericFieldHasFocus(Rect rect)` · [L811](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:811)
+`private static bool NumericFieldHasFocus(Rect rect)` · [L863](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:863)
 
 - **역할:** 지정 숫자 입력 컨트롤이 현재 키보드 포커스를 갖는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26891,9 +28306,9 @@
 
 <a id="m-1849"></a>
 
-### 022. RimKataSettingsDrawer.DrawNumericUnit
+### 023. RimKataSettingsDrawer.DrawNumericUnit
 
-`private static void DrawNumericUnit(Rect fieldRect, string displayedNumber, string unit)` · [L817](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:817)
+`private static void DrawNumericUnit(Rect fieldRect, string displayedNumber, string unit)` · [L869](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:869)
 
 - **역할:** 숫자 입력값 옆에 단위 문자열을 그립니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26902,9 +28317,9 @@
 
 <a id="m-1850"></a>
 
-### 023. RimKataSettingsDrawer.FinishSection
+### 024. RimKataSettingsDrawer.FinishSection
 
-`private static void FinishSection(float width, ref float y)` · [L834](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:834)
+`private static void FinishSection(float width, ref float y)` · [L886](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:886)
 
 - **역할:** 설정 구간 끝의 세로 간격을 반영합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -26913,53 +28328,53 @@
 
 <a id="m-1851"></a>
 
-### 024. RimKataSettingsDrawer.CalculateContentHeight
+### 025. RimKataSettingsDrawer.CalculateContentHeight
 
-`private static float CalculateContentHeight()` · [L841](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:841)
+`private static float CalculateContentHeight()` · [L893](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:893)
 
-- **역할:** 현재 메인 설정의 수치 행과 구역·버튼 배치에 필요한 내용 높이를 계산합니다.
+- **역할:** 현재 메인 설정의 수치 행과 구역·버튼 배치에 필요한 내용 높이를 계산합니다. 날아 차기 기절 확률 행도 실제 본문 높이에 포함합니다. 추가한 발차기 재사용·피해량 두 행을 본문 높이에 포함합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
 <a id="m-1852"></a>
 
-### 025. RimKataSettingsDrawer.HasAnyGrowth
+### 026. RimKataSettingsDrawer.HasAnyGrowth
 
-`private static bool HasAnyGrowth(RimKataSettings settings)` · [L853](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:853)
+`private static bool HasAnyGrowth(RimKataSettings settings)` · [L905](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:905)
 
-- **역할:** 제압 질량·회피·눕기 등의 설정 중 성장값 열을 표시할 항목이 있는지 확인합니다.
+- **역할:** 제압 질량·회피·눕기 등의 설정 중 성장값 열을 표시할 항목이 있는지 확인합니다. 날아 차기 기절 확률의 성장 모드도 성장 열 표시 여부에 포함합니다. 발차기 재사용·피해량의 성장 모드도 최소값 열 표시 여부에 포함합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
 <a id="m-1853"></a>
 
-### 026. RimKataSettingsDrawer.MaximumTranslatedLabelWidth
+### 027. RimKataSettingsDrawer.MaximumTranslatedLabelWidth
 
-`private static float MaximumTranslatedLabelWidth()` · [L874](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:874)
+`private static float MaximumTranslatedLabelWidth()` · [L929](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:929)
 
-- **역할:** 메인 수치·성장 라벨과 제압 질량 등 현재 항목의 번역 너비를 계산합니다.
+- **역할:** 메인 수치·성장 라벨과 제압 질량 등 현재 항목의 번역 너비를 계산합니다. 날아 차기 기절 확률 번역 라벨도 열 너비 계산에 포함합니다. 발차기 두 행과 격투당 감소 수식 라벨도 번역된 열 너비 계산에 포함합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
-- **호출 — 외부:** `Verse.Text.CalcSize(string text)` ×4 · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1, Verse.NamedArgument arg2)` ×3 · `UnityEngine.Mathf.Max(float a, float b)` ×2 · `Verse.Translator.Translate(string key)` ×2 · `UnityEngine.Mathf.Max(params float[] values)`
+- **호출 — 외부:** `Verse.Text.CalcSize(string text)` ×5 · `Verse.TranslatorFormattedStringExtensions.Translate(string key, Verse.NamedArgument arg1, Verse.NamedArgument arg2)` ×4 · `Verse.Translator.Translate(string key)` ×3 · `UnityEngine.Mathf.Max(params float[] values)` ×2 · `UnityEngine.Mathf.Max(float a, float b)`
 
 <a id="m-1854"></a>
 
-### 027. RimKataSettingsDrawer.ResetCombat
+### 028. RimKataSettingsDrawer.ResetCombat
 
-`private static void ResetCombat(RimKataSettings settings)` · [L915](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:915)
+`private static void ResetCombat(RimKataSettings settings)` · [L974](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:974)
 
-- **역할:** 전투 확률·회피 시간·제압 질량·눕기 보정의 고정값·성장값·최소값·모드를 기본값으로 복원합니다.
+- **역할:** 전투 확률·회피 시간·제압 질량·눕기 보정의 고정값·성장값·최소값·모드를 기본값으로 복원합니다. 날아 차기 기본 활성 값도 전투 요소 초기화에 포함합니다. 발차기 재사용 시간과 피해율의 고정/성장 수치를 기본값으로 복구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
 
 <a id="m-1855"></a>
 
-### 028. RimKataSettingsDrawer.ResetModifiers
+### 029. RimKataSettingsDrawer.ResetModifiers
 
-`private static void ResetModifiers(RimKataSettings settings)` · [L959](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:959)
+`private static void ResetModifiers(RimKataSettings settings)` · [L1030](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:1030)
 
 - **역할:** 명중·쿨다운 보정 관련 설정을 기본값으로 되돌립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -26968,9 +28383,9 @@
 
 <a id="m-1856"></a>
 
-### 029. RimKataSettingsDrawer.ResetSerum
+### 030. RimKataSettingsDrawer.ResetSerum
 
-`private static void ResetSerum(RimKataSettings settings)` · [L975](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:975)
+`private static void ResetSerum(RimKataSettings settings)` · [L1046](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSettingsDrawer.cs:1046)
 
 - **역할:** 감정마비 혈청 보정 관련 설정을 기본값으로 되돌립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -28031,16 +29446,16 @@
 
 `internal static void DrawShotFlash(IntVec3 cell, Map map, FleckDef fleck, float scale)` · [L62](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:62)
 
-- **역할:** 슬라이딩 공격 중에는 소수점 이동 좌표에 바닐라 총구 섬광을 표시하고 일반 공격은 기존 셀 기반 호출을 유지합니다.
+- **역할:** 슬라이딩 공격 중에는 소수점 이동 좌표에 바닐라 총구 섬광을 표시하고 일반 공격은 기존 셀 기반 호출을 유지합니다. 날아 차기 중 원거리 발사 문맥의 위치가 있으면 그 위치에 총구 효과를 출력합니다. 발차기 중 원거리 공격의 준비된 발사 중심도 사용하여 총구 효과를 실제 렌더 위치에 표시합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataSlidingAttackOrigin.TryGet(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2706)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TryGetShotCenter(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2938) · [RimKataKickRender.TryGetShotCenter(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-3000) · [RimKataSlidingAttackOrigin.TryGet(Verse.Verb verb, out UnityEngine.Vector3 center)](#m-2706)
 - **호출 — 외부:** `RimWorld.FleckMaker.Static(UnityEngine.Vector3 loc, Verse.Map map, Verse.FleckDef fleckDef, [float scale = 1])` · `RimWorld.FleckMaker.Static(Verse.IntVec3 cell, Verse.Map map, Verse.FleckDef fleckDef, [float scale = 1])`
 
 <a id="m-2709"></a>
 
 ### 007. Patch_MeleeDamage_RimKataSlidingOrigin.TargetMethods
 
-`private static IEnumerable<MethodBase> TargetMethods()` · [L73](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:73)
+`private static IEnumerable<MethodBase> TargetMethods()` · [L75](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:75)
 
 - **역할:** 바닐라와 설치된 CE의 DamageInfosToApply 반복자 MoveNext를 패치 대상으로 찾습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -28051,7 +29466,7 @@
 
 ### 008. Patch_MeleeDamage_RimKataSlidingOrigin.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L86](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:86)
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L88](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:88)
 
 - **역할:** 기존 피해 정보 생성 반복자의 SetAngle(Vector3) 호출만 슬라이딩 방향 보정으로 연결합니다. 추가 피해 루프나 피해 실행 호출은 만들지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -28062,7 +29477,7 @@
 
 ### 009. Patch_VerbShotFlash_RimKataSlidingOrigin.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L107](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:107)
+`private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)` · [L109](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSlidingAttackOrigin.cs:109)
 
 - **역할:** 기존 TryCastNextBurstShot의 셀 기반 FleckMaker.Static 호출을 슬라이딩 좌표를 지원하는 섬광 호출로 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -28074,7 +29489,7 @@
 
 ## 132. RimKataStrengthRule.cs
 
-[Source/RimKataStrengthRule.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthRule.cs) · 메서드 **5개** · 종류별 근력 허용 규칙과 기본값 상속/명시 증가율 저장 · [파일 목차](#files)
+[Source/RimKataStrengthRule.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthRule.cs) · 메서드 **5개** · 종류별 강화 허용과 독립 추가 근력 저장 · [파일 목차](#files)
 
 <a id="m-2803"></a>
 
@@ -28082,7 +29497,7 @@
 
 `public RimKataStrengthRule Copy()` · [L22](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthRule.cs:22)
 
-- **역할:** 허용 상태와 기본값 상속/명시 값 구분을 포함한 근력 규칙 사본을 만듭니다.
+- **역할:** 허용 상태와 독립 추가 근력의 명시 여부 및 값을 복사합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
@@ -28093,8 +29508,8 @@
 
 `public float EffectivePercent(float defaultPercent)` · [L31](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthRule.cs:31)
 
-- **역할:** 개별값 지정 여부에 따라 명시 값 또는 전달된 프로필 기본값을 선택하고 유한 비음수 증가율로 반환합니다.
-- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 허용된 항목의 프로필 기본 증가량과 허용 여부와 무관한 개별 추가 근력을 더합니다. 허용되지 않은 항목은 개별 추가 근력만 반환합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataStrengthRule.SanitizePercent(float value)](#m-2806)
 - **호출 — 외부:** 없음
 
@@ -28221,7 +29636,7 @@
 
 `private static void RebuildRules()` · [L73](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthUtility.cs:73)
 
-- **역할:** 공유 설정에서 허용된 의류·이식물 규칙만 실제 ThingDef/HediffDef 사전으로 준비합니다.
+- **역할:** 허용된 항목 또는 양의 독립 추가 근력을 가진 의류·이식물 규칙을 실제 Def 사전에 준비합니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()` ×2 · `Verse.DefDatabase<T>.GetNamedSilentFail(string defName)` ×2 · `Verse.GenText.NullOrEmpty(string str)`
@@ -28276,7 +29691,7 @@
 
 `internal static void Refresh(Pawn pawn, bool? qualified = null, bool notifyLoadout = true)` · [L130](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthUtility.cs:130)
 
-- **역할:** 장비·이식물·자격 변경 사건에서 허용 원인의 실제 착용/설치 개수를 합산하고 그립과 증가율을 게시합니다. 0% 원인도 그립을 활성화하며 설치 수술의 중간 구성은 생략합니다. 변경 시 질량 캐시·보존 무기·제압을 갱신하고 요청에 따라 일반 장비 재검증·표시도 갱신합니다.
+- **역할:** 기존 장비·이식물·자격·설정 사건에서 실제 착용 항목별 (허용 시 프로필 기본값 + 개별 추가값)을 합산합니다. 강화 그립은 허용 체크와 손 보유 조건만 따르며 독립 추가값으로 활성화하지 않습니다. 설치 중간 구성은 생략하고 변경된 근력·그립을 기존 소비자에 게시합니다.
 - **호출받음:** 직접 **13곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataStrengthRule.EffectivePercent(float defaultPercent)](#m-2804) ×2 · [RimKataCaravanEquipment.NormalizeStrengthLoadout(Verse.Pawn pawn)](#m-2772) · [RimKataColonistBarWeaponCache.Refresh(Verse.Pawn pawn)](#m-0239) · [RimKataDownedWeaponUtility.NotifyStrengthChanged(Verse.Pawn pawn)](#m-2797) · [RimKataEligibility.HasRimKataAccess(Verse.Pawn pawn)](#m-1148) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataResponseVisualParticipantCache.NotifyStrengthChanged(Verse.Pawn pawn, bool enhancedGrip)](#m-2773) · [RimKataSecondaryHandRequirement.HasMissingHand(Verse.Pawn pawn)](#m-1641) · [RimKataStrengthUtility.RebuildRules()](#m-2815) · [RimKataSubdueUtility.NotifyEquipmentChanged(Verse.Pawn pawn)](#m-2583) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataWeaponSlotUtility.NotifyLoadoutChanged(Verse.Pawn pawn)](#m-1710) · [RimKataWeaponSlotUtility.ValidateLoadout(Verse.Pawn pawn, \[bool dropInvalidSecondary = true\])](#m-1705)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` ×2 · `RimWorld.StatWorker.ClearCacheForThing(Verse.Thing thing)` · `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>.TryRemove(TKey key, out TValue value)` · `System.Collections.Generic.HashSet<T>.Add(T item)` · `System.Collections.Generic.HashSet<T>.Contains(T item)` · `System.Collections.Generic.HashSet<T>.Remove(T item)` · `System.Math.Min(double val1, double val2)` · `Verse.HediffSet.PartIsMissing(Verse.BodyPartRecord part)`
@@ -28636,7 +30051,7 @@
 `internal static bool IsHolding(Pawn pawn)` · [L176](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdue.cs:176)
 
 - **역할:** 폰에게 등록된 제압 관계가 있는지 확인합니다.
-- **호출받음:** 직접 **7곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **9곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSubdueUtility.Get(Verse.Pawn pawn)](#m-2573)
 - **호출 — 외부:** 없음
 
@@ -28754,9 +30169,9 @@
 
 ### 021. RimKataSubdueUtility.KillAndDiscard
 
-`internal static void KillAndDiscard(Pawn target)` · [L281](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdue.cs:281)
+`internal static void KillAndDiscard(Pawn target, DamageInfo? damageInfo = null)` · [L281](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdue.cs:281)
 
-- **역할:** 폐기할 폰의 사망·시체·일지·이야기 기록을 처리한 뒤 월드에서 폐기합니다.
+- **역할:** 제압 던지기와 밀어 차기의 이동 불가 지형 결과에 공통으로 사용합니다. 전달된 피해·공격자 정보로 사망을 처리하고 시체·일지·이야기 참조를 정리한 뒤 월드에서 폐기합니다. 비행 완료 시에만 호출하며 제압 던지기는 기존처럼 피해 정보 없이 호출합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSubdueUtility.ClearPawnTales(RimWorld.TaleManager manager, Verse.Pawn pawn)](#m-2586)
 - **호출 — 외부:** `RimWorld.Planet.WorldPawns.Contains(Verse.Pawn p)` · `RimWorld.Planet.WorldPawns.PassToWorld(Verse.Pawn pawn, [RimWorld.Planet.PawnDiscardDecideMode discardMode = RimWorld.Planet.PawnDiscardDecideMode.Decide])` · `RimWorld.Planet.WorldPawns.RemoveAndDiscardPawnViaGC(Verse.Pawn p)` · `Verse.BattleLog.Notify_PawnDiscarded(Verse.Pawn p, bool silentlyRemoveReferences)` · `Verse.Corpse.Destroy([Verse.DestroyMode mode = Verse.DestroyMode.Vanish])` · `Verse.Pawn.Kill(Verse.DamageInfo? dinfo, [Verse.Hediff exactCulprit = null])` · `Verse.PlayLog.Notify_PawnDiscarded(Verse.Pawn p, bool silentlyRemoveReferences)`
@@ -29878,13 +31293,13 @@
 
 ## 122. RimKataSubdueThrow.cs
 
-[Source/RimKataSubdueThrow.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs) · 메서드 **14개** · 던져진 폰의 지연 이동 렌더·착지·구조물 충격·이동 불가 결과 처리 · [파일 목차](#files)
+[Source/RimKataSubdueThrow.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs) · 메서드 **17개** · 제압 던지기·밀어 차기의 지연 이동 렌더·착지·구조물 충격·이동 불가 결과 처리 · [파일 목차](#files)
 
 <a id="m-2683"></a>
 
 ### 001. RimKataThrownPawn.GetDirectlyHeldThings
 
-`public ThingOwner GetDirectlyHeldThings()` · [L26](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:26)
+`public ThingOwner GetDirectlyHeldThings()` · [L35](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:35)
 
 - **역할:** 던지기 객체가 직접 보관하는 운반 컨테이너를 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -29895,7 +31310,7 @@
 
 ### 002. RimKataThrownPawn.GetChildHolders
 
-`public void GetChildHolders(List<IThingHolder> outChildren)` · [L27](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:27)
+`public void GetChildHolders(List<IThingHolder> outChildren)` · [L36](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:36)
 
 - **역할:** 던지기 컨테이너 안의 하위 소유자를 목록에 추가합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -29906,7 +31321,7 @@
 
 ### 003. RimKataThrownPawn.CanLaunch
 
-`internal static bool CanLaunch(RimKataSubdueState state)` · [L30](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:30)
+`internal static bool CanLaunch(RimKataSubdueState state)` · [L39](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:39)
 
 - **역할:** 유효한 제압 관계이며 전방 두 셀이 맵 안에 있어 던질 수 있는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -29917,29 +31332,40 @@
 
 ### 004. RimKataThrownPawn.Launch
 
-`internal static void Launch(RimKataSubdueState state)` · [L34](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:34)
+`internal static void Launch(RimKataSubdueState state)` · [L43](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:43)
 
 - **역할:** 운반 대상을 비행 객체로 넘기고 제압 관계·공격 Job을 종료합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSubdueJobs.StopAttackJob(Verse.Pawn pawn)](#m-2657) · [RimKataSubdueRender.CarriedPosition(Verse.Pawn pawn, UnityEngine.Vector3 root, Verse.Rot4 facing)](#m-2671) · [RimKataSubdueUtility.Remove(RimKataSubdueState state)](#m-2580) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataThrownPawn.CanLaunch(RimKataSubdueState state)](#m-2685) · [RimKataThrownPawn.Destroy(\[Verse.DestroyMode mode = Verse.DestroyMode.Vanish\])](#m-2696)
 - **호출 — 외부:** `Verse.GenSpawn.Spawn(Verse.Thing newThing, Verse.IntVec3 loc, Verse.Map map, Verse.Rot4 rot, [Verse.WipeMode wipeMode = Verse.WipeMode.Vanish], [bool respawningAfterLoad = false], [bool forbidLeavings = false])` · `Verse.IntVec3.ToVector3Shifted()` · `Verse.ThingMaker.MakeThing(Verse.ThingDef def, [Verse.ThingDef stuff = null])` · `Verse.ThingOwner.TryTransferToContainer(Verse.Thing item, Verse.ThingOwner otherContainer, [bool canMergeWithExistingStacks = true])`
 
+<a id="m-3030"></a>
+
+### 005. RimKataThrownPawn.LaunchPush
+
+`internal static void LaunchPush(Pawn attacker, Pawn target, IntVec3 direction, DamageDef damageDef)` · [L64](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:64)
+
+- **역할:** 질량·이동 방향이 확정된 밀어 차기 대상을 기존 비행 컨테이너에 넣어 8방향 한 칸/8틱 이동을 시작합니다. 소집·자동 사격·회전·재개 가능한 작업 큐를 보관하며 이관 실패는 원점 재배치 또는 월드 보관으로 처리합니다. 제압 관계는 만들지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataThrownPawn.RestorePawn](#m-3032) ×2 · [RimKataThrownPawn.Destroy](#m-2696)
+- **호출 — 외부:** `Verse.ThingMaker.MakeThing` · `Verse.GenSpawn.Spawn` ×2 · `Verse.AI.Pawn_JobTracker.SuspendCurrentJob` · `Verse.AI.Pawn_JobTracker.CaptureAndClearJobQueue` · `Verse.Pawn.DeSpawn` · `Verse.ThingOwner.TryAdd` · `RimWorld.Planet.WorldPawns.PassToWorld`
+
 <a id="m-2687"></a>
 
-### 005. RimKataThrownPawn.ExposeData
+### 006. RimKataThrownPawn.ExposeData
 
-`public override void ExposeData()` · [L55](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:55)
+`public override void ExposeData()` · [L110](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:110)
 
-- **역할:** 던져진 폰과 진행 시간·출발 위치·충돌 기절·소집 상태를 저장·복원합니다.
+- **역할:** 던져진 폰과 진행 시간·출발 위치·충돌 기절·소집 상태를 저장·복원합니다. 밀어 차기 여부·8방향 이동·원래 회전·사망 피해 정보·보관 작업 큐도 저장하며 기존 세이브는 2칸 제압 던지기로 읽습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×7 · `Verse.Scribe_Deep.Look<T>(ref T target, string label, params object[] ctorArgs)` · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` · `Verse.Thing.ExposeData()`
 
 <a id="m-2688"></a>
 
-### 006. RimKataThrownPawn.SpawnSetup
+### 007. RimKataThrownPawn.SpawnSetup
 
-`public override void SpawnSetup(Map map, bool respawningAfterLoad)` · [L69](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:69)
+`public override void SpawnSetup(Map map, bool respawningAfterLoad)` · [L129](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:129)
 
 - **역할:** 비행 객체 생성 또는 로드 후 현재 출력 위치를 갱신합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -29948,42 +31374,53 @@
 
 <a id="m-2689"></a>
 
-### 007. RimKataThrownPawn.TickInterval
+### 008. RimKataThrownPawn.TickInterval
 
-`protected override void TickInterval(int delta)` · [L75](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:75)
+`protected override void TickInterval(int delta)` · [L135](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:135)
 
-- **역할:** 셀당 8틱으로 비행을 진행하고 셀 도달 시 충돌·착지 결과를 판정합니다.
+- **역할:** 셀당 8틱으로 제압 던지기 2칸 또는 밀어 차기 1칸 이동을 진행합니다. 도착 시 각 기능의 구조물·대각 모서리·대상별 이동 가능 판정을 거쳐 공통 Finish로 착지·기절·시체 없는 폐기를 처리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataThrownPawn.Destroy(\[Verse.DestroyMode mode = Verse.DestroyMode.Vanish\])](#m-2696) · [RimKataThrownPawn.EvaluateArrival(Verse.Map map, Verse.Pawn pawn, Verse.IntVec3 origin, Verse.Rot4 facing, int step, out Verse.IntVec3 landing, out bool impact, out bool discard)](#m-2690) · [RimKataThrownPawn.Finish(Verse.IntVec3 cell, bool impact, bool discard)](#m-2693) · [RimKataThrownPawn.RefreshVisual()](#m-2691)
+- **호출 — 프로젝트 내부:** [RimKataThrownPawn.Destroy(\[Verse.DestroyMode mode = Verse.DestroyMode.Vanish\])](#m-2696) · [RimKataThrownPawn.EvaluateArrival(Verse.Map map, Verse.Pawn pawn, Verse.IntVec3 origin, Verse.Rot4 facing, int step, out Verse.IntVec3 landing, out bool impact, out bool discard)](#m-2690) · [RimKataThrownPawn.EvaluatePushArrival](#m-3031) · [RimKataThrownPawn.Finish(Verse.IntVec3 cell, bool impact, bool discard)](#m-2693) · [RimKataThrownPawn.RefreshVisual()](#m-2691)
 - **호출 — 외부:** `System.Math.Min(int val1, int val2)`
 
 <a id="m-2690"></a>
 
-### 008. RimKataThrownPawn.EvaluateArrival
+### 009. RimKataThrownPawn.EvaluateArrival
 
-`internal static bool EvaluateArrival(Map map, Pawn pawn, IntVec3 origin, Rot4 facing, int step, out IntVec3 landing, out bool impact, out bool discard)` · [L91](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:91)
+`internal static bool EvaluateArrival(Map map, Pawn pawn, IntVec3 origin, Rot4 facing, int step, out IntVec3 landing, out bool impact, out bool discard)` · [L155](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:155)
 
 - **역할:** 다음 셀의 구조물 차단과 최종 셀 이동 가능 여부로 충돌·착지·폐기 결과를 구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.GenGrid.WalkableBy(Verse.IntVec3 c, Verse.Map map, Verse.Pawn pawn)` ×2 · `Verse.GenGrid.InBounds(Verse.IntVec3 c, Verse.Map map)` · `Verse.GridsUtility.GetThingList(Verse.IntVec3 c, Verse.Map map)` · `Verse.Thing.BlocksPawn(Verse.Pawn p)`
 
+<a id="m-3031"></a>
+
+### 010. RimKataThrownPawn.EvaluatePushArrival
+
+`private bool EvaluatePushArrival(out IntVec3 landing, out bool impact, out bool discard)` · [L177](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:177)
+
+- **역할:** 8틱 밀기 이동 완료 시 목적지와 대각 양옆 구조물을 확인합니다. 막혔으면 출발 셀 충돌, 아니면 한 칸 뒤 착지로 정하고 실제 대상이 그 셀을 이동할 수 없을 때만 폐기합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataPushKick.StructureBlocks](#m-3018) ×3
+- **호출 — 외부:** `Verse.GenGrid.InBounds` · `Verse.GenGrid.WalkableBy`
+
 <a id="m-2691"></a>
 
-### 009. RimKataThrownPawn.RefreshVisual
+### 011. RimKataThrownPawn.RefreshVisual
 
-`private void RefreshVisual()` · [L113](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:113)
+`private void RefreshVisual()` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:193)
 
-- **역할:** 출발 보정 위치에서 전방 두 셀까지의 직선 비행 출력 좌표를 계산합니다.
+- **역할:** 출발 보정 위치에서 목적지까지 직선 이동 좌표를 계산합니다. 제압은 기존 전방 두 셀, 밀어 차기는 대상의 원래 출력 위치에서 밀리는 8방향 한 셀을 사용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `UnityEngine.Mathf.Clamp01(float value)` · `Verse.Altitudes.AltitudeFor(Verse.AltitudeLayer alt)` · `Verse.IntVec3.ToVector3()` · `Verse.IntVec3.ToVector3Shifted()`
 
 <a id="m-2692"></a>
 
-### 010. RimKataThrownPawn.DynamicDrawPhaseAt
+### 012. RimKataThrownPawn.DynamicDrawPhaseAt
 
-`public override void DynamicDrawPhaseAt(DrawPhase phase, Vector3 drawLoc, bool flip = false)` · [L121](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:121)
+`public override void DynamicDrawPhaseAt(DrawPhase phase, Vector3 drawLoc, bool flip = false)` · [L201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:201)
 
 - **역할:** 보관 중인 폰을 비행 출력 위치에서 렌더합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -29992,42 +31429,53 @@
 
 <a id="m-2693"></a>
 
-### 011. RimKataThrownPawn.Finish
+### 013. RimKataThrownPawn.Finish
 
-`private void Finish(IntVec3 cell, bool impact, bool discard)` · [L126](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:126)
+`private void Finish(IntVec3 cell, bool impact, bool discard)` · [L206](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:206)
 
-- **역할:** 착지·충돌 기절·폐기를 처리하고 실패 시 보관 폰을 보호한 뒤 비행 객체를 종료합니다.
+- **역할:** 이동 완료 후 착지·충돌 기절·폐기를 처리하고 실패 시 보관 폰을 보호한 뒤 비행 객체를 종료합니다. 밀어 차기는 공격자 정보를 유지해 시체 없이 폐기하거나 정상 착지 후 보관 작업·소집·자동 사격·회전을 복원합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataThrownPawn.PreserveContents()](#m-2694) ×2 · [RimKataSubdueUtility.KillAndDiscard(Verse.Pawn target)](#m-2585) · [RimKataThrownPawn.Destroy(\[Verse.DestroyMode mode = Verse.DestroyMode.Vanish\])](#m-2696)
+- **호출 — 프로젝트 내부:** [RimKataThrownPawn.PreserveContents()](#m-2694) ×2 · [RimKataSubdueUtility.KillAndDiscard(Verse.Pawn target, Verse.DamageInfo? damageInfo)](#m-2585) · [RimKataThrownPawn.RestorePawn](#m-3032) · [RimKataThrownPawn.Destroy(\[Verse.DestroyMode mode = Verse.DestroyMode.Vanish\])](#m-2696)
 - **호출 — 외부:** `Verse.ThingOwner<T>.TryDrop(Verse.Thing thing, Verse.IntVec3 dropLoc, Verse.Map map, Verse.ThingPlaceMode mode, out T lastResultingThing, [System.Action<T, int> placedAction = null], [System.Predicate<Verse.IntVec3> nearPlaceValidator = null])` ×2 · `RimWorld.StunHandler.StunFor(int ticks, Verse.Thing instigator, [bool addBattleLog = true], [bool showMote = true], [bool disableRotation = false])` · `Verse.GenGrid.WalkableBy(Verse.IntVec3 c, Verse.Map map, Verse.Pawn pawn)` · `Verse.ThingOwner<T>.Remove(Verse.Thing item)`
+
+<a id="m-3032"></a>
+
+### 014. RimKataThrownPawn.RestorePawn
+
+`private void RestorePawn(Pawn victim)` · [L240](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:240)
+
+- **역할:** 정상/비상 착지에서 원래 소집·자동 사격과 기능별 방향을 복원합니다. 밀기에서 재개 가능한 작업은 playerForced를 바꾸지 않고 큐에 재연결한 뒤 한 번 재개를 요청합니다. 맵 밖 결과는 예약 작업을 정리하고 작업 실행을 시도하지 않습니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `Verse.AI.JobQueue.Clear` · `Verse.AI.JobQueue.Dequeue` · `Verse.AI.JobQueue.EnqueueLast` · `Verse.AI.Pawn_JobTracker.CheckForJobOverride` · `Verse.PawnTweener.ResetTweenedPosToRoot`
 
 <a id="m-2694"></a>
 
-### 012. RimKataThrownPawn.PreserveContents
+### 015. RimKataThrownPawn.PreserveContents
 
-`private void PreserveContents()` · [L159](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:159)
+`private void PreserveContents()` · [L262](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:262)
 
-- **역할:** 남은 보관 폰을 컨테이너에서 꺼내 월드 관리에 넘깁니다.
+- **역할:** 남은 보관 폰을 컨테이너에서 꺼내 월드 관리에 넘기며 밀기에서 보관한 맵 작업 큐는 실행하지 않고 정리합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.Planet.WorldPawns.Contains(Verse.Pawn p)` · `RimWorld.Planet.WorldPawns.PassToWorld(Verse.Pawn pawn, [RimWorld.Planet.PawnDiscardDecideMode discardMode = RimWorld.Planet.PawnDiscardDecideMode.Decide])` · `Verse.ThingOwner<T>.Remove(Verse.Thing item)`
 
 <a id="m-2695"></a>
 
-### 013. RimKataThrownPawn.Notify_MyMapRemoved
+### 016. RimKataThrownPawn.Notify_MyMapRemoved
 
-`public override void Notify_MyMapRemoved()` · [L167](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:167)
+`public override void Notify_MyMapRemoved()` · [L271](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:271)
 
-- **역할:** 맵 제거 과정에서 이미 월드 관리로 넘겨진 폰의 컨테이너 참조를 해제합니다.
+- **역할:** 맵 제거 과정에서 이미 월드 관리로 넘겨진 폰의 컨테이너 참조와 밀기용 보관 작업 큐를 정리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.Planet.WorldPawns.Contains(Verse.Pawn p)` · `Verse.Thing.Notify_MyMapRemoved()` · `Verse.ThingOwner<T>.Remove(Verse.Thing item)`
 
 <a id="m-2696"></a>
 
-### 014. RimKataThrownPawn.Destroy
+### 017. RimKataThrownPawn.Destroy
 
-`public override void Destroy(DestroyMode mode = DestroyMode.Vanish)` · [L175](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:175)
+`public override void Destroy(DestroyMode mode = DestroyMode.Vanish)` · [L283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSubdueThrow.cs:283)
 
 - **역할:** 비행 객체 파괴 시 남은 폰을 가까운 셀에 내려놓거나 월드 관리에 보존합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -30039,7 +31487,7 @@
 
 ## 83. RimKataTargetAccess.cs
 
-[Source/RimKataTargetAccess.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs) · 메서드 **5개** · 대상별 제한 해제 규칙과 적용 프로필 선택 · [파일 목차](#files)
+[Source/RimKataTargetAccess.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs) · 메서드 **7개** · 대상별 제한 해제 규칙과 적용 프로필 선택 · [파일 목차](#files)
 
 <a id="m-1946"></a>
 
@@ -30047,7 +31495,7 @@
 
 `public RimKataTargetRule Copy()` · [L13](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:13)
 
-- **역할:** 대상 규칙의 식별자·활성 상태·프로필 연결을 복사합니다.
+- **역할:** 대상 식별자와 아군·적군 각각의 허용 플래그 및 프로필 연결을 복사합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** 없음
@@ -30058,40 +31506,56 @@
 
 `public void ExposeData()` · [L18](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:18)
 
-- **역할:** 대상 규칙의 활성 상태와 프로필 연결을 저장·복원합니다.
+- **역할:** 아군·적군 허용과 프로필을 각각 저장합니다. 구 enabled/profileId만 있는 설정은 양쪽에 같은 값으로 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×3
 
+<a id="m-3019"></a>
+
+### 003. RimKataTargetAccess.Binding.EnabledFor
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:53)
+
+- **역할:** 진영별 허용을 고릅니다. 양쪽 허용값이 같으면 기존 적대 판정을 호출하지 않습니다.
+
+<a id="m-3020"></a>
+
+### 004. RimKataTargetAccess.Binding.ProfileFor
+
+[소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:57)
+
+- **역할:** 허용된 해당 측의 프로필을 반환합니다. 양쪽이 모두 허용되고 같은 프로필이면 진영 판정을 생략합니다.
+
 <a id="m-1948"></a>
 
-### 003. RimKataTargetAccess.IsEnabled
+### 005. RimKataTargetAccess.IsEnabled
 
 `internal static bool IsEnabled(Pawn pawn)` · [L42](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:42)
 
-- **역할:** 폰에 해당하는 대상 규칙이 활성화되어 있는지 확인합니다.
+- **역할:** 대상 규칙을 찾고 해당 폰의 아군·적군 허용값을 반환합니다. 양쪽 값이 같으면 진영 판정을 생략합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataTargetCatalog.Resolve(Verse.Pawn pawn)](#m-1951)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.ContainsKey(TKey key)`
 
 <a id="m-1949"></a>
 
-### 004. RimKataTargetAccess.SettingsFor
+### 006. RimKataTargetAccess.SettingsFor
 
 `internal static RimKataSettings SettingsFor(Pawn pawn)` · [L49](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:49)
 
-- **역할:** 폰에 연결된 프로필 설정 또는 현재 공통 설정을 반환합니다.
-- **호출받음:** 직접 **103곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 대상 규칙의 해당 진영이 허용된 경우 연결 프로필을 반환하며 그 외에는 현재 공통 설정을 사용합니다.
+- **호출받음:** 직접 **108곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataTargetCatalog.Resolve(Verse.Pawn pawn)](#m-1951)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` · `object.ReferenceEquals(object objA, object objB)`
 
 <a id="m-1950"></a>
 
-### 005. RimKataTargetAccess.Rebuild
+### 007. RimKataTargetAccess.Rebuild
 
 `internal static void Rebuild()` · [L61](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargetAccess.cs:61)
 
-- **역할:** 설정의 대상 규칙과 프로필을 정의별 바인딩으로 재구성하고 변경 리비전을 갱신합니다.
+- **역할:** 대상별 아군·적군 허용/프로필 바인딩을 만들고 양쪽 활성 프로필 변경으로 리비전을 갱신합니다. 구 전체 제한 해제는 양쪽 허용으로 이관합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)` ×3 · `System.Collections.Generic.HashSet<T>.Add(T item)` ×2 · `System.Collections.Generic.List<T>.Add(T item)` · `object.ReferenceEquals(object objA, object objB)` · `string.Equals(string a, string b, System.StringComparison comparisonType)` · `string.IsNullOrEmpty(string value)`
@@ -30183,7 +31647,7 @@
 `public static bool IsAutomaticEnemy(Pawn pawn, Thing target)` · [L21](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargeting.cs:21)
 
 - **역할:** 같은 맵의 생성된 적대 대상을 자동 공격 적으로 인정합니다.
-- **호출받음:** 직접 **36곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **38곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.GenHostility.HostileTo(Verse.Thing a, Verse.Thing b)`
 
@@ -30227,7 +31691,7 @@
 `public static bool IsPawnTargetStateValid( Pawn pawn, bool allowIncapacitated = false)` · [L57](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataTargeting.cs:57)
 
 - **역할:** 사망·쓰러짐·정신적 은폐 상태를 반영하여 폰 표적의 유효성을 판정합니다.
-- **호출받음:** 직접 **37곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **40곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataTargeting.IsCombatCapableCrawling(Verse.Pawn pawn)](#m-1958)
 - **호출 — 외부:** `RimWorld.InvisibilityUtility.IsPsychologicallyInvisible(Verse.Pawn pawn)`
 
@@ -30529,7 +31993,7 @@
 
 ## 87. RimKataVisualPatches.cs
 
-[Source/RimKataVisualPatches.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs) · 메서드 **113개** · 몸·무기·대응 연출·전투 표시·사거리 렌더 · [파일 목차](#files)
+[Source/RimKataVisualPatches.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs) · 메서드 **115개** · 몸·무기·대응 연출·전투 표시·사거리 렌더 · [파일 목차](#files)
 
 <a id="m-2371"></a>
 
@@ -30586,11 +32050,33 @@
 - **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
 
+<a id="m-2941"></a>
+
+### 006. RimKataWorldRenderContext.TryFlyingKick
+
+`internal static bool TryFlyingKick(Pawn pawn, out RimKataFlyingKickVisual visual)` · [L80](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:80)
+
+- **역할:** 현재 월드 렌더 문맥에 이미 전달된 동일 폰의 날아 차기 자료를 반환합니다. 현재 문맥에 일반 발차기 자료가 있으면 날아 차기 자료를 반환하지 않아 변환이 중복되지 않게 합니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
+<a id="m-3006"></a>
+
+### 007. RimKataWorldRenderContext.TryKick
+
+`internal static bool TryKick(Pawn pawn, out RimKataKickVisual visual)` · [L87](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:87)
+
+- **역할:** 현재 월드 렌더 문맥이 요청한 폰과 같고 발차기 자료를 가질 때만 전달합니다. 문맥 밖 폰이나 일반 폰의 상태를 따로 조회하지 않습니다.
+- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** 없음
+
 <a id="m-2855"></a>
 
-### 006. RimKataWorldRenderContext.EquipmentBodyAltitude
+### 008. RimKataWorldRenderContext.EquipmentBodyAltitude
 
-`internal static float EquipmentBodyAltitude(Pawn pawn, Vector3 equipmentRoot, Rot4 facing)` · [L80](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:80)
+`internal static float EquipmentBodyAltitude(Pawn pawn, Vector3 equipmentRoot, Rot4 facing)` · [L94](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:94)
 
 - **역할:** 현재 같은 폰의 장비 문맥에 전달된 몸 깊이를 읽습니다. 그 값이 없는 외부 진입에서는 전달받은 장비 원점에서 방향별 바닐라 장비 레이어 오프셋을 빼며 자격·상태·참가자 조회는 추가하지 않습니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -30599,9 +32085,9 @@
 
 <a id="m-2838"></a>
 
-### 007. RimKataWorldRenderContext.TryEnhancedGrip
+### 009. RimKataWorldRenderContext.TryEnhancedGrip
 
-`internal static bool TryEnhancedGrip(Pawn pawn, out bool enhanced)` · [L85](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:85)
+`internal static bool TryEnhancedGrip(Pawn pawn, out bool enhanced)` · [L99](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:99)
 
 - **역할:** 이미 전달된 몸체 렌더 문맥이 같은 폰인지 확인하고 그 문맥의 근력 그립 값만 읽습니다. 별도 소유자·자격·근력 사전을 조회하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30610,20 +32096,20 @@
 
 <a id="m-2375"></a>
 
-### 008. RimKataWorldRenderContext.TryBreach
+### 010. RimKataWorldRenderContext.TryBreach
 
-`internal static bool TryBreach(Pawn pawn, out RimKataBreachVisual visual)` · [L91](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:91)
+`internal static bool TryBreach(Pawn pawn, out RimKataBreachVisual visual)` · [L105](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:105)
 
-- **역할:** 공통 몸 참가 자료에서 돌파의 불변 시각 스냅샷을 반환하며 개별 돌파 등록부 조회를 반복하지 않습니다.
+- **역할:** 공통 몸 참가 자료에서 돌파의 불변 시각 스냅샷을 반환하며 개별 돌파 등록부 조회를 반복하지 않습니다. 날아 차기 자료가 함께 전달된 프레임에서는 이전 돌파 자료를 사용하지 않습니다. 현재 문맥에 일반 발차기 자료가 있으면 돌파 자료를 반환하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** 없음
 
 <a id="m-2376"></a>
 
-### 009. RimKataWorldRenderContext.TryCrawl
+### 011. RimKataWorldRenderContext.TryCrawl
 
-`internal static bool TryCrawl(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)` · [L98](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:98)
+`internal static bool TryCrawl(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)` · [L112](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:112)
 
 - **역할:** 공통 몸 참가 자료에 게시된 기면서 사격의 무기와 표적을 반환하며 런타임 조준 표를 다시 조회하지 않습니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -30632,9 +32118,9 @@
 
 <a id="m-2697"></a>
 
-### 010. RimKataWorldRenderContext.HasNextAim
+### 012. RimKataWorldRenderContext.HasNextAim
 
-`internal static bool HasNextAim(Pawn pawn)` · [L106](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:106)
+`internal static bool HasNextAim(Pawn pawn)` · [L120](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:120)
 
 - **역할:** 등록된 state/owner/map 연결이 유효하면 그 상태로 다음 조준 유무를 구해 문맥에 공유하고 미등록 일반 조준은 기존 본체 경로로 처리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30643,9 +32129,9 @@
 
 <a id="m-2377"></a>
 
-### 011. RimKataWorldRenderContext.TrySnapshot
+### 013. RimKataWorldRenderContext.TrySnapshot
 
-`internal static bool TrySnapshot(Pawn pawn, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)` · [L124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:124)
+`internal static bool TrySnapshot(Pawn pawn, RimKataMapComponent owner, out RimKataVisualSnapshot snapshot)` · [L138](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:138)
 
 - **역할:** 게시 자료에 공용 스냅샷 자격이 없으면 빈 호출 사슬 진입 전에 거절합니다. 같은 문맥은 스냅샷을 공유하고 문맥 밖은 게시된 참가 자료의 상태 참조로 읽습니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -30654,9 +32140,9 @@
 
 <a id="m-2378"></a>
 
-### 012. RimKataWorldRenderContext.ReadSnapshot
+### 014. RimKataWorldRenderContext.ReadSnapshot
 
-`private static bool ReadSnapshot(ref Context context, out RimKataVisualSnapshot snapshot)` · [L137](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:137)
+`private static bool ReadSnapshot(ref Context context, out RimKataVisualSnapshot snapshot)` · [L151](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:151)
 
 - **역할:** 실제 참가 스냅샷 요청에서만 Frame을 취득하여 등록 상태의 스냅샷을 읽습니다. 동일 문맥에서 결과를 재사용하고 다음 문맥에서는 다시 읽습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30665,9 +32151,9 @@
 
 <a id="m-1988"></a>
 
-### 013. RimKataVisualUtility.IsCachedWorldVisualUser
+### 015. RimKataVisualUtility.IsCachedWorldVisualUser
 
-`public static bool IsCachedWorldVisualUser(Pawn pawn)` · [L159](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:159)
+`public static bool IsCachedWorldVisualUser(Pawn pawn)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:173)
 
 - **역할:** 직접 활성 또는 등록 캐시와 세력 효과 설정으로 월드 시각 효과 적용 대상을 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30676,9 +32162,9 @@
 
 <a id="m-1989"></a>
 
-### 014. RimKataVisualUtility.TryGetCachedWorldLoadout
+### 016. RimKataVisualUtility.TryGetCachedWorldLoadout
 
-`public static bool TryGetCachedWorldLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L175](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:175)
+`public static bool TryGetCachedWorldLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L189](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:189)
 
 - **역할:** 전체 자격 재해석 없이 캐시를 우선해 월드 렌더용 주·부무기를 조회합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -30687,9 +32173,9 @@
 
 <a id="m-1990"></a>
 
-### 015. RimKataVisualUtility.TryGetUiLoadout
+### 017. RimKataVisualUtility.TryGetUiLoadout
 
-`public static bool TryGetUiLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:187)
+`public static bool TryGetUiLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L201](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:201)
 
 - **역할:** UI에 필요한 접근 자격을 확인하며 표시할 주·부무기를 조회합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
@@ -30698,9 +32184,9 @@
 
 <a id="m-1991"></a>
 
-### 016. RimKataVisualUtility.IsSecondaryUsable
+### 018. RimKataVisualUtility.IsSecondaryUsable
 
-`public static bool IsSecondaryUsable( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L199](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:199)
+`public static bool IsSecondaryUsable( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L213](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:213)
 
 - **역할:** 부무기 설정·주무기 허용·한손 그립 조건으로 부무기 표시 가능성을 확인합니다. 이미 전달된 렌더 문맥에 근력 그립이 있으면 이를 사용하고 문맥 밖 경로만 등록된 폰별 유효 그립을 확인합니다.
 - **호출받음:** 직접 **13곳** · 메서드 그룹 참조 **0곳**.
@@ -30709,9 +32195,9 @@
 
 <a id="m-1992"></a>
 
-### 017. RimKataVisualUtility.TryGetResponseParticipantLoadout
+### 019. RimKataVisualUtility.TryGetResponseParticipantLoadout
 
-`public static bool TryGetResponseParticipantLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L213](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:213)
+`public static bool TryGetResponseParticipantLoadout( Pawn pawn, out ThingWithComps primary, out ThingWithComps secondary)` · [L227](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:227)
 
 - **역할:** 회전·대응 자세·튕겨내기에 참여한 보유 무기에서 렌더용 부무기를 찾습니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -30720,9 +32206,9 @@
 
 <a id="m-1993"></a>
 
-### 018. RimKataVisualUtility.TryGetActiveSnapshot
+### 020. RimKataVisualUtility.TryGetActiveSnapshot
 
-`public static bool TryGetActiveSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:253)
+`public static bool TryGetActiveSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L267](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:267)
 
 - **역할:** 공용 렌더 문맥이 가진 등록 상태 참조로 활성 몸/대응 스냅샷을 요청합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -30731,9 +32217,9 @@
 
 <a id="m-1994"></a>
 
-### 019. RimKataVisualUtility.TryGetCachedActiveSnapshot
+### 021. RimKataVisualUtility.TryGetCachedActiveSnapshot
 
-`public static bool TryGetCachedActiveSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L260](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:260)
+`public static bool TryGetCachedActiveSnapshot( Pawn pawn, out RimKataVisualSnapshot snapshot)` · [L274](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:274)
 
 - **역할:** 이미 알려진 owner 유무와 관계없이 공용 렌더 문맥의 등록 스냅샷 경로를 사용합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -30742,9 +32228,9 @@
 
 <a id="m-1995"></a>
 
-### 020. RimKataVisualUtility.TryGetCachedActiveSnapshot
+### 022. RimKataVisualUtility.TryGetCachedActiveSnapshot
 
-`internal static bool TryGetCachedActiveSnapshot( Pawn pawn, RimKataMapComponent component, out RimKataVisualSnapshot snapshot)` · [L267](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:267)
+`internal static bool TryGetCachedActiveSnapshot( Pawn pawn, RimKataMapComponent component, out RimKataVisualSnapshot snapshot)` · [L281](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:281)
 
 - **역할:** 이미 알려진 owner 유무와 관계없이 공용 렌더 문맥의 등록 스냅샷 경로를 사용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30753,9 +32239,9 @@
 
 <a id="m-1996"></a>
 
-### 021. RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot
+### 023. RimKataVisualUtility.TryGetQualifiedOrResponseSnapshot
 
-`internal static bool TryGetQualifiedOrResponseSnapshot( Pawn pawn, RimKataMapComponent component, out RimKataVisualSnapshot snapshot)` · [L275](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:275)
+`internal static bool TryGetQualifiedOrResponseSnapshot( Pawn pawn, RimKataMapComponent component, out RimKataVisualSnapshot snapshot)` · [L289](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:289)
 
 - **역할:** 공용 렌더 문맥의 등록 자격·대응 분류와 상태 참조를 사용해 스냅샷을 읽습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30764,9 +32250,9 @@
 
 <a id="m-1997"></a>
 
-### 022. RimKataVisualUtility.TryGetCachedResponseSnapshot
+### 024. RimKataVisualUtility.TryGetCachedResponseSnapshot
 
-`public static bool TryGetCachedResponseSnapshot( Pawn pawn, bool participantKnown, out RimKataVisualSnapshot snapshot)` · [L283](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:283)
+`public static bool TryGetCachedResponseSnapshot( Pawn pawn, bool participantKnown, out RimKataVisualSnapshot snapshot)` · [L297](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:297)
 
 - **역할:** 알려진 대응 참가 여부 또는 게시된 대응 분류로 진입을 제한하고 공용 렌더 스냅샷 경로를 사용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -30775,9 +32261,9 @@
 
 <a id="m-1998"></a>
 
-### 023. RimKataVisualUtility.TryGetCachedResponseSnapshot
+### 025. RimKataVisualUtility.TryGetCachedResponseSnapshot
 
-`internal static bool TryGetCachedResponseSnapshot( Pawn pawn, RimKataMapComponent component, bool participantKnown, out RimKataVisualSnapshot snapshot)` · [L298](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:298)
+`internal static bool TryGetCachedResponseSnapshot( Pawn pawn, RimKataMapComponent component, bool participantKnown, out RimKataVisualSnapshot snapshot)` · [L312](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:312)
 
 - **역할:** 알려진 대응 참가 여부 또는 게시된 대응 분류로 진입을 제한하고 공용 렌더 스냅샷 경로를 사용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30786,9 +32272,9 @@
 
 <a id="m-1999"></a>
 
-### 024. RimKataVisualUtility.SnapshotFor
+### 026. RimKataVisualUtility.SnapshotFor
 
-`public static RimKataVisualSnapshot SnapshotFor(Pawn pawn)` · [L314](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:314)
+`public static RimKataVisualSnapshot SnapshotFor(Pawn pawn)` · [L328](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:328)
 
 - **역할:** 활성 시각 스냅샷이 있으면 반환하고 없으면 기본값을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30797,9 +32283,9 @@
 
 <a id="m-2000"></a>
 
-### 025. RimKataVisualUtility.DrawOffset
+### 027. RimKataVisualUtility.DrawOffset
 
-`public static Vector3 DrawOffset(RimKataVisualSnapshot snapshot)` · [L323](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:323)
+`public static Vector3 DrawOffset(RimKataVisualSnapshot snapshot)` · [L337](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:337)
 
 - **역할:** 일반 회피·제자리 구르기·회피 이동 진행도에 따른 몸 렌더 위치 보정값을 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -30808,9 +32294,9 @@
 
 <a id="m-2001"></a>
 
-### 026. RimKataVisualUtility.RequiresDynamicBodyRotation
+### 028. RimKataVisualUtility.RequiresDynamicBodyRotation
 
-`public static bool RequiresDynamicBodyRotation(RimKataVisualSnapshot snapshot)` · [L360](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:360)
+`public static bool RequiresDynamicBodyRotation(RimKataVisualSnapshot snapshot)` · [L374](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:374)
 
 - **역할:** 회전·구르기·근접 회피·대상 응시 자세가 동적 몸 회전을 요구하는지 판정합니다. 새 자세는 몸체 캐시를 우회해 매 프레임 갱신합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30819,9 +32305,9 @@
 
 <a id="m-2002"></a>
 
-### 027. RimKataVisualUtility.TryGetResponseFacing
+### 029. RimKataVisualUtility.TryGetResponseFacing
 
-`public static bool TryGetResponseFacing( Pawn pawn, RimKataVisualSnapshot snapshot, out Rot4 facing)` · [L372](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:372)
+`public static bool TryGetResponseFacing( Pawn pawn, RimKataVisualSnapshot snapshot, out Rot4 facing)` · [L386](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:386)
 
 - **역할:** 유효한 대응 대상의 현재 위치를 바라보는 몸 방향을 계산합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30830,9 +32316,9 @@
 
 <a id="m-2003"></a>
 
-### 028. RimKataVisualUtility.TryGetLiveResponseFocus
+### 030. RimKataVisualUtility.TryGetLiveResponseFocus
 
-`public static bool TryGetLiveResponseFocus( Pawn pawn, RimKataVisualSnapshot snapshot, out LocalTargetInfo focus)` · [L399](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:399)
+`public static bool TryGetLiveResponseFocus( Pawn pawn, RimKataVisualSnapshot snapshot, out LocalTargetInfo focus)` · [L413](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:413)
 
 - **역할:** 대응 자세의 대상이 같은 맵에 남아 공격 가능한 상태인지 확인해 반환합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -30841,9 +32327,9 @@
 
 <a id="m-2004"></a>
 
-### 029. RimKataVisualUtility.TryGetVisualLoadout
+### 031. RimKataVisualUtility.TryGetVisualLoadout
 
-`private static bool TryGetVisualLoadout( Pawn pawn, bool resolveAccess, out ThingWithComps primary, out ThingWithComps secondary)` · [L431](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:431)
+`private static bool TryGetVisualLoadout( Pawn pawn, bool resolveAccess, out ThingWithComps primary, out ThingWithComps secondary)` · [L445](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:445)
 
 - **역할:** 시각 자격과 등록 부무기를 조회하고 실제 보유 상태를 검증해 주·부무기 구성을 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -30852,9 +32338,9 @@
 
 <a id="m-2005"></a>
 
-### 030. RimKataVisualUtility.IsHeldSecondary
+### 032. RimKataVisualUtility.IsHeldSecondary
 
-`private static bool IsHeldSecondary( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L497](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:497)
+`private static bool IsHeldSecondary( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L511](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:511)
 
 - **역할:** 부무기가 없거나 실제 보유 중인 비주무기인지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -30863,9 +32349,9 @@
 
 <a id="m-2006"></a>
 
-### 031. RimKataVisualUtility.IsHeldNonPrimary
+### 033. RimKataVisualUtility.IsHeldNonPrimary
 
-`private static bool IsHeldNonPrimary( Pawn pawn, ThingWithComps primary, ThingWithComps weapon)` · [L506](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:506)
+`private static bool IsHeldNonPrimary( Pawn pawn, ThingWithComps primary, ThingWithComps weapon)` · [L520](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:520)
 
 - **역할:** 무기가 파괴되지 않았고 주무기와 다르며 Pawn의 장비 목록에 있는지 확인합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -30874,9 +32360,9 @@
 
 <a id="m-2007"></a>
 
-### 032. RimKataVisualUtility.FindPawnOwner
+### 034. RimKataVisualUtility.FindPawnOwner
 
-`public static Pawn FindPawnOwner(Thing thing)` · [L518](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:518)
+`public static Pawn FindPawnOwner(Thing thing)` · [L532](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:532)
 
 - **역할:** Thing의 부모 보유자를 제한된 깊이까지 따라가 소유 Pawn을 찾습니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -30885,9 +32371,9 @@
 
 <a id="m-2008"></a>
 
-### 033. RimKataCarryDrawUtility.Push
+### 035. RimKataCarryDrawUtility.Push
 
-`public static int Push( ThingWithComps weapon, Vector3 drawPos)` · [L554](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:554)
+`public static int Push( ThingWithComps weapon, Vector3 drawPos)` · [L568](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:568)
 
 - **역할:** 주무기 휴대 렌더의 Pawn·부무기·스냅샷·위치를 준비하고 예외 시 이전 문맥을 복원합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30896,9 +32382,9 @@
 
 <a id="m-2009"></a>
 
-### 034. RimKataCarryDrawUtility.EnterScope
+### 036. RimKataCarryDrawUtility.EnterScope
 
-`private static int EnterScope()` · [L635](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:635)
+`private static int EnterScope()` · [L649](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:649)
 
 - **역할:** 이전 휴대 렌더 문맥을 보존하고 새 중첩 범위를 시작합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30907,9 +32393,9 @@
 
 <a id="m-2010"></a>
 
-### 035. RimKataCarryDrawUtility.EnsureNestedContextCapacity
+### 037. RimKataCarryDrawUtility.EnsureNestedContextCapacity
 
-`private static void EnsureNestedContextCapacity(int requiredLength)` · [L650](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:650)
+`private static void EnsureNestedContextCapacity(int requiredLength)` · [L664](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:664)
 
 - **역할:** 중첩 휴대 렌더 문맥 배열의 용량을 필요한 크기로 늘립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30918,9 +32404,9 @@
 
 <a id="m-2011"></a>
 
-### 036. RimKataCarryDrawUtility.Pop
+### 038. RimKataCarryDrawUtility.Pop
 
-`public static void Pop(int scopeToken)` · [L669](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:669)
+`public static void Pop(int scopeToken)` · [L683](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:683)
 
 - **역할:** 휴대 렌더 범위를 종료해 이전 문맥을 복원하고 순서가 어긋나면 전체 문맥을 비웁니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -30929,9 +32415,9 @@
 
 <a id="m-2012"></a>
 
-### 037. RimKataDualWeaponRenderUtility.NativeSecondaryAngleForContext
+### 039. RimKataDualWeaponRenderUtility.NativeSecondaryAngleForContext
 
-`internal static float NativeSecondaryAngleForContext(float angle)` · [L738](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:738)
+`internal static float NativeSecondaryAngleForContext(float angle)` · [L752](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:752)
 
 - **역할:** 부무기 반사 문맥에 맞춰 바닐라 최종 무기 각도를 반사축 기준으로 보정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30940,9 +32426,9 @@
 
 <a id="m-2013"></a>
 
-### 038. RimKataDualWeaponRenderUtility.Plane10ForContext
+### 040. RimKataDualWeaponRenderUtility.Plane10ForContext
 
-`public static Mesh Plane10ForContext()` · [L746](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:746)
+`public static Mesh Plane10ForContext()` · [L760](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:760)
 
 - **역할:** 부무기 반사가 필요한 문맥에서 기본 plane10 대신 V 좌표를 뒤집은 메시를 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -30951,9 +32437,9 @@
 
 <a id="m-2014"></a>
 
-### 039. RimKataDualWeaponRenderUtility.Plane10FlipForContext
+### 041. RimKataDualWeaponRenderUtility.Plane10FlipForContext
 
-`public static Mesh Plane10FlipForContext()` · [L753](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:753)
+`public static Mesh Plane10FlipForContext()` · [L767](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:767)
 
 - **역할:** 부무기 반사가 필요한 문맥에서 plane10Flip의 V 좌표 반전 메시를 반환합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -30962,9 +32448,9 @@
 
 <a id="m-2015"></a>
 
-### 040. RimKataDualWeaponRenderUtility.DrawSecondaryEquipmentMesh
+### 042. RimKataDualWeaponRenderUtility.DrawSecondaryEquipmentMesh
 
-`public static void DrawSecondaryEquipmentMesh( Mesh mesh, Matrix4x4 matrix, Material material, int layer)` · [L760](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:760)
+`public static void DrawSecondaryEquipmentMesh( Mesh mesh, Matrix4x4 matrix, Material material, int layer)` · [L774](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:774)
 
 - **역할:** 바닐라 부무기 메시를 공통 최종 제출 경로에 보내 깊이·높이·전투 기울임을 보정합니다. 깊이 반사축은 현재 출력 범위에 전달된 실제 몸 깊이를 사용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -30973,9 +32459,9 @@
 
 <a id="m-2016"></a>
 
-### 041. RimKataDualWeaponRenderUtility.TryDrawPair
+### 043. RimKataDualWeaponRenderUtility.TryDrawPair
 
-`public static bool TryDrawPair( Thing equipment, Vector3 originalDrawLoc, float originalAimAngle)` · [L772](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:772)
+`public static bool TryDrawPair( Thing equipment, Vector3 originalDrawLoc, float originalAimAngle)` · [L786](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:786)
 
 - **역할:** 등록된 주·부 슬롯과 렌더 문맥을 확인해 원본 무기 출력을 각 슬롯의 독립 목표·대기 출력으로 대체합니다. 장비 문맥의 실제 몸 깊이를 한 번 읽어 주·부 출력 경로에 함께 전달합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -30984,20 +32470,20 @@
 
 <a id="m-2017"></a>
 
-### 042. RimKataDualWeaponRenderUtility.DrawSecondaryAfterExternalPrimary
+### 044. RimKataDualWeaponRenderUtility.DrawSecondaryAfterExternalPrimary
 
-`internal static void DrawSecondaryAfterExternalPrimary( Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root, float bodyAltitude, bool combat = false)` · [L908](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:908)
+`internal static void DrawSecondaryAfterExternalPrimary( Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root, float bodyAltitude, bool combat = false)` · [L922](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:922)
 
-- **역할:** 외부 주 무기 출력 뒤 부 슬롯의 실제 전투 또는 고유 대기 자세를 그리며 일반 눕기 스코프를 보존·복원합니다. 호출자가 확보한 실제 몸 깊이를 부 슬롯 출력에 전달합니다.
+- **역할:** 외부 주 무기 출력 뒤 부 슬롯의 실제 전투 또는 고유 대기 자세를 그리며 일반 눕기 스코프를 보존·복원합니다. 호출자가 확보한 실제 몸 깊이를 부 슬롯 출력에 전달합니다. 낙상 조준 문맥이 있으면 바닐라 대기 자세를 요청하기 전에 전투 출력으로 분류합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponRenderUtility.DrawWeapon(Verse.Pawn pawn, Verse.ThingWithComps primary, Verse.ThingWithComps weapon, UnityEngine.Vector3 primaryDrawLoc, UnityEngine.Vector3 equipmentPivot, float fallbackAngle, bool secondary, bool snapshotActive, RimKataVisualSnapshot snapshot, float bodyAltitude, \[bool nativeCombat = false\])](#m-2023) · [RimKataDualWeaponRenderUtility.EquipmentCenter(Verse.Pawn pawn, Verse.ThingWithComps weapon, UnityEngine.Vector3 equipmentPivot, float aimAngle)](#m-2035) · [RimKataGroundPoseRender.PopEquipment(bool pushed)](#m-1372) · [RimKataGroundPoseRender.PushEquipment(Verse.Pawn pawn, Verse.PawnRenderFlags flags)](#m-1371) · [RimKataWeaponRenderProbe.TryGetVanillaIdlePose(Verse.Pawn pawn, Verse.ThingWithComps weapon, UnityEngine.Vector3 root, out UnityEngine.Vector3 drawLoc, out float aimAngle, \[Verse.Rot4? facing = null\])](#m-2129)
 - **호출 — 외부:** 없음
 
 <a id="m-2018"></a>
 
-### 043. RimKataDualWeaponRenderUtility.DrawSecondaryFromOwnIdlePose
+### 045. RimKataDualWeaponRenderUtility.DrawSecondaryFromOwnIdlePose
 
-`internal static void DrawSecondaryFromOwnIdlePose( ThingWithComps secondary, Vector3 root, Rot4 facing, Vector3 originalDrawLoc, float originalAimAngle, float bodyAltitude)` · [L944](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:944)
+`internal static void DrawSecondaryFromOwnIdlePose( ThingWithComps secondary, Vector3 root, Rot4 facing, Vector3 originalDrawLoc, float originalAimAngle, float bodyAltitude)` · [L958](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:958)
 
 - **역할:** 외부 렌더에서 얻은 부 무기 고유 대기 위치와 각도를 슬롯별 위치 규칙에 맞춰 출력합니다. 전달된 실제 몸 깊이를 공통 출력의 부 슬롯 반사축으로 사용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31006,9 +32492,9 @@
 
 <a id="m-2019"></a>
 
-### 044. RimKataDualWeaponRenderUtility.DrawCombatIndicators
+### 046. RimKataDualWeaponRenderUtility.DrawCombatIndicators
 
-`public static void DrawCombatIndicators(Pawn pawn)` · [L967](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:967)
+`public static void DrawCombatIndicators(Pawn pawn)` · [L981](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:981)
 
 - **역할:** 선택 폰의 집중 목표 선과 양쪽 무기 예열·쿨다운을 그리며 기어 사격은 별도 읽기 전용 쿨다운 정보와 실제 무기 중심을 사용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31017,9 +32503,9 @@
 
 <a id="m-2020"></a>
 
-### 045. RimKataDualWeaponRenderUtility.DrawFocusedCloseTargetLine
+### 047. RimKataDualWeaponRenderUtility.DrawFocusedCloseTargetLine
 
-`private static void DrawFocusedCloseTargetLine( Pawn pawn, Thing target)` · [L1093](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1093)
+`private static void DrawFocusedCloseTargetLine( Pawn pawn, Thing target)` · [L1107](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1107)
 
 - **역할:** 공격 기즈모의 근접 요청 대상까지 검은 목표 연결선을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31028,9 +32514,9 @@
 
 <a id="m-2021"></a>
 
-### 046. RimKataDualWeaponRenderUtility.DrawFocusedTargetLine
+### 048. RimKataDualWeaponRenderUtility.DrawFocusedTargetLine
 
-`private static void DrawFocusedTargetLine( Pawn pawn, Thing target, bool fromAttackGizmo)` · [L1110](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1110)
+`private static void DrawFocusedTargetLine( Pawn pawn, Thing target, bool fromAttackGizmo)` · [L1124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1124)
 
 - **역할:** 집중 대상까지 연결선을 그리고 기즈모 출처인 경우 검은 선과 보정 폭을 사용합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31039,9 +32525,9 @@
 
 <a id="m-2022"></a>
 
-### 047. RimKataDualWeaponRenderUtility.FocusedTargetLineWidthForCamera
+### 049. RimKataDualWeaponRenderUtility.FocusedTargetLineWidthForCamera
 
-`private static float FocusedTargetLineWidthForCamera()` · [L1140](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1140)
+`private static float FocusedTargetLineWidthForCamera()` · [L1154](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1154)
 
 - **역할:** 카메라 축소율을 반영해 집중 목표 선의 최소 화면 픽셀 두께를 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31050,20 +32536,20 @@
 
 <a id="m-2023"></a>
 
-### 048. RimKataDualWeaponRenderUtility.DrawWeapon
+### 050. RimKataDualWeaponRenderUtility.DrawWeapon
 
-`private static void DrawWeapon( Pawn pawn, ThingWithComps primary, ThingWithComps weapon, Vector3 primaryDrawLoc, Vector3 equipmentPivot, float fallbackAngle, bool secondary, bool snapshotActive, RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false)` · [L1158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1158)
+`private static void DrawWeapon( Pawn pawn, ThingWithComps primary, ThingWithComps weapon, Vector3 primaryDrawLoc, Vector3 equipmentPivot, float fallbackAngle, bool secondary, bool snapshotActive, RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false)` · [L1172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1172)
 
-- **역할:** 슬롯별 실제 조준·대응 표적과 대기 위치를 결정하고 외부 무기 출력 또는 공통 무기 출력 경로로 전달합니다. 공통 출력에는 전달받은 실제 몸 깊이를 그대로 넘깁니다.
+- **역할:** 슬롯별 실제 조준·대응 표적과 대기 위치를 결정하고 외부 무기 출력 또는 공통 무기 출력 경로로 전달합니다. 공통 출력에는 전달받은 실제 몸 깊이를 그대로 넘깁니다. 대응/무기별 조준을 우선하고 없는 슬롯만 낙상 문맥의 보존 표적을 사용합니다. 낙상 조준 중에는 외부 대기 무기 자세를 허용하지 않고 전투용 부 무기 반전·기울기를 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponRenderUtility.EquipmentCenter(Verse.Pawn pawn, Verse.ThingWithComps weapon, UnityEngine.Vector3 equipmentPivot, float aimAngle)](#m-2035) ×2 · [Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(Verse.ThingWithComps weapon, RimKataVisualSnapshot snapshot)](#m-2057) · [RimKataDualWeaponController.TryGetNextAim(Verse.Pawn pawn, out Verse.ThingWithComps weapon, out Verse.LocalTargetInfo target)](#m-1037) · [RimKataDualWeaponController.TryGetVisualData(Verse.Pawn pawn, Verse.ThingWithComps weapon, out RimKataWeaponVisualData data)](#m-1028) · [RimKataDualWeaponRenderUtility.AngleToTarget(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.LocalTargetInfo target, float fallback)](#m-2036) · [RimKataDualWeaponRenderUtility.DrawNativeWeapon(Verse.ThingWithComps weapon, UnityEngine.Vector3 drawLoc, float aimAngle, bool secondary, bool secondaryIdle, Verse.Rot4 facing, UnityEngine.Vector3 placementPivot, float bodyAltitude)](#m-2024) · [RimKataDualWeaponRenderUtility.SecondaryOffsetForFacing(UnityEngine.Vector3 offset, Verse.Rot4 facing)](#m-2025) · [RimKataDualWeaponRenderUtility.VisualAimAngle(Verse.Pawn pawn, Verse.ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)](#m-2173) · [RimKataVisualUtility.TryGetLiveResponseFocus(Verse.Pawn pawn, RimKataVisualSnapshot snapshot, out Verse.LocalTargetInfo focus)](#m-2003) · [RimKataWeaponRenderProbe.DrawSpecialSecondary(Verse.Pawn pawn, Verse.ThingWithComps weapon, float visualAngleOffset, bool allowWeaponPose, out UnityEngine.Vector3 nativeLoc, out float nativeAngle)](#m-2128) · [RimKataWeaponRenderProbe.TryGetDrawPivot(Verse.Pawn pawn, out UnityEngine.Vector3 pivot, out float facingAngle)](#m-2126)
 - **호출 — 외부:** 없음
 
 <a id="m-2024"></a>
 
-### 049. RimKataDualWeaponRenderUtility.DrawNativeWeapon
+### 051. RimKataDualWeaponRenderUtility.DrawNativeWeapon
 
-`private static void DrawNativeWeapon( ThingWithComps weapon, Vector3 drawLoc, float aimAngle, bool secondary, bool secondaryIdle, Rot4 facing, Vector3 placementPivot, float bodyAltitude)` · [L1239](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1239)
+`private static void DrawNativeWeapon( ThingWithComps weapon, Vector3 drawLoc, float aimAngle, bool secondary, bool secondaryIdle, Rot4 facing, Vector3 placementPivot, float bodyAltitude)` · [L1253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1253)
 
 - **역할:** 부 슬롯의 방향별 깊이·조준축·근접 기울임 문맥을 설정해 바닐라 무기 출력을 호출하고 이전 문맥을 복원합니다. 실제 몸 깊이도 중첩 가능한 출력 문맥으로 보관·복원합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31072,9 +32558,9 @@
 
 <a id="m-2025"></a>
 
-### 050. RimKataDualWeaponRenderUtility.SecondaryOffsetForFacing
+### 052. RimKataDualWeaponRenderUtility.SecondaryOffsetForFacing
 
-`private static Vector3 SecondaryOffsetForFacing( Vector3 offset, Rot4 facing)` · [L1282](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1282)
+`private static Vector3 SecondaryOffsetForFacing( Vector3 offset, Rot4 facing)` · [L1296](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1296)
 
 - **역할:** 남북 부무기의 위치를 몸 방향 축으로 반사하고 동서 위치는 최종 높이 보정에 맡깁니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31083,9 +32569,9 @@
 
 <a id="m-2026"></a>
 
-### 051. RimKataDualWeaponRenderUtility.EquipmentRadial
+### 053. RimKataDualWeaponRenderUtility.EquipmentRadial
 
-`private static Vector3 EquipmentRadial( ThingWithComps weapon, float angle, float distanceFactor)` · [L1296](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1296)
+`private static Vector3 EquipmentRadial( ThingWithComps weapon, float angle, float distanceFactor)` · [L1310](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1310)
 
 - **역할:** 무기 정의의 장착 거리와 생애 단계 배율을 반영한 조준 방향 방사 위치를 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31094,9 +32580,9 @@
 
 <a id="m-2027"></a>
 
-### 052. RimKataDualWeaponRenderUtility.DrawCombatIndicatorForWeapon
+### 054. RimKataDualWeaponRenderUtility.DrawCombatIndicatorForWeapon
 
-`private static void DrawCombatIndicatorForWeapon( Pawn pawn, RimKataWeaponVisualData visual, Verb verb, float altitudeOffset, bool pauseFireForDodge)` · [L1309](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1309)
+`private static void DrawCombatIndicatorForWeapon( Pawn pawn, RimKataWeaponVisualData visual, Verb verb, float altitudeOffset, bool pauseFireForDodge)` · [L1323](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1323)
 
 - **역할:** 무기 종류·예열·쿨다운·회피 중단 설정에 따라 전투 표시를 그립니다. 엎드림·기어 사격은 현재 제출된 해당 무기 중심, 그 외는 기존 폰 중심을 사용합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
@@ -31105,9 +32591,9 @@
 
 <a id="m-2170"></a>
 
-### 053. RimKataDualWeaponRenderUtility.TryGetIndicatorWeaponCenter
+### 055. RimKataDualWeaponRenderUtility.TryGetIndicatorWeaponCenter
 
-`private static bool TryGetIndicatorWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)` · [L1382](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1382)
+`private static bool TryGetIndicatorWeaponCenter(Pawn pawn, ThingWithComps weapon, out Vector3 center)` · [L1396](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1396)
 
 - **역할:** 엎드림 또는 기어 사격 렌더가 제출한 해당 무기의 현재 화면 중심을 읽어 전투 표시와 공유합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -31116,9 +32602,9 @@
 
 <a id="m-2171"></a>
 
-### 054. RimKataDualWeaponRenderUtility.TryDrawGroundWarmup
+### 056. RimKataDualWeaponRenderUtility.TryDrawGroundWarmup
 
-`internal static bool TryDrawGroundWarmup(Stance_Warmup warmup, float pieSizeFactor)` · [L1387](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1387)
+`internal static bool TryDrawGroundWarmup(Stance_Warmup warmup, float pieSizeFactor)` · [L1401](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1401)
 
 - **역할:** 선택 폰의 네이티브 조준 표시를 현재 엎드림·기어 사격 무기 중심으로 옮기고 성공 여부를 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31127,9 +32613,9 @@
 
 <a id="m-2172"></a>
 
-### 055. RimKataDualWeaponRenderUtility.TryDrawGroundCooldown
+### 057. RimKataDualWeaponRenderUtility.TryDrawGroundCooldown
 
-`internal static bool TryDrawGroundCooldown(Stance_Cooldown cooldown)` · [L1399](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1399)
+`internal static bool TryDrawGroundCooldown(Stance_Cooldown cooldown)` · [L1413](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1413)
 
 - **역할:** 기존 슬롯 표시가 맡지 않은 네이티브 쿨다운 원을 현재 엎드림·기어 사격 무기 중심으로 옮깁니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31138,9 +32624,9 @@
 
 <a id="m-2028"></a>
 
-### 056. RimKataDualWeaponRenderUtility.DrawBlackCooldownCircle
+### 058. RimKataDualWeaponRenderUtility.DrawBlackCooldownCircle
 
-`private static void DrawBlackCooldownCircle( Vector3 center, float radius)` · [L1411](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1411)
+`private static void DrawBlackCooldownCircle( Vector3 center, float radius)` · [L1425](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1425)
 
 - **역할:** 지정 중심과 반경으로 검은 쿨다운 원을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31149,9 +32635,9 @@
 
 <a id="m-2029"></a>
 
-### 057. RimKataDualWeaponRenderUtility.DrawAimPie
+### 059. RimKataDualWeaponRenderUtility.DrawAimPie
 
-`private static void DrawAimPie( Vector3 origin, LocalTargetInfo target, int degreesWide, float altitudeOffset)` · [L1426](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1426)
+`private static void DrawAimPie( Vector3 origin, LocalTargetInfo target, int degreesWide, float altitudeOffset)` · [L1440](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1440)
 
 - **역할:** 전달받은 폰 또는 실제 무기 중심에서 현재 표적을 향한 기본 조준 부채꼴을 그립니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31160,9 +32646,9 @@
 
 <a id="m-2030"></a>
 
-### 058. RimKataDualWeaponRenderUtility.DrawBlackAimPie
+### 060. RimKataDualWeaponRenderUtility.DrawBlackAimPie
 
-`private static void DrawBlackAimPie( Vector3 origin, LocalTargetInfo target, int degreesWide, float altitudeOffset)` · [L1446](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1446)
+`private static void DrawBlackAimPie( Vector3 origin, LocalTargetInfo target, int degreesWide, float altitudeOffset)` · [L1460](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1460)
 
 - **역할:** 전달받은 폰 또는 실제 무기 중심에서 현재 표적 방향과 남은 시간 각도로 검은 쿨다운 부채꼴을 그립니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31171,9 +32657,9 @@
 
 <a id="m-2031"></a>
 
-### 059. RimKataDualWeaponRenderUtility.AimPieFacing
+### 061. RimKataDualWeaponRenderUtility.AimPieFacing
 
-`private static float AimPieFacing( Vector3 origin, LocalTargetInfo target)` · [L1467](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1467)
+`private static float AimPieFacing( Vector3 origin, LocalTargetInfo target)` · [L1481](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1481)
 
 - **역할:** 전달받은 표시 중심에서 표적의 현재 그리기 위치 또는 셀을 향한 연속 방향을 계산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31182,9 +32668,9 @@
 
 <a id="m-2032"></a>
 
-### 060. RimKataDualWeaponRenderUtility.ClaimsVanillaCombatCooldown
+### 062. RimKataDualWeaponRenderUtility.ClaimsVanillaCombatCooldown
 
-`public static bool ClaimsVanillaCombatCooldown( Stance_Cooldown cooldown)` · [L1482](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1482)
+`public static bool ClaimsVanillaCombatCooldown( Stance_Cooldown cooldown)` · [L1496](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1496)
 
 - **역할:** 림카타가 해당 무기의 쿨다운 표시를 담당하는지 확인해 바닐라 중복 표시 여부를 결정합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31193,9 +32679,9 @@
 
 <a id="m-2033"></a>
 
-### 061. RimKataDualWeaponRenderUtility.TryGetCurrentEquipmentPivot
+### 063. RimKataDualWeaponRenderUtility.TryGetCurrentEquipmentPivot
 
-`internal static bool TryGetCurrentEquipmentPivot( out Vector3 equipmentPivot)` · [L1542](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1542)
+`internal static bool TryGetCurrentEquipmentPivot( out Vector3 equipmentPivot)` · [L1556](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1556)
 
 - **역할:** 현재 쌍수 렌더 중인 장비 배치 기준점을 반환합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31204,9 +32690,9 @@
 
 <a id="m-2034"></a>
 
-### 062. RimKataDualWeaponRenderUtility.ResolveEquipmentPivot
+### 064. RimKataDualWeaponRenderUtility.ResolveEquipmentPivot
 
-`internal static Vector3 ResolveEquipmentPivot( Pawn pawn, ThingWithComps primary, Vector3 originalDrawLoc, float originalAimAngle)` · [L1549](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1549)
+`internal static Vector3 ResolveEquipmentPivot( Pawn pawn, ThingWithComps primary, Vector3 originalDrawLoc, float originalAimAngle)` · [L1563](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1563)
 
 - **역할:** 휴대 문맥·외부 대기 렌더 기준점 또는 원래 장비 위치에서 Pawn 기준점을 복원합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -31215,9 +32701,9 @@
 
 <a id="m-2035"></a>
 
-### 063. RimKataDualWeaponRenderUtility.EquipmentCenter
+### 065. RimKataDualWeaponRenderUtility.EquipmentCenter
 
-`private static Vector3 EquipmentCenter( Pawn pawn, ThingWithComps weapon, Vector3 equipmentPivot, float aimAngle)` · [L1583](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1583)
+`private static Vector3 EquipmentCenter( Pawn pawn, ThingWithComps weapon, Vector3 equipmentPivot, float aimAngle)` · [L1597](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1597)
 
 - **역할:** Pawn의 생애 단계 거리 배율과 무기 방사 위치로 장비 중심을 계산합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -31226,9 +32712,9 @@
 
 <a id="m-2173"></a>
 
-### 064. RimKataDualWeaponRenderUtility.VisualAimAngle
+### 066. RimKataDualWeaponRenderUtility.VisualAimAngle
 
-`internal static float VisualAimAngle( Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)` · [L1595](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1595)
+`internal static float VisualAimAngle( Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback)` · [L1609](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1609)
 
 - **역할:** 대상 방향을 구해 전환 중이면 시작 각도에서 SmoothStep으로 보간하고 필요 오버로드에서 방향 계산 성공 여부를 전달합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -31237,9 +32723,9 @@
 
 <a id="m-2698"></a>
 
-### 065. RimKataDualWeaponRenderUtility.VisualAimAngle
+### 067. RimKataDualWeaponRenderUtility.VisualAimAngle
 
-`private static float VisualAimAngle( Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback, out bool resolved)` · [L1599](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1599)
+`private static float VisualAimAngle( Pawn pawn, ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback, out bool resolved)` · [L1613](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1613)
 
 - **역할:** 대상 방향을 구해 전환 중이면 시작 각도에서 SmoothStep으로 보간하고 필요 오버로드에서 방향 계산 성공 여부를 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31248,42 +32734,42 @@
 
 <a id="m-2174"></a>
 
-### 066. RimKataDualWeaponRenderUtility.AdjustCooldownAim
+### 068. RimKataDualWeaponRenderUtility.AdjustCooldownAim
 
-`internal static void AdjustCooldownAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle, out AimPreparation prepared)` · [L1617](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1617)
+`internal static void AdjustCooldownAim(Thing equipment, ref Vector3 drawLoc, ref float aimAngle, out AimPreparation prepared)` · [L1631](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1631)
 
-- **역할:** 주 무기 단독 출력의 쿨다운 동안 예약 목표로 향하는 각도와 무기 위치를 부드럽게 보간합니다.
+- **역할:** 주 무기 단독 출력의 쿨다운 동안 예약 목표로 향하는 각도와 무기 위치를 부드럽게 보간합니다. 낙상 중에는 같은 호출에서 확보한 단독 무기의 실제 조준 표적을 원래 날아 차기 표적보다 우선합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponController.TryGetVisualData(Verse.Pawn pawn, Verse.ThingWithComps weapon, out RimKataWeaponVisualData data)](#m-1028) · [RimKataDualWeaponRenderUtility.ResolveEquipmentPivot(Verse.Pawn pawn, Verse.ThingWithComps primary, UnityEngine.Vector3 originalDrawLoc, float originalAimAngle)](#m-2034) · [RimKataDualWeaponRenderUtility.VisualAimAngle(Verse.Pawn pawn, Verse.ThingWithComps weapon, RimKataWeaponVisualData visual, float fallback, out bool resolved)](#m-2698) · [RimKataVisualUtility.TryGetLiveResponseFocus(Verse.Pawn pawn, RimKataVisualSnapshot snapshot, out Verse.LocalTargetInfo focus)](#m-2003)
 - **호출 — 외부:** `UnityEngine.Mathf.DeltaAngle(float current, float target)` · `Verse.Vector3Utility.RotatedBy(UnityEngine.Vector3 v3, float angle)`
 
 <a id="m-2036"></a>
 
-### 067. RimKataDualWeaponRenderUtility.AngleToTarget
+### 069. RimKataDualWeaponRenderUtility.AngleToTarget
 
-`internal static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback)` · [L1640](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1640)
+`internal static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback)` · [L1654](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1654)
 
-- **역할:** 유효 대상과 눕기 머리 원점 또는 폰 출력 위치의 방향을 계산하고 길이가 부족하면 기존 각도를 반환합니다.
+- **역할:** 유효 대상과 눕기 머리 원점 또는 폰 출력 위치의 방향을 계산하고 길이가 부족하면 기존 각도를 반환합니다. 날아 차기 중 실제로 이동한 조준 원점에서 목표 각도를 구합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponRenderUtility.AngleToTarget(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.LocalTargetInfo target, float fallback, out bool resolved)](#m-2699)
 - **호출 — 외부:** 없음
 
 <a id="m-2699"></a>
 
-### 068. RimKataDualWeaponRenderUtility.AngleToTarget
+### 070. RimKataDualWeaponRenderUtility.AngleToTarget
 
-`private static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback, out bool resolved)` · [L1643](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1643)
+`private static float AngleToTarget(Pawn pawn, ThingWithComps weapon, LocalTargetInfo target, float fallback, out bool resolved)` · [L1657](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1657)
 
-- **역할:** 유효 대상과 눕기 머리 원점 또는 폰 출력 위치의 방향을 계산하고 길이가 부족하면 기존 각도를 반환합니다.
+- **역할:** 유효 대상과 눕기 머리 원점 또는 폰 출력 위치의 방향을 계산하고 길이가 부족하면 기존 각도를 반환합니다. 날아 차기 중 실제로 이동한 조준 원점에서 목표 각도를 구합니다. 발차기 중에는 목 회전으로 이동한 무기 조준 원점을 우선 사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataGroundPoseRender.TryGetRangedAimOrigin(Verse.Pawn pawn, Verse.ThingWithComps weapon, out UnityEngine.Vector3 origin)](#m-1374)
+- **호출 — 프로젝트 내부:** [RimKataFlyingKickRender.TryGetAimOrigin(Verse.Pawn pawn, out UnityEngine.Vector3 origin)](#m-2934) · [RimKataGroundPoseRender.TryGetRangedAimOrigin(Verse.Pawn pawn, Verse.ThingWithComps weapon, out UnityEngine.Vector3 origin)](#m-1374) · [RimKataKickRender.TryGetAimOrigin(Verse.Pawn pawn, out UnityEngine.Vector3 origin)](#m-2996)
 - **호출 — 외부:** `Verse.IntVec3.ToVector3Shifted()` · `Verse.Vector3Utility.AngleFlat(UnityEngine.Vector3 v)`
 
 <a id="m-2037"></a>
 
-### 069. RimKataDualWeaponRenderUtility.CreateVFlippedMesh
+### 071. RimKataDualWeaponRenderUtility.CreateVFlippedMesh
 
-`private static Mesh CreateVFlippedMesh(Mesh source)` · [L1658](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1658)
+`private static Mesh CreateVFlippedMesh(Mesh source)` · [L1674](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1674)
 
 - **역할:** 원본 메시를 복제해 텍스처 V 좌표를 뒤집습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31292,9 +32778,9 @@
 
 <a id="m-2038"></a>
 
-### 070. RimKataAutomaticRangeVisualUtility.CanDrawAutomaticSearchRange
+### 072. RimKataAutomaticRangeVisualUtility.CanDrawAutomaticSearchRange
 
-`public static bool CanDrawAutomaticSearchRange(Pawn pawn)` · [L1678](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1678)
+`public static bool CanDrawAutomaticSearchRange(Pawn pawn)` · [L1694](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1694)
 
 - **역할:** 자동 탐색 범위 표시 대상인지 자격 캐시로 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31303,9 +32789,9 @@
 
 <a id="m-2039"></a>
 
-### 071. RimKataAutomaticRangeVisualUtility.DrawAutomaticSearchRange
+### 073. RimKataAutomaticRangeVisualUtility.DrawAutomaticSearchRange
 
-`public static void DrawAutomaticSearchRange(Pawn pawn)` · [L1683](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1683)
+`public static void DrawAutomaticSearchRange(Pawn pawn)` · [L1699](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1699)
 
 - **역할:** 주·부무기의 최대 후보 셀 반경에 맞춰 검은 자동 탐색 범위 테두리를 그립니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
@@ -31314,9 +32800,9 @@
 
 <a id="m-2040"></a>
 
-### 072. RimKataAutomaticRangeVisualUtility.DrawLongestRangedWeaponRange
+### 074. RimKataAutomaticRangeVisualUtility.DrawLongestRangedWeaponRange
 
-`public static void DrawLongestRangedWeaponRange(Pawn pawn)` · [L1735](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1735)
+`public static void DrawLongestRangedWeaponRange(Pawn pawn)` · [L1751](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1751)
 
 - **역할:** 현재 표시할 원거리 무기 중 사거리가 가장 긴 Verb의 기본 범위 링을 그립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31325,9 +32811,9 @@
 
 <a id="m-2041"></a>
 
-### 073. RimKataAutomaticRangeVisualUtility.LongestRangedWeaponVerb
+### 075. RimKataAutomaticRangeVisualUtility.LongestRangedWeaponVerb
 
-`private static Verb LongestRangedWeaponVerb(Pawn pawn)` · [L1741](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1741)
+`private static Verb LongestRangedWeaponVerb(Pawn pawn)` · [L1757](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1757)
 
 - **역할:** 허용된 주·부무기의 실제 사거리를 비교해 범위 표시용 원거리 Verb를 고릅니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31336,9 +32822,9 @@
 
 <a id="m-2042"></a>
 
-### 074. RimKataAutomaticRangeVisualUtility.FirstVanillaRangedCommandVerb
+### 076. RimKataAutomaticRangeVisualUtility.FirstVanillaRangedCommandVerb
 
-`private static Verb FirstVanillaRangedCommandVerb(Pawn pawn)` · [L1784](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1784)
+`private static Verb FirstVanillaRangedCommandVerb(Pawn pawn)` · [L1800](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1800)
 
 - **역할:** 장비 목록의 첫 원거리 무기에서 기본 공격 명령 Verb를 찾습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31347,9 +32833,9 @@
 
 <a id="m-2043"></a>
 
-### 075. RimKataAutomaticRangeVisualUtility.StandardCommandVerb
+### 077. RimKataAutomaticRangeVisualUtility.StandardCommandVerb
 
-`private static Verb StandardCommandVerb(ThingWithComps weapon)` · [L1807](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1807)
+`private static Verb StandardCommandVerb(ThingWithComps weapon)` · [L1823](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1823)
 
 - **역할:** 무기에 표준 명령을 제공하는 첫 원거리 Verb를 반환합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -31358,9 +32844,9 @@
 
 <a id="m-2044"></a>
 
-### 076. RimKataAutomaticRangeVisualUtility.MaximumAutomaticSearchVisualCellRadius
+### 078. RimKataAutomaticRangeVisualUtility.MaximumAutomaticSearchVisualCellRadius
 
-`private static float MaximumAutomaticSearchVisualCellRadius( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L1828](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1828)
+`private static float MaximumAutomaticSearchVisualCellRadius( Pawn pawn, ThingWithComps primary, ThingWithComps secondary)` · [L1844](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1844)
 
 - **역할:** 주·부무기의 표시용 자동 탐색 반경 중 최대값을 구합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31369,9 +32855,9 @@
 
 <a id="m-2045"></a>
 
-### 077. RimKataAutomaticRangeVisualUtility.AutomaticSearchVisualCellRadius
+### 079. RimKataAutomaticRangeVisualUtility.AutomaticSearchVisualCellRadius
 
-`private static float AutomaticSearchVisualCellRadius( Pawn pawn, ThingWithComps weapon, Verb verb)` · [L1844](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1844)
+`private static float AutomaticSearchVisualCellRadius( Pawn pawn, ThingWithComps weapon, Verb verb)` · [L1860](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1860)
 
 - **역할:** 근접 무기는 실제 사거리, 원거리 무기는 후보 셀 반경을 표시용으로 반환합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31380,9 +32866,9 @@
 
 <a id="m-2046"></a>
 
-### 078. Patch_PawnAttackGizmoUtility_RimKataMeleeRange.Postfix
+### 080. Patch_PawnAttackGizmoUtility_RimKataMeleeRange.Postfix
 
-`public static void Postfix(Pawn pawn, ref Gizmo __result)` · [L1873](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1873)
+`public static void Postfix(Pawn pawn, ref Gizmo __result)` · [L1889](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1889)
 
 - **역할:** 근접 공격 기즈모에 대상 지정 문맥 래퍼와 선택 Pawn의 자동 탐색 범위 표시를 붙입니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31391,9 +32877,9 @@
 
 <a id="m-2047"></a>
 
-### 079. Patch_PawnAttackGizmoUtility_RimKataMeleeRange.DrawSelectedMeleeRanges
+### 081. Patch_PawnAttackGizmoUtility_RimKataMeleeRange.DrawSelectedMeleeRanges
 
-`private static void DrawSelectedMeleeRanges(LocalTargetInfo _)` · [L1901](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1901)
+`private static void DrawSelectedMeleeRanges(LocalTargetInfo _)` · [L1917](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1917)
 
 - **역할:** 현재 선택된 자격 Pawn들의 자동 탐색 범위를 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
@@ -31402,9 +32888,9 @@
 
 <a id="m-2748"></a>
 
-### 080. Patch_PawnStanceTracker_RimKataCombatIndicators.Transpiler
+### 082. Patch_PawnStanceTracker_RimKataCombatIndicators.Transpiler
 
-`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L1929](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1929)
+`private static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L1945](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1945)
 
 - **역할:** 바닐라 자세 표시가 끝난 뒤 등록 자격자에게만 기존 선택 폰 전투 표시기를 호출합니다. 일반 폰은 표시기 및 상태·장비 조회에 진입하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31413,9 +32899,9 @@
 
 <a id="m-2175"></a>
 
-### 081. Patch_StanceWarmup_RimKataGroundIndicator.Prefix
+### 083. Patch_StanceWarmup_RimKataGroundIndicator.Prefix
 
-`private static bool Prefix(Stance_Warmup __instance, bool ___drawAimPie, float ___pieSizeFactor)` · [L1960](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1960)
+`private static bool Prefix(Stance_Warmup __instance, bool ___drawAimPie, float ___pieSizeFactor)` · [L1976](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1976)
 
 - **역할:** 무기 중심 조준 표시가 실제로 그려졌을 때만 네이티브 Stance_Warmup 표시를 생략하여 이중 표시를 막습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31424,9 +32910,9 @@
 
 <a id="m-2049"></a>
 
-### 082. Patch_StanceCooldown_RimKataRangedIndicator.Prefix
+### 084. Patch_StanceCooldown_RimKataRangedIndicator.Prefix
 
-`public static bool Prefix(Stance_Cooldown __instance)` · [L1970](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1970)
+`public static bool Prefix(Stance_Cooldown __instance)` · [L1986](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1986)
 
 - **역할:** 기존 림카타 슬롯 표시가 쿨다운을 맡으면 원본 표시를 생략하고 그 외 엎드림·기어 사격은 실제 무기 중심에서 네이티브 원을 대체합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31435,20 +32921,20 @@
 
 <a id="m-2050"></a>
 
-### 083. Patch_PawnRenderer_RimKataDodgeOffset.Prefix
+### 085. Patch_PawnRenderer_RimKataDodgeOffset.Prefix
 
-`public static void Prefix( Pawn ___pawn, DrawPhase phase, ref Vector3 drawLoc, ref Rot4? rotOverride, out RimKataWorldRenderContext.Scope __state)` · [L1980](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1980)
+`public static void Prefix( Pawn ___pawn, DrawPhase phase, ref Vector3 drawLoc, ref Rot4? rotOverride, out RimKataWorldRenderContext.Scope __state)` · [L1996](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:1996)
 
-- **역할:** 살아 있는 폰 전용 Prepare/PrepareShadow가 호출하는 기존 회피 위치·시선 보정 helper입니다. DynamicDrawPhaseAt의 전역 Harmony Prefix로 등록하지 않습니다.
+- **역할:** 살아 있는 폰 전용 Prepare/PrepareShadow가 호출하는 기존 회피 위치·시선 보정 helper입니다. DynamicDrawPhaseAt의 전역 Harmony Prefix로 등록하지 않습니다. 날아 차기 자료가 있으면 기존 이동 조준·회피 위치 보정을 중복 적용하지 않습니다. 전달된 발차기 자료가 있으면 공통 회피 오프셋을 중복 적용하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.TryGetOwner(Verse.Pawn pawn, out RimKataMapComponent component)](#m-0484) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataVisualUtility.DrawOffset(RimKataVisualSnapshot snapshot)](#m-2000) · [RimKataVisualUtility.TryGetCachedActiveSnapshot(Verse.Pawn pawn, RimKataMapComponent component, out RimKataVisualSnapshot snapshot)](#m-1995) · [RimKataVisualUtility.TryGetResponseFacing(Verse.Pawn pawn, RimKataVisualSnapshot snapshot, out Verse.Rot4 facing)](#m-2002) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373) · [Stance_RimKataAim.TryGetCachedMovementDirection(out Verse.IntVec3 direction)](#m-0090)
 - **호출 — 외부:** `UnityEngine.Vector3.Dot(UnityEngine.Vector3 lhs, UnityEngine.Vector3 rhs)` · `UnityEngine.Vector3.Normalize()` · `Verse.IntVec3.ToVector3()` · `Verse.Rot4.FromAngleFlat(float angle)` · `Verse.Rot4.FromIntVec3(Verse.IntVec3 offset)`
 
 <a id="m-2379"></a>
 
-### 084. Patch_PawnRenderer_RimKataDodgeOffset.Finalizer
+### 086. Patch_PawnRenderer_RimKataDodgeOffset.Finalizer
 
-`public static void Finalizer(RimKataWorldRenderContext.Scope __state)` · [L2049](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2049)
+`public static void Finalizer(RimKataWorldRenderContext.Scope __state)` · [L2066](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2066)
 
 - **역할:** 기존 문맥 복구 helper입니다. 전역 Harmony Finalizer로 등록하지 않으며 살아 있는 폰 준비 함수에서 직접 finally 복구합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31457,9 +32943,9 @@
 
 <a id="m-2051"></a>
 
-### 085. Patch_PawnRenderer_RimKataDynamicRotationCache.Prefix
+### 087. Patch_PawnRenderer_RimKataDynamicRotationCache.Prefix
 
-`public static void Prefix(Pawn ___pawn, ref bool disableCache, out RimKataWorldRenderContext.Scope __state)` · [L2055](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2055)
+`public static void Prefix(Pawn ___pawn, ref bool disableCache, out RimKataWorldRenderContext.Scope __state)` · [L2072](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2072)
 
 - **역할:** 살아 있는 폰 준비 함수가 호출하는 동적 몸 회전의 캐시 사용 제한 helper입니다. 전역 Harmony Prefix로 등록하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31468,9 +32954,9 @@
 
 <a id="m-2380"></a>
 
-### 086. Patch_PawnRenderer_RimKataDynamicRotationCache.Finalizer
+### 088. Patch_PawnRenderer_RimKataDynamicRotationCache.Finalizer
 
-`public static void Finalizer(RimKataWorldRenderContext.Scope __state)` · [L2074](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2074)
+`public static void Finalizer(RimKataWorldRenderContext.Scope __state)` · [L2091](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2091)
 
 - **역할:** 기존 문맥 복구 helper입니다. 전역 Harmony Finalizer로 등록하지 않으며 살아 있는 폰 준비 함수에서 직접 finally 복구합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31479,20 +32965,20 @@
 
 <a id="m-2052"></a>
 
-### 087. Patch_PawnRenderTree_RimKataTumbleRotation.Prefix
+### 089. Patch_PawnRenderTree_RimKataTumbleRotation.Prefix
 
-`public static void Prefix(ref PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, out RenderScope __state)` · [L2086](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2086)
+`public static void Prefix(ref PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, out RenderScope __state)` · [L2103](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2103)
 
-- **역할:** 살아 있는 폰의 사전 그리기에서 기존 머리 요청 복구와 넘어짐·근접 회피 몸 회전을 준비하는 helper입니다. 전역 Harmony Prefix로 등록하지 않습니다.
+- **역할:** 살아 있는 폰의 사전 그리기에서 기존 머리 요청 복구와 넘어짐·근접 회피 몸 회전을 준비하는 helper입니다. 전역 Harmony Prefix로 등록하지 않습니다. 날아 차기 자료가 있는 프레임에서는 기존 회전 스냅샷을 적용하지 않습니다. 발차기 전용 몸 회전이 있으면 공통 공중제비 회전을 중복 적용하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGroundPoseHead.Restore(System.Collections.Generic.List&lt;Verse.PawnGraphicDrawRequest&gt; requests)](#m-1362) · [RimKataVisualUtility.TryGetCachedActiveSnapshot(Verse.Pawn pawn, out RimKataVisualSnapshot snapshot)](#m-1994) · [RimKataWorldRenderContext.Begin(Verse.Pawn pawn, \[bool portrait = false\])](#m-2371) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373)
 - **호출 — 외부:** `UnityEngine.Matrix4x4.Rotate(UnityEngine.Quaternion q)` ×2 · `UnityEngine.Matrix4x4.Translate(UnityEngine.Vector3 vector)` ×2 · `UnityEngine.Quaternion.AngleAxis(float angle, UnityEngine.Vector3 axis)` ×2 · `UnityEngine.Mathf.Abs(float f)`
 
 <a id="m-2053"></a>
 
-### 088. Patch_PawnRenderTree_RimKataTumbleRotation.Postfix
+### 090. Patch_PawnRenderTree_RimKataTumbleRotation.Postfix
 
-`public static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, RenderScope __state)` · [L2140](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2140)
+`public static void Postfix(PawnDrawParms parms, List<PawnGraphicDrawRequest> ___drawRequests, RenderScope __state)` · [L2158](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2158)
 
 - **역할:** 살아 있는 폰의 사전 그리기가 끝나면 눕는 자세 몸 행렬을 반영하는 helper입니다. 전역 Harmony Postfix로 등록하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31501,9 +32987,9 @@
 
 <a id="m-2381"></a>
 
-### 089. Patch_PawnRenderTree_RimKataTumbleRotation.Finalizer
+### 091. Patch_PawnRenderTree_RimKataTumbleRotation.Finalizer
 
-`public static void Finalizer(RenderScope __state)` · [L2147](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2147)
+`public static void Finalizer(RenderScope __state)` · [L2165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2165)
 
 - **역할:** 살아 있는 폰의 사전 그리기에서 연 문맥을 복구하는 helper입니다. 전역 Harmony Finalizer로 등록하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31512,20 +32998,20 @@
 
 <a id="m-2054"></a>
 
-### 090. Patch_PawnRenderUtility_RimKataDualWeapons.Prefix
+### 092. Patch_PawnRenderUtility_RimKataDualWeapons.Prefix
 
-`public static bool Prefix(Thing eq, ref Vector3 drawLoc, ref float aimAngle)` · [L2154](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2154)
+`public static bool Prefix(Thing eq, ref Vector3 drawLoc, ref float aimAngle)` · [L2172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2172)
 
-- **역할:** 기어 사격 전용 렌더를 먼저 처리하고 단독 무기의 쿨다운 예약 회전과 누운 조준을 메시 선택 전에 적용한 뒤 기존 캡처·쌍수 분기로 연결합니다.
+- **역할:** 기어 사격 전용 렌더를 먼저 처리하고 단독 무기의 쿨다운 예약 회전과 누운 조준을 메시 선택 전에 적용합니다. 캡처에는 조정된 좌표를 전달하되 쌍수 분기에는 눕기 조준 보정 전의 공통 입력을 전달하여 주·부 무기의 개별 그리기에서 각각 보정합니다. 날아 차기 실패 후 Fallen 인계에서도 주 무기의 조준 위치를 부 무기의 원점으로 재사용하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCrawlFireRender.TryHandleEquipment(Verse.Thing equipment, out bool drawOriginal)](#m-0679) · [RimKataDualWeaponRenderUtility.AdjustCooldownAim(Verse.Thing equipment, ref UnityEngine.Vector3 drawLoc, ref float aimAngle, out RimKataDualWeaponRenderUtility.AimPreparation prepared)](#m-2174) · [RimKataDualWeaponRenderUtility.TryDrawPair(Verse.Thing equipment, UnityEngine.Vector3 originalDrawLoc, float originalAimAngle)](#m-2016) · [RimKataGroundPoseRender.AdjustWeaponAim(Verse.Thing equipment, ref UnityEngine.Vector3 drawLoc, ref float aimAngle, in RimKataDualWeaponRenderUtility.AimPreparation prepared)](#m-1375) · [RimKataWeaponRenderProbe.NotifyEquipmentDraw(Verse.Thing weapon)](#m-2120) · [RimKataWeaponRenderProbe.TryCaptureNativeDraw(Verse.Thing weapon, UnityEngine.Vector3 drawLoc, float aimAngle)](#m-2131)
 - **호출 — 외부:** 없음
 
 <a id="m-2055"></a>
 
-### 091. Patch_PawnRenderUtility_RimKataDualWeapons.Transpiler
+### 093. Patch_PawnRenderUtility_RimKataDualWeapons.Transpiler
 
-`public static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L2169](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2169)
+`public static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L2187](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2187)
 
 - **역할:** 장비 렌더 IL의 메시 선택과 부무기 DrawMesh만 반사·최종 배치용 경로로 바꿉니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31534,9 +33020,9 @@
 
 <a id="m-2056"></a>
 
-### 092. Patch_PawnRenderUtility_RimKataDeflection.Prefix
+### 094. Patch_PawnRenderUtility_RimKataDeflection.Prefix
 
-`public static void Prefix( Thing eq, ref Vector3 drawLoc, ref float aimAngle, out float __state)` · [L2225](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2225)
+`public static void Prefix( Thing eq, ref Vector3 drawLoc, ref float aimAngle, out float __state)` · [L2243](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2243)
 
 - **역할:** 현재 대응 참가자의 쳐내기·반격 스냅샷에서 해당 무기의 위치와 각도 보정 문맥을 구성합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31545,9 +33031,9 @@
 
 <a id="m-2057"></a>
 
-### 093. Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset
+### 095. Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset
 
-`internal static float GetVisualAngleOffset(ThingWithComps weapon, RimKataVisualSnapshot snapshot)` · [L2293](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2293)
+`internal static float GetVisualAngleOffset(ThingWithComps weapon, RimKataVisualSnapshot snapshot)` · [L2311](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2311)
 
 - **역할:** 전체 회전·무기별 튕겨내기·대응 자세 진행도로 무기 시각 회전각을 합산합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31556,9 +33042,9 @@
 
 <a id="m-2058"></a>
 
-### 094. Patch_PawnRenderUtility_RimKataDeflection.Finalizer
+### 096. Patch_PawnRenderUtility_RimKataDeflection.Finalizer
 
-`public static void Finalizer(float __state)` · [L2313](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2313)
+`public static void Finalizer(float __state)` · [L2331](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2331)
 
 - **역할:** 장비 렌더 종료 시 이전 중첩 문맥의 시각 각도 보정값을 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31567,9 +33053,9 @@
 
 <a id="m-2059"></a>
 
-### 095. Patch_PawnRenderUtility_RimKataDeflection.ApplyVisualAngleOffset
+### 097. Patch_PawnRenderUtility_RimKataDeflection.ApplyVisualAngleOffset
 
-`public static float ApplyVisualAngleOffset(float angle)` · [L2318](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2318)
+`public static float ApplyVisualAngleOffset(float angle)` · [L2336](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2336)
 
 - **역할:** 바닐라 최종 무기 각도에 부무기 반사와 대응 시각 회전값을 적용합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31578,9 +33064,9 @@
 
 <a id="m-2060"></a>
 
-### 096. Patch_PawnRenderUtility_RimKataDeflection.Transpiler
+### 098. Patch_PawnRenderUtility_RimKataDeflection.Transpiler
 
-`public static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions)` · [L2324](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2324)
+`public static IEnumerable<CodeInstruction> Transpiler( IEnumerable<CodeInstruction> instructions)` · [L2342](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2342)
 
 - **역할:** 장비 렌더 IL의 최종 각도 정규화 직후 시각 각도 보정을 주입합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31589,9 +33075,9 @@
 
 <a id="m-2061"></a>
 
-### 097. RimKataGunReadyDrawUtility.IsDrawingEquipmentFor
+### 099. RimKataGunReadyDrawUtility.IsDrawingEquipmentFor
 
-`public static bool IsDrawingEquipmentFor(Pawn pawn)` · [L2373](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2373)
+`public static bool IsDrawingEquipmentFor(Pawn pawn)` · [L2391](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2391)
 
 - **역할:** 지정 Pawn의 장비 렌더 문맥 안인지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31600,31 +33086,31 @@
 
 <a id="m-2062"></a>
 
-### 098. RimKataGunReadyDrawUtility.Push
+### 100. RimKataGunReadyDrawUtility.Push
 
-`public static int Push(Pawn pawn, PawnRenderFlags flags)` · [L2380](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2380)
+`public static int Push(Pawn pawn, PawnRenderFlags flags)` · [L2398](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2398)
 
-- **역할:** 전달된 등록 자격과 반응 참가 자료로 장비 문맥을 엽니다. 자료가 없는 일반 폰은 자격 캐시로 되돌아가지 않으며 기존 자격자의 평시 쌍수·조준과 반응 상대 렌더를 보존합니다.
+- **역할:** 전달된 등록 자격과 반응 참가 자료로 장비 문맥을 엽니다. 자료가 없는 일반 폰은 자격 캐시로 되돌아가지 않으며 기존 자격자의 평시 쌍수·조준과 반응 상대 렌더를 보존합니다. 이미 등록된 날아 차기 Fall 자료 또는 GroundPose 스냅샷의 보존 표적을 한 번 확인하여 fallAimTarget과 조준 준비를 전달합니다. Busy 여부 때문에 이를 대기로 낮추지 않으며 추가 자격/전투 상태 탐색은 하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatStatePresenceCache.TryGetOwner(Verse.Pawn pawn, out RimKataMapComponent component)](#m-0484) · [RimKataDodgeMovementUtility.TryGetCurrentMovementDirection(Verse.Pawn pawn, out Verse.IntVec3 direction)](#m-0788) · [RimKataEligibility.TryGetEnabledCombatVerb(Verse.Pawn pawn, out Verse.Verb verb)](#m-1165) · [RimKataGunReadyDrawUtility.EnterScope(bool portrait)](#m-2063) · [RimKataGunReadyDrawUtility.MayNeedGunReadyTarget(Verse.Pawn pawn, bool statePresent)](#m-2065) · [RimKataGunReadyDrawUtility.Pop(int scopeToken)](#m-2066) · [RimKataMapComponent.TryGetGunReadyTarget(Verse.Pawn pawn, out Verse.LocalTargetInfo target)](#m-0613) · [RimKataVisualUtility.IsSecondaryUsable(Verse.Pawn pawn, Verse.ThingWithComps primary, Verse.ThingWithComps secondary)](#m-1991) · [RimKataVisualUtility.TryGetCachedResponseSnapshot(Verse.Pawn pawn, RimKataMapComponent component, bool participantKnown, out RimKataVisualSnapshot snapshot)](#m-1998) · [RimKataVisualUtility.TryGetCachedWorldLoadout(Verse.Pawn pawn, out Verse.ThingWithComps primary, out Verse.ThingWithComps secondary)](#m-1989) · [RimKataVisualUtility.TryGetResponseParticipantLoadout(Verse.Pawn pawn, out Verse.ThingWithComps primary, out Verse.ThingWithComps secondary)](#m-1992) · [RimKataWorldRenderContext.BodyFor(Verse.Pawn pawn)](#m-2373) · [RimKataWorldRenderContext.ResponseFor(Verse.Pawn pawn)](#m-2374)
 - **호출 — 외부:** `Verse.Vector3Utility.AngleFlat(UnityEngine.Vector3 v)` ×2 · `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `Verse.IntVec3.ToVector3()` · `Verse.IntVec3.ToVector3Shifted()` · `Verse.Map.GetComponent<T>()`
 
 <a id="m-2063"></a>
 
-### 099. RimKataGunReadyDrawUtility.EnterScope
+### 101. RimKataGunReadyDrawUtility.EnterScope
 
-`private static int EnterScope(bool portrait)` · [L2525](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2525)
+`private static int EnterScope(bool portrait)` · [L2543](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2543)
 
-- **역할:** 중첩된 총기 준비 렌더 문맥을 보존하고 초상화 여부를 포함한 새 범위를 시작합니다.
+- **역할:** 중첩된 총기 준비 렌더 문맥을 보존하고 초상화 여부를 포함한 새 범위를 시작합니다. 낙상 표적은 Invalid로 초기화하여 이전 폰·이전 출력의 조준을 넘기지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataGunReadyDrawUtility.EnsureNestedContextCapacity(int requiredLength)](#m-2064)
 - **호출 — 외부:** 없음
 
 <a id="m-2064"></a>
 
-### 100. RimKataGunReadyDrawUtility.EnsureNestedContextCapacity
+### 102. RimKataGunReadyDrawUtility.EnsureNestedContextCapacity
 
-`private static void EnsureNestedContextCapacity(int requiredLength)` · [L2543](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2543)
+`private static void EnsureNestedContextCapacity(int requiredLength)` · [L2561](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2561)
 
 - **역할:** 중첩 총기 준비 문맥 배열의 용량을 필요한 크기로 늘립니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31633,9 +33119,9 @@
 
 <a id="m-2065"></a>
 
-### 101. RimKataGunReadyDrawUtility.MayNeedGunReadyTarget
+### 103. RimKataGunReadyDrawUtility.MayNeedGunReadyTarget
 
-`private static bool MayNeedGunReadyTarget( Pawn pawn, bool statePresent)` · [L2562](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2562)
+`private static bool MayNeedGunReadyTarget( Pawn pawn, bool statePresent)` · [L2580](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2580)
 
 - **역할:** 전용 공격 Job 또는 기존 전투 상태로 총기 준비 대상 조회가 필요한지 확인합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -31644,9 +33130,9 @@
 
 <a id="m-2066"></a>
 
-### 102. RimKataGunReadyDrawUtility.Pop
+### 104. RimKataGunReadyDrawUtility.Pop
 
-`public static void Pop(int scopeToken)` · [L2570](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2570)
+`public static void Pop(int scopeToken)` · [L2588](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2588)
 
 - **역할:** 총기 준비 렌더 범위를 종료해 이전 문맥을 복원하고 잘못된 중첩은 비웁니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31655,9 +33141,9 @@
 
 <a id="m-2067"></a>
 
-### 103. Patch_PawnRenderUtility_RimKataGunReadyContext.Prefix
+### 105. Patch_PawnRenderUtility_RimKataGunReadyContext.Prefix
 
-`public static void Prefix( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags, out DrawScope __state)` · [L2619](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2619)
+`public static void Prefix( Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags, out DrawScope __state)` · [L2637](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2637)
 
 - **역할:** 살아 있는 폰 전용 장비 입구에서 기존 눕는 자세·무기 대기·외부 무기 관찰 문맥을 설정합니다. 바닐라 공통 장비 함수에는 등록하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31666,9 +33152,9 @@
 
 <a id="m-2068"></a>
 
-### 104. Patch_PawnRenderUtility_RimKataGunReadyContext.Finalizer
+### 106. Patch_PawnRenderUtility_RimKataGunReadyContext.Finalizer
 
-`public static Exception Finalizer( Exception __exception, DrawScope __state)` · [L2633](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2633)
+`public static Exception Finalizer( Exception __exception, DrawScope __state)` · [L2651](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2651)
 
 - **역할:** 살아 있는 폰 전용 장비 출력의 관찰·무기 대기·눕는 자세 문맥을 종료하고 예외를 원래대로 전달합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31677,9 +33163,9 @@
 
 <a id="m-2069"></a>
 
-### 105. Patch_PawnRenderUtility_RimKataCarryGunReady.Postfix
+### 107. Patch_PawnRenderUtility_RimKataCarryGunReady.Postfix
 
-`public static void Postfix(Pawn pawn, ref bool __result)` · [L2653](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2653)
+`public static void Postfix(Pawn pawn, ref bool __result)` · [L2671](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2671)
 
 - **역할:** 현재 Pawn의 총기 준비 문맥이 활성일 때 무기를 공개 휴대하도록 표시합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31688,9 +33174,9 @@
 
 <a id="m-2070"></a>
 
-### 106. Patch_PawnRenderUtility_RimKataCarryDrawContext.Prefix
+### 108. Patch_PawnRenderUtility_RimKataCarryDrawContext.Prefix
 
-`public static void Prefix( ThingWithComps weapon, Vector3 drawPos, out int __state)` · [L2668](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2668)
+`public static void Prefix( ThingWithComps weapon, Vector3 drawPos, out int __state)` · [L2686](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2686)
 
 - **역할:** 기본 휴대 무기 그리기 전에 주·부무기 위치와 시각 문맥을 준비합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31699,9 +33185,9 @@
 
 <a id="m-2071"></a>
 
-### 107. Patch_PawnRenderUtility_RimKataCarryDrawContext.Finalizer
+### 109. Patch_PawnRenderUtility_RimKataCarryDrawContext.Finalizer
 
-`public static Exception Finalizer( Exception __exception, int __state)` · [L2678](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2678)
+`public static Exception Finalizer( Exception __exception, int __state)` · [L2696](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2696)
 
 - **역할:** 기본 휴대 무기 그리기 종료·예외 시 이전 휴대 렌더 문맥을 복원합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31710,9 +33196,9 @@
 
 <a id="m-2072"></a>
 
-### 108. Patch_PawnRenderUtility_RimKataDrawGunReady.Prefix
+### 110. Patch_PawnRenderUtility_RimKataDrawGunReady.Prefix
 
-`public static bool Prefix( ThingWithComps weapon, Vector3 drawPos, float equipmentDrawDistanceFactor)` · [L2690](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2690)
+`public static bool Prefix( ThingWithComps weapon, Vector3 drawPos, float equipmentDrawDistanceFactor)` · [L2708](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2708)
 
 - **역할:** 총기 준비 중 주무기의 기본 휴대 자세를 유지 조준 각도의 장비 렌더로 대체합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31721,9 +33207,9 @@
 
 <a id="m-2073"></a>
 
-### 109. Patch_CommandVerbTarget_RimKataAutomaticRange.Postfix
+### 111. Patch_CommandVerbTarget_RimKataAutomaticRange.Postfix
 
-`public static void Postfix( Command_VerbTarget __instance, List<Verb> ___groupedVerbs)` · [L2714](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2714)
+`public static void Postfix( Command_VerbTarget __instance, List<Verb> ___groupedVerbs)` · [L2732](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2732)
 
 - **역할:** 무기 명령 범위 표시 후 해당 Verb와 묶인 Verb들의 자동 탐색 범위를 추가합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31732,9 +33218,9 @@
 
 <a id="m-2074"></a>
 
-### 110. Patch_CommandVerbTarget_RimKataAutomaticRange.DrawAutomaticSearchRange
+### 112. Patch_CommandVerbTarget_RimKataAutomaticRange.DrawAutomaticSearchRange
 
-`private static void DrawAutomaticSearchRange(Verb verb)` · [L2736](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2736)
+`private static void DrawAutomaticSearchRange(Verb verb)` · [L2754](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2754)
 
 - **역할:** 명령 Verb가 허용된 주·부무기에 속하면 해당 Pawn의 자동 탐색 범위를 그립니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -31743,9 +33229,9 @@
 
 <a id="m-2075"></a>
 
-### 111. Patch_PawnAttackGizmoUtility_RimKataSquadRange.Postfix
+### 113. Patch_PawnAttackGizmoUtility_RimKataSquadRange.Postfix
 
-`public static void Postfix(ref Gizmo __result)` · [L2783](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2783)
+`public static void Postfix(ref Gizmo __result)` · [L2801](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2801)
 
 - **역할:** 분대 공격 기즈모에 분대 명령 문맥과 통합 또는 추가 범위 표시를 연결합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -31754,9 +33240,9 @@
 
 <a id="m-2076"></a>
 
-### 112. Patch_PawnAttackGizmoUtility_RimKataSquadRange.DrawSelectedUnifiedRanges
+### 114. Patch_PawnAttackGizmoUtility_RimKataSquadRange.DrawSelectedUnifiedRanges
 
-`private static void DrawSelectedUnifiedRanges(LocalTargetInfo _)` · [L2822](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2822)
+`private static void DrawSelectedUnifiedRanges(LocalTargetInfo _)` · [L2840](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2840)
 
 - **역할:** 선택된 플레이어 Pawn들의 최장 원거리 범위와 자격자의 자동 탐색 범위를 함께 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
@@ -31765,9 +33251,9 @@
 
 <a id="m-2077"></a>
 
-### 113. Patch_PawnAttackGizmoUtility_RimKataSquadRange.DrawSelectedAutomaticRanges
+### 115. Patch_PawnAttackGizmoUtility_RimKataSquadRange.DrawSelectedAutomaticRanges
 
-`private static void DrawSelectedAutomaticRanges(LocalTargetInfo _)` · [L2848](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2848)
+`private static void DrawSelectedAutomaticRanges(LocalTargetInfo _)` · [L2866](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataVisualPatches.cs:2866)
 
 - **역할:** 현재 선택된 자격 Pawn들의 자동 탐색 범위만 추가로 그립니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **1곳**.
@@ -32614,3 +34100,76 @@
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `RimWorld.StatDef.ValueToString(float val, [Verse.ToStringNumberSense numberSense = Verse.ToStringNumberSense.Absolute], [bool finalized = true])`
+
+<a id="file-143"></a>
+
+## 143. RimKataPushKick.cs
+
+[Source/RimKataPushKick.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPushKick.cs) · 메서드 **2개** · 일반 발차기 명중 후 밀기 추가 효과 · [파일 목차](#files)
+
+<a id="m-3017"></a>
+
+### 001. RimKataPushKick.Apply
+
+`internal static void Apply(Pawn attacker, Pawn target, DamageDef damageDef)` · [L9](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPushKick.cs:9)
+
+- **역할:** 일반 발차기 실제 Hit 뒤 허용 플래그와 신체 질량 한도를 확인합니다. 대상 현재 셀에서 반대 방향1칸을 정하고 구조물·닫힌 문·대각 모서리 충돌은 제자리120틱 기절로 처리합니다. 이동은 LaunchPush에 넘기며 여기서 순간 위치 변경이나 사망/삭제를 처리하지 않습니다. 한 칸/8틱 렌더 후 도착 결과에서만 착지·폐기를 판정합니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataPushKick.StructureBlocks(Verse.Map map, Verse.Pawn target, Verse.IntVec3 cell)](#m-3018) ×3 · [RimKataSettings.GetPushKickMassMultiplier(Verse.Pawn pawn)](#m-3016) · [RimKataStrengthUtility.BodyMass](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthUtility.cs:57) ×2 · [RimKataStrengthUtility.Bonus](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataStrengthUtility.cs:50) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataThrownPawn.LaunchPush](#m-3030)
+- **호출 — 외부:** `System.Math.Sign(int)` ×2 · `Verse.GenGrid.InBounds` · `RimWorld.StunHandler.StunFor`
+
+<a id="m-3018"></a>
+
+### 002. RimKataPushKick.StructureBlocks
+
+`internal static bool StructureBlocks(Map map, Pawn target, IntVec3 cell)` · [L38](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPushKick.cs:38)
+
+- **역할:** 지정 셀의 구조물이 대상의 통행을 막거나 닫힌 문인지 확인합니다. 지형 사망 판정과 분리합니다.
+- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** 없음
+- **호출 — 외부:** `Verse.GridsUtility.GetThingList` · `Verse.Building.BlocksPawn`
+<a id="file-144"></a>
+
+## 144. RimKataBreachLeap.cs
+
+[Source/RimKataBreachLeap.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs) · 메서드 **5개** · 돌파 전용 도약·착지 렌더 진행 · [파일 목차](#files)
+
+<a id="m-3025"></a>
+
+### 001. RimKataBreachLeap.Start
+
+[소스 L13](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs:13)
+
+- **역할:** 기존 돌파 셀 진입 사건의 마지막 2칸에서 한 번 생성합니다. 이동률로 접근 시간을 준비하고 남쪽 몸·머리의 옆 방향을 한 번 정합니다. 실제 이동이나 공격은 만들지 않습니다.
+
+<a id="m-3026"></a>
+
+### 002. RimKataBreachLeap.Tick
+
+[소스 L22](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs:22)
+
+- **역할:** 돌파 Run에서만 렌더 나이를 증가시킵니다.
+
+<a id="m-3027"></a>
+
+### 003. RimKataBreachLeap.Capture
+
+[소스 L24](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs:24)
+
+- **역할:** 문 파괴 또는 기존 기립 전환 직전에 현재 높이·각도·자세·무기 회전 비율을 보존하여 다음 렌더 구간을 연속으로 시작합니다.
+
+<a id="m-3028"></a>
+
+### 004. RimKataBreachLeap.Apply
+
+[소스 L34](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs:34)
+
+- **역할:** 날아 차기의 6틱 상승·6틱 회전 계산을 복사한 돌파 전용 연출입니다. 문 접점까지 공중 높이를 남기고 Slide의 첫 6틱 동안 높이를 0으로 내려 기존 누운 각도에 연결합니다. 조기 Rise는 기존 6틱 기립 안에서 처리합니다. 실제 날아 차기 상태·피해·기절·공격 대상·GroundPose 실패 인계가 없습니다.
+
+<a id="m-3029"></a>
+
+### 005. RimKataBreachLeap.ExposeData
+
+[소스 L66](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataBreachLeap.cs:66)
+
+- **역할:** 도약 나이·접근 시간·남쪽 몸 방향·전환 시작값을 기존 돌파 상태에 함께 저장하고 복원합니다.

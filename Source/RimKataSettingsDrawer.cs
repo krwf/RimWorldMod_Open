@@ -34,6 +34,18 @@ namespace KRWF.RimKata
         public string subdueMassMultiplier;
         public string subdueMassMultiplierGrowth;
         public string subdueMassMultiplierMinimum;
+        public string flyingKickStunChance;
+        public string flyingKickStunChanceGrowth;
+        public string flyingKickStunChanceMinimum;
+        public string kickCooldownTicks;
+        public string kickCooldownBaseTicks;
+        public string kickCooldownReductionTicks;
+        public string kickDamageMultiplier;
+        public string kickDamageMultiplierGrowth;
+        public string kickDamageMultiplierMinimum;
+        public string pushKickMassMultiplier;
+        public string pushKickMassMultiplierGrowth;
+        public string pushKickMassMultiplierMinimum;
         public string proneMissChance;
         public string proneMissChanceGrowth;
         public string proneMissChanceMinimum;
@@ -89,6 +101,18 @@ namespace KRWF.RimKata
             subdueMassMultiplier = settings.subdueMassMultiplierPercent.ToString();
             subdueMassMultiplierGrowth = settings.subdueMassMultiplierGrowthPerLevelPercent.ToString();
             subdueMassMultiplierMinimum = settings.subdueMassMultiplierMinimumPercent.ToString();
+            flyingKickStunChance = settings.flyingKickStunChancePercent.ToString();
+            flyingKickStunChanceGrowth = settings.flyingKickStunChanceGrowthPerLevelPercent.ToString();
+            flyingKickStunChanceMinimum = settings.flyingKickStunChanceMinimumPercent.ToString();
+            kickCooldownTicks = settings.kickCooldownTicks.ToString();
+            kickCooldownBaseTicks = settings.kickCooldownBaseTicks.ToString();
+            kickCooldownReductionTicks = settings.kickCooldownReductionPerLevelTicks.ToString();
+            kickDamageMultiplier = settings.kickDamageMultiplierPercent.ToString();
+            kickDamageMultiplierGrowth = settings.kickDamageMultiplierGrowthPerLevelPercent.ToString();
+            kickDamageMultiplierMinimum = settings.kickDamageMultiplierMinimumPercent.ToString();
+            pushKickMassMultiplier = settings.pushKickMassMultiplierPercent.ToString();
+            pushKickMassMultiplierGrowth = settings.pushKickMassMultiplierGrowthPerLevelPercent.ToString();
+            pushKickMassMultiplierMinimum = settings.pushKickMassMultiplierMinimumPercent.ToString();
             proneMissChance = settings.proneMissChancePercent.ToString();
             proneMissChanceGrowth = settings.proneMissChanceGrowthPerLevelPercent.ToString();
             proneMissChanceMinimum = settings.proneMissChanceMinimumPercent.ToString();
@@ -325,6 +349,22 @@ namespace KRWF.RimKata
                 ref settings.rangedDodgeChanceMinimumPercent, ref buffers.rangedDodgeChanceMinimum,
                 100f, 100f, showMinimum);
             DrawDurationRow(viewRect.width, ref y, settings, buffers, showMinimum);
+            DrawKickCooldownRow(viewRect.width, ref y, settings, buffers, showMinimum);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_KickDamage", SkillDefOf.Melee,
+                ref settings.kickDamageMultiplierFixed, ref settings.kickDamageMultiplierPercent, ref buffers.kickDamageMultiplier,
+                ref settings.kickDamageMultiplierGrowthPerLevelPercent, ref buffers.kickDamageMultiplierGrowth,
+                ref settings.kickDamageMultiplierMinimumPercent, ref buffers.kickDamageMultiplierMinimum,
+                float.MaxValue, float.MaxValue, showMinimum, float.MaxValue);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_PushKickMassLimit", SkillDefOf.Melee,
+                ref settings.pushKickMassMultiplierFixed, ref settings.pushKickMassMultiplierPercent, ref buffers.pushKickMassMultiplier,
+                ref settings.pushKickMassMultiplierGrowthPerLevelPercent, ref buffers.pushKickMassMultiplierGrowth,
+                ref settings.pushKickMassMultiplierMinimumPercent, ref buffers.pushKickMassMultiplierMinimum,
+                MaximumMultiplierPercent, MaximumMultiplierPercent, showMinimum);
+            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_FlyingKickStunChance", SkillDefOf.Melee,
+                ref settings.flyingKickStunChanceFixed, ref settings.flyingKickStunChancePercent, ref buffers.flyingKickStunChance,
+                ref settings.flyingKickStunChanceGrowthPerLevelPercent, ref buffers.flyingKickStunChanceGrowth,
+                ref settings.flyingKickStunChanceMinimumPercent, ref buffers.flyingKickStunChanceMinimum,
+                100f, 100f, showMinimum, 100f);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_SubdueMassLimit", SkillDefOf.Melee,
                 ref settings.subdueMassMultiplierFixed, ref settings.subdueMassMultiplierPercent, ref buffers.subdueMassMultiplier,
                 ref settings.subdueMassMultiplierGrowthPerLevelPercent, ref buffers.subdueMassMultiplierGrowth,
@@ -655,6 +695,29 @@ namespace KRWF.RimKata
             y += RowHeight;
         }
 
+        private static void DrawKickCooldownRow(float width, ref float y, RimKataSettings settings,
+            RimKataSettingsUiBuffers buffers, bool showMinimum)
+        {
+            Rect row = new Rect(0f, y, width, RowHeight);
+            SplitRow(row, showMinimum, out Rect labelRect, out Rect valueRect, out Rect minimumRect, out Rect fixedRect);
+            string label = "KRWF_RimKata_KickCooldown".Translate();
+            if (!settings.kickCooldownFixed)
+                label = "KRWF_RimKata_DurationGrowthLabel".Translate(label, SkillDefOf.Melee.LabelCap);
+            DrawRowLabel(labelRect, label);
+            if (settings.kickCooldownFixed)
+                DrawIntField(valueRect, ref settings.kickCooldownTicks, ref buffers.kickCooldownTicks,
+                    0, int.MaxValue, "tick");
+            else
+            {
+                DrawFloatField(valueRect, ref settings.kickCooldownReductionPerLevelTicks, ref buffers.kickCooldownReductionTicks,
+                    0f, float.MaxValue, "tick");
+                DrawIntField(minimumRect, ref settings.kickCooldownBaseTicks, ref buffers.kickCooldownBaseTicks,
+                    0, int.MaxValue, "tick");
+            }
+            DrawFixedCheckbox(fixedRect, ref settings.kickCooldownFixed);
+            y += RowHeight;
+        }
+
         private static void DrawFloatRow(
             float width,
             ref float y,
@@ -840,7 +903,7 @@ namespace KRWF.RimKata
 
         private static float CalculateContentHeight()
         {
-            const int rowCount = 22;
+            const int rowCount = 26;
             const int sectionCount = 3;
             return ButtonHeight * 3f + 3f
                 + rowCount * RowHeight
@@ -855,6 +918,10 @@ namespace KRWF.RimKata
             return settings != null
                 && (!settings.rangedDodgeDurationFixed
                     || !settings.subdueMassMultiplierFixed
+                    || !settings.flyingKickStunChanceFixed
+                    || !settings.kickCooldownFixed
+                    || !settings.kickDamageMultiplierFixed
+                    || !settings.pushKickMassMultiplierFixed
                     || !settings.rangedDodgeChanceFixed
                     || !settings.proneMissChanceFixed
                     || !settings.proneHuntingStealthBonusFixed
@@ -876,6 +943,10 @@ namespace KRWF.RimKata
             string[] keys =
             {
                 "KRWF_RimKata_RangedDodgeDuration",
+                "KRWF_RimKata_KickCooldown",
+                "KRWF_RimKata_KickDamage",
+                "KRWF_RimKata_PushKickMassLimit",
+                "KRWF_RimKata_FlyingKickStunChance",
                 "KRWF_RimKata_SubdueMassLimit",
                 "KRWF_RimKata_ProneMissChance",
                 "KRWF_RimKata_ProneHuntingStealthBonus",
@@ -909,7 +980,8 @@ namespace KRWF.RimKata
             }
 
             string duration = "KRWF_RimKata_DurationGrowthLabel".Translate("KRWF_RimKata_RangedDodgeDuration".Translate(), SkillDefOf.Melee.LabelCap);
-            return Mathf.Max(maximum, Text.CalcSize(duration).x);
+            string kickCooldown = "KRWF_RimKata_DurationGrowthLabel".Translate("KRWF_RimKata_KickCooldown".Translate(), SkillDefOf.Melee.LabelCap);
+            return Mathf.Max(maximum, Text.CalcSize(duration).x, Text.CalcSize(kickCooldown).x);
         }
 
         private static void ResetCombat(RimKataSettings settings)
@@ -922,6 +994,22 @@ namespace KRWF.RimKata
             settings.subdueMassMultiplierGrowthPerLevelPercent = RimKataSettings.DefaultSubdueMassMultiplierGrowthPerLevelPercent;
             settings.subdueMassMultiplierMinimumPercent = RimKataSettings.DefaultSubdueMassMultiplierMinimumPercent;
             settings.subdueMassMultiplierFixed = RimKataSettings.DefaultSubdueMassMultiplierFixed;
+            settings.flyingKickStunChancePercent = RimKataSettings.DefaultFlyingKickStunChancePercent;
+            settings.flyingKickStunChanceGrowthPerLevelPercent = RimKataSettings.DefaultFlyingKickStunChanceGrowthPerLevelPercent;
+            settings.flyingKickStunChanceMinimumPercent = RimKataSettings.DefaultFlyingKickStunChanceMinimumPercent;
+            settings.flyingKickStunChanceFixed = RimKataSettings.DefaultFlyingKickStunChanceFixed;
+            settings.kickCooldownTicks = RimKataSettings.DefaultKickCooldownTicks;
+            settings.kickCooldownBaseTicks = RimKataSettings.DefaultKickCooldownBaseTicks;
+            settings.kickCooldownReductionPerLevelTicks = RimKataSettings.DefaultKickCooldownReductionPerLevelTicks;
+            settings.kickCooldownFixed = RimKataSettings.DefaultKickCooldownFixed;
+            settings.kickDamageMultiplierPercent = RimKataSettings.DefaultKickDamageMultiplierPercent;
+            settings.kickDamageMultiplierGrowthPerLevelPercent = RimKataSettings.DefaultKickDamageMultiplierGrowthPerLevelPercent;
+            settings.kickDamageMultiplierMinimumPercent = RimKataSettings.DefaultKickDamageMultiplierMinimumPercent;
+            settings.kickDamageMultiplierFixed = RimKataSettings.DefaultKickDamageMultiplierFixed;
+            settings.pushKickMassMultiplierPercent = RimKataSettings.DefaultPushKickMassMultiplierPercent;
+            settings.pushKickMassMultiplierGrowthPerLevelPercent = RimKataSettings.DefaultPushKickMassMultiplierGrowthPerLevelPercent;
+            settings.pushKickMassMultiplierMinimumPercent = RimKataSettings.DefaultPushKickMassMultiplierMinimumPercent;
+            settings.pushKickMassMultiplierFixed = RimKataSettings.DefaultPushKickMassMultiplierFixed;
             settings.proneMissChancePercent = RimKataSettings.DefaultProneMissChancePercent;
             settings.proneMissChanceGrowthPerLevelPercent = RimKataSettings.DefaultProneMissChanceGrowthPerLevelPercent;
             settings.proneMissChanceMinimumPercent = RimKataSettings.DefaultProneMissChanceMinimumPercent;

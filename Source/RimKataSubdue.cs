@@ -278,10 +278,10 @@ namespace KRWF.RimKata
             RimKataThrownPawn.Launch(state);
         }
 
-        internal static void KillAndDiscard(Pawn target)
+        internal static void KillAndDiscard(Pawn target, DamageInfo? damageInfo = null)
         {
             // Kill on a held pawn would first drop it onto the carrier's cell.
-            if (!target.Dead) target.Kill(null);
+            if (!target.Dead) target.Kill(damageInfo);
             Corpse corpse = target.Corpse;
             if (corpse != null && !corpse.Destroyed) corpse.Destroy(DestroyMode.Vanish);
 

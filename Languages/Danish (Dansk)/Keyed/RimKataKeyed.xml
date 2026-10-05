@@ -110,7 +110,7 @@
   <KRWF_RimKata_NonHumanArmorDialogTitle>RimKata-beklædning til ikke-mennesker</KRWF_RimKata_NonHumanArmorDialogTitle>
   <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Kategori</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
   <KRWF_RimKata_TargetDialogTitle>Mål for fjernelse af begrænsninger</KRWF_RimKata_TargetDialogTitle>
-  <KRWF_RimKata_TargetDialogDescription>Aktiverede mål omgår de normale adgangskrav og bruger den valgte profil. Deaktiverede mål beholder deres normale adgangskontroller.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetDialogDescription>Indstil tilladelse og profiler separat for venlige og fjendtlige mål. Venlige omfatter ikke-fjendtlige mål. Aktiverede mål omgår de sædvanlige adgangskrav og bruger den valgte profil; deaktiverede mål beholder de sædvanlige adgangstjek.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Kategori</KRWF_RimKata_TargetCategoryFilter>
   <KRWF_RimKata_TargetCorpseFilter>Ligfilter</KRWF_RimKata_TargetCorpseFilter>
   <KRWF_RimKata_TargetNonCorpses>Ikke lig</KRWF_RimKata_TargetNonCorpses>
@@ -123,6 +123,10 @@
   <KRWF_RimKata_TargetOther>Andet</KRWF_RimKata_TargetOther>
   <KRWF_RimKata_TargetName>Navn</KRWF_RimKata_TargetName>
   <KRWF_RimKata_TargetEnabled>Aktiveret</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetFriendly>Venlige</KRWF_RimKata_TargetFriendly>
+  <KRWF_RimKata_TargetHostile>Fjendtlige</KRWF_RimKata_TargetHostile>
+  <KRWF_RimKata_TargetFriendlyProfile>Venlig profil</KRWF_RimKata_TargetFriendlyProfile>
+  <KRWF_RimKata_TargetHostileProfile>Fjendtlig profil</KRWF_RimKata_TargetHostileProfile>
   <KRWF_RimKata_TargetDisabled>Deaktiveret</KRWF_RimKata_TargetDisabled>
   <KRWF_RimKata_TargetProfile>Anvendt profil</KRWF_RimKata_TargetProfile>
   <KRWF_RimKata_NoMatchingTargets>Ingen matchende mål.</KRWF_RimKata_NoMatchingTargets>
@@ -233,8 +237,21 @@
 
   <KRWF_RimKata_StrengthEnhancement>Muskelstyrkelse</KRWF_RimKata_StrengthEnhancement>
   <KRWF_RimKata_StrengthIncrease>Styrkeforøgelse</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_AllowedStrengthIncrease>Styrkeforøgelse fra tilladt udstyr</KRWF_RimKata_AllowedStrengthIncrease>
+  <KRWF_RimKata_IndependentStrengthIncrease>Ekstra styrke uanset tilladelse</KRWF_RimKata_IndependentStrengthIncrease>
   <KRWF_RimKata_StrengthImplants>Implantater</KRWF_RimKata_StrengthImplants>
-  <KRWF_RimKata_StrengthOverrideTip>Standard: {0}%. Ryd feltet for at bruge standarden. Fed skrift angiver individuelle værdier, også 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_StrengthOverrideTip>Tilføjer styrke uanset tilladelse (tomt felt: 0%). For tilladte elementer lægges værdien til standardforøgelsen. Fed skrift angiver individuelt angivne værdier.</KRWF_RimKata_StrengthOverrideTip>
   <KRWF_RimKata_ResetAllStrength>Nulstil alle</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Nulstil filtrerede resultater</KRWF_RimKata_ResetFilteredStrength>
+  <KRWF_RimKata_FeatureFlyingKick>Flyvespark</KRWF_RimKata_FeatureFlyingKick>
+  <KRWF_RimKata_FlyingKickAllowedFriendly>Tillad flyvespark for ikke-fjendtlige figurer</KRWF_RimKata_FlyingKickAllowedFriendly>
+  <KRWF_RimKata_FlyingKickAllowedHostile>Tillad flyvespark for fjendtlige figurer</KRWF_RimKata_FlyingKickAllowedHostile>
+  <KRWF_RimKata_FlyingKickStunChance>Bedøvelseschance ved flyvespark</KRWF_RimKata_FlyingKickStunChance>
+  <KRWF_RimKata_FlyingKickDamage>Skade fra flyvespark</KRWF_RimKata_FlyingKickDamage>
+  <KRWF_RimKata_FeatureKick>Spark</KRWF_RimKata_FeatureKick>
+  <KRWF_RimKata_KickCooldown>Nedkøling for spark</KRWF_RimKata_KickCooldown>
+  <KRWF_RimKata_KickDamage>Skade fra spark</KRWF_RimKata_KickDamage>
+  <KRWF_RimKata_KickChance>Chance for spark</KRWF_RimKata_KickChance>
+  <KRWF_RimKata_FeaturePushKick>Skubbespark</KRWF_RimKata_FeaturePushKick>
+  <KRWF_RimKata_PushKickMassLimit>Massegrænse for skubbespark</KRWF_RimKata_PushKickMassLimit>
 </LanguageData>

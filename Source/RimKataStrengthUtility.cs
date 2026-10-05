@@ -77,7 +77,8 @@ namespace KRWF.RimKata
             List<RimKataStrengthRule> rules = RimKataMod.Settings?.strengthRules;
             if (rules != null) foreach (RimKataStrengthRule rule in rules)
             {
-                if (rule?.enabled != true || rule.defName.NullOrEmpty()) continue;
+                if (rule == null || (!rule.enabled && rule.AdditionalPercent <= 0f)
+                    || rule.defName.NullOrEmpty()) continue;
                 if (rule.sourceKind == RimKataStrengthSourceKind.Apparel)
                 {
                     ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(rule.defName);
@@ -141,14 +142,14 @@ namespace KRWF.RimKata
                     : RimKataEligibility.HasRimKataAccess(pawn)));
                 if (allowed && (apparelRules.Count != 0 || implantRules.Count != 0))
                 {
-                    bool found = false;
+                    bool enhancedGrip = false;
                     double percent = 0d;
                     float defaultPercent = RimKataTargetAccess.SettingsFor(pawn)?.strengthIncreasePercent ?? 0f;
                     List<Apparel> apparel = pawn.apparel?.WornApparel;
                     if (apparel != null) foreach (Apparel item in apparel)
                     {
                         if (!apparelRules.TryGetValue(item.def, out RimKataStrengthRule rule)) continue;
-                        found = true;
+                        enhancedGrip |= rule.enabled;
                         percent += rule.EffectivePercent(defaultPercent);
                     }
                     List<Hediff> hediffs = pawn.health?.hediffSet?.hediffs;
@@ -156,11 +157,12 @@ namespace KRWF.RimKata
                     {
                         if (!implantRules.TryGetValue(hediff.def, out RimKataStrengthRule rule)
                             || (hediff.Part != null && pawn.health.hediffSet.PartIsMissing(hediff.Part))) continue;
-                        found = true;
+                        enhancedGrip |= rule.enabled;
                         percent += rule.EffectivePercent(defaultPercent);
                     }
-                    if (found) current = new Entry((float)Math.Min(percent / 100d, float.MaxValue),
-                        !RimKataSecondaryHandRequirement.HasMissingHand(pawn));
+                    if (enhancedGrip || percent > 0d)
+                        current = new Entry((float)Math.Min(percent / 100d, float.MaxValue),
+                            enhancedGrip && !RimKataSecondaryHandRequirement.HasMissingHand(pawn));
                 }
                 if (current == null) entries.TryRemove(pawn, out _);
                 else entries[pawn] = current;

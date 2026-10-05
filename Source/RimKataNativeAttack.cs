@@ -45,6 +45,7 @@ namespace KRWF.RimKata
         internal RimKataHuntingSession huntingSession;
         internal RimKataReactiveMotionState reactiveMotion;
         internal RimKataSubdueState subdueState;
+        internal RimKataKickAttack kickAttack;
         internal bool reactiveOpeningAttack;
         internal int notBeforeTick;
         internal ThingWithComps weapon;
@@ -78,6 +79,8 @@ namespace KRWF.RimKata
         private VerbBinding nativeBinding;
         private RimKataFireContext.ScopeState previousContext;
         private RimKataSlidingAttackOrigin.Scope previousSlidingOrigin;
+        private RimKataFlyingKickRender.ShotScope previousFlyingKickOrigin;
+        private RimKataKickRender.ShotScope previousKickOrigin;
         private Stance_RimKataAim previousAim;
         private Stance previousSpecialStance;
         private RimKataSubdueCombat.ExecutionScope previousSubdueExecution;
@@ -86,6 +89,7 @@ namespace KRWF.RimKata
         internal int extraAimTicks;
         private int? previousBurstShotCount;
         private bool singleShotOverride;
+        private bool kickOpportunityNotified;
 
         internal static void Bind(Verb verb)
         {
@@ -112,11 +116,11 @@ namespace KRWF.RimKata
             }
             if (bindingVerb != verb)
             {
-                Bind(verb);
+                if (kickAttack == null) Bind(verb);
                 bindingVerb = verb;
                 nativeBinding = bindings.GetOrCreateValue(verb);
             }
-            else if (!RimKataPreparedWeaponData.IsCurrent(verb))
+            else if (kickAttack == null && !RimKataPreparedWeaponData.IsCurrent(verb))
             {
                 RimKataPreparedWeaponData.Bind(verb);
             }
@@ -135,6 +139,7 @@ namespace KRWF.RimKata
             cancelled = false;
             Started = false;
             HasFired = false;
+            kickOpportunityNotified = false;
             Pending = true;
             nativeBinding.request = this;
             if (reactiveMotion != null || subdueState != null) LimitToSingleShot();
@@ -186,6 +191,7 @@ namespace KRWF.RimKata
 
         private bool CanContinue()
         {
+            if (kickAttack != null) return kickAttack.CanContinue();
             if (reactiveMotion != null) return RimKataReactiveAttack.CanContinue(this);
             if (subdueState != null) return RimKataSubdueCombat.CanContinueAttack(this);
             if (pawn?.Spawned != true || pawn.Dead || pawn.Downed || pawn.InMentalState
@@ -266,7 +272,7 @@ namespace KRWF.RimKata
                     if (cell.IsValid) currentTarget(verb) = new LocalTargetInfo(cell);
                 }
             }
-            RimKataReactiveMotion.AttackStarting(this);
+            if (kickAttack == null) RimKataReactiveMotion.AttackStarting(this);
             return Pending && !cancelled;
         }
 
@@ -315,7 +321,7 @@ namespace KRWF.RimKata
         {
             Executing = true;
             previousAim = pawn.stances?.curStance as Stance_RimKataAim;
-            previousSpecialStance = huntingSession != null || reactiveMotion != null || subdueState != null
+            previousSpecialStance = huntingSession != null || reactiveMotion != null || subdueState != null || kickAttack != null
                 ? pawn.stances?.curStance : null;
             if (subdueState != null)
                 previousSubdueRotation = pawn.Rotation;
@@ -327,6 +333,8 @@ namespace KRWF.RimKata
                 interceptionTarget, closeMeleeResolution,
                 closeMeleeHit, closeDefensePrecheck);
             previousSlidingOrigin = RimKataSlidingAttackOrigin.Begin(this);
+            previousFlyingKickOrigin = RimKataFlyingKickRender.BeginShot(this);
+            previousKickOrigin = RimKataKickRender.BeginShot(this);
             if (subdueState != null)
                 previousSubdueExecution = RimKataSubdueCombat.BeginNativeExecution(subdueState);
             previousDirectionalExecution = RimKataDirectionalFire.BeginNativeExecution(this);
@@ -336,13 +344,36 @@ namespace KRWF.RimKata
             => bindings.TryGetValue(verb, out VerbBinding binding)
                 && binding.request?.Executing == true;
 
+        internal static void NotifyMeleeAttackStarting(
+            RimKataResponseVisualParticipantCache.BodyVisualEntry entry, RimWorld.Verb_MeleeAttack verb)
+        {
+            if (verb is Verb_RimKataFlyingKick || verb is Verb_RimKataKick) return;
+            if (bindings.TryGetValue(verb, out VerbBinding binding) && binding.request?.Executing == true)
+                binding.request.NotifyKickAttackStarting();
+            else
+                RimKataKick.NativeMeleeStarting(entry, verb);
+        }
+
+        private void NotifyKickAttackStarting()
+        {
+            if (kickOpportunityNotified || kickAttack != null
+                || reactiveMotion != null || subdueState != null || huntingSession != null) return;
+            kickOpportunityNotified = true;
+            RimKataKick.AttackStarting(this);
+        }
+
         internal void FinishNativeCast(Exception exception)
         {
+            bool rangedShot = exception == null && !verb.IsMeleeAttack && RimKataFireContext.ShotFired;
             RimKataDirectionalFire.EndNativeExecution(previousDirectionalExecution);
             previousDirectionalExecution = default;
             HasFired |= RimKataFireContext.ShotFired;
             RimKataFireContext.End(verb, previousContext);
             RimKataSlidingAttackOrigin.End(previousSlidingOrigin);
+            RimKataFlyingKickRender.EndShot(previousFlyingKickOrigin);
+            RimKataKickRender.EndShot(previousKickOrigin);
+            previousKickOrigin = default;
+            previousFlyingKickOrigin = default;
             previousSlidingOrigin = default;
             Executing = false;
             previousContext = default;
@@ -350,6 +381,7 @@ namespace KRWF.RimKata
                 RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution);
             previousSubdueExecution = default;
             RestoreAimAfterShot();
+            if (rangedShot) NotifyKickAttackStarting();
             if (exception != null)
             {
                 cancelled = true;
@@ -366,7 +398,7 @@ namespace KRWF.RimKata
                 && RimKataSubdueUtility.Get(pawn) == subdueState && pawn.CurJob == job;
             if (pawn.stances?.curStance is Stance_Busy busy && busy.verb == verb)
             {
-                if (huntingSession != null || reactiveMotion != null || subdueState != null)
+                if (huntingSession != null || reactiveMotion != null || subdueState != null || kickAttack != null)
                 {
                     if (pawn.CurJob == job && previousSpecialStance != null
                         && (subdueState == null || restoreSubdue))
@@ -396,13 +428,15 @@ namespace KRWF.RimKata
             nonInterruptingSelfCast(verb) = false;
             try
             {
-                if (reactiveMotion != null) RimKataReactiveMotion.AttackCompleted(this);
+                if (kickAttack != null) kickAttack.Complete(cancelled);
+                else if (reactiveMotion != null) RimKataReactiveMotion.AttackCompleted(this);
                 else if (subdueState != null) RimKataSubdueCombat.AttackCompleted(this);
                 else RimKataDualWeaponController.CompleteNativeAttack(this, HasFired, cancelled);
             }
             finally
             {
-                if (cancelled || (subdueState != null ? subdueState.weaponVerb != verb : cycle.boundVerb != verb))
+                if (cancelled || (kickAttack == null
+                    && (subdueState != null ? subdueState.weaponVerb != verb : cycle.boundVerb != verb)))
                 {
                     RimKataPreparedWeaponData.Restore(verb);
                     bindingVerb = null;
@@ -512,6 +546,8 @@ namespace KRWF.RimKata
 
         private void ReleaseReferences()
         {
+            if (kickAttack != null && !kickAttack.Completed)
+                kickAttack.Complete(true);
             if (reactiveMotion != null) RimKataReactiveMotion.ReleaseAttack(this);
             pawn = null;
             state = null;
@@ -519,6 +555,7 @@ namespace KRWF.RimKata
             huntingSession = null;
             reactiveMotion = null;
             subdueState = null;
+            kickAttack = null;
             reactiveOpeningAttack = false;
             notBeforeTick = 0;
             weapon = null;
@@ -536,6 +573,7 @@ namespace KRWF.RimKata
             previousSubdueExecution = default;
             Started = false;
             HasFired = false;
+            kickOpportunityNotified = false;
         }
 
         internal void ClearCompletedReferences() => ReleaseReferences();

@@ -110,7 +110,7 @@
   <KRWF_RimKata_NonHumanArmorDialogTitle>RimKata 인외 의류</KRWF_RimKata_NonHumanArmorDialogTitle>
   <KRWF_RimKata_NonHumanEquipmentCategoryFilter>분류</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
   <KRWF_RimKata_TargetDialogTitle>제약 해제 대상</KRWF_RimKata_TargetDialogTitle>
-  <KRWF_RimKata_TargetDialogDescription>사용하는 대상은 원래 자격 제한을 무시하고 지정한 프로필을 적용합니다. 사용하지 않는 대상은 기존 자격 판정을 유지합니다.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetDialogDescription>아군과 적군의 허용 여부와 프로필을 각각 지정합니다. 아군에는 비적대 대상이 포함됩니다. 허용한 대상은 원래 자격 제한을 무시하고 지정한 프로필을 적용하며, 허용하지 않은 대상은 기존 자격 판정을 유지합니다.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>종류</KRWF_RimKata_TargetCategoryFilter>
   <KRWF_RimKata_TargetCorpseFilter>시체 여부</KRWF_RimKata_TargetCorpseFilter>
   <KRWF_RimKata_TargetNonCorpses>시체 아님</KRWF_RimKata_TargetNonCorpses>
@@ -123,6 +123,10 @@
   <KRWF_RimKata_TargetOther>기타</KRWF_RimKata_TargetOther>
   <KRWF_RimKata_TargetName>이름</KRWF_RimKata_TargetName>
   <KRWF_RimKata_TargetEnabled>사용</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetFriendly>아군</KRWF_RimKata_TargetFriendly>
+  <KRWF_RimKata_TargetHostile>적군</KRWF_RimKata_TargetHostile>
+  <KRWF_RimKata_TargetFriendlyProfile>아군 프로필</KRWF_RimKata_TargetFriendlyProfile>
+  <KRWF_RimKata_TargetHostileProfile>적군 프로필</KRWF_RimKata_TargetHostileProfile>
   <KRWF_RimKata_TargetDisabled>미사용</KRWF_RimKata_TargetDisabled>
   <KRWF_RimKata_TargetProfile>적용 프로필</KRWF_RimKata_TargetProfile>
   <KRWF_RimKata_NoMatchingTargets>일치하는 대상이 없습니다.</KRWF_RimKata_NoMatchingTargets>
@@ -233,8 +237,21 @@
 
   <KRWF_RimKata_StrengthEnhancement>근력 강화</KRWF_RimKata_StrengthEnhancement>
   <KRWF_RimKata_StrengthIncrease>근력 증가량</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_AllowedStrengthIncrease>강화 허용 장비의 근력 증가량</KRWF_RimKata_AllowedStrengthIncrease>
+  <KRWF_RimKata_IndependentStrengthIncrease>허용과 무관한 추가 근력</KRWF_RimKata_IndependentStrengthIncrease>
   <KRWF_RimKata_StrengthImplants>이식물</KRWF_RimKata_StrengthImplants>
-  <KRWF_RimKata_StrengthOverrideTip>기본값: {0}%. 입력칸을 비우면 기본값을 따릅니다. 굵은 수치는 0%를 포함한 개별 지정값입니다.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_StrengthOverrideTip>허용 여부와 관계없이 더하는 근력입니다. 빈칸은 0%이며, 허용된 항목에는 연출 설정의 허용 장비 기본 증가량와 합산됩니다. 굵은 수치는 개별 지정값입니다.</KRWF_RimKata_StrengthOverrideTip>
   <KRWF_RimKata_ResetAllStrength>전체 초기화</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>필터 결과 초기화</KRWF_RimKata_ResetFilteredStrength>
+  <KRWF_RimKata_FeatureFlyingKick>날아 차기</KRWF_RimKata_FeatureFlyingKick>
+  <KRWF_RimKata_FlyingKickAllowedFriendly>아군에게 날아 차기 허용</KRWF_RimKata_FlyingKickAllowedFriendly>
+  <KRWF_RimKata_FlyingKickAllowedHostile>적군에게 날아 차기 허용</KRWF_RimKata_FlyingKickAllowedHostile>
+  <KRWF_RimKata_FlyingKickStunChance>날아 차기 기절 확률</KRWF_RimKata_FlyingKickStunChance>
+  <KRWF_RimKata_FlyingKickDamage>날아 차기 피해량</KRWF_RimKata_FlyingKickDamage>
+  <KRWF_RimKata_FeatureKick>발차기</KRWF_RimKata_FeatureKick>
+  <KRWF_RimKata_KickCooldown>발차기 재사용 대기시간</KRWF_RimKata_KickCooldown>
+  <KRWF_RimKata_KickDamage>발차기 피해량</KRWF_RimKata_KickDamage>
+  <KRWF_RimKata_KickChance>발차기 확률</KRWF_RimKata_KickChance>
+  <KRWF_RimKata_FeaturePushKick>밀어 차기</KRWF_RimKata_FeaturePushKick>
+  <KRWF_RimKata_PushKickMassLimit>밀어 차기 가능한 무게</KRWF_RimKata_PushKickMassLimit>
 </LanguageData>

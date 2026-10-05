@@ -148,6 +148,8 @@ namespace KRWF.RimKata
         {
             RimKataStrengthUtility.ResetGame();
             RimKataMotionJobGate.ResetGame();
+            RimKataFlyingKick.ResetGame();
+            RimKataKick.ResetGame();
             RimKataResponseVisualParticipantCache.ResetGame();
             mapUsers = new ConditionalWeakTable<Map, MapUsers>();
             entries = new ConditionalWeakTable<Pawn, Entry>();
@@ -161,11 +163,11 @@ namespace KRWF.RimKata
             List<Map> maps = Find.Maps;
             for (int i = 0; i < maps.Count; i++)
             {
-                if (!mapUsers.TryGetValue(maps[i], out MapUsers users)) continue;
-                foreach (Pawn pawn in users.permittedSources)
+                IReadOnlyList<Pawn> pawns = maps[i].mapPawns.AllPawnsSpawned;
+                for (int j = 0; j < pawns.Count; j++)
                 {
-                    if (pawn.Faction == faction && TryGetEntry(pawn, out Entry entry))
-                        SetQualified(pawn, entry, users, RimKataEligibility.FactionEffectsEnabled(pawn));
+                    Pawn pawn = pawns[j];
+                    if (pawn.Faction == faction) NotifyTargetChanged(pawn);
                 }
             }
         }
@@ -247,6 +249,8 @@ namespace KRWF.RimKata
             if (!qualified)
             {
                 RimKataBreachUtility.NotifyEligibilityLost(pawn);
+                RimKataFlyingKick.QualificationLost(pawn);
+                RimKataKick.QualificationLost(pawn);
                 RimKataSubdueUtility.NotifyEligibilityLost(pawn);
                 RimKataReactiveMotion.Remove(pawn);
                 RimKataMotionJobGate.Clear(pawn);

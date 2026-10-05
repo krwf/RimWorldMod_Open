@@ -61,7 +61,9 @@ namespace KRWF.RimKata
 
         internal static void DrawShotFlash(IntVec3 cell, Map map, FleckDef fleck, float scale)
         {
-            if (TryGet(RimKataFireContext.ActiveVerb, out Vector3 center))
+            if (RimKataKickRender.TryGetShotCenter(RimKataFireContext.ActiveVerb, out Vector3 center)
+                || RimKataFlyingKickRender.TryGetShotCenter(RimKataFireContext.ActiveVerb, out center)
+                || TryGet(RimKataFireContext.ActiveVerb, out center))
                 FleckMaker.Static(center, map, fleck, scale);
             else FleckMaker.Static(cell, map, fleck, scale);
         }

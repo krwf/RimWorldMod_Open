@@ -91,8 +91,9 @@ namespace KRWF.RimKata
             if (side && secondary == (facing == Rot4.West))
                 position.z = current.root.z + (position.z - current.root.z) * 0.5f;
             if (secondary)
-                position.y = side && !current.visual.poseActive
-                    ? 2f * current.bodyAltitude - position.y
+                position.y = side
+                    ? Mathf.Lerp(2f * current.bodyAltitude - position.y, position.y - 0.001f,
+                        current.visual.poseActive ? Mathf.Clamp01(current.visual.weaponRotation) : 0f)
                     : position.y - 0.001f;
 
             bool west = facing == Rot4.West;

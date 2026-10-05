@@ -32,6 +32,12 @@ namespace KRWF.RimKata
             internal Frame next;
             internal bool snapshotRead, snapshotActive;
             internal RimKataVisualSnapshot snapshot;
+            internal bool kickRead, flyingKickRead;
+            internal RimKataKickVisual? kick;
+            internal RimKataFlyingKickVisual? flyingKick;
+            internal RimKataKickRender.Geometry kickGeometry;
+            internal RimKataFlyingKickRender.Geometry flyingKickGeometry;
+            internal bool kickGeometryReady, flyingKickGeometryReady;
         }
 
         [ThreadStatic] private static Context current;
@@ -67,6 +73,10 @@ namespace KRWF.RimKata
             if (finished == null) return;
             if (finished.snapshotRead) finished.snapshot = default;
             finished.snapshotRead = finished.snapshotActive = false;
+            finished.kickRead = finished.flyingKickRead = false;
+            finished.kick = null;
+            finished.flyingKick = null;
+            finished.kickGeometryReady = finished.flyingKickGeometryReady = false;
             finished.next = spare;
             spare = finished;
         }
@@ -76,6 +86,101 @@ namespace KRWF.RimKata
                 : RimKataResponseVisualParticipantCache.BodyVisualFor(pawn);
 
         internal static bool ResponseFor(Pawn pawn) => BodyFor(pawn)?.response == true;
+
+        internal static bool TryFlyingKick(Pawn pawn, out RimKataFlyingKickVisual visual)
+        {
+            bool active = current.scoped && !current.portrait && current.pawn == pawn
+                && current.body?.kick.HasValue != true && current.body?.flyingKick.HasValue == true;
+            visual = active ? FlyingKickFor(pawn).GetValueOrDefault() : default;
+            return active;
+        }
+
+        internal static bool TryKick(Pawn pawn, out RimKataKickVisual visual)
+        {
+            bool active = current.scoped && !current.portrait && current.pawn == pawn
+                && current.body?.kick.HasValue == true;
+            visual = active ? KickFor(pawn).GetValueOrDefault() : default;
+            return active;
+        }
+
+        internal static RimKataKickVisual? KickFor(Pawn pawn)
+        {
+            var seed = BodyFor(pawn)?.kick;
+            if (!seed.HasValue) return null;
+            if (!current.scoped || current.pawn != pawn)
+                return RimKataKickRender.ReadPublished(seed.Value, out _, out _);
+            Frame frame = ReadFrame(ref current);
+            if (!frame.kickRead)
+            {
+                frame.kick = RimKataKickRender.ReadPublished(seed.Value,
+                    out frame.kickGeometry, out frame.kickGeometryReady);
+                frame.kickRead = true;
+            }
+            return frame.kick;
+        }
+
+        internal static RimKataFlyingKickVisual? FlyingKickFor(Pawn pawn)
+        {
+            var seed = BodyFor(pawn)?.flyingKick;
+            if (!seed.HasValue) return null;
+            if (!current.scoped || current.pawn != pawn)
+                return RimKataFlyingKickRender.ReadPublished(seed.Value, out _, out _);
+            Frame frame = ReadFrame(ref current);
+            if (!frame.flyingKickRead)
+            {
+                frame.flyingKick = RimKataFlyingKickRender.ReadPublished(seed.Value,
+                    out frame.flyingKickGeometry, out frame.flyingKickGeometryReady);
+                frame.flyingKickRead = true;
+            }
+            return frame.flyingKick;
+        }
+
+        internal static void UpdateKickGeometry(RimKataKickRender.FrameSlot slot, RimKataKickRender.Geometry geometry)
+        {
+            Frame frame = current.frame;
+            if (frame?.kick?.frame != slot) return;
+            frame.kickGeometry = geometry;
+            frame.kickGeometryReady = true;
+        }
+
+        internal static void UpdateFlyingKickGeometry(RimKataFlyingKickRender.FrameSlot slot,
+            RimKataFlyingKickRender.Geometry geometry)
+        {
+            Frame frame = current.frame;
+            if (frame?.flyingKick?.frame != slot) return;
+            frame.flyingKickGeometry = geometry;
+            frame.flyingKickGeometryReady = true;
+        }
+
+        internal static bool TryKickGeometry(RimKataKickRender.FrameSlot slot,
+            out RimKataKickRender.Geometry geometry, out bool ready)
+        {
+            Frame frame = current.frame;
+            if (frame?.kickRead == true && frame.kick?.frame == slot)
+            {
+                geometry = frame.kickGeometry;
+                ready = frame.kickGeometryReady;
+                return true;
+            }
+            geometry = default;
+            ready = false;
+            return false;
+        }
+
+        internal static bool TryFlyingKickGeometry(RimKataFlyingKickRender.FrameSlot slot,
+            out RimKataFlyingKickRender.Geometry geometry, out bool ready)
+        {
+            Frame frame = current.frame;
+            if (frame?.flyingKickRead == true && frame.flyingKick?.frame == slot)
+            {
+                geometry = frame.flyingKickGeometry;
+                ready = frame.flyingKickGeometryReady;
+                return true;
+            }
+            geometry = default;
+            ready = false;
+            return false;
+        }
 
         internal static float EquipmentBodyAltitude(Pawn pawn, Vector3 equipmentRoot, Rot4 facing)
             => current.scoped && current.pawn == pawn && current.hasBodyAltitude
@@ -92,7 +197,7 @@ namespace KRWF.RimKata
         {
             var body = BodyFor(pawn);
             visual = body?.breach ?? default;
-            return body?.breach.HasValue == true;
+            return body?.kick.HasValue != true && body?.flyingKick.HasValue != true && body?.breach.HasValue == true;
         }
 
         internal static bool TryCrawl(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)
@@ -136,6 +241,18 @@ namespace KRWF.RimKata
 
         private static bool ReadSnapshot(ref Context context, out RimKataVisualSnapshot snapshot)
         {
+            Frame frame = ReadFrame(ref context);
+            if (!frame.snapshotRead)
+            {
+                frame.snapshotRead = true;
+                frame.snapshotActive = RimKataResponseVisualParticipantCache.TryReadSnapshot(context.body, out frame.snapshot);
+            }
+            snapshot = frame.snapshot;
+            return frame.snapshotActive;
+        }
+
+        private static Frame ReadFrame(ref Context context)
+        {
             Frame frame = context.frame;
             if (frame == null)
             {
@@ -144,13 +261,7 @@ namespace KRWF.RimKata
                 frame.next = null;
                 context.frame = frame;
             }
-            if (!frame.snapshotRead)
-            {
-                frame.snapshotRead = true;
-                frame.snapshotActive = RimKataResponseVisualParticipantCache.TryReadSnapshot(context.body, out frame.snapshot);
-            }
-            snapshot = frame.snapshot;
-            return frame.snapshotActive;
+            return frame;
         }
     }
 
@@ -717,6 +828,7 @@ namespace KRWF.RimKata
         [ThreadStatic] private static float nativeSecondaryCombatTilt;
         [ThreadStatic] private static float nativeSecondaryReflectionAxis;
         [ThreadStatic] private static Vector3 currentEquipmentPivot;
+        [ThreadStatic] private static AimPreparation nativeAimPreparation;
         private static Mesh plane10VFlip;
         private static Mesh plane10UvFlip;
 
@@ -910,6 +1022,8 @@ namespace KRWF.RimKata
             float bodyAltitude, bool combat = false)
         {
             if (drawingPair || secondary == null) return;
+            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
+            combat |= context.pawn == pawn && context.fallAimTarget.IsValid;
             float aimAngle = pawn.Rotation.AsAngle;
             Vector3 drawLoc;
             if (combat)
@@ -922,7 +1036,6 @@ namespace KRWF.RimKata
                 return;
             }
 
-            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             // External renderers may enter outside the equipment pass, so this call needs its own pose scope.
             bool groundPoseScope = RimKataGroundPoseRender.PushEquipment(pawn, PawnRenderFlags.None);
             drawingPair = true;
@@ -1172,33 +1285,34 @@ namespace KRWF.RimKata
                 && RimKataVisualUtility.TryGetLiveResponseFocus(
                     pawn, snapshot, out responseFocus);
 
+            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
+            bool fallCombat = context.pawn == pawn && context.fallAimTarget.IsValid;
             if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
                 pawn, weapon, snapshotActive
                     ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
-                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat, out _, out _)
+                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat && !fallCombat, out _, out _)
                     == RimKataWeaponRenderProbe.SecondaryDrawResult.Custom)
             {
                 return;
             }
-
             float aimAngle = fallbackAngle;
             Vector3 drawLoc = primaryDrawLoc;
-            RimKataWeaponVisualData visual = default(RimKataWeaponVisualData);
-            bool cycleTarget = RimKataDualWeaponController.TryGetVisualData(
-                    pawn,
-                    weapon,
-                    out visual)
-                && visual.target.IsValid;
-            bool hasOwnTarget = cycleTarget || responseTarget;
+            AimPreparation prepared = new AimPreparation { pawn = pawn, weapon = weapon };
+            prepared.hasVisual = RimKataGunReadyDrawUtility.TryGetVisualData(pawn, weapon, out prepared.visual);
+            RimKataWeaponVisualData visual = prepared.visual;
+            bool cycleTarget = prepared.hasVisual && visual.target.IsValid;
+            bool fallTarget = fallCombat && !cycleTarget && !responseTarget;
+            bool hasOwnTarget = cycleTarget || responseTarget || fallTarget;
             if (hasOwnTarget)
             {
                 LocalTargetInfo target = responseTarget
                     ? responseFocus
-                    : visual.target;
+                    : fallTarget ? context.fallAimTarget : visual.target;
 
-                aimAngle = responseTarget
-                    ? AngleToTarget(pawn, weapon, target, fallbackAngle)
-                    : VisualAimAngle(pawn, weapon, visual, fallbackAngle);
+                if (responseTarget || fallTarget)
+                    aimAngle = AngleToTarget(pawn, weapon, target, fallbackAngle);
+                else
+                    aimAngle = VisualAimAngle(pawn, weapon, visual, fallbackAngle, out prepared.adjusted);
                 drawLoc = EquipmentCenter(
                     pawn,
                     weapon,
@@ -1206,7 +1320,7 @@ namespace KRWF.RimKata
                     aimAngle);
             }
             else if (!secondary
-                && RimKataDualWeaponController.TryGetNextAim(pawn, out ThingWithComps activeWeapon, out LocalTargetInfo _)
+                && RimKataGunReadyDrawUtility.TryGetNextAim(pawn, out ThingWithComps activeWeapon, out LocalTargetInfo _)
                 && activeWeapon != weapon)
             {
                 aimAngle = pawn.Rotation.AsAngle;
@@ -1233,14 +1347,15 @@ namespace KRWF.RimKata
 
             bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat;
             DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
-                placementPivot, bodyAltitude);
+                placementPivot, bodyAltitude, prepared);
         }
 
         private static void DrawNativeWeapon(
             ThingWithComps weapon, Vector3 drawLoc, float aimAngle,
             bool secondary, bool secondaryIdle, Rot4 facing,
-            Vector3 placementPivot, float bodyAltitude)
+            Vector3 placementPivot, float bodyAltitude, AimPreparation prepared = default)
         {
+            AimPreparation previousAimPreparation = nativeAimPreparation;
             bool previousSecondary = drawingSecondary;
             bool previousDepthMirroring = mirroringSecondaryDepth;
             bool previousRangedMirroring = mirroringRangedCombatWeapon;
@@ -1248,6 +1363,7 @@ namespace KRWF.RimKata
             float previousBodyAltitude = nativeBodyAltitude;
             float previousCombatTilt = nativeSecondaryCombatTilt;
             float previousAxis = nativeSecondaryReflectionAxis;
+            nativeAimPreparation = prepared;
             drawingSecondary = secondary;
             mirroringSecondaryDepth = secondary && (facing == Rot4.East || facing == Rot4.West);
             mirroringRangedCombatWeapon = mirroringSecondaryDepth && !secondaryIdle
@@ -1269,6 +1385,7 @@ namespace KRWF.RimKata
             }
             finally
             {
+                nativeAimPreparation = previousAimPreparation;
                 drawingSecondary = previousSecondary;
                 mirroringSecondaryDepth = previousDepthMirroring;
                 mirroringRangedCombatWeapon = previousRangedMirroring;
@@ -1618,15 +1735,22 @@ namespace KRWF.RimKata
             out AimPreparation prepared)
         {
             prepared = default;
+            if (drawingPair)
+            {
+                if (!RimKataWeaponRenderProbe.Probing && nativeAimPreparation.weapon == equipment)
+                    prepared = nativeAimPreparation;
+                return;
+            }
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
-            if (drawingPair || !context.active || context.secondary != null
+            if (!context.active || context.secondary != null
                 || equipment != context.primary || !(equipment is ThingWithComps weapon)
                 || (context.snapshotActive && context.snapshot.responsePoseWeapon == weapon
                     && RimKataVisualUtility.TryGetLiveResponseFocus(context.pawn, context.snapshot, out _))) return;
             prepared.pawn = context.pawn;
             prepared.weapon = weapon;
-            prepared.hasVisual = RimKataDualWeaponController.TryGetVisualData(context.pawn, weapon, out prepared.visual);
-            if (!prepared.hasVisual || !prepared.visual.turning) return;
+            prepared.hasVisual = RimKataGunReadyDrawUtility.TryGetVisualData(context.pawn, weapon, out prepared.visual);
+            if (!prepared.hasVisual || !prepared.visual.turning
+                && !(context.fallAimTarget.IsValid && prepared.visual.target.IsValid)) return;
             float angle = VisualAimAngle(context.pawn, weapon, prepared.visual,
                 aimAngle, out bool resolvedDestination);
             Vector3 pivot = ResolveEquipmentPivot(context.pawn, weapon, drawLoc, aimAngle);
@@ -1648,7 +1772,9 @@ namespace KRWF.RimKata
             Vector3 targetPosition = target.HasThing && target.Thing.Spawned
                 ? target.Thing.DrawPos
                 : target.Cell.ToVector3Shifted();
-            Vector3 origin = RimKataGroundPoseRender.TryGetRangedAimOrigin(pawn, weapon, out Vector3 headOrigin)
+            Vector3 origin = (RimKataKickRender.TryGetAimOrigin(pawn, out Vector3 headOrigin)
+                || RimKataFlyingKickRender.TryGetAimOrigin(pawn, out headOrigin)
+                || RimKataGroundPoseRender.TryGetRangedAimOrigin(pawn, weapon, out headOrigin))
                 ? headOrigin : pawn.DrawPos;
             Vector3 aim = targetPosition - origin;
             resolved = aim.sqrMagnitude > 0.001f;
@@ -1995,6 +2121,7 @@ namespace KRWF.RimKata
             if (___pawn == null) return;
 
             var visual = RimKataWorldRenderContext.BodyFor(___pawn);
+            if (visual?.kick.HasValue == true || visual?.flyingKick.HasValue == true) return;
             RimKataMapComponent component = visual?.snapshotOwner;
             if (___pawn?.stances?.curStance is Stance_RimKataAim movingAim
                 && (visual?.snapshotState != null ? visual.qualified : RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
@@ -2090,8 +2217,9 @@ namespace KRWF.RimKata
             __state = default;
             __state.context = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
             RimKataGroundPoseHead.Restore(___drawRequests);
+            var body = RimKataWorldRenderContext.BodyFor(parms.pawn);
             if (parms.Portrait
-                || RimKataWorldRenderContext.BodyFor(parms.pawn)?.HasSnapshot != true
+                || body?.kick.HasValue == true || body?.flyingKick.HasValue == true || body?.HasSnapshot != true
                 || !RimKataVisualUtility.TryGetCachedActiveSnapshot(
                     parms.pawn,
                     out RimKataVisualSnapshot snapshot))
@@ -2157,13 +2285,17 @@ namespace KRWF.RimKata
             if (RimKataCrawlFireRender.TryHandleEquipment(eq, out bool drawOriginal))
                 return drawOriginal;
             RimKataDualWeaponRenderUtility.AdjustCooldownAim(eq, ref drawLoc, ref aimAngle, out var prepared);
+            if (!RimKataWeaponRenderProbe.Probing)
+            {
+                RimKataWeaponRenderProbe.NotifyEquipmentDraw(eq);
+                if (RimKataDualWeaponRenderUtility.TryDrawPair(eq, drawLoc, aimAngle)) return false;
+            }
             RimKataGroundPoseRender.AdjustWeaponAim(eq, ref drawLoc, ref aimAngle, in prepared);
             if (RimKataWeaponRenderProbe.TryCaptureNativeDraw(eq, drawLoc, aimAngle))
             {
                 return false;
             }
-            RimKataWeaponRenderProbe.NotifyEquipmentDraw(eq);
-            return !RimKataDualWeaponRenderUtility.TryDrawPair(eq, drawLoc, aimAngle);
+            return true;
         }
 
         public static IEnumerable<CodeInstruction> Transpiler(
@@ -2360,6 +2492,10 @@ namespace KRWF.RimKata
         public bool snapshotActive;
         public RimKataVisualSnapshot snapshot;
         public float aimAngle;
+        public LocalTargetInfo fallAimTarget;
+        internal RimKataMapComponent visualOwner;
+        internal RimKataPawnCombatState visualState;
+        internal bool visualStateRead;
     }
 
     internal static class RimKataGunReadyDrawUtility
@@ -2369,6 +2505,35 @@ namespace KRWF.RimKata
         [ThreadStatic] private static RimKataGunReadyDrawContext[] nestedContexts;
 
         public static ref readonly RimKataGunReadyDrawContext Current => ref current;
+
+        internal static bool TryGetVisualData(Pawn pawn, ThingWithComps weapon,
+            out RimKataWeaponVisualData visual)
+        {
+            if (!current.active || current.pawn != pawn
+                || weapon != current.primary && weapon != current.secondary)
+                return RimKataDualWeaponController.TryGetVisualData(pawn, weapon, out visual);
+            return RimKataDualWeaponController.TryGetVisualData(pawn, ReadVisualState(pawn), weapon, out visual);
+        }
+
+        internal static bool TryGetNextAim(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)
+        {
+            if (!current.active || current.pawn != pawn)
+                return RimKataDualWeaponController.TryGetNextAim(pawn, out weapon, out target);
+            bool found = RimKataDualWeaponController.TryGetNextAim(pawn, ReadVisualState(pawn),
+                out RimKataWeaponCycleState cycle, out target);
+            weapon = found ? cycle.weapon : null;
+            return found;
+        }
+
+        private static RimKataPawnCombatState ReadVisualState(Pawn pawn)
+        {
+            if (!current.visualStateRead)
+            {
+                current.visualStateRead = true;
+                current.visualState = current.visualOwner?.GetState(pawn, false);
+            }
+            return current.visualState;
+        }
 
         public static bool IsDrawingEquipmentFor(Pawn pawn)
         {
@@ -2446,6 +2611,21 @@ namespace KRWF.RimKata
                     return scopeToken;
                 }
 
+                LocalTargetInfo fallAimTarget = LocalTargetInfo.Invalid;
+                bool fallSnapshot = false;
+                if (visual?.kick.HasValue != true && visual?.flyingKick.HasValue == true
+                    && RimKataWorldRenderContext.FlyingKickFor(pawn)?.aimTarget is Thing flyingTarget)
+                    fallAimTarget = new LocalTargetInfo(flyingTarget);
+                else if (visual?.kick.HasValue != true && visual?.groundPose == true
+                    && RimKataVisualUtility.TryGetCachedActiveSnapshot(pawn, out current.snapshot))
+                {
+                    fallSnapshot = true;
+                    fallAimTarget = current.snapshot.groundPoseAimTarget;
+                }
+                bool fallAim = fallAimTarget.HasThing
+                    && (flags & PawnRenderFlags.NeverAimWeapon) == 0
+                    && RimKataDualWeaponController.IsLiveVisualTarget(pawn, fallAimTarget.Thing);
+
                 bool mayNeedGunReadyTarget = rimKataUser
                     && MayNeedGunReadyTarget(pawn, statePresent);
                 bool gunReadyCandidate = mayNeedGunReadyTarget
@@ -2459,13 +2639,13 @@ namespace KRWF.RimKata
                 bool needsActiveContext = secondary != null
                     || responseParticipant
                     || (statePresent && pawn.stances?.curStance is Stance_RimKataAim)
-                    || gunReadyCandidate;
+                    || gunReadyCandidate || fallAim;
                 if (!needsActiveContext)
                 {
                     return scopeToken;
                 }
 
-                bool snapshotActive = statePresent
+                bool snapshotActive = fallSnapshot || statePresent
                     && (secondary != null || responseParticipant)
                     && RimKataVisualUtility.TryGetCachedResponseSnapshot(
                         pawn,
@@ -2476,7 +2656,18 @@ namespace KRWF.RimKata
                 current.primary = primary;
                 current.secondary = secondary;
                 current.snapshotActive = snapshotActive;
+                current.visualOwner = component;
+                current.visualState = statePresent ? visual?.snapshotState : null;
+                current.visualStateRead = current.visualState != null || !statePresent;
                 current.active = true;
+                if (fallAim)
+                {
+                    current.fallAimTarget = fallAimTarget;
+                    current.aimAngle = RimKataDualWeaponRenderUtility.AngleToTarget(
+                        pawn, primary, fallAimTarget, pawn.Rotation.AsAngle);
+                    current.gunReady = true;
+                    return scopeToken;
+                }
                 if (!gunReadyCandidate)
                 {
                     return scopeToken;
@@ -2537,6 +2728,7 @@ namespace KRWF.RimKata
             current.portrait = portrait;
             current.active = false;
             current.gunReady = false;
+            current.fallAimTarget = LocalTargetInfo.Invalid;
             return scopeDepth;
         }
 

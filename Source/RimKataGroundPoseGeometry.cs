@@ -6,7 +6,7 @@ namespace KRWF.RimKata
 {
     internal static class RimKataGroundPoseGeometry
     {
-        private struct Body
+        internal struct Body
         {
             internal PawnRenderNode root;
             internal Vector3 foot;
@@ -27,9 +27,13 @@ namespace KRWF.RimKata
             internal T value;
         }
 
-        private static readonly ConditionalWeakTable<Pawn, Sample<Body>> Bodies = new ConditionalWeakTable<Pawn, Sample<Body>>();
+        internal sealed class BodySample
+        {
+            internal Body value;
+        }
+
+        private static readonly ConditionalWeakTable<Pawn, BodySample> Bodies = new ConditionalWeakTable<Pawn, BodySample>();
         private static readonly ConditionalWeakTable<ThingWithComps, Sample<Weapon>> Weapons = new ConditionalWeakTable<ThingWithComps, Sample<Weapon>>();
-        private static readonly object sync = new object();
 
         internal struct WeaponPlacement
         {
@@ -71,20 +75,31 @@ namespace KRWF.RimKata
 
         internal static void ObserveBody(PawnDrawParms parms, Vector3 foot, Vector3 anchor,
             Vector3 center, float northReach, Vector3? head)
+            => ObserveBody(parms, foot, anchor, center, northReach, head, parms.pawn.DrawPos);
+
+        internal static void ObserveBody(PawnDrawParms parms, Vector3 foot, Vector3 anchor,
+            Vector3 center, float northReach, Vector3? head, Vector3 rootPosition)
         {
-            Body body = new Body
+            BodySample sample = GetBodySample(parms.pawn);
+            lock (sample)
+                StoreBodyUnderLock(sample, parms, foot, anchor, center, northReach, head, rootPosition);
+        }
+
+        internal static BodySample GetBodySample(Pawn pawn) => Bodies.GetValue(pawn, CreateBodySample);
+
+        // The caller holds the sample lock so geometry and body publication share one critical section.
+        internal static void StoreBodyUnderLock(BodySample sample, PawnDrawParms parms, Vector3 foot,
+            Vector3 anchor, Vector3 center, float northReach, Vector3? head, Vector3 rootPosition)
+        {
+            sample.value = new Body
             {
                 root = parms.pawn.Drawer.renderer.renderTree.rootNode,
-                foot = (foot - parms.pawn.DrawPos).Yto0(),
-                anchor = (anchor - parms.pawn.DrawPos).Yto0(),
-                center = (center - parms.pawn.DrawPos).Yto0(),
-                head = head.HasValue ? (head.Value - parms.pawn.DrawPos).Yto0() : (Vector3?)null,
+                foot = (foot - rootPosition).Yto0(),
+                anchor = (anchor - rootPosition).Yto0(),
+                center = (center - rootPosition).Yto0(),
+                head = head.HasValue ? (head.Value - rootPosition).Yto0() : (Vector3?)null,
                 northReach = northReach
             };
-            lock (sync)
-            {
-                Bodies.GetValue(parms.pawn, CreateBodySample).value = body;
-            }
         }
 
         internal static void ObserveWeapon(Pawn pawn, ThingWithComps weapon, Vector3 center,
@@ -97,17 +112,21 @@ namespace KRWF.RimKata
                 facing = pawn.Rotation,
                 aimLocalCenter = (center - anchor).Yto0().RotatedBy(-aimAngle)
             };
-            lock (sync)
+            Sample<Weapon> cached = Weapons.GetValue(weapon, CreateWeaponSample);
+            lock (cached)
             {
-                Weapons.GetValue(weapon, CreateWeaponSample).value = sample;
+                cached.value = sample;
             }
         }
 
-        private static Sample<Body> CreateBodySample(Pawn pawn) => new Sample<Body>();
+        private static BodySample CreateBodySample(Pawn pawn) => new BodySample();
 
         private static Sample<Weapon> CreateWeaponSample(ThingWithComps weapon) => new Sample<Weapon>();
 
         internal static Vector3 StandingCenter(Verb verb, Vector3 aimOrigin)
+            => StandingCenter(verb, aimOrigin, StandingAnchor(verb.CasterPawn));
+
+        internal static Vector3 StandingCenter(Verb verb, Vector3 aimOrigin, Vector3 standingAnchor)
         {
             Pawn pawn = verb.CasterPawn;
             ThingWithComps weapon = verb.EquipmentSource;
@@ -117,15 +136,17 @@ namespace KRWF.RimKata
                 : pawn.Rotation.FacingCell.ToVector3();
             float aim = direction.x * direction.x + direction.z * direction.z > 0.0001f
                 ? Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg : pawn.Rotation.AsAngle;
-            return StandingCenter(pawn, weapon, aim);
+            return StandingCenter(pawn, weapon, aim, standingAnchor);
         }
 
         internal static Vector3 StandingCenter(Pawn pawn, ThingWithComps weapon, float aim)
+            => StandingCenter(pawn, weapon, aim, StandingAnchor(pawn));
+
+        private static Vector3 StandingCenter(Pawn pawn, ThingWithComps weapon, float aim, Vector3 anchor)
         {
-            Vector3 anchor = StandingAnchor(pawn);
-            lock (sync)
+            if (Weapons.TryGetValue(weapon, out var cached))
             {
-                if (Weapons.TryGetValue(weapon, out var cached))
+                lock (cached)
                 {
                     Weapon sample = cached.value;
                     if (sample.owner == pawn && sample.facing == pawn.Rotation)
@@ -139,9 +160,9 @@ namespace KRWF.RimKata
 
         private static Vector3 StandingAnchor(Pawn pawn)
         {
-            lock (sync)
-                return Bodies.TryGetValue(pawn, out var cached)
-                    && cached.value.root == pawn.Drawer.renderer.renderTree.rootNode
+            if (!Bodies.TryGetValue(pawn, out var cached)) return pawn.DrawPos;
+            lock (cached)
+                return cached.value.root == pawn.Drawer.renderer.renderTree.rootNode
                     ? pawn.DrawPos + cached.value.anchor : pawn.DrawPos;
         }
 
@@ -172,40 +193,44 @@ namespace KRWF.RimKata
         internal static bool HasUsableAnchor(Pawn pawn, ThingWithComps weapon)
         {
             if (!RimKataWeaponRenderProbe.HasSpecialRenderer(weapon.def)) return true;
-            lock (sync) return Weapons.TryGetValue(weapon, out var cached)
-                && cached.value.owner == pawn && cached.value.facing == pawn.Rotation;
+            if (!Weapons.TryGetValue(weapon, out var cached)) return false;
+            lock (cached) return cached.value.owner == pawn && cached.value.facing == pawn.Rotation;
         }
 
         internal static Vector3 Displacement(Pawn pawn, Vector3 center, RimKataGroundPoseState pose,
             bool headCentered = false)
         {
-            Body body;
-            lock (sync) body = Bodies.TryGetValue(pawn, out var cached) ? cached.value : default;
+            Vector3 rootPosition = pawn.DrawPos;
+            Body body = default;
+            if (Bodies.TryGetValue(pawn, out var cached))
+            {
+                lock (cached) body = cached.value;
+            }
             if (body.root == null || body.root != pawn.Drawer.renderer.renderTree.rootNode)
             {
                 // A loaded pawn may not have rendered yet, but its initialized head transform is available.
                 PawnDrawParms parms = PawnDrawParms.DefaultFor(pawn);
                 if (headCentered && pose.DrawFacing.IsValid) parms.facing = pose.DrawFacing;
-                parms.matrix = Matrix4x4.Translate(pawn.DrawPos);
+                parms.matrix = Matrix4x4.Translate(rootPosition);
                 if (!RimKataGroundPoseHead.TryGetHeadMatrix(parms, out Matrix4x4 head)) return Vector3.zero;
                 Vector3 foot = parms.matrix.MultiplyPoint3x4(new Vector3(0f, 0f, -0.5f));
                 Vector3 anchor = parms.matrix.MultiplyPoint3x4(Vector3.zero);
                 Vector3 bodyCenter = RimKataGroundPoseHead.TryGetBodyMatrix(parms, out Matrix4x4 bodyMatrix)
                     ? bodyMatrix.MultiplyPoint3x4(Vector3.zero) : anchor;
-                body = new Body { foot = (foot - pawn.DrawPos).Yto0(),
-                    anchor = (anchor - pawn.DrawPos).Yto0(), center = (bodyCenter - pawn.DrawPos).Yto0(),
-                    head = (head.MultiplyPoint3x4(Vector3.zero) - pawn.DrawPos).Yto0(),
+                body = new Body { foot = (foot - rootPosition).Yto0(),
+                    anchor = (anchor - rootPosition).Yto0(), center = (bodyCenter - rootPosition).Yto0(),
+                    head = (head.MultiplyPoint3x4(Vector3.zero) - rootPosition).Yto0(),
                     northReach = Mathf.Max(0f, head.m23 - foot.z) * 0.5f };
             }
-            WeaponPlacement placement = Placement(pawn.DrawPos + body.anchor, pawn.DrawPos + body.center,
-                pawn.DrawPos + body.foot, pose.DrawAngle, pose.DrawWeaponOffset,
+            WeaponPlacement placement = Placement(rootPosition + body.anchor, rootPosition + body.center,
+                rootPosition + body.foot, pose.DrawAngle, pose.DrawWeaponOffset,
                 NorthLift(body.northReach, pose.angle, pose.DrawProgress), pose.DrawProgress);
             Vector3 moved = placement.Place(center);
             if (headCentered && body.head.HasValue)
             {
-                Vector3 foot = pawn.DrawPos + body.foot;
+                Vector3 foot = rootPosition + body.foot;
                 Vector3 weaponOffset = pose.DrawWeaponOffset;
-                Vector3 head = foot + (pawn.DrawPos + body.head.Value - foot).RotatedBy(pose.DrawAngle)
+                Vector3 head = foot + (rootPosition + body.head.Value - foot).RotatedBy(pose.DrawAngle)
                     + weaponOffset;
                 moved = placement.PlaceAtHead(center, head);
             }

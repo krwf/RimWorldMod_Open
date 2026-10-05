@@ -358,6 +358,22 @@ namespace KRWF.RimKata
         public const float DefaultSubdueMassMultiplierGrowthPerLevelPercent = 6f;
         public const float DefaultSubdueMassMultiplierMinimumPercent = 40f;
         public const bool DefaultSubdueMassMultiplierFixed = true;
+        public const float DefaultFlyingKickStunChancePercent = 70f;
+        public const float DefaultFlyingKickStunChanceGrowthPerLevelPercent = 3f;
+        public const float DefaultFlyingKickStunChanceMinimumPercent = 10f;
+        public const bool DefaultFlyingKickStunChanceFixed = false;
+        public const int DefaultKickCooldownTicks = 300;
+        public const int DefaultKickCooldownBaseTicks = 500;
+        public const float DefaultKickCooldownReductionPerLevelTicks = 10f;
+        public const bool DefaultKickCooldownFixed = false;
+        public const float DefaultKickDamageMultiplierPercent = 250f;
+        public const float DefaultKickDamageMultiplierGrowthPerLevelPercent = 10f;
+        public const float DefaultKickDamageMultiplierMinimumPercent = 80f;
+        public const bool DefaultKickDamageMultiplierFixed = false;
+        public const float DefaultPushKickMassMultiplierPercent = 250f;
+        public const float DefaultPushKickMassMultiplierGrowthPerLevelPercent = 10f;
+        public const float DefaultPushKickMassMultiplierMinimumPercent = 80f;
+        public const bool DefaultPushKickMassMultiplierFixed = false;
         public const int MinimumRangedDodgeDurationTicks = 1;
         public const int MaximumRangedDodgeDurationTicks = 600;
 
@@ -390,6 +406,8 @@ namespace KRWF.RimKata
         public const int DefaultBreachSlideDurationTicks = 120;
         public const int DefaultBreachWaitDurationTicks = 60;
         public const float DefaultSlidingChancePercent = 20f;
+        public const float DefaultFlyingKickDamageMultiplierPercent = 200f;
+        public const float DefaultKickChancePercent = 20f;
         public const float DefaultShakeOffChancePercent = 20f;
         public const int DefaultSubdueImpactStunTicks = 180;
         public const int MinimumGroundPoseDurationTicks = 0;
@@ -434,6 +452,9 @@ namespace KRWF.RimKata
         public const bool DefaultCloseFireEnabled = true;
         public const bool DefaultTargetRushEnabled = true;
         public const bool DefaultBreachEnabled = true;
+        public const bool DefaultFlyingKickEnabled = true;
+        public const bool DefaultKickEnabled = true;
+        public const bool DefaultPushKickEnabled = true;
         public const bool DefaultSubdueEnabled = true;
         public const bool DefaultSubdueDamageTransferEnabled = true;
         public const bool DefaultResponseEnabled = true;
@@ -445,6 +466,8 @@ namespace KRWF.RimKata
         public const bool DefaultShakeOffEnabled = true;
         public const bool DefaultDirectionalFireEnabled = true;
         public const bool DefaultCrawlFireDefaultAllowed = true;
+        public const bool DefaultFlyingKickAllowedFriendly = true;
+        public const bool DefaultFlyingKickAllowedHostile = false;
         public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
 
@@ -560,6 +583,22 @@ namespace KRWF.RimKata
         public float subdueMassMultiplierGrowthPerLevelPercent = DefaultSubdueMassMultiplierGrowthPerLevelPercent;
         public float subdueMassMultiplierMinimumPercent = DefaultSubdueMassMultiplierMinimumPercent;
         public bool subdueMassMultiplierFixed = DefaultSubdueMassMultiplierFixed;
+        public float flyingKickStunChancePercent = DefaultFlyingKickStunChancePercent;
+        public float flyingKickStunChanceGrowthPerLevelPercent = DefaultFlyingKickStunChanceGrowthPerLevelPercent;
+        public float flyingKickStunChanceMinimumPercent = DefaultFlyingKickStunChanceMinimumPercent;
+        public bool flyingKickStunChanceFixed = DefaultFlyingKickStunChanceFixed;
+        public int kickCooldownTicks = DefaultKickCooldownTicks;
+        public int kickCooldownBaseTicks = DefaultKickCooldownBaseTicks;
+        public float kickCooldownReductionPerLevelTicks = DefaultKickCooldownReductionPerLevelTicks;
+        public bool kickCooldownFixed = DefaultKickCooldownFixed;
+        public float kickDamageMultiplierPercent = DefaultKickDamageMultiplierPercent;
+        public float kickDamageMultiplierGrowthPerLevelPercent = DefaultKickDamageMultiplierGrowthPerLevelPercent;
+        public float kickDamageMultiplierMinimumPercent = DefaultKickDamageMultiplierMinimumPercent;
+        public bool kickDamageMultiplierFixed = DefaultKickDamageMultiplierFixed;
+        public float pushKickMassMultiplierPercent = DefaultPushKickMassMultiplierPercent;
+        public float pushKickMassMultiplierGrowthPerLevelPercent = DefaultPushKickMassMultiplierGrowthPerLevelPercent;
+        public float pushKickMassMultiplierMinimumPercent = DefaultPushKickMassMultiplierMinimumPercent;
+        public bool pushKickMassMultiplierFixed = DefaultPushKickMassMultiplierFixed;
 
         public RimKataCandidateRangeMode candidateRangeMode = DefaultCandidateRangeMode;
         public float customCandidateRange = DefaultCustomCandidateRange;
@@ -589,6 +628,8 @@ namespace KRWF.RimKata
         public int breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
         public int breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
         public float slidingChancePercent = DefaultSlidingChancePercent;
+        public float flyingKickDamageMultiplierPercent = DefaultFlyingKickDamageMultiplierPercent;
+        public float kickChancePercent = DefaultKickChancePercent;
         public float shakeOffChancePercent = DefaultShakeOffChancePercent;
         public int subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
         public float strengthIncreasePercent = 0f;
@@ -652,6 +693,9 @@ namespace KRWF.RimKata
         public bool closeFireEnabled = DefaultCloseFireEnabled;
         public bool targetRushEnabled = DefaultTargetRushEnabled;
         public bool breachEnabled = DefaultBreachEnabled;
+        public bool flyingKickEnabled = DefaultFlyingKickEnabled;
+        public bool kickEnabled = DefaultKickEnabled;
+        public bool pushKickEnabled = DefaultPushKickEnabled;
         public bool subdueEnabled = DefaultSubdueEnabled;
         public bool subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
         public bool responseEnabled = DefaultResponseEnabled;
@@ -664,6 +708,8 @@ namespace KRWF.RimKata
         public bool directionalFireEnabled = DefaultDirectionalFireEnabled;
         public bool crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
         public bool crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
+        public bool flyingKickAllowedFriendly = DefaultFlyingKickAllowedFriendly;
+        public bool flyingKickAllowedHostile = DefaultFlyingKickAllowedHostile;
         public bool smoothAimTransition = DefaultSmoothAimTransition;
         // Legacy blanket override is only read to migrate into the shared target list.
         internal bool accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
@@ -694,6 +740,10 @@ namespace KRWF.RimKata
             RimKataEligibility.IsHostileToPlayerFaction(pawn)
                 ? crawlFireDefaultAllowedHostile : crawlFireDefaultAllowedFriendly;
 
+        public bool GetFlyingKickAllowed(Pawn pawn) =>
+            RimKataEligibility.IsHostileToPlayerFaction(pawn)
+                ? flyingKickAllowedHostile : flyingKickAllowedFriendly;
+
         public int GetRangedDodgeDurationTicks(Pawn pawn)
         {
             if (rangedDodgeDurationFixed)
@@ -713,6 +763,25 @@ namespace KRWF.RimKata
         public float GetSubdueMassMultiplier(Pawn pawn) => MultiplierFromPercent(ResolvePercent(
             pawn, subdueMassMultiplierFixed, subdueMassMultiplierPercent,
             subdueMassMultiplierMinimumPercent, subdueMassMultiplierGrowthPerLevelPercent, SkillDefOf.Melee));
+
+        public float GetFlyingKickStunChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
+            pawn, flyingKickStunChanceFixed, flyingKickStunChancePercent,
+            flyingKickStunChanceMinimumPercent, flyingKickStunChanceGrowthPerLevelPercent, SkillDefOf.Melee));
+
+        public float FlyingKickDamageMultiplier => MultiplierFromPercent(flyingKickDamageMultiplierPercent);
+
+        public int GetKickCooldownTicks(Pawn pawn) => (int)Math.Min(int.MaxValue, Math.Max(0d,
+            kickCooldownFixed ? kickCooldownTicks : Math.Round(kickCooldownBaseTicks
+                - (double)kickCooldownReductionPerLevelTicks * SkillLevel(pawn, SkillDefOf.Melee))));
+
+        public float GetKickDamageMultiplier(Pawn pawn) => MultiplierFromPercent(ResolvePercent(
+            pawn, kickDamageMultiplierFixed, kickDamageMultiplierPercent,
+            kickDamageMultiplierMinimumPercent, kickDamageMultiplierGrowthPerLevelPercent, SkillDefOf.Melee));
+        public float GetPushKickMassMultiplier(Pawn pawn) => MultiplierFromPercent(ResolvePercent(
+            pawn, pushKickMassMultiplierFixed, pushKickMassMultiplierPercent,
+            pushKickMassMultiplierMinimumPercent, pushKickMassMultiplierGrowthPerLevelPercent, SkillDefOf.Melee));
+
+        public float KickChance => ChanceFromPercent(kickChancePercent);
 
         public float GetRangedDodgeChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
             pawn, rangedDodgeChanceFixed, rangedDodgeChancePercent,
@@ -839,6 +908,22 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref subdueMassMultiplierGrowthPerLevelPercent, "subdueMassMultiplierGrowthPerLevelPercent", DefaultSubdueMassMultiplierGrowthPerLevelPercent);
             Scribe_Values.Look(ref subdueMassMultiplierMinimumPercent, "subdueMassMultiplierMinimumPercent", DefaultSubdueMassMultiplierMinimumPercent);
             Scribe_Values.Look(ref subdueMassMultiplierFixed, "subdueMassMultiplierFixed", DefaultSubdueMassMultiplierFixed);
+            Scribe_Values.Look(ref flyingKickStunChancePercent, "flyingKickStunChancePercent", DefaultFlyingKickStunChancePercent);
+            Scribe_Values.Look(ref flyingKickStunChanceGrowthPerLevelPercent, "flyingKickStunChanceGrowthPerLevelPercent", DefaultFlyingKickStunChanceGrowthPerLevelPercent);
+            Scribe_Values.Look(ref flyingKickStunChanceMinimumPercent, "flyingKickStunChanceMinimumPercent", DefaultFlyingKickStunChanceMinimumPercent);
+            Scribe_Values.Look(ref flyingKickStunChanceFixed, "flyingKickStunChanceFixed", DefaultFlyingKickStunChanceFixed);
+            Scribe_Values.Look(ref kickCooldownTicks, "kickCooldownTicks", DefaultKickCooldownTicks);
+            Scribe_Values.Look(ref kickCooldownBaseTicks, "kickCooldownBaseTicks", DefaultKickCooldownBaseTicks);
+            Scribe_Values.Look(ref kickCooldownReductionPerLevelTicks, "kickCooldownReductionPerLevelTicks", DefaultKickCooldownReductionPerLevelTicks);
+            Scribe_Values.Look(ref kickCooldownFixed, "kickCooldownFixed", DefaultKickCooldownFixed);
+            Scribe_Values.Look(ref kickDamageMultiplierPercent, "kickDamageMultiplierPercent", DefaultKickDamageMultiplierPercent);
+            Scribe_Values.Look(ref kickDamageMultiplierGrowthPerLevelPercent, "kickDamageMultiplierGrowthPerLevelPercent", DefaultKickDamageMultiplierGrowthPerLevelPercent);
+            Scribe_Values.Look(ref kickDamageMultiplierMinimumPercent, "kickDamageMultiplierMinimumPercent", DefaultKickDamageMultiplierMinimumPercent);
+            Scribe_Values.Look(ref kickDamageMultiplierFixed, "kickDamageMultiplierFixed", DefaultKickDamageMultiplierFixed);
+            Scribe_Values.Look(ref pushKickMassMultiplierPercent, "pushKickMassMultiplierPercent", DefaultPushKickMassMultiplierPercent);
+            Scribe_Values.Look(ref pushKickMassMultiplierGrowthPerLevelPercent, "pushKickMassMultiplierGrowthPerLevelPercent", DefaultPushKickMassMultiplierGrowthPerLevelPercent);
+            Scribe_Values.Look(ref pushKickMassMultiplierMinimumPercent, "pushKickMassMultiplierMinimumPercent", DefaultPushKickMassMultiplierMinimumPercent);
+            Scribe_Values.Look(ref pushKickMassMultiplierFixed, "pushKickMassMultiplierFixed", DefaultPushKickMassMultiplierFixed);
             Scribe_Values.Look(ref candidateRangeMode, "candidateRangeMode", DefaultCandidateRangeMode);
             Scribe_Values.Look(ref customCandidateRange, "customCandidateRange", DefaultCustomCandidateRange);
             Scribe_Values.Look(ref touchCandidateLimit, "touchCandidateLimit", DefaultTouchCandidateLimit);
@@ -867,6 +952,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref breachSlideDurationTicks, "breachSlideDurationTicks", DefaultBreachSlideDurationTicks);
             Scribe_Values.Look(ref breachWaitDurationTicks, "breachWaitDurationTicks", DefaultBreachWaitDurationTicks);
             Scribe_Values.Look(ref slidingChancePercent, "slidingChancePercent", DefaultSlidingChancePercent);
+            Scribe_Values.Look(ref flyingKickDamageMultiplierPercent, "flyingKickDamageMultiplierPercent", DefaultFlyingKickDamageMultiplierPercent);
+            Scribe_Values.Look(ref kickChancePercent, "kickChancePercent", DefaultKickChancePercent);
             Scribe_Values.Look(ref shakeOffChancePercent, "shakeOffChancePercent", DefaultShakeOffChancePercent);
             Scribe_Values.Look(ref subdueImpactStunTicks, "subdueImpactStunTicks", DefaultSubdueImpactStunTicks);
             Scribe_Values.Look(ref strengthIncreasePercent, "strengthIncreasePercent", 0f);
@@ -912,6 +999,9 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref closeFireEnabled, "closeFireEnabled", DefaultCloseFireEnabled);
             Scribe_Values.Look(ref targetRushEnabled, "targetRushEnabled", DefaultTargetRushEnabled);
             Scribe_Values.Look(ref breachEnabled, "breachEnabled", DefaultBreachEnabled);
+            Scribe_Values.Look(ref flyingKickEnabled, "flyingKickEnabled", DefaultFlyingKickEnabled);
+            Scribe_Values.Look(ref kickEnabled, "kickEnabled", DefaultKickEnabled);
+            Scribe_Values.Look(ref pushKickEnabled, "pushKickEnabled", DefaultPushKickEnabled);
             Scribe_Values.Look(ref subdueEnabled, "subdueEnabled", DefaultSubdueEnabled);
             Scribe_Values.Look(ref subdueDamageTransferEnabled, "subdueDamageTransferEnabled", DefaultSubdueDamageTransferEnabled);
             Scribe_Values.Look(ref accessRestrictionsDisabled, "accessRestrictionsDisabled", DefaultAccessRestrictionsDisabled);
@@ -930,6 +1020,8 @@ namespace KRWF.RimKata
                 Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
             Scribe_Values.Look(ref crawlFireDefaultAllowedFriendly, "crawlFireDefaultAllowedFriendly", legacyCrawlDefault);
             Scribe_Values.Look(ref crawlFireDefaultAllowedHostile, "crawlFireDefaultAllowedHostile", legacyCrawlDefault);
+            Scribe_Values.Look(ref flyingKickAllowedFriendly, "flyingKickAllowedFriendly", DefaultFlyingKickAllowedFriendly);
+            Scribe_Values.Look(ref flyingKickAllowedHostile, "flyingKickAllowedHostile", DefaultFlyingKickAllowedHostile);
             Scribe_Values.Look(ref smoothAimTransition, "smoothAimTransition", DefaultSmoothAimTransition);
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
@@ -1062,6 +1154,20 @@ namespace KRWF.RimKata
             breachSlideDurationTicks = Mathf.Clamp(breachSlideDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             breachWaitDurationTicks = Mathf.Clamp(breachWaitDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             slidingChancePercent = SanitizePercent(slidingChancePercent, DefaultSlidingChancePercent);
+            flyingKickDamageMultiplierPercent = SanitizeNonNegative(flyingKickDamageMultiplierPercent, DefaultFlyingKickDamageMultiplierPercent);
+            flyingKickStunChancePercent = SanitizePercent(flyingKickStunChancePercent, DefaultFlyingKickStunChancePercent);
+            flyingKickStunChanceGrowthPerLevelPercent = SanitizePercent(flyingKickStunChanceGrowthPerLevelPercent, DefaultFlyingKickStunChanceGrowthPerLevelPercent);
+            flyingKickStunChanceMinimumPercent = SanitizePercent(flyingKickStunChanceMinimumPercent, DefaultFlyingKickStunChanceMinimumPercent);
+            kickCooldownTicks = Math.Max(0, kickCooldownTicks);
+            kickCooldownBaseTicks = Math.Max(0, kickCooldownBaseTicks);
+            kickCooldownReductionPerLevelTicks = SanitizeNonNegative(kickCooldownReductionPerLevelTicks, DefaultKickCooldownReductionPerLevelTicks);
+            kickDamageMultiplierPercent = SanitizeNonNegative(kickDamageMultiplierPercent, DefaultKickDamageMultiplierPercent);
+            kickDamageMultiplierGrowthPerLevelPercent = SanitizeNonNegative(kickDamageMultiplierGrowthPerLevelPercent, DefaultKickDamageMultiplierGrowthPerLevelPercent);
+            kickDamageMultiplierMinimumPercent = SanitizeNonNegative(kickDamageMultiplierMinimumPercent, DefaultKickDamageMultiplierMinimumPercent);
+            pushKickMassMultiplierPercent = SanitizeNonNegative(pushKickMassMultiplierPercent, DefaultPushKickMassMultiplierPercent);
+            pushKickMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(pushKickMassMultiplierGrowthPerLevelPercent, DefaultPushKickMassMultiplierGrowthPerLevelPercent);
+            pushKickMassMultiplierMinimumPercent = SanitizeNonNegative(pushKickMassMultiplierMinimumPercent, DefaultPushKickMassMultiplierMinimumPercent);
+            kickChancePercent = SanitizePercent(kickChancePercent, DefaultKickChancePercent);
             shakeOffChancePercent = SanitizePercent(shakeOffChancePercent, DefaultShakeOffChancePercent);
             subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
@@ -1164,6 +1270,22 @@ namespace KRWF.RimKata
             subdueMassMultiplierGrowthPerLevelPercent = DefaultSubdueMassMultiplierGrowthPerLevelPercent;
             subdueMassMultiplierMinimumPercent = DefaultSubdueMassMultiplierMinimumPercent;
             subdueMassMultiplierFixed = DefaultSubdueMassMultiplierFixed;
+            flyingKickStunChancePercent = DefaultFlyingKickStunChancePercent;
+            flyingKickStunChanceGrowthPerLevelPercent = DefaultFlyingKickStunChanceGrowthPerLevelPercent;
+            flyingKickStunChanceMinimumPercent = DefaultFlyingKickStunChanceMinimumPercent;
+            flyingKickStunChanceFixed = DefaultFlyingKickStunChanceFixed;
+            kickCooldownTicks = DefaultKickCooldownTicks;
+            kickCooldownBaseTicks = DefaultKickCooldownBaseTicks;
+            kickCooldownReductionPerLevelTicks = DefaultKickCooldownReductionPerLevelTicks;
+            kickCooldownFixed = DefaultKickCooldownFixed;
+            kickDamageMultiplierPercent = DefaultKickDamageMultiplierPercent;
+            kickDamageMultiplierGrowthPerLevelPercent = DefaultKickDamageMultiplierGrowthPerLevelPercent;
+            kickDamageMultiplierMinimumPercent = DefaultKickDamageMultiplierMinimumPercent;
+            kickDamageMultiplierFixed = DefaultKickDamageMultiplierFixed;
+            pushKickMassMultiplierPercent = DefaultPushKickMassMultiplierPercent;
+            pushKickMassMultiplierGrowthPerLevelPercent = DefaultPushKickMassMultiplierGrowthPerLevelPercent;
+            pushKickMassMultiplierMinimumPercent = DefaultPushKickMassMultiplierMinimumPercent;
+            pushKickMassMultiplierFixed = DefaultPushKickMassMultiplierFixed;
             candidateRangeMode = DefaultCandidateRangeMode;
             customCandidateRange = DefaultCustomCandidateRange;
             touchCandidateLimit = DefaultTouchCandidateLimit;
@@ -1192,6 +1314,8 @@ namespace KRWF.RimKata
             breachSlideDurationTicks = DefaultBreachSlideDurationTicks;
             breachWaitDurationTicks = DefaultBreachWaitDurationTicks;
             slidingChancePercent = DefaultSlidingChancePercent;
+            flyingKickDamageMultiplierPercent = DefaultFlyingKickDamageMultiplierPercent;
+            kickChancePercent = DefaultKickChancePercent;
             shakeOffChancePercent = DefaultShakeOffChancePercent;
             subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
             strengthIncreasePercent = 0f;
@@ -1226,6 +1350,9 @@ namespace KRWF.RimKata
             targetRushEnabled = DefaultTargetRushEnabled;
             breachEnabled = DefaultBreachEnabled;
             subdueEnabled = DefaultSubdueEnabled;
+            flyingKickEnabled = DefaultFlyingKickEnabled;
+            kickEnabled = DefaultKickEnabled;
+            pushKickEnabled = DefaultPushKickEnabled;
             subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
             proneFireEnabled = DefaultProneFireEnabled;
             crawlFireEnabled = DefaultCrawlFireEnabled;
@@ -1234,6 +1361,8 @@ namespace KRWF.RimKata
             directionalFireEnabled = DefaultDirectionalFireEnabled;
             crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
             crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
+            flyingKickAllowedFriendly = DefaultFlyingKickAllowedFriendly;
+            flyingKickAllowedHostile = DefaultFlyingKickAllowedHostile;
             smoothAimTransition = DefaultSmoothAimTransition;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }

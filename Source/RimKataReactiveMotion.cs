@@ -207,6 +207,7 @@ namespace KRWF.RimKata
                     combat.shakeOffPending = false;
                     StaggerTicks(pawn.stances.stagger) = 0;
                     StaggerSpeed(pawn.stances.stagger) = StaggerHandler.DefaultStaggerMoveSpeedFactor;
+                    if (combat.kick != null) RimKataKick.StaggerEnded(combat);
                     return;
                 }
             }
@@ -246,6 +247,9 @@ namespace KRWF.RimKata
                 if (Get(pawn) == state) Remove(pawn, false);
                 return;
             }
+            StaggerTicks(pawn.stances.stagger) = 0;
+            StaggerSpeed(pawn.stances.stagger) = StaggerHandler.DefaultStaggerMoveSpeedFactor;
+            if (combat.kick != null) RimKataKick.StaggerEnded(combat);
             int opposite = (Sector(state.startAngle) + (secondary ? 0 : 4)) & 7;
             Thing otherTarget = (secondary ? state.primaryWeapon : state.secondaryWeapon) != null
                 ? EnemyAt(state, pawn.Position + Directions[opposite]) : null;

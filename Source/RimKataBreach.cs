@@ -12,14 +12,16 @@ namespace KRWF.RimKata
 
     internal struct RimKataBreachVisual
     {
-        internal Rot4 facing;
-        internal float angle, progress;
+        internal Rot4 facing, bodyFacing;
+        internal float angle, progress, height, weaponRotation;
         internal bool poseActive, protectedPose, carryDoor, holdWeapons;
         internal Vector3 doorOrigin;
         internal RimKataBreachDoorSnapshot door;
 
         internal bool Matches(in RimKataBreachVisual other)
-            => facing == other.facing && angle == other.angle && progress == other.progress
+            => facing == other.facing && bodyFacing == other.bodyFacing
+                && angle == other.angle && progress == other.progress
+                && height == other.height && weaponRotation == other.weaponRotation
                 && poseActive == other.poseActive && protectedPose == other.protectedPose
                 && carryDoor == other.carryDoor && holdWeapons == other.holdWeapons
                 && doorOrigin.Equals(other.doorOrigin) && ReferenceEquals(door, other.door);
@@ -43,8 +45,10 @@ namespace KRWF.RimKata
         internal int waitRangedJobId = -1;
         internal bool waitRangedAllowed;
         internal float rate, riseFrom = 1f;
-        internal bool player, protectedState, broken, dropped, carried;
+        internal bool player, protectedState, broken, dropped, carried, turnAfterRise;
         internal RimKataBreachDoorSnapshot door;
+
+        internal RimKataBreachLeap leap;
 
         public void ExposeData()
         {
@@ -73,7 +77,9 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref broken, "broken");
             Scribe_Values.Look(ref dropped, "dropped");
             Scribe_Values.Look(ref carried, "carried");
+            Scribe_Values.Look(ref turnAfterRise, "turnAfterRise");
             Scribe_Deep.Look(ref door, "doorGraphic");
+            Scribe_Deep.Look(ref leap, "leapVisual");
         }
 
         internal float Progress => phase == BreachPhase.Slide ? Mathf.Clamp01(elapsed / 6f)
@@ -83,7 +89,7 @@ namespace KRWF.RimKata
         {
             if (!broken || dropped || pawn?.Map == null) return;
             dropped = true;
-            door?.Drop(pawn.Map, pawn.Position);
+            door?.Drop(pawn.Map, carried ? pawn.Position : doorCell);
         }
 
         internal void DetachWaitToil(bool removeFinish = true)
@@ -294,13 +300,15 @@ namespace KRWF.RimKata
             float angle = Mathf.DeltaAngle(0f, state.facing.AsAngle + 180f) * progress;
             var visual = new RimKataBreachVisual
             {
-                facing = state.facing, angle = angle, progress = progress,
+                facing = state.facing, bodyFacing = state.facing, angle = angle, progress = progress,
+                weaponRotation = 1f,
                 poseActive = state.phase == BreachPhase.Slide || state.phase == BreachPhase.Rise,
                 protectedPose = state.protectedState, carryDoor = state.carried,
                 holdWeapons = state.phase != BreachPhase.Released,
                 doorOrigin = state.doorOrigin,
                 door = state.broken && !state.dropped ? state.door : null
             };
+            state.leap?.Apply(state, ref visual);
             RimKataResponseVisualParticipantCache.PublishBreach(state.pawn, visual);
         }
 
@@ -475,6 +483,9 @@ namespace KRWF.RimKata
             { RimKataBreachMovement.Stop(pawn, state); return; }
             switch (state.phase)
             {
+                case BreachPhase.Run:
+                    state.leap?.Tick();
+                    break;
                 case BreachPhase.Approach:
                     if (pawn.Position == state.runup && !pawn.pather.Moving)
                     { state.phase = BreachPhase.Run; RimKataBreachMovement.StartStraight(pawn, state); }
@@ -487,6 +498,12 @@ namespace KRWF.RimKata
                 case BreachPhase.Rise:
                     if (++state.elapsed >= 6)
                     {
+                        if (state.turnAfterRise)
+                        {
+                            state.facing = Rot4.FromIntVec3(state.direction).Opposite;
+                            pawn.Rotation = state.facing;
+                            state.turnAfterRise = false;
+                        }
                         state.phase = BreachPhase.Wait;
                         state.elapsed = 0;
                         ResumeNaturalWait();
@@ -519,6 +536,7 @@ namespace KRWF.RimKata
             // Destruction callbacks can cancel or replace this job.
             if (State != state || pawn.jobs?.curDriver != this) return;
             if (!door.Destroyed || door.Spawned) { Cancel(); return; }
+            state.leap?.Capture(state);
             state.broken = true;
             state.protectedState = true;
             state.phase = BreachPhase.Slide;
@@ -528,13 +546,17 @@ namespace KRWF.RimKata
             RimKataBreachUtility.Publish(state);
         }
 
-        internal void BeginRise()
+        internal void BeginRise(bool movementStopped = false)
         {
             var state = State;
             if (state == null || state.phase == BreachPhase.Rise || state.phase == BreachPhase.Wait) return;
             if (!state.broken) { Cancel(); return; }
             if (state.phase == BreachPhase.Slide) RimKataBreachMovement.RememberBlocker(state);
+            state.leap?.Capture(state);
             state.riseFrom = state.Progress;
+            // Keep the current fall direction through the rise, then turn at the standing handoff.
+            state.turnAfterRise = movementStopped && state.phase == BreachPhase.Slide
+                && state.elapsed < state.slideTicks;
             state.phase = BreachPhase.Rise;
             state.elapsed = 0;
             pawn.pather.StopDead();
@@ -563,11 +585,11 @@ namespace KRWF.RimKata
         public override void Notify_PatherArrived()
         {
             if (State?.phase == BreachPhase.Approach) return;
-            BeginRise();
+            BeginRise(movementStopped: true);
         }
         public override void Notify_PatherFailed()
         {
-            if (State?.broken == true) BeginRise(); else Cancel();
+            if (State?.broken == true) BeginRise(movementStopped: true); else Cancel();
         }
     }
 }

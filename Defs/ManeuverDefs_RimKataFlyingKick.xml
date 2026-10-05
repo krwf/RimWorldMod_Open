@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ToolCapacityDef>
+    <defName>RimKata_FlyingKickCapacity</defName>
+    <label>flying kick</label>
+  </ToolCapacityDef>
+  <DamageDef ParentName="BluntBase">
+    <defName>RimKata_FlyingKickDamage</defName>
+    <label>flying kick</label>
+    <bluntStunChancePerDamagePctOfCorePartToHeadCurve IsNull="True" />
+    <bluntStunChancePerDamagePctOfCorePartToBodyCurve IsNull="True" />
+  </DamageDef>
+  <ManeuverDef>
+    <defName>RimKata_FlyingKick</defName>
+    <requiredCapacity>RimKata_FlyingKickCapacity</requiredCapacity>
+    <verb>
+      <verbClass>KRWF.RimKata.Verb_RimKataFlyingKick</verbClass>
+      <meleeDamageDef>RimKata_FlyingKickDamage</meleeDamageDef>
+    </verb>
+    <logEntryDef>MeleeAttack</logEntryDef>
+    <combatLogRulesHit>RimKata_FlyingKick_Hit</combatLogRulesHit>
+    <combatLogRulesDeflect>RimKata_FlyingKick_Deflect</combatLogRulesDeflect>
+    <combatLogRulesMiss>RimKata_FlyingKick_Miss</combatLogRulesMiss>
+    <combatLogRulesDodge>RimKata_FlyingKick_Dodge</combatLogRulesDodge>
+  </ManeuverDef>
+  <RulePackDef>
+    <defName>RimKata_FlyingKick_Hit</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[INITIATOR_nameDef] hit [RECIPIENT_nameDef] with a flying kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_FlyingKick_Deflect</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef]'s armor deflected [INITIATOR_nameDef]'s flying kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_FlyingKick_Miss</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[INITIATOR_nameDef] missed [RECIPIENT_nameDef] with a flying kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_FlyingKick_Dodge</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef] dodged [INITIATOR_nameDef]'s flying kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_FlyingKick_Blocked</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef] avoided [INITIATOR_nameDef]'s flying kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+</Defs>

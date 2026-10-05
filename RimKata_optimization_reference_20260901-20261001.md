@@ -2,13 +2,13 @@
 
 작성일: 2026-10-01. 기존에 해결한 비용과 실행 구조를 새 기능에서 다시 만들지 않기 위한 발췌본입니다.
 
-주 원문은 `RimKata_code_cleanup_worklog_260830.md`입니다. 기간 안의 날짜가 확인되는 기록에서 최적화·성능 조사·후속 폐기 결정만 추렸습니다. 같은 문제의 반복 기록은 묶었으며, 기능 설명·번역·기본값·메서드 전수 목록·반복 빌드 보고는 제외했습니다. 날짜가 없는 8월 말~9월 초 경계 기록은 임의로 9월에 편입하지 않았습니다. 원문 링크의 줄 번호는 작성 시점 기준입니다.
+주 원문은 `RimKata_development_memory.md`입니다. 기간 안의 날짜가 확인되는 기록에서 최적화·성능 조사·후속 폐기 결정만 추렸습니다. 같은 문제의 반복 기록은 묶었으며, 기능 설명·번역·기본값·메서드 전수 목록·반복 빌드 보고는 제외했습니다. 날짜가 없는 8월 말~9월 초 경계 기록은 임의로 9월에 편입하지 않았습니다. 원문 링크의 줄 번호는 작성 시점 기준입니다.
 
 여기서 **구현**은 해당 날짜의 작업 기록에 구현됐다는 뜻입니다. 모든 항목을 현재 소스와 인게임에서 다시 검증했다는 뜻은 아닙니다. 이후 기록이 앞선 방식을 폐기·대체했다면 마지막 결정을 함께 적었습니다. 10월 1일의 현재 회귀 검토는 맨 뒤에 따로 구분했습니다.
 
 ## 1. 새 작업 전에 적용할 핵심 기준
 
-1. **공격 요청과 실제 실행을 분리합니다.** 본체는 재사용하는 요청에 무기·대상·문맥을 담아 `RimKataNativeAttack.Queue()`로 등록하고 복귀합니다. 실제 무기 소유자의 `VerbTick`이 실행합니다. 특수 기능이라는 이유로 별도 함수에서 `WarmupComplete → 피해 처리 → 반환 → 다음 무기`를 다시 만들지 않습니다. [실행 위임 기록][native]
+1. **공격 요청과 실제 실행을 분리합니다.** 본체는 재사용하는 요청에 무기·대상·문맥을 담아 `RimKataNativeAttack.Queue()`로 등록하고 복귀합니다. 실제 무기 소유자의 `VerbTick`이 실행합니다. 특수 기능이라는 이유로 별도 함수에서 `WarmupComplete → 피해 처리 → 반환 → 다음 무기`를 다시 만들지 않습니다. [실행 위임 기록][native] **2026-10-05 사용자 지시 예외:** 날아 차기는 무기 사이클이 아닌 단일 비무기 공격이므로 Touch 접점에서 전용 Verb로 한 번 직접 타격하고 명중 후 설정 확률의 기절을 적용합니다. 이 예외를 일반 무기·슬라이딩·떨치기·일반 발차기에 확대하지 않습니다.
 2. **일반 근접 사격의 직접 피해·즉시 Impact 전달은 폐기된 방식입니다.** 발사 시 필요한 명중·방어 문맥을 기록하고 투사체의 원래 충돌 처리가 소비합니다. 당시 `PrepareImmediateImpact`는 기존 요격 용도로만 남겼습니다. 이 과거 코드를 새로운 일반·특수 공격의 표준으로 복사하지 않습니다. [폐기 기록][close-native]
 3. **평시에는 일반 폰의 장비·자격·전투 상태를 새 기능 때문에 반복 확인하지 않습니다.** 연출을 시작하는 자격자가 이미 아는 본인·상대를 시작 사건에서 등록하고, 진행 중인 참가자만 갱신하며, 종료 사건에서 해제합니다. 회피는 자격자 본인의 연출입니다. 비자격자도 지목된 쳐내기 상대·제압 대상일 수 있다는 예외를 일반 폰의 회피 검사로 확대하지 않습니다. **전체 순회문이 없어도 모든 폰의 렌더 호출에서 자격·상태를 조회하면 전체 폰에 반복 비용이 듭니다.** [일반 폰 진입][ordinary] · [참가자 공유][participant] · [등록 자료 직접 소비](#registered-visual-source)
 4. **전투 상태 존재 캐시를 유지합니다.** 이를 없애고 자격자 맵 순회로 대체한 시도는 원복됐습니다. 최종 채택한 개선은 기존 캐시와 진입 구조를 보존하면서 이미 얻은 `state`·`owner`를 전달하는 것입니다. [원복과 최종 결정][presence]
@@ -159,7 +159,7 @@
 
 ## 9. 2026-10-01 후속 패치 — 새 기능에 기존 최적화 적용
 
-추출 이후 사용자 승인으로 구현했습니다. 아래는 현재 적용 상태이며 게임 내 재현 결과와 구분합니다. [작업 기록](<C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3156>)
+추출 이후 사용자 승인으로 구현했습니다. 아래는 현재 적용 상태이며 게임 내 재현 결과와 구분합니다. [작업 기록](<C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3156>)
 
 - **슬라이딩·떨치기:** 직접 WarmupComplete·투사체 수집·즉시 Impact와 전역 Launch 훅 두 개를 제거했습니다. 주·부 슬롯별 재사용 요청을 기존 NativeAttack.Queue/VerbTick에 전달하며, 특수 완료 처리는 일반 후보 재선정과 분리합니다.
 - **일정과 수명:** 슬라이드 6틱 공격은 직전 틱에 예약합니다. 떨치기 후속 3틱 간격/24틱 공격은 17절 수정에 따라 해당 틱의 작업 처리에서 셀을 확인하고 같은 틱의 장비 처리로 전달합니다. 떨치기를 발동시킨 기존 공격 자체가 0틱 타격이며, 공격 직전 현재 요청을 인계합니다. 같은 무기의 0틱 공격은 다시 예약하지 않습니다. 쌍수의 반대 무기는 별도로 0틱 요청을 예약합니다. 예약 대상·예정 틱은 저장/로드하며 마지막 요청 완료까지 일반 공격 재개를 막습니다. 연출 종료 뒤 보호 효과는 연장하지 않습니다.
@@ -283,7 +283,7 @@
 - CE도 전용 CanHitCellFromCellIgnoringRange의 requireLineOfSight 분기에만 같은 범위를 적용합니다. 탄약 준비·소모·탄도·충돌은 원본을 유지합니다. 일반 호출은 활성 verb 비교만 거쳐 원본 bool을 사용하고 보정 helper·자격/상태 조회를 호출하지 않습니다. 다른 verb·Thing 대상·다른 셀에는 적용하지 않으며 중첩/예외 완료에서 이전 범위를 복원합니다.
 - 같은 무기 묶음 기즈모는 바닐라 CurrentTargetUnderMouse가 추가 선택 폰의 실제 Verb.CanHitTarget을 호출합니다. 이 호출 지점에서 난사 타게팅의 셀일 때만 해당 자격자의 기존 CanOrderCell을 사용하고 대표 source의 사거리도 반영합니다. 일반 타게팅/Thing 대상은 원본 호출을 유지하며, 최종 명령은 폰별 기존 자격·사거리 조건을 다시 따릅니다. 단체 공격 기즈모와 개별 난사 슬롯 등록은 기존 경로를 유지합니다.
 - 난사 플래그는 명령 진입과 기존 GUI 사건별 단체 선택 결과에 반영합니다. 비활성 시 이미 가진 전투 상태를 설정·프로필·무기 바인딩 갱신에서 정리하며, 이를 위해 매 틱 별도 설정·자격 조회를 추가하지 않습니다.
-- 근력은 의류·이식물·신체 복구·자격·설정·프로필·로드 사건에서 허용 항목별 합계를 갱신합니다. 소비자는 이미 받은 폰·무기 참조와 갱신된 결과를 사용합니다. 매 공격·기즈모·렌더에서 의류와 hediff 목록을 다시 훑거나 무기의 소유 폰을 다시 찾지 않습니다. 월드 렌더는 기존 등록 자료에 함께 발행한 유효 손잡이 조건을 읽습니다.
+- 근력은 의류·이식물·신체 복구·자격·설정·프로필·로드 사건에서 장착 항목별 합계를 갱신합니다. 항목별 증가량은 (허용 시 적용 프로필의 기본 증가량 + 허용과 무관한 개별 추가 근력)이며, 허용 체크만 강화 그립의 원인이 됩니다. 허용하지 않아도 추가값이 있는 Def는 기존 장비·hediff 변경 사건의 등록 사전에 포함합니다. 소비자는 이미 받은 폰·무기 참조와 갱신된 결과를 사용합니다. 매 공격·기즈모·렌더에서 의류와 hediff 목록을 다시 훑거나 무기의 소유 폰을 다시 찾지 않습니다. 월드 렌더는 기존 등록 자료에 함께 발행한 유효 손잡이 조건을 읽습니다.
 - 근력 창의 전체/필터 초기화는 버튼 실행 시에만 신규 설정과 같은 기본 보호구 목록을 준비해 해당 범위의 허용값을 복원합니다. 개별 증가율은 해제하며, 로드나 소비 경로에서 기본 보호구를 반복 조회·재허용하지 않습니다.
 - 근력의 한 손 취급은 해당 자격자에게만 적용하며 전역 무기 정의·허용 설정을 바꾸지 않습니다. 부 슬롯·손실된 손의 기존 제한과 제압·기어 사격의 한 무기 소비를 유지합니다. 강화 상실 시 기존 무기 검증뿐 아니라 제압의 선택 무기와 기어 사격의 보관 무기도 사건에서 정리합니다.
 - 바닐라 이식물 교체는 기존 부위를 복원한 뒤 새 이식물을 추가합니다. 이 수술 호출 범위에서 근력 갱신을 모아 최종 구성으로 한 번 처리합니다. 중간의 일시적인 근력 상실을 실제 강화 상실로 소비해 무기를 떨어뜨리지 않으며, 중첩 호출·원본 예외·갱신 예외에서도 갱신 범위를 해제합니다.
@@ -307,96 +307,131 @@
 - 범위는 값 형식으로 저장하고 중첩·예외의 Finalizer에서 복원합니다. 앞선 외부 Prefix가 원본을 생략했을 때는 실제 진입 여부를 확인하여 부모 범위를 지우지 않습니다. 같은 공격의 계산 결과를 공유하는 조치이며 매 틱 유지하는 별도 폰 캐시가 아닙니다.
 - 세이브에 남는 공격 횟수·사망·Job과 화면 모트는 구분합니다. 이 사례는 135틱에 Mo의 공격 33건과 처치 7건, 본인 쳐내기 1건이 저장돼 있었으며, 모트 반복만으로 반격 재귀나 Job 재시작을 확정하지 않았습니다. 작업 중단의 직접 원인은 미확정입니다.
 
+## 23. 2026-10-04 날아 차기의 접근 사건·독립 공격·참가자 렌더
+
+- `RimKataFlyingKick`는 실제 `TryEnterNextPathCell` 전후에서 등록된 자격자만 받습니다. native IL에서 기존 등록 슬롯·폰 동일성·자격 플래그를 먼저 확인하며, 이동 도중 자격이 바뀔 수 있으므로 성공한 진입에만 최신 등록을 다시 확인합니다. 일반 폰이나 쳐내기 등의 비자격 임시 참여자는 날아 차기·자격 캐시·상태 소유자 함수를 호출하지 않습니다.
+- 8방향 직선의 실제 3→2칸 접근만 발동합니다. 기존 이동·점유를 유지하고, 두 칸 보행 가능 여부와 바닐라 대각 모서리 차단을 확인합니다. 진행 중에는 보유한 단일 목표와 Job을 사용하며 자기/목표 셀이 바뀐 때만 직선 경로를 재검사합니다. 주변 후보 탐색·전체 `CanReach`·위치 임시 대입은 추가하지 않습니다.
+- 날아 차기 공격은 상태가 보유한 전용 Verb의 예약→기존 `VerbTick` 실행→완료 알림을 사용합니다. 일반 무기 후보에 전용 Tool을 등록하거나 주·부 무기의 요청/쿨다운을 가져오지 않습니다. 전용 Tool의 기본 주먹 피해 배율은 이 기술에만 적용하며, 일반 근접 도구 선택은 바닐라에 남깁니다. 피해를 controller 안에서 직접 반복 적용하거나 완료를 기다리는 루프를 만들지 않습니다.
+- 명중 결과는 실제 타격 단계와 해당 공격의 방어 결과를 함께 사용합니다. Ink가 먼저 흡수한 공격을 단순 `TryCastShot == true`로 명중 처리하지 않으며, 방어구 때문에 최종 피해량이 0이라는 이유만으로 회피로 바꾸지도 않습니다. 기본 둔상 자동 기절은 이 기술의 DamageDef에서만 제거하고 별도 확률을 한 번 적용합니다.
+- 렌더는 발동 시 등록된 `BodyVisualEntry.flyingKick` 값과 동작 전용 frame 슬롯을 직접 소비합니다. 북쪽 시선은 기존 넘어져 쏴의 `LieAngle`과 `FacingAt`을 그대로 사용하여 접근 반대 방향으로 눕는 각도와 현재 각도에 맞는 렌더 방향을 함께 구합니다. 남쪽도 실제 접근 반대 방향의 각도를 쓰며, 동서 방향의 ±72/90도를 남북에 대입하지 않습니다. 눕는 방향은 시작·저장 복원 시 이미 가진 `approachStep`으로 구하며 렌더에서 대상·경로·자격을 다시 조회하지 않습니다. 실제 시작 시선이 남쪽일 때는 한 번 무작위 선택한 동쪽/서쪽을 타격 자세 구간의 몸·머리에만 사용합니다. 도약·체공·착지·실패 하강에는 이 시선을 사용하지 않으며 무기 시선도 원래 남쪽을 유지합니다. 북쪽 계산에서 나온 남쪽 렌더에 이 보정을 다시 적용하지 않습니다. 실제 폰 회전·목표·타격 시점은 유지합니다. 발사 시 이미 가진 request state의 변위를 한 번 계산해 투사체·총구 효과가 공유합니다. 시체/초상화 제외와 실제 몸 높이를 이용한 쌍수 앞뒤 배치를 유지합니다.
+- 발밑→목 접촉 경로와 이동 시간은 도약 시작 사건에서 한 번 계산합니다. 지정한 살아 있는 대상 한 명의 기존 렌더 자료만 사용하고, 이후 렌더는 절대 발밑 좌표를 소비합니다. 시작부터 전진하며 6틱 상승한 뒤 최고점에서 6틱에 걸쳐 눕는 각도로 전환합니다. native 이동 시간이 짧더라도 이 두 전환은 완료합니다. 새 frame에 실제 발 위치가 없을 때만 시작 사건에서 생애 단계 몸 오프셋을 반영합니다. 이동 중의 남은 native 비용과 정지 시 초기화된 비용(0/1)을 구분합니다. 실제 공격 완료는 한 번 저장해 연출 종료와 분리하며, 연출이 남았다는 이유로 피해를 재예약하거나 대상/Job을 재검증하지 않습니다. 아군·적군 허용도 발동 사건에서 한 번 적용합니다.
+- 실패 착지는 날아 차기 상태와 렌더 등록을 종료하고 기존 Fallen에 최종 각도·이동량·원래 목표를 넘기며 시선 인수는 전달하지 않습니다. 남쪽 옆모습 보정은 날아 차기 중에만 적용하며 Fallen에 전달하지 않습니다. 날아 차기 실패라는 이유로 시선을 고정하던 분기도 제거했으며 이후 시선과 자세는 기존 넘어짐 계산이 맡습니다. 다시 Falling 6틱을 시작하거나 공격 가능한 새 후보를 찾지 않습니다. 날아 차기에서 넘어진 경우에만 정해진 유지시간을 보존하고, 기립은 기존 6틱을 사용합니다. 일반 발차기와 밀어 차기의 기회/확률/공격은 별도 구현 범위입니다.
+
+## 24. 2026-10-05 일반 발차기의 기회·공격 사건·목 회전
+
+- 일반 발차기는 날아 차기·떨치기·제압과 별도 상태입니다. `StaggerFor`에서 기존 등록 슬롯의 폰 동일성과 자격 플래그를 먼저 확인하고, 성공한 stagger 사건만 전달합니다. 일반 폰과 비자격 임시 연출 참여자는 발차기 함수·자격 캐시·상태 소유자 조회로 들어오지 않습니다. 등록된 자격자의 최초 사건에 상태가 필요할 때만 기존 소유자를 찾고, 이후에는 보유한 상태를 사용합니다.
+- 재사용 대기시간 밖에서 시작한 근접 전투의 stagger 구간만 종료 통지를 받을 대상으로 등록합니다. `StaggerHandlerTick`의 실제 만료·속도 복원 분기 안에서만 등록 게이트를 거쳐 종료를 통지하며, 만료 전이나 이미 0인 틱에는 추가 등록 조회를 하지 않습니다. 발차기 `Tick`과 공격 시작에서 종료 시점을 반복 관찰하지 않습니다. 슬라이딩의 직접 stagger 해제는 이미 보유한 상태로 같은 종료 처리를 호출합니다. 한 구간이 끝나면 기회 하나를 얻고, 새 stagger·근접 전투 종료·소집 변경 시 기존 관찰 표시와 기회만 지웁니다. 대기시간 중 시작한 stagger가 대기시간 만료 뒤 연장되더라도 새 구간으로 보지 않습니다. 다른 연출 중에는 종료 통지 등록과 기회를 유지하고 새 발차기의 확률 굴림만 보류합니다. 대기 자세 자체는 기회 삭제 조건이 아닙니다. 기존 근접 대상의 유효성 검사는 상태 틱에 남기고, 실제 공격 시 현재 stagger 여부도 발동 조건으로 확인합니다.
+- 무기 없는 소집 대기/자동 근접 공격도 허용합니다. stagger 사건에서 바닐라가 이미 지목한 `meleeThreat` 하나를 Touch·적대 확인해 보존하고, 이후 실제 native 근접 공격의 대상을 이어받습니다. 기존 근접 트리거·명시적 근접 작업·보존한 근접 대상만 확인하며 발차기를 위해 주변 폰을 탐색하거나 무기 사이클을 만들지 않습니다.
+- 일반 공격의 실제 실행에서 발동 조건과 렌더 준비를 통과했을 때만 기회를 한 번 소비하고 확률을 굴립니다. 근접은 native 명중 굴림 진입 직전이고 원거리는 해당 발의 발사 성공 알림입니다. 요청의 원래 state/target을 전달하며, 연사 후속 탄환·무탄약·실행 전 실패·다른 특수 공격은 추가 발차기를 만들지 않습니다. 맨손 native 공격도 등록된 자격자의 기존 발차기 상태만 사용합니다.
+- 피해는 별도의 전용 Verb를 예약하여 기존 native 실행·방어 결과 경로로 처리합니다. 주·부 무기의 일반 도구 후보·쿨다운·Job·요청을 교체하지 않습니다. 사람 주먹의 XML 기본 피해에 발차기 배율만 적용하며, 공격 종류 선택을 일반 공격 쪽에 강제로 고정하지 않습니다. Ink 선처리와 native 명중/회피를 유지하고, 직접 피해 루프나 완료를 기다리는 루프는 추가하지 않습니다.
+- 연출은 발동 시 본인 목/발 좌표와 지정한 대상 셀로 각도를 정합니다. 목을 축으로 6틱 회전하고 6틱 복구하며, 실제 셀이나 경로를 옮기지 않습니다. 남쪽 발차기는 원래 방향의 공격 각도를 유지하면서 몸·머리의 시각 방향만 동쪽/서쪽 중 한 번 무작위 선택합니다. 초기 목·몸 좌표는 선택한 옆모습에 맞추며 저장 복원도 같은 선택을 사용합니다. 무기는 이 옆모습 보정을 적용하지 않고 원래 방향과 조준을 유지합니다. 이미 시작한 12틱 연출은 기회 수명과 분리하여 새 stagger·근접 종료·소집 변경·다른 연출 때문에 끊지 않습니다. 타격은 별도로 원래 작업·대상·Touch 등 실행 조건을 확인하되 재stagger만으로 취소하지 않습니다. 렌더는 등록한 `BodyVisualEntry.kick`과 그 동작의 frame만 읽습니다. 무기는 조준과 앞뒤 깊이를 유지하면서 몸의 변위를 따르고, 실제 사격은 이미 받은 요청 상태로 총구 좌표를 계산합니다. 기회나 대기시간만 남은 상태에는 렌더를 등록하지 않습니다.
+- 저장하는 것은 기회·관찰 중인 구간·대기시간 만료 틱·연출 진행·타격 대상·보존한 근접 대상·완료 여부입니다. 불러오기 시 관찰 표시가 남았지만 stagger가 이미 끝난 저장 상태만 한 번 종료 처리로 보정합니다. 완료한 타격을 불러오기 뒤 다시 예약하지 않으며, frame은 첫 실제 틱/렌더에서 본인 자료로 복구합니다. 자격 상실·퇴장·사망·게임 교체에서는 해당 등록을 정리하고 일반 폰/시체 렌더 조회는 추가하지 않습니다. 밀어 차기는 아래25절의 실제 명중 완료 추가 효과로 연결합니다.
+
 ## 원문 연결
 
 각 링크는 원문 구간의 시작 줄로 이동합니다. 이전 방식의 설명과 후속 폐기 기록이 함께 있는 경우 후속 결정을 우선합니다.
 
-[native]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:77>
-[close-native]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:144>
-[ordinary]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:294>
-[participant]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3076>
-[registered-visual-work]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3198>
-[presence]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2727>
-[binding]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:283>
-[candidate-pass]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:163>
-[wait-search]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3066>
-[candidate-trust]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:413>
-[ring-concurrent]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:38>
-[render-readonly]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:467>
-[prepared14]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2603>
-[door]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2930>
-[occupancy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:104>
-[neutral]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:23>
-[job-state]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2202>
-[controller]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:432>
-[continuity6]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:450>
-[mobile]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:424>
-[loadout]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:272>
-[close-entry]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:259>
-[response-tick]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:309>
-[defense-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:301>
-[continuity10]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:18>
-[command-aim]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2824>
-[idle-candidates]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2890>
-[breach-wait]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3056>
-[explosive-empty]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1897>
-[move-gate5]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2392>
-[move-gate7]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:403>
-[moving-batch]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2539>
-[movement-watch]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:362>
-[ring-maintenance]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:332>
-[target-move]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:340>
-[prepared-pass]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:346>
-[geometry]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:324>
-[incapacitated]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:31>
-[hud]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1749>
-[weather]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1782>
-[idle-intercept]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1826>
-[dormancy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2307>
-[projectile-recipients]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2528>
-[explosive-scheduler]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2671>
-[bullet-defense]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2772>
-[idle-ai]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2864>
-[ground-events]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2918>
-[crawl-events]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2926>
-[hunting-conceal]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2904>
-[breach-access]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3004>
-[mine-event]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3110>
-[subdue]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3146>
-[gunready5]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2320>
-[range-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2332>
-[indicators]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2381>
-[dodge-render]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2423>
-[render-owner]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:373>
-[gunready-copy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2445>
-[carry-copy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2456>
-[gizmo]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2468>
-[secondary-tick]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2478>
-[render-pairrange]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2488>
-[colonist-icon]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:65>
-[smooth-start]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2898>
-[smooth24]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3134>
-[ground-indicator]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2902>
-[breach-render]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3022>
-[map-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3096>
-[opening-bind]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:56>
-[prepared-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2617>
-[catalog]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2631>
-[door-environment]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2940>
-[door-recipe]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3036>
-[door-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:3122>
-[pending-pool]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:317>
-[first-move]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:355>
-[damage-measure]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:231>
-[death-stack]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:130>
-[occupancy-measure]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:113>
-[empty-selection]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:194>
-[intercept-prediction]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1863>
-[temporary-request]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1874>
-[ai-projectile]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:1907>
-[drafted-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2369>
-[inactivity-gate]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2499>
-[compat-defense]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2912>
-[compat-pocket]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2910>
-[melee-gizmo]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2413>
-[combat-icon]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_code_cleanup_worklog_260830.md:2561>
+[native]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:77>
+[close-native]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:144>
+[ordinary]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:294>
+[participant]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3076>
+[registered-visual-work]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3198>
+[presence]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2727>
+[binding]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:283>
+[candidate-pass]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:163>
+[wait-search]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3066>
+[candidate-trust]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:413>
+[ring-concurrent]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:38>
+[render-readonly]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:467>
+[prepared14]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2603>
+[door]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2930>
+[occupancy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:104>
+[neutral]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:23>
+[job-state]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2202>
+[controller]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:432>
+[continuity6]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:450>
+[mobile]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:424>
+[loadout]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:272>
+[close-entry]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:259>
+[response-tick]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:309>
+[defense-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:301>
+[continuity10]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:18>
+[command-aim]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2824>
+[idle-candidates]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2890>
+[breach-wait]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3056>
+[explosive-empty]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1897>
+[move-gate5]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2392>
+[move-gate7]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:403>
+[moving-batch]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2539>
+[movement-watch]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:362>
+[ring-maintenance]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:332>
+[target-move]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:340>
+[prepared-pass]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:346>
+[geometry]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:324>
+[incapacitated]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:31>
+[hud]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1749>
+[weather]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1782>
+[idle-intercept]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1826>
+[dormancy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2307>
+[projectile-recipients]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2528>
+[explosive-scheduler]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2671>
+[bullet-defense]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2772>
+[idle-ai]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2864>
+[ground-events]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2918>
+[crawl-events]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2926>
+[hunting-conceal]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2904>
+[breach-access]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3004>
+[mine-event]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3110>
+[subdue]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3146>
+[gunready5]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2320>
+[range-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2332>
+[indicators]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2381>
+[dodge-render]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2423>
+[render-owner]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:373>
+[gunready-copy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2445>
+[carry-copy]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2456>
+[gizmo]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2468>
+[secondary-tick]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2478>
+[render-pairrange]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2488>
+[colonist-icon]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:65>
+[smooth-start]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2898>
+[smooth24]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3134>
+[ground-indicator]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2902>
+[breach-render]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3022>
+[map-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3096>
+[opening-bind]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:56>
+[prepared-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2617>
+[catalog]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2631>
+[door-environment]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2940>
+[door-recipe]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3036>
+[door-cleanup]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:3122>
+[pending-pool]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:317>
+[first-move]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:355>
+[damage-measure]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:231>
+[death-stack]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:130>
+[occupancy-measure]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:113>
+[empty-selection]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:194>
+[intercept-prediction]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1863>
+[temporary-request]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1874>
+[ai-projectile]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:1907>
+[drafted-reuse]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2369>
+[inactivity-gate]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2499>
+[compat-defense]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2912>
+[compat-pocket]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2910>
+[melee-gizmo]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2413>
+[combat-icon]: <C:/Users/user/Documents/RimworldModsFolder/RimKata/RimKata_development_memory.md:2561>
+
+## 25. 밀어 차기 명중 사건
+
+- 일반 발차기 전용 요청의 실제 Hit 완료에서만 호출하며 Completed를 먼저 표시해 중복 이동을 막습니다. 별도 확률·추가 공격·새 Tick/렌더 등록·일반 폰 순회는 추가하지 않습니다. 기존 바닐라/호환 방어의 빗나감·회피·패링 결과를 보존합니다.
+- 허용 플래그 뒤에만 공격자/대상 신체 질량과 기존 근력 캐시를 읽습니다. 장비·소지품 질량은 제외하고 제압과 같이 설정배율과 근력보너스를 합산합니다.
+- 밀리는 셀과 대각 모서리의 구조물만 한 번 확인합니다. 구조물·닫힌 문 충돌은120틱 기절, 통과 불가 지형은 이동 후 정상 사망 경로입니다. 기존 대상의 실제 위치와 경로만 갱신하며 주변 후보 탐색이나 일반 전투 상태 재등록은 하지 않습니다.
+## 26. 제약 해제의 아군·적군 설정 분리 (2026-10-05)
+
+- 대상별 허용 플래그와 프로필을 아군·적군으로 분리합니다. 기존 비적대=아군 기준을 사용하며 구 단일 설정은 로드할 때 양쪽에 복사합니다. 양쪽 허용값/프로필이 같을 때는 별도 진영 판정을 생략합니다.
+- 팩션 변경과 플레이어와의 적대 관계 변경 사건에서 기존 대상 변경 통지로 자격·프로필·근력·무기 캐시를 갱신합니다. 관계 변경 때 해당 팩션의 맵 폰을 한 번 확인해야 이전에 비허용이던 대상의 새 자격도 반영할 수 있습니다. 이를 일반 틱·렌더 조회로 옮기지 않습니다.
+## 27. 돌파 도약은 기존 참여자의 렌더만 확장 (2026-10-05)
+
+- 문 2칸 전 도약은 기존 돌파 CellEntryScope 사건 안에서 한 번 등록합니다. 일반 폰 대상 패치/자격/상태 조회를 추가하지 않습니다.
+- 날아 차기의 자세·높이 계산만 돌파로 복사합니다. FlyingKick 전투 상태나 별도 참가자 등록을 동시에 켜면 돌파의 배타적 몸·무기 렌더를 막으므로 사용하지 않습니다.
+- 돌파 Job의 기존 Tick/문 파괴/Rise 전환에서 진행값을 계산하고 동일한 breach visual과 프레임 슬롯으로 소비합니다. 문은 기존 frame.foot(도약·회전 변환 전 발밑 기준)을 그대로 사용합니다. 몸에만 높이·회전을 적용하며, 문을 Pawn.DrawPos/셀 중심으로 옮기지 않습니다. 시각 보간을 위해 실제 이동·공격·보호·종료 시간을 바꾸지 않습니다.

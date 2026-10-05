@@ -14,7 +14,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 16f + HeaderHeight;
+        private const float ContentHeight = RowHeight * 18f + HeaderHeight;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -32,6 +32,8 @@ namespace KRWF.RimKata
         private int breachSlideDurationTicks;
         private int breachWaitDurationTicks;
         private float slidingChancePercent;
+        private float flyingKickDamageMultiplierPercent;
+        private float kickChancePercent;
         private float shakeOffChancePercent;
         private int subdueImpactStunTicks;
         private float strengthIncreasePercent;
@@ -48,6 +50,8 @@ namespace KRWF.RimKata
         private string breachSlideDurationBuffer;
         private string breachWaitDurationBuffer;
         private string slidingChanceBuffer;
+        private string flyingKickDamageBuffer;
+        private string kickChanceBuffer;
         private string shakeOffChanceBuffer;
         private string subdueImpactStunBuffer;
         private string strengthIncreaseBuffer;
@@ -66,10 +70,12 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FallenFriendlyFireAvoidChance",
             "KRWF_RimKata_BreachSlideDuration",
             "KRWF_RimKata_BreachWaitDuration",
+            "KRWF_RimKata_FlyingKickDamage",
+            "KRWF_RimKata_KickChance",
             "KRWF_RimKata_SlidingChance",
             "KRWF_RimKata_ShakeOffChance",
             "KRWF_RimKata_SubdueImpactStunDuration",
-            "KRWF_RimKata_StrengthIncrease"
+            "KRWF_RimKata_AllowedStrengthIncrease"
         };
 
         private static readonly string[] HeaderKeys =
@@ -96,6 +102,8 @@ namespace KRWF.RimKata
                 breachSlideDurationTicks = settings.breachSlideDurationTicks;
                 breachWaitDurationTicks = settings.breachWaitDurationTicks;
                 slidingChancePercent = settings.slidingChancePercent;
+                flyingKickDamageMultiplierPercent = settings.flyingKickDamageMultiplierPercent;
+                kickChancePercent = settings.kickChancePercent;
                 shakeOffChancePercent = settings.shakeOffChancePercent;
                 subdueImpactStunTicks = settings.subdueImpactStunTicks;
                 strengthIncreasePercent = settings.strengthIncreasePercent;
@@ -113,6 +121,8 @@ namespace KRWF.RimKata
             breachSlideDurationBuffer = breachSlideDurationTicks.ToString();
             breachWaitDurationBuffer = breachWaitDurationTicks.ToString();
             slidingChanceBuffer = slidingChancePercent.ToString();
+            flyingKickDamageBuffer = flyingKickDamageMultiplierPercent.ToString();
+            kickChanceBuffer = kickChancePercent.ToString();
             shakeOffChanceBuffer = shakeOffChancePercent.ToString();
             subdueImpactStunBuffer = subdueImpactStunTicks.ToString();
             strengthIncreaseBuffer = strengthIncreasePercent.ToString();
@@ -177,14 +187,16 @@ namespace KRWF.RimKata
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[9], ref fallenFriendlyFireAvoidChancePercent, ref fallenFriendlyFireAvoidChanceBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[10], ref breachSlideDurationTicks, ref breachSlideDurationBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[11], ref breachWaitDurationTicks, ref breachWaitDurationBuffer);
-            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref slidingChancePercent, ref slidingChanceBuffer);
-            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[13], ref shakeOffChancePercent, ref shakeOffChanceBuffer);
-            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[14], ref subdueImpactStunTicks, ref subdueImpactStunBuffer);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref flyingKickDamageMultiplierPercent, ref flyingKickDamageBuffer, float.MaxValue);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[13], ref kickChancePercent, ref kickChanceBuffer);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[14], ref slidingChancePercent, ref slidingChanceBuffer);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[15], ref shakeOffChancePercent, ref shakeOffChanceBuffer);
+            DrawTickRow(viewRect.width, ref y, NumericLabelKeys[16], ref subdueImpactStunTicks, ref subdueImpactStunBuffer);
             RimKataSettingsDrawer.DrawFloatField(new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
                 ref strengthIncreasePercent, ref strengthIncreaseBuffer, 0f, float.MaxValue, "%");
             strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
             DrawRowLabel(new Rect(FieldWidth + ColumnGap, y, viewRect.width - FieldWidth - ColumnGap, RowHeight),
-                NumericLabelKeys[15].Translate());
+                NumericLabelKeys[17].Translate());
             y += RowHeight;
             Widgets.EndScrollView();
             DrawButtons(new Rect(inRect.x, inRect.yMax - ButtonHeight, inRect.width, ButtonHeight));
@@ -210,6 +222,8 @@ namespace KRWF.RimKata
                 || settings.breachSlideDurationTicks != breachSlideDurationTicks
                 || settings.breachWaitDurationTicks != breachWaitDurationTicks
                 || settings.slidingChancePercent != slidingChancePercent
+                || settings.flyingKickDamageMultiplierPercent != flyingKickDamageMultiplierPercent
+                || settings.kickChancePercent != kickChancePercent
                 || settings.shakeOffChancePercent != shakeOffChancePercent
                 || settings.subdueImpactStunTicks != subdueImpactStunTicks
                 || settings.strengthIncreasePercent != strengthIncreasePercent;
@@ -226,6 +240,8 @@ namespace KRWF.RimKata
             settings.breachSlideDurationTicks = breachSlideDurationTicks;
             settings.breachWaitDurationTicks = breachWaitDurationTicks;
             settings.slidingChancePercent = slidingChancePercent;
+            settings.flyingKickDamageMultiplierPercent = flyingKickDamageMultiplierPercent;
+            settings.kickChancePercent = kickChancePercent;
             settings.shakeOffChancePercent = shakeOffChancePercent;
             settings.subdueImpactStunTicks = subdueImpactStunTicks;
             settings.strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
@@ -253,11 +269,12 @@ namespace KRWF.RimKata
             y += RowHeight;
         }
 
-        private static void DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer)
+        private static void DrawPercentRow(float width, ref float y, string key, ref float value, ref string buffer,
+            float maximum = 100f)
         {
             RimKataSettingsDrawer.DrawFloatField(
                 new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
-                ref value, ref buffer, 0f, 100f, "%");
+                ref value, ref buffer, 0f, maximum, "%");
             DrawRowLabel(new Rect(FieldWidth + ColumnGap, y, width - FieldWidth - ColumnGap, RowHeight), key.Translate());
             y += RowHeight;
         }

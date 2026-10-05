@@ -110,7 +110,7 @@
   <KRWF_RimKata_NonHumanArmorDialogTitle>İnsan dışı RimKata giysileri</KRWF_RimKata_NonHumanArmorDialogTitle>
   <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Kategori</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
   <KRWF_RimKata_TargetDialogTitle>Kısıtlamaları kaldırılacak hedefler</KRWF_RimKata_TargetDialogTitle>
-  <KRWF_RimKata_TargetDialogDescription>Etkin hedefler normal erişim gereksinimlerini atlayarak seçili profili kullanır. Devre dışı hedefler normal erişim denetimlerini korur.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetDialogDescription>Dost ve düşman hedefler için izinleri ve profilleri ayrı ayarlayın. Dostlar, düşmanca olmayan hedefleri de kapsar. Etkin hedefler olağan erişim koşullarını atlayıp seçilen profili kullanır; diğerleri olağan erişim denetimlerini korur.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Kategori</KRWF_RimKata_TargetCategoryFilter>
   <KRWF_RimKata_TargetCorpseFilter>Ceset filtresi</KRWF_RimKata_TargetCorpseFilter>
   <KRWF_RimKata_TargetNonCorpses>Ceset olmayanlar</KRWF_RimKata_TargetNonCorpses>
@@ -123,6 +123,10 @@
   <KRWF_RimKata_TargetOther>Diğer</KRWF_RimKata_TargetOther>
   <KRWF_RimKata_TargetName>Ad</KRWF_RimKata_TargetName>
   <KRWF_RimKata_TargetEnabled>Etkin</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetFriendly>Dost</KRWF_RimKata_TargetFriendly>
+  <KRWF_RimKata_TargetHostile>Düşman</KRWF_RimKata_TargetHostile>
+  <KRWF_RimKata_TargetFriendlyProfile>Dost profili</KRWF_RimKata_TargetFriendlyProfile>
+  <KRWF_RimKata_TargetHostileProfile>Düşman profili</KRWF_RimKata_TargetHostileProfile>
   <KRWF_RimKata_TargetDisabled>Devre dışı</KRWF_RimKata_TargetDisabled>
   <KRWF_RimKata_TargetProfile>Uygulanan profil</KRWF_RimKata_TargetProfile>
   <KRWF_RimKata_NoMatchingTargets>Eşleşen hedef yok.</KRWF_RimKata_NoMatchingTargets>
@@ -233,8 +237,21 @@
 
   <KRWF_RimKata_StrengthEnhancement>Kas güçlendirme</KRWF_RimKata_StrengthEnhancement>
   <KRWF_RimKata_StrengthIncrease>Güç artışı</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_AllowedStrengthIncrease>İzin verilen donanımdan güç artışı</KRWF_RimKata_AllowedStrengthIncrease>
+  <KRWF_RimKata_IndependentStrengthIncrease>İzinden bağımsız ek güç</KRWF_RimKata_IndependentStrengthIncrease>
   <KRWF_RimKata_StrengthImplants>İmplantlar</KRWF_RimKata_StrengthImplants>
-  <KRWF_RimKata_StrengthOverrideTip>Varsayılan: %{0}. Varsayılanı kullanmak için alanı boşaltın. Kalın değerler, %0 dahil, özel ayarlardır.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_StrengthOverrideTip>İzin durumundan bağımsız olarak güç ekler (boş alan: %0). İzin verilen öğelerde varsayılan güç artışına eklenir. Kalın değerler ayrı olarak belirlenmiştir.</KRWF_RimKata_StrengthOverrideTip>
   <KRWF_RimKata_ResetAllStrength>Tümünü sıfırla</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Filtrelenen sonuçları sıfırla</KRWF_RimKata_ResetFilteredStrength>
+  <KRWF_RimKata_FeatureFlyingKick>Uçan tekme</KRWF_RimKata_FeatureFlyingKick>
+  <KRWF_RimKata_FlyingKickAllowedFriendly>Düşman olmayan piyonların uçan tekme atmasına izin ver</KRWF_RimKata_FlyingKickAllowedFriendly>
+  <KRWF_RimKata_FlyingKickAllowedHostile>Düşman piyonların uçan tekme atmasına izin ver</KRWF_RimKata_FlyingKickAllowedHostile>
+  <KRWF_RimKata_FlyingKickStunChance>Uçan tekme sersemletme şansı</KRWF_RimKata_FlyingKickStunChance>
+  <KRWF_RimKata_FlyingKickDamage>Uçan tekme hasarı</KRWF_RimKata_FlyingKickDamage>
+  <KRWF_RimKata_FeatureKick>Tekme</KRWF_RimKata_FeatureKick>
+  <KRWF_RimKata_KickCooldown>Tekme bekleme süresi</KRWF_RimKata_KickCooldown>
+  <KRWF_RimKata_KickDamage>Tekme hasarı</KRWF_RimKata_KickDamage>
+  <KRWF_RimKata_KickChance>Tekme olasılığı</KRWF_RimKata_KickChance>
+  <KRWF_RimKata_FeaturePushKick>İtme tekmesi</KRWF_RimKata_FeaturePushKick>
+  <KRWF_RimKata_PushKickMassLimit>İtme tekmesi kütle sınırı</KRWF_RimKata_PushKickMassLimit>
 </LanguageData>

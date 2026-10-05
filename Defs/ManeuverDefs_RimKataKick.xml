@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ToolCapacityDef>
+    <defName>RimKata_KickCapacity</defName>
+    <label>kick</label>
+  </ToolCapacityDef>
+  <DamageDef ParentName="BluntBase">
+    <defName>RimKata_KickDamage</defName>
+    <label>kick</label>
+  </DamageDef>
+  <ManeuverDef>
+    <defName>RimKata_Kick</defName>
+    <requiredCapacity>RimKata_KickCapacity</requiredCapacity>
+    <verb>
+      <verbClass>KRWF.RimKata.Verb_RimKataKick</verbClass>
+      <meleeDamageDef>RimKata_KickDamage</meleeDamageDef>
+    </verb>
+    <logEntryDef>MeleeAttack</logEntryDef>
+    <combatLogRulesHit>RimKata_Kick_Hit</combatLogRulesHit>
+    <combatLogRulesDeflect>RimKata_Kick_Deflect</combatLogRulesDeflect>
+    <combatLogRulesMiss>RimKata_Kick_Miss</combatLogRulesMiss>
+    <combatLogRulesDodge>RimKata_Kick_Dodge</combatLogRulesDodge>
+  </ManeuverDef>
+  <RulePackDef>
+    <defName>RimKata_Kick_Hit</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[INITIATOR_nameDef] hit [RECIPIENT_nameDef] with a kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_Kick_Deflect</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef]'s armor deflected [INITIATOR_nameDef]'s kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_Kick_Miss</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[INITIATOR_nameDef] missed [RECIPIENT_nameDef] with a kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_Kick_Dodge</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef] dodged [INITIATOR_nameDef]'s kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+  <RulePackDef>
+    <defName>RimKata_Kick_Blocked</defName>
+    <rulePack>
+      <rulesStrings><li>r_logentry->[RECIPIENT_nameDef] avoided [INITIATOR_nameDef]'s kick.</li></rulesStrings>
+    </rulePack>
+  </RulePackDef>
+</Defs>

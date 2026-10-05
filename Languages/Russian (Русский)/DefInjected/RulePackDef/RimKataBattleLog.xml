@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
   <RimKata_ParryBattleLog.rulePack.rulesStrings.0>r_logentry-&gt;[SUBJECT_nameDef] парировал атаку [INITIATOR_nameDef].</RimKata_ParryBattleLog.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;Удар ногой в прыжке от [INITIATOR_nameDef] попал в [RECIPIENT_nameDef].</RimKata_FlyingKick_Hit.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;Броня [RECIPIENT_nameDef] отразила удар ногой в прыжке от [INITIATOR_nameDef].</RimKata_FlyingKick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;Удар ногой в прыжке от [INITIATOR_nameDef] не попал в [RECIPIENT_nameDef].</RimKata_FlyingKick_Miss.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] уклоняется от удара ногой в прыжке от [INITIATOR_nameDef].</RimKata_FlyingKick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] избегает удара ногой в прыжке от [INITIATOR_nameDef].</RimKata_FlyingKick_Blocked.rulePack.rulesStrings.0>
+  <RimKata_Kick_Hit.rulePack.rulesStrings.0>r_logentry-&gt;Удар ногой от [INITIATOR_nameDef] попал в [RECIPIENT_nameDef].</RimKata_Kick_Hit.rulePack.rulesStrings.0>
+  <RimKata_Kick_Deflect.rulePack.rulesStrings.0>r_logentry-&gt;Броня [RECIPIENT_nameDef] отразила удар ногой от [INITIATOR_nameDef].</RimKata_Kick_Deflect.rulePack.rulesStrings.0>
+  <RimKata_Kick_Miss.rulePack.rulesStrings.0>r_logentry-&gt;Удар ногой от [INITIATOR_nameDef] не попал в [RECIPIENT_nameDef].</RimKata_Kick_Miss.rulePack.rulesStrings.0>
+  <RimKata_Kick_Dodge.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] уклоняется от удара ногой от [INITIATOR_nameDef].</RimKata_Kick_Dodge.rulePack.rulesStrings.0>
+  <RimKata_Kick_Blocked.rulePack.rulesStrings.0>r_logentry-&gt;[RECIPIENT_nameDef] избегает удара ногой от [INITIATOR_nameDef].</RimKata_Kick_Blocked.rulePack.rulesStrings.0>
 </LanguageData>

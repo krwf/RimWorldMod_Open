@@ -121,7 +121,9 @@ namespace KRWF.RimKata
 
         private static FrameEntry EntryFor(Pawn pawn)
         {
-            if (pawn == null || RimKataWorldRenderContext.BodyFor(pawn)?.groundPose != true) return null;
+            if (pawn == null) return null;
+            var body = RimKataWorldRenderContext.BodyFor(pawn);
+            if (body?.kick.HasValue == true || body?.flyingKick.HasValue == true || body?.groundPose != true) return null;
             if (equipmentFrame.pawn == pawn) return equipmentFrame.entry;
             return Frames.TryGetValue(pawn, out FrameEntry entry) && entry.ready ? entry : null;
         }
@@ -134,6 +136,7 @@ namespace KRWF.RimKata
 
         internal static bool WeaponsAboveBody(Pawn pawn = null)
         {
+            if (RimKataKickRender.EquipmentActive || RimKataFlyingKickRender.EquipmentActive) return false;
             if (RimKataReactiveRender.WeaponsAboveBody(pawn)) return true;
             if (RimKataBreachRender.WeaponsAboveBody(pawn)) return true;
             if (pawn == null) return equipmentFrame.weaponLayerOffset > 0f;
@@ -171,14 +174,15 @@ namespace KRWF.RimKata
         {
             origin = default;
             if (pawn == null || weapon?.def.IsRangedWeapon != true) return false;
-            FrameEntry entry = EntryFor(pawn);
-            if (entry == null) return false;
+            // PushEquipment already selected the ground-pose frame for this scope.
             if (equipmentFrame.pawn == pawn)
             {
                 if (!equipmentFrame.headCenter.HasValue) return false;
                 origin = equipmentFrame.PlaceWeapon(equipmentFrame.placement.anchor);
                 return true;
             }
+            FrameEntry entry = EntryFor(pawn);
+            if (entry == null) return false;
             Frame frame = ReadFrame(pawn, entry);
             if (!frame.headCenter.HasValue) return false;
             origin = frame.PlaceWeapon(frame.placement.anchor);
@@ -190,24 +194,27 @@ namespace KRWF.RimKata
         {
             ref readonly Frame frame = ref equipmentFrame;
             if (frame.pawn == null || !(equipment is ThingWithComps weapon)
-                || !TryGetRangedAimOrigin(frame.pawn, weapon, out Vector3 origin)) return;
+                || !weapon.def.IsRangedWeapon || !frame.headCenter.HasValue) return;
             Pawn pawn = frame.pawn;
+            ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             LocalTargetInfo target = LocalTargetInfo.Invalid;
             RimKataWeaponVisualData cycleVisual = default;
             bool cycleAim = false;
-            if (RimKataVisualUtility.TryGetCachedActiveSnapshot(pawn, out var snapshot)
-                && snapshot.responsePoseWeapon == weapon
-                && RimKataVisualUtility.TryGetLiveResponseFocus(pawn, snapshot, out var response))
-                target = response;
-            else
+            bool responseAim = context.pawn == pawn && context.snapshotActive
+                ? context.snapshot.responsePoseWeapon == weapon
+                    && RimKataVisualUtility.TryGetLiveResponseFocus(pawn, context.snapshot, out target)
+                : RimKataVisualUtility.TryGetCachedActiveSnapshot(pawn, out var snapshot)
+                    && snapshot.responsePoseWeapon == weapon
+                    && RimKataVisualUtility.TryGetLiveResponseFocus(pawn, snapshot, out target);
+            if (!responseAim)
             {
                 bool sameWeapon = prepared.pawn == pawn && prepared.weapon == weapon;
+                if (sameWeapon && prepared.adjusted && prepared.hasVisual && prepared.visual.target.IsValid) return;
                 RimKataWeaponVisualData visual = prepared.visual;
                 bool hasVisual = sameWeapon ? prepared.hasVisual
-                    : RimKataDualWeaponController.TryGetVisualData(pawn, weapon, out visual);
+                    : RimKataGunReadyDrawUtility.TryGetVisualData(pawn, weapon, out visual);
                 if (hasVisual && visual.target.IsValid)
                 {
-                    if (sameWeapon && prepared.adjusted) return;
                     target = visual.target;
                     cycleVisual = visual;
                     cycleAim = true;
@@ -216,8 +223,10 @@ namespace KRWF.RimKata
                     && !busy.neverAimWeapon && busy.verb?.EquipmentSource == weapon)
                     target = busy.focusTarg;
             }
+            if (!target.IsValid && context.pawn == pawn) target = context.fallAimTarget;
             if (!target.IsValid) return;
 
+            Vector3 origin = frame.PlaceWeapon(frame.placement.anchor);
             Vector3 position = target.HasThing && target.Thing.Spawned
                 ? target.Thing.DrawPos : target.Cell.ToVector3Shifted();
             Vector3 direction = (position - origin).Yto0();
@@ -240,9 +249,14 @@ namespace KRWF.RimKata
 
         internal static Matrix4x4 TransformEquipment(Pawn pawn, Matrix4x4 matrix)
         {
+            if (RimKataWorldRenderContext.TryKick(pawn, out _))
+                return RimKataKickRender.TransformEquipment(pawn, matrix);
+            if (RimKataWorldRenderContext.TryFlyingKick(pawn, out _))
+                return RimKataFlyingKickRender.TransformEquipment(pawn, matrix);
             FrameEntry entry = EntryFor(pawn);
             if (entry == null)
-                return RimKataReactiveRender.TransformEquipment(pawn, RimKataBreachRender.TransformEquipment(pawn, matrix));
+                return RimKataFlyingKickRender.TransformEquipment(pawn,
+                    RimKataReactiveRender.TransformEquipment(pawn, RimKataBreachRender.TransformEquipment(pawn, matrix)));
             if (equipmentFrame.pawn == pawn) return TransformEquipment(in equipmentFrame, matrix);
             Frame frame = ReadFrame(pawn, entry);
             return TransformEquipment(in frame, matrix);
@@ -250,10 +264,15 @@ namespace KRWF.RimKata
 
         private static Matrix4x4 TransformEquipment(in Frame frame, Matrix4x4 matrix, bool externalPrimary = false)
         {
+            if (RimKataKickRender.EquipmentActive)
+                return RimKataKickRender.TransformEquipment(matrix);
+            if (RimKataFlyingKickRender.EquipmentActive)
+                return RimKataFlyingKickRender.TransformEquipment(matrix);
             if (frame.pawn == null)
             {
                 RimKataCrawlFireRender.ObserveWeaponCenter(new Vector3(matrix.m03, matrix.m13, matrix.m23));
-                return RimKataReactiveRender.TransformEquipment(RimKataBreachRender.TransformEquipment(matrix));
+                return RimKataFlyingKickRender.TransformEquipment(
+                    RimKataReactiveRender.TransformEquipment(RimKataBreachRender.TransformEquipment(matrix)));
             }
             Vector3 position = new Vector3(matrix.m03, matrix.m13, matrix.m23);
             ThingWithComps weapon = ObserveWeapon(frame, position, externalPrimary);
@@ -267,11 +286,22 @@ namespace KRWF.RimKata
 
         internal static void TransformExternalEquipment(ref Vector3 position, ref Quaternion rotation)
         {
+            if (RimKataKickRender.EquipmentActive)
+            {
+                RimKataKickRender.TransformEquipment(ref position);
+                return;
+            }
+            if (RimKataFlyingKickRender.EquipmentActive)
+            {
+                RimKataFlyingKickRender.TransformEquipment(ref position);
+                return;
+            }
             if (equipmentFrame.pawn == null)
             {
                 RimKataCrawlFireRender.ObserveWeaponCenter(position);
                 RimKataBreachRender.TransformEquipment(ref position, ref rotation);
                 RimKataReactiveRender.TransformEquipment(ref position);
+                RimKataFlyingKickRender.TransformEquipment(ref position);
                 return;
             }
             ThingWithComps weapon = ObserveWeapon(equipmentFrame, position, externalPrimary: true);
@@ -329,8 +359,13 @@ namespace KRWF.RimKata
 
         internal static Matrix4x4 TransformAccessory(Matrix4x4 matrix)
         {
+            if (RimKataKickRender.EquipmentActive)
+                return RimKataKickRender.TransformEquipment(matrix);
+            if (RimKataFlyingKickRender.EquipmentActive)
+                return RimKataFlyingKickRender.TransformEquipment(matrix);
             if (equipmentFrame.pawn == null)
-                return RimKataReactiveRender.TransformEquipment(RimKataBreachRender.TransformEquipment(matrix));
+                return RimKataFlyingKickRender.TransformEquipment(
+                    RimKataReactiveRender.TransformEquipment(RimKataBreachRender.TransformEquipment(matrix)));
             Vector3 position = equipmentFrame.weapons.MultiplyPoint3x4(
                 new Vector3(matrix.m03, matrix.m13, matrix.m23));
             matrix.m03 = position.x;

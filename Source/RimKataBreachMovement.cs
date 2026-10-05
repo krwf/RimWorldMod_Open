@@ -90,7 +90,7 @@ namespace KRWF.RimKata
         internal static void Stop(Pawn pawn, RimKataBreachState state)
         {
             if (!(pawn.jobs?.curDriver is JobDriver_RimKataBreach driver)) return;
-            if (state.broken) driver.BeginRise(); else driver.Cancel();
+            if (state.broken) driver.BeginRise(movementStopped: true); else driver.Cancel();
         }
 
         internal static void RememberBlocker(RimKataBreachState state)
@@ -277,6 +277,12 @@ namespace KRWF.RimKata
                 || state.phase != BreachPhase.Run && state.phase != BreachPhase.Slide
                 || __state.version != RimKataBreachUtility.AttackStateVersion
                     && RimKataBreachUtility.Get(___pawn) != state) return;
+            if (state.phase == BreachPhase.Run && state.leap == null
+                && ___pawn.Position == state.doorCell - state.direction * 2)
+            {
+                state.leap = RimKataBreachLeap.Start(state);
+                RimKataBreachUtility.Publish(state);
+            }
             if (state.broken && ___pawn.Position == state.doorCell)
             {
                 Vector3 offset = ___pawn.Position.ToVector3Shifted() - state.doorOrigin;

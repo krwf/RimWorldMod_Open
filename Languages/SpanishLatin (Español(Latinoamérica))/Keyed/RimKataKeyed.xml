@@ -110,7 +110,7 @@
   <KRWF_RimKata_NonHumanArmorDialogTitle>Ropa RimKata no humana</KRWF_RimKata_NonHumanArmorDialogTitle>
   <KRWF_RimKata_NonHumanEquipmentCategoryFilter>Categoría</KRWF_RimKata_NonHumanEquipmentCategoryFilter>
   <KRWF_RimKata_TargetDialogTitle>Objetivos de eliminación de restricciones</KRWF_RimKata_TargetDialogTitle>
-  <KRWF_RimKata_TargetDialogDescription>Los objetivos habilitados omiten los requisitos de acceso habituales y usan el perfil seleccionado. Los objetivos deshabilitados conservan sus comprobaciones de acceso habituales.</KRWF_RimKata_TargetDialogDescription>
+  <KRWF_RimKata_TargetDialogDescription>Configura permisos y perfiles por separado para los objetivos aliados y hostiles. Los aliados incluyen los objetivos no hostiles. Los objetivos activados omiten los requisitos habituales y usan el perfil elegido; los demás mantienen las comprobaciones habituales.</KRWF_RimKata_TargetDialogDescription>
   <KRWF_RimKata_TargetCategoryFilter>Categoría</KRWF_RimKata_TargetCategoryFilter>
   <KRWF_RimKata_TargetCorpseFilter>Filtro de cadáveres</KRWF_RimKata_TargetCorpseFilter>
   <KRWF_RimKata_TargetNonCorpses>No cadáveres</KRWF_RimKata_TargetNonCorpses>
@@ -123,6 +123,10 @@
   <KRWF_RimKata_TargetOther>Otro</KRWF_RimKata_TargetOther>
   <KRWF_RimKata_TargetName>Nombre</KRWF_RimKata_TargetName>
   <KRWF_RimKata_TargetEnabled>Habilitado</KRWF_RimKata_TargetEnabled>
+  <KRWF_RimKata_TargetFriendly>Aliados</KRWF_RimKata_TargetFriendly>
+  <KRWF_RimKata_TargetHostile>Hostiles</KRWF_RimKata_TargetHostile>
+  <KRWF_RimKata_TargetFriendlyProfile>Perfil aliado</KRWF_RimKata_TargetFriendlyProfile>
+  <KRWF_RimKata_TargetHostileProfile>Perfil hostil</KRWF_RimKata_TargetHostileProfile>
   <KRWF_RimKata_TargetDisabled>Deshabilitado</KRWF_RimKata_TargetDisabled>
   <KRWF_RimKata_TargetProfile>Perfil aplicado</KRWF_RimKata_TargetProfile>
   <KRWF_RimKata_NoMatchingTargets>No hay objetivos coincidentes.</KRWF_RimKata_NoMatchingTargets>
@@ -233,8 +237,21 @@
 
   <KRWF_RimKata_StrengthEnhancement>Mejora de fuerza</KRWF_RimKata_StrengthEnhancement>
   <KRWF_RimKata_StrengthIncrease>Aumento de fuerza</KRWF_RimKata_StrengthIncrease>
+  <KRWF_RimKata_AllowedStrengthIncrease>Aumento de fuerza del equipo permitido</KRWF_RimKata_AllowedStrengthIncrease>
+  <KRWF_RimKata_IndependentStrengthIncrease>Fuerza adicional sin depender del permiso</KRWF_RimKata_IndependentStrengthIncrease>
   <KRWF_RimKata_StrengthImplants>Implantes</KRWF_RimKata_StrengthImplants>
-  <KRWF_RimKata_StrengthOverrideTip>Valor predeterminado: {0}%. Vacía el campo para usarlo. La negrita indica un valor individual, incluido 0%.</KRWF_RimKata_StrengthOverrideTip>
+  <KRWF_RimKata_StrengthOverrideTip>Añade fuerza independientemente del permiso (campo vacío: 0%). Para las entradas permitidas, se suma al aumento predeterminado. Los valores en negrita se han fijado individualmente.</KRWF_RimKata_StrengthOverrideTip>
   <KRWF_RimKata_ResetAllStrength>Restablecer todo</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Restablecer resultados filtrados</KRWF_RimKata_ResetFilteredStrength>
+  <KRWF_RimKata_FeatureFlyingKick>Patada voladora</KRWF_RimKata_FeatureFlyingKick>
+  <KRWF_RimKata_FlyingKickAllowedFriendly>Permitir patadas voladoras a peones no hostiles</KRWF_RimKata_FlyingKickAllowedFriendly>
+  <KRWF_RimKata_FlyingKickAllowedHostile>Permitir patadas voladoras a peones hostiles</KRWF_RimKata_FlyingKickAllowedHostile>
+  <KRWF_RimKata_FlyingKickStunChance>Probabilidad de aturdimiento de la patada voladora</KRWF_RimKata_FlyingKickStunChance>
+  <KRWF_RimKata_FlyingKickDamage>Daño de la patada voladora</KRWF_RimKata_FlyingKickDamage>
+  <KRWF_RimKata_FeatureKick>Patada</KRWF_RimKata_FeatureKick>
+  <KRWF_RimKata_KickCooldown>Tiempo de recarga de la patada</KRWF_RimKata_KickCooldown>
+  <KRWF_RimKata_KickDamage>Daño de la patada</KRWF_RimKata_KickDamage>
+  <KRWF_RimKata_KickChance>Probabilidad de patada</KRWF_RimKata_KickChance>
+  <KRWF_RimKata_FeaturePushKick>Patada de empuje</KRWF_RimKata_FeaturePushKick>
+  <KRWF_RimKata_PushKickMassLimit>Límite de masa de la patada de empuje</KRWF_RimKata_PushKickMassLimit>
 </LanguageData>
