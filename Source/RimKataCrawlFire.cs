@@ -454,7 +454,7 @@ namespace KRWF.RimKata
             Map map = record.pawn.Map;
             if (map == null) return;
             bool overridden = record.fireAllowed != (RimKataTargetAccess.SettingsFor(record.pawn)
-                ?.GetCrawlFireDefaultAllowed(record.pawn) ?? RimKataSettings.DefaultCrawlFireDefaultAllowed);
+                ?.crawlFireDefaultAllowed ?? RimKataSettings.DefaultCrawlFireDefaultAllowed);
             if (!FireOverrides.TryGetValue(map, out HashSet<Pawn> pawns))
             {
                 if (!overridden) return;
@@ -471,7 +471,7 @@ namespace KRWF.RimKata
             foreach (Pawn pawn in pawns)
                 if (Retained.TryGetValue(pawn, out var record))
                 {
-                    record.fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.GetCrawlFireDefaultAllowed(pawn)
+                    record.fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.crawlFireDefaultAllowed
                         ?? RimKataSettings.DefaultCrawlFireDefaultAllowed;
                     if (record.fireAllowed) NotifyPathStarted(pawn);
                     else NotifyPathStopped(pawn);

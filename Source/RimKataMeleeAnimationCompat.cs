@@ -35,18 +35,19 @@ namespace KRWF.RimKata
         private static MethodInfo shouldDraw, drawMesh, filterBridge;
         private static int idleType;
         private static bool failed;
+        internal static bool EquipmentRenderingEnabled { get; private set; }
 
         internal static void Apply(Harmony harmony)
         {
-            Type renderer = AccessTools.TypeByName("AM.AnimRenderer");
+            Type renderer = RimKataActiveModTypes.Find("AM.AnimRenderer");
             if (renderer == null) return;
 
-            Type part = AccessTools.TypeByName("AnimPartData");
-            Type snapshot = AccessTools.TypeByName("AnimPartSnapshot");
-            Type ov = AccessTools.TypeByName("AnimPartOverrideData");
-            Type def = AccessTools.TypeByName("AM.AnimDef");
-            Type comp = AccessTools.TypeByName("AM.Idle.IdleControllerComp");
-            Type tweak = AccessTools.TypeByName("AM.Tweaks.ItemTweakData");
+            Type part = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartData");
+            Type snapshot = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartSnapshot");
+            Type ov = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartOverrideData");
+            Type def = RimKataActiveModTypes.Find("AM.AnimDef");
+            Type comp = RimKataActiveModTypes.Find("AM.Idle.IdleControllerComp");
+            Type tweak = RimKataActiveModTypes.Find("AM.Tweaks.ItemTweakData");
             var r = Expression.Parameter(typeof(object), "renderer");
             var n = Expression.Parameter(typeof(string), "name");
             var i = Expression.Parameter(typeof(int), "index");
@@ -85,13 +86,13 @@ namespace KRWF.RimKata
                     Expression.Field(ss, "WorldMatrix"), Expression.Field(ss, "WorldMatrixNoOverride"),
                     Expression.Field(ss, "FlipX"), Expression.Field(ss, "FlipY"))), r, i).Compile();
             getTweak = (Func<ThingDef, object>)Delegate.CreateDelegate(typeof(Func<ThingDef, object>),
-                AccessTools.Method(AccessTools.TypeByName("AM.Tweaks.TweakDataManager"), "TryGetTweak", new[] { typeof(ThingDef) }));
+                AccessTools.Method(RimKataActiveModTypes.Find("AM.Tweaks.TweakDataManager"), "TryGetTweak", new[] { typeof(ThingDef) }));
             offX = Getter<float>(tweak, "OffX"); offY = Getter<float>(tweak, "OffY");
             scaleX = Getter<float>(tweak, "ScaleX"); scaleY = Getter<float>(tweak, "ScaleY");
             rotation = Getter<float>(tweak, "Rotation");
             flipX = Getter<bool>(tweak, "FlipX"); flipY = Getter<bool>(tweak, "FlipY");
             getMesh = (Func<bool, bool, Mesh>)Delegate.CreateDelegate(typeof(Func<bool, bool, Mesh>),
-                AccessTools.Method(AccessTools.TypeByName("AnimData"), "GetMesh"));
+                AccessTools.Method(RimKataActiveModTypes.Find(renderer.Assembly, "AnimData"), "GetMesh"));
             shouldDraw = AccessTools.Method(renderer, "ShouldDraw", new[] { snapshot.MakeByRefType() });
             drawMesh = AccessTools.Method(typeof(Graphics), nameof(Graphics.DrawMesh), new[]
             {
@@ -103,17 +104,15 @@ namespace KRWF.RimKata
 
             try
             {
-                harmony.Patch(AccessTools.Method(renderer, "Draw"), prefix: Hook(nameof(Begin)),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(renderer, "Draw"), prefix: Hook(nameof(Begin)),
                     transpiler: Hook(nameof(Transpiler)), postfix: Hook(nameof(FinishDraw)), finalizer: Hook(nameof(End)));
-                harmony.Patch(AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "TryDrawPair"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "TryDrawPair"),
                     prefix: Hook(nameof(PairPrefix)));
-                harmony.Patch(AccessTools.Method(typeof(RimKataEquipmentRenderHooks), nameof(RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras)),
-                    prefix: Hook(nameof(BeginEquipment)), finalizer: Hook(nameof(EndEquipment)));
-                harmony.Patch(AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "DrawWeapon"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataDualWeaponRenderUtility), "DrawWeapon"),
                     prefix: Hook(nameof(DrawSlot)));
-                harmony.Patch(AccessTools.Method(typeof(RimKataWeaponRenderProbe), "NotifySecondaryDraw"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataWeaponRenderProbe), "NotifySecondaryDraw"),
                     postfix: Hook(nameof(SecondaryDrawn)));
-                harmony.Patch(AccessTools.Method(AccessTools.TypeByName(
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(RimKataActiveModTypes.Find(
                     "AM.Patches.Patch_PawnRenderer_DrawEquipment"), "Prefix", new[] { typeof(Thing) }),
                     prefix: Hook(nameof(RangedEquipmentPrefix)));
             }
@@ -122,6 +121,7 @@ namespace KRWF.RimKata
                 failed = true;
                 throw;
             }
+            EquipmentRenderingEnabled = true;
             RimKataMeleeAnimationReplay.Apply(harmony);
         }
 
@@ -287,18 +287,17 @@ namespace KRWF.RimKata
             return root;
         }
 
-        [HarmonyPriority(Priority.First + 100)]
-        private static void BeginEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags,
+        internal static void BeginEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags,
             out EquipmentFrame __state)
         {
             __state = null;
             if (failed || !RimKataMeleeAnimationReplay.Active || RimKataWeaponRenderProbe.Probing || (flags & PawnRenderFlags.Portrait) != 0
-                || pawn?.Spawned != true || pawn.Dead || pawn.Downed
-                || !RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(pawn, out ThingWithComps secondary)
-                || secondary == null || !RimKataVisualUtility.IsSecondaryUsable(pawn, pawn.equipment?.Primary, secondary)
+                || pawn?.Spawned != true || pawn.Dead || pawn.Downed) return;
+            RimKataResponseVisualParticipantCache.BodyVisualEntry visual = RimKataWorldRenderContext.BodyFor(pawn);
+            if (visual?.registeredQualified != true || visual.equipmentSecondary == null
                 || RimKataBreachWeaponRender.Owns(pawn) || RimKataReactiveRender.Owns(pawn)) return;
             EquipmentFrame frame = equipmentFrames.GetValue(pawn, _ => new EquipmentFrame());
-            frame.Pawn = pawn; frame.Primary = pawn.equipment.Primary; frame.Secondary = secondary;
+            frame.Pawn = pawn; frame.Primary = visual.equipmentPrimary; frame.Secondary = visual.equipmentSecondary;
             frame.Root = drawPos; frame.Facing = facing; frame.Flags = flags; frame.SecondaryDrawn = false;
             frame.BodyRoot = drawPos;
             frame.BodyRoot.y = RimKataWorldRenderContext.EquipmentBodyAltitude(pawn, drawPos, facing);
@@ -306,12 +305,11 @@ namespace KRWF.RimKata
             __state = frame;
         }
 
-        [HarmonyPriority(Priority.First)]
-        private static Exception EndEquipment(Exception __exception, EquipmentFrame __state)
+        internal static void EndEquipment(bool completed, EquipmentFrame __state)
         {
-            if (__state == null) return __exception;
+            if (__state == null) return;
             __state.DrawingEquipment = false;
-            if (__exception != null || failed) return __exception;
+            if (!completed || failed) return;
             try
             {
                 if (OwnsRender(__state.Pawn))
@@ -327,7 +325,6 @@ namespace KRWF.RimKata
                 }
             }
             catch (Exception exception) { Fail(exception); }
-            return __exception;
         }
 
         private static void SecondaryDrawn(Thing weapon)
@@ -553,7 +550,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private sealed class EquipmentFrame
+        internal sealed class EquipmentFrame
         {
             internal Pawn Pawn;
             internal ThingWithComps Primary, Secondary;

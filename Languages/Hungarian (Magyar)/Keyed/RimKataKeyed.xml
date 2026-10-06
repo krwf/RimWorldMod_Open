@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Mégse</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Visszaállítja a fegyverbeállításokat?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Visszaállítja a ruházati beállításokat?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Köszönöm XD\nKattintson a „{0}” gombra.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Visszaállítja ezt: „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Visszaállítja ezt: „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Törli ezt: „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Érzelemcsillapító szérumfüggőség</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Tulajdonságok kiválasztása</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Lövészetszint</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Közelharcszint</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Kijelölés törlése</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Előre látja a közeli tűzharcokat, és reagál rájuk. Használhatja a RimKatát.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Követelmények</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Tulajdonságok ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Lövészetszint</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Közelharcszint</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Jelöltkorlátok</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Közelharci hatótávolság</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Rövid hatótávolság</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Mozgás időtartama áttörés közben</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Várakozási idő az áttörés célpontjának elérése után</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Alapértékek</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Kúszás közbeni tüzelés engedélyezése a nem ellenséges karaktereknek</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Kúszás közbeni tüzelés engedélyezése az ellenséges karaktereknek</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés alapértelmezett engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Kúszás közbeni tüzelés engedélyezése</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Földre került célpontok elengedése automatikus lefogáskor</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Sima célzási átmenetek</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Lefogás</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatikus lefogás</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Lefogás</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Lefogható tömeg határa</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Ütközéses kábítás ideje lefogáskor</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Automatikus lefogás időtartama</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Támadás lefogás közben</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Megtámadja a tartott karaktert. Minden lefogás kezdetén kikapcsolva.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Lefogási műveletek</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Összes visszaállítása</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Szűrt eredmények visszaállítása</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Ugrórúgás</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Ugrórúgás engedélyezése a nem ellenséges karaktereknek</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Ugrórúgás engedélyezése az ellenséges karaktereknek</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Ugrórúgás kábítási esélye</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Ugrórúgás sebzése</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Rúgás</KRWF_RimKata_FeatureKick>

@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Abbrechen</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Waffeneinstellungen zurücksetzen?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Bekleidungseinstellungen zurücksetzen?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Danke XD\nBitte auf „{0}“ klicken.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>„{0}“ zurücksetzen?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>„{0}“ zurücksetzen?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>„{0}“ löschen?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Abhängigkeit vom Gefühlsbetäubungsserum</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Eigenschaften auswählen</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Schießen-Stufe</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Nahkampf-Stufe</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Auswahl zurücksetzen</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Erkennt Feuergefechte auf kurze Distanz im Voraus und reagiert darauf. Kann RimKata verwenden.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Voraussetzungen</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Eigenschaften ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Schießen-Stufe</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Nahkampf-Stufe</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Kandidatenbegrenzungen</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Nahkampfreichweite</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Kurze Reichweite</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Bewegungsdauer beim Durchbruch</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wartezeit nach Erreichen des Durchbruchziels</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Standardwerte</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Schießen beim Kriechen für nicht feindselige Figuren erlauben</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Schießen beim Kriechen für feindselige Figuren erlauben</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen standardmäßig erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Schießen beim Kriechen erlauben</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Zu Boden gegangene Ziele beim automatischen Überwältigen loslassen</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Sanfte Zielwechsel</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Überwältigen</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatisch überwältigen</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Überwältigen</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Massengrenze zum Überwältigen</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Betäubungsdauer durch Aufprall beim Überwältigen</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Haltedauer beim automatischen Überwältigen</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Angriff beim Überwältigen</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Greift die festgehaltene Figur an. Zu Beginn jeder Überwältigung deaktiviert.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Überwältigungsaktionen</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Alle zurücksetzen</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Gefilterte Ergebnisse zurücksetzen</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Sprungtritt</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Sprungtritte für nicht feindselige Figuren erlauben</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Sprungtritte für feindselige Figuren erlauben</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Betäubungschance des Sprungtritts</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Schaden des Sprungtritts</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Tritt</KRWF_RimKata_FeatureKick>

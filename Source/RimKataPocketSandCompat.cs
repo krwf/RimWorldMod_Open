@@ -21,7 +21,7 @@ namespace KRWF.RimKata
 
         internal static void Apply()
         {
-            Type driver = AccessTools.TypeByName("PocketSand.JobDriver_Equip");
+            Type driver = RimKataActiveModTypes.Find("PocketSand.JobDriver_Equip");
             if (driver == null) return;
             var harmony = new Harmony("krwf.rimkata.pocketsand");
             try
@@ -45,7 +45,7 @@ namespace KRWF.RimKata
                 }
                 if (exchange == null || !typeof(JobDriver).IsAssignableFrom(driver))
                     throw new InvalidOperationException("PocketSand equipment exchange API did not match.");
-                harmony.Patch(exchange, transpiler: new HarmonyMethod(
+                RimKataStartupPatches.Patch(harmony, exchange, transpiler: new HarmonyMethod(
                     typeof(RimKataPocketSandCompat), nameof(ExchangeTranspiler)));
             }
             catch (Exception exception)

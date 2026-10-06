@@ -7,7 +7,7 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    internal static class RimKataWeaponRenderProbe
+    internal static partial class RimKataWeaponRenderProbe
     {
         internal enum SecondaryDrawResult
         {
@@ -30,7 +30,7 @@ namespace KRWF.RimKata
             internal bool secondaryDrawn;
         }
 
-        private static readonly Dictionary<ThingDef, RimKataWeaponRenderDiscovery.Renderer[]> renderersByDef =
+        private static Dictionary<ThingDef, RimKataWeaponRenderDiscovery.Renderer[]> renderersByDef =
             new Dictionary<ThingDef, RimKataWeaponRenderDiscovery.Renderer[]>();
         private static readonly HashSet<ThingDef> failedProbes = new HashSet<ThingDef>();
         private static readonly HashSet<ThingDef> failedFallbacks = new HashSet<ThingDef>();
@@ -72,20 +72,11 @@ namespace KRWF.RimKata
 
         internal static void RefreshDefinitions()
         {
-            renderersByDef.Clear();
-            failedProbes.Clear();
-            failedFallbacks.Clear();
-            if (!RimKataWeaponRenderDiscovery.HasRenderers)
+            var plan = new DefinitionPlan(RimKataWeaponRenderDiscovery.Renderers, RimKataEquipmentMemory.Current);
+            using (RimKataStartupDiagnostics.Measure("preparation", "equipment_renderer_mapping"))
             {
-                return;
-            }
-
-            foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
-            {
-                if (def.IsWeapon)
-                {
-                    Register(def);
-                }
+                foreach (object unused in plan.Scan()) { }
+                plan.Apply(RimKataWeaponRenderDiscovery.Renderers);
             }
         }
 

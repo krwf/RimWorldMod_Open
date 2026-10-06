@@ -55,11 +55,11 @@ namespace KRWF.RimKata
         internal static void Apply(Harmony harmony)
         {
             if (applied) return;
-            ProjectileType = AccessTools.TypeByName("CombatExtended.ProjectileCE");
+            ProjectileType = RimKataActiveModTypes.Find("CombatExtended.ProjectileCE");
             if (ProjectileType == null) return;
-            BulletType = AccessTools.TypeByName("CombatExtended.BulletCE");
-            VerbType = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
-            explosiveCompType = AccessTools.TypeByName("CombatExtended.CompProperties_ExplosiveCE");
+            BulletType = RimKataActiveModTypes.Find("CombatExtended.BulletCE");
+            VerbType = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
+            explosiveCompType = RimKataActiveModTypes.Find("CombatExtended.CompProperties_ExplosiveCE");
             Position = Property<Vector3>("ExactPosition");
             PreviousPosition = Field<Vector3>("LastPos");
             Launcher = Field<Thing>("launcher");
@@ -74,23 +74,23 @@ namespace KRWF.RimKata
                 || !RimKataCombatExtendedTrajectory.Initialize())
                 throw new InvalidOperationException("CE projectile API did not match.");
 
-            harmony.Patch(AccessTools.Method(ProjectileType, "Launch",
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(ProjectileType, "Launch",
                     new[] { typeof(Thing), typeof(Vector2), typeof(Thing) }),
                 prefix: Patch(nameof(LaunchPrefix)), postfix: Patch(nameof(LaunchPostfix)));
-            harmony.Patch(AccessTools.Method(ProjectileType, "Throw"), postfix: Patch(nameof(LaunchPostfix)));
-            harmony.Patch(AccessTools.Method(ProjectileType, "CanCollideWith"), prefix: Patch(nameof(CanCollidePrefix)));
-            harmony.Patch(AccessTools.Method(ProjectileType, "CheckForCollisionBetween"),
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(ProjectileType, "Throw"), postfix: Patch(nameof(LaunchPostfix)));
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(ProjectileType, "CanCollideWith"), prefix: Patch(nameof(CanCollidePrefix)));
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(ProjectileType, "CheckForCollisionBetween"),
                 postfix: Patch(nameof(CollisionPostfix)));
-            Type laserType = AccessTools.TypeByName("CombatExtended.Lasers.LaserBeamCE");
+            Type laserType = RimKataActiveModTypes.Find("CombatExtended.Lasers.LaserBeamCE");
             MethodInfo rayImpact = AccessTools.DeclaredMethod(laserType, "Impact", new[] { typeof(Thing), typeof(Vector3) });
             if (rayImpact != null)
-                harmony.Patch(rayImpact, prefix: Patch(nameof(RayImpactPrefix)), finalizer: Patch(nameof(RayImpactFinalizer)));
+                RimKataStartupPatches.Patch(harmony, rayImpact, prefix: Patch(nameof(RayImpactPrefix)), finalizer: Patch(nameof(RayImpactFinalizer)));
             foreach (Type type in AccessTools.GetTypesFromAssembly(ProjectileType.Assembly))
             {
                 if (!ProjectileType.IsAssignableFrom(type)) continue;
                 MethodInfo impact = AccessTools.DeclaredMethod(type, "Impact", new[] { typeof(Thing) });
                 if (impact != null && !impact.IsAbstract)
-                    harmony.Patch(impact, prefix: Patch(nameof(ImpactPrefix)), finalizer: Patch(nameof(ImpactFinalizer)));
+                    RimKataStartupPatches.Patch(harmony, impact, prefix: Patch(nameof(ImpactPrefix)), finalizer: Patch(nameof(ImpactFinalizer)));
             }
             applied = true;
             RimKataCombatExtendedProjectileHooks.Apply(harmony);

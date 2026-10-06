@@ -16,6 +16,7 @@ namespace KRWF.RimKata
         internal RimKataFlyingKickPhase phase;
         internal Thing target;
         internal int jobId, age, phaseTicks, descentTicks, recoveryTicks, contactTicks;
+        internal int contactStartAge, contactTravelTicks;
         internal int lastTick = -1;
         internal float startHeight, startAngle;
         internal Rot4 facing;
@@ -36,6 +37,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref descentTicks, "descentTicks");
             Scribe_Values.Look(ref recoveryTicks, "recoveryTicks");
             Scribe_Values.Look(ref contactTicks, "contactTicks");
+            Scribe_Values.Look(ref contactStartAge, "contactStartAge");
+            Scribe_Values.Look(ref contactTravelTicks, "contactTravelTicks");
             Scribe_Values.Look(ref startHeight, "startHeight");
             Scribe_Values.Look(ref startAngle, "startAngle");
             Scribe_Values.Look(ref facing, "facing");
@@ -75,6 +78,7 @@ namespace KRWF.RimKata
                         contactStart = (visual.footPosition - contactEnd * progress
                             - new Vector3(0f, 0f, visual.height)) / (1f - progress);
                 }
+                if (contactTravelTicks <= 0) contactTravelTicks = Math.Max(1, contactTicks);
             }
         }
     }
@@ -109,19 +113,27 @@ namespace KRWF.RimKata
             if (pawn.Position == previous || pawn.pather?.Moving != true) return;
             Thing target = pawn.pather.Destination.Thing;
             if (target?.Spawned != true || Distance(previous, target.Position) != 3
-                || Distance(pawn.Position, target.Position) != 2
-                || Active.ContainsKey(pawn) || !LiveTarget(pawn, target)) return;
-            var settings = RimKataTargetAccess.SettingsFor(pawn);
-            if (settings?.flyingKickEnabled != true || !settings.GetFlyingKickAllowed(pawn)) return;
+                || Distance(pawn.Position, target.Position) != 2) return;
             IntVec3 approach = target.Position - pawn.Position;
             IntVec3 step = new IntVec3(Math.Sign(approach.x), 0, Math.Sign(approach.z));
             if (pawn.Position - previous != step || target.Position - previous != step * 3) return;
+            TryStart(entry, target, step);
+        }
+
+        internal static bool TryStart(RimKataResponseVisualParticipantCache.BodyVisualEntry entry,
+            Thing target, IntVec3 step)
+        {
+            Pawn pawn = entry.pawn;
+            if (Active.ContainsKey(pawn) || RimKataFlyingKickApproach.WasUsedForCurrentJob(pawn)
+                || !LiveTarget(pawn, target)) return false;
+            var settings = RimKataTargetAccess.SettingsFor(pawn);
+            if (settings?.flyingKickEnabled != true) return false;
             RimKataPawnCombatState combat = entry.snapshotState;
             if (!ApprovedApproach(pawn, target, ref combat) || !CanStart(pawn, combat)
-                || !StraightPath(pawn, target.Position)) return;
+                || !StraightPath(pawn, target.Position)) return false;
             var owner = combat?.ownerComponent ?? pawn.Map.GetComponent<RimKataMapComponent>();
             combat ??= owner.GetState(pawn, true);
-            if (combat == null || HasOtherMotion(pawn, combat)) return;
+            if (combat == null || HasOtherMotion(pawn, combat)) return false;
             Rot4 facing = Rot4.FromAngleFlat((target.Position - pawn.Position).AngleFlat);
             var flight = new RimKataFlyingKickState {
                 target = target, jobId = pawn.CurJob.loadID, facing = facing,
@@ -133,8 +145,10 @@ namespace KRWF.RimKata
                 lieAngle = RimKataGroundPoseUtility.LieAngle(-step.ToVector3(), facing) };
             combat.flyingKick = flight;
             Active[pawn] = combat;
+            RimKataFlyingKickApproach.NotifyStarted(pawn);
             BeginContact(combat);
             Publish(combat);
+            return true;
         }
 
         internal static int Distance(IntVec3 a, IntVec3 b)
@@ -162,10 +176,12 @@ namespace KRWF.RimKata
                 && !HasOtherMotion(pawn, combat) && RimKataGroundPoseHead.Supports(pawn);
 
         private static bool HasOtherMotion(Pawn pawn, RimKataPawnCombatState combat)
+            => combat?.VisualActive == true || combat?.CloseDodgeActive == true
+                || combat?.DodgeMovementActive == true || HasInterruptingMotion(pawn, combat);
+
+        private static bool HasInterruptingMotion(Pawn pawn, RimKataPawnCombatState combat)
             => combat?.groundPose != null || combat?.reactiveMotion != null
-                || combat?.kick?.motionActive == true
-                || combat?.VisualActive == true || combat?.CloseDodgeActive == true
-                || combat?.DodgeMovementActive == true || combat?.DeflectionSpinActive == true
+                || combat?.kick?.motionActive == true || combat?.DeflectionSpinActive == true
                 || RimKataBreachUtility.Get(pawn) != null || RimKataSubdueUtility.IsHolding(pawn);
 
         private static bool LiveTarget(Pawn pawn, Thing target)
@@ -208,23 +224,24 @@ namespace KRWF.RimKata
             if (flight == null || flight.lastTick == Find.TickManager.TicksGame) return;
             flight.lastTick = Find.TickManager.TicksGame;
             Pawn pawn = combat.pawn;
-            if (!pawn.Spawned || pawn.Dead || pawn.Downed || !pawn.Awake() || HasOtherMotion(pawn, combat))
+            // A new dodge must not discard the flight's hit result or its Fall -> Fallen handoff.
+            if (!pawn.Spawned || pawn.Dead || pawn.Downed || !pawn.Awake() || HasInterruptingMotion(pawn, combat))
             {
                 Clear(combat);
                 return;
             }
             bool airborne = flight.phase == RimKataFlyingKickPhase.Approach || flight.phase == RimKataFlyingKickPhase.Strike;
-            bool touch = false;
             if (airborne) ObserveAttackResult(combat);
             if (airborne && !flight.attackResolved && flight.phase != RimKataFlyingKickPhase.Abort)
             {
+                // Stagger prevents takeoff in CanStart; it does not cancel an admitted leap.
                 if (pawn.CurJob?.loadID != flight.jobId || pawn.CurJob.targetA.Thing != flight.target
                     || !LiveTarget(pawn, flight.target) || pawn.InMentalState || pawn.IsBurning()
-                    || pawn.stances.stagger.Staggered || pawn.stances.stunner.Stunned)
+                    || pawn.stances.stunner.Stunned)
                     Abort(combat);
-                else
+                else if (RefreshApproach(combat))
                 {
-                    if (touch = pawn.CanReachImmediate(flight.target, PathEndMode.Touch))
+                    if (pawn.CanReachImmediate(flight.target, PathEndMode.Touch))
                         Strike(combat, validated: true);
                     if (combat.flyingKick != flight) return;
                     ObserveAttackResult(combat);
@@ -250,13 +267,14 @@ namespace KRWF.RimKata
                     float strikeAngle = flight.facing.IsHorizontal ? -Side(flight) * 72f : flight.visual.lieAngle;
                     flight.visual.angle = Mathf.Lerp(flight.startAngle, strikeAngle, turn);
                 }
-                float progress = Mathf.Clamp01(flight.age / (float)Math.Max(1, flight.contactTicks));
+                float progress = Mathf.Clamp01((flight.age - flight.contactStartAge)
+                    / (float)Math.Max(1, flight.contactTravelTicks));
                 float lift = flight.age <= 6 ? flight.age / 6f
                     : 1f - Mathf.Clamp01((flight.age - 6f) / Math.Max(1, flight.contactTicks - 6));
                 flight.visual.height = 1.2f * lift;
                 flight.visual.footPosition = Vector3.Lerp(flight.contactStart, flight.contactEnd, progress)
                     + new Vector3(0f, 0f, flight.visual.height);
-                if (progress >= 1f && flight.phase == RimKataFlyingKickPhase.Strike
+                if (progress >= 1f && flight.age >= flight.contactTicks && flight.phase == RimKataFlyingKickPhase.Strike
                     && flight.phaseTicks >= RimKataGroundPoseState.TransitionDuration && flight.attackResolved)
                     BeginDescent(flight, flight.attackHit ? RimKataFlyingKickPhase.Land : RimKataFlyingKickPhase.Fall, 4);
             }
@@ -279,20 +297,34 @@ namespace KRWF.RimKata
                     return;
                 }
             }
-            if (!flight.attackResolved
-                && (flight.phase == RimKataFlyingKickPhase.Approach || flight.phase == RimKataFlyingKickPhase.Strike)
-                && !touch)
-            {
-                if (pawn.pather?.Moving != true || pawn.pather.Destination.Thing != flight.target)
-                    Abort(combat);
-                else if (flight.pawnCell != pawn.Position || flight.targetCell != flight.target.Position)
-                {
-                    flight.pawnCell = pawn.Position;
-                    flight.targetCell = flight.target.Position;
-                    if (!StraightPath(pawn, flight.targetCell)) Abort(combat);
-                }
-            }
             if (combat.flyingKick == flight) Publish(combat);
+        }
+
+        private static bool RefreshApproach(RimKataPawnCombatState combat)
+        {
+            var flight = combat.flyingKick;
+            IntVec3 pawnCell = combat.pawn.Position, targetCell = flight.target.Position;
+            if (flight.pawnCell == pawnCell && flight.targetCell == targetCell) return true;
+            // Straightness and clearance admit the leap once; the same target may move closer or sideways.
+            if (Distance(pawnCell, targetCell) > Distance(flight.pawnCell, flight.targetCell))
+            {
+                Abort(combat);
+                return false;
+            }
+            if (flight.targetCell != targetCell && flight.contactStarted)
+            {
+                if (!RimKataFlyingKickRender.CaptureContact(combat.pawn, flight.target, flight.visual,
+                    out _, out flight.contactEnd))
+                    flight.contactEnd = targetCell.ToVector3Shifted();
+                // Retarget from the displayed foot without restarting the original rise/fall curve.
+                flight.contactStart = flight.visual.footPosition - new Vector3(0f, 0f, flight.visual.height);
+                flight.contactStartAge = flight.age;
+                flight.contactTravelTicks = Math.Max(RimKataGroundPoseState.TransitionDuration,
+                    flight.contactTicks - flight.age);
+            }
+            flight.pawnCell = pawnCell;
+            flight.targetCell = targetCell;
+            return true;
         }
 
         private static void ObserveAttackResult(RimKataPawnCombatState combat)
@@ -314,6 +346,8 @@ namespace KRWF.RimKata
                 flight.contactEnd = flight.targetCell.ToVector3Shifted();
             flight.contactTicks = Math.Max(6 + RimKataGroundPoseState.TransitionDuration,
                 flight.age + ContactDuration(combat.pawn, flight.approachStep));
+            flight.contactStartAge = 0;
+            flight.contactTravelTicks = flight.contactTicks;
             flight.contactStarted = true;
             flight.visual.footPinned = true;
             flight.visual.footPosition = flight.contactStart;
@@ -368,13 +402,14 @@ namespace KRWF.RimKata
             if (flight.phase != RimKataFlyingKickPhase.Approach && flight.phase != RimKataFlyingKickPhase.Strike) return false;
             Pawn pawn = combat.pawn;
             if (!validated && (!pawn.Spawned || pawn.Dead || pawn.Downed || pawn.InMentalState
-                || pawn.stances.stunner.Stunned || pawn.stances.stagger.Staggered
+                || pawn.stances.stunner.Stunned
                 || pawn.CurJob?.loadID != flight.jobId || pawn.CurJob.targetA.Thing != flight.target
                 || !LiveTarget(pawn, flight.target) || !pawn.CanReachImmediate(flight.target, PathEndMode.Touch)))
             {
                 Abort(combat);
                 return false;
             }
+            if (!validated && !RefreshApproach(combat)) return false;
             if (!ExecuteAttack(combat)) { Abort(combat); return false; }
             if (combat.flyingKick == flight) ObserveAttackResult(combat);
             return true;
@@ -409,10 +444,15 @@ namespace KRWF.RimKata
 
         internal static void QualificationLost(Pawn pawn)
         {
+            RimKataFlyingKickApproach.Remove(pawn);
             if (pawn != null && Active.TryGetValue(pawn, out var combat)) Abort(combat);
         }
 
-        internal static void ResetGame() => Active.Clear();
+        internal static void ResetGame()
+        {
+            Active.Clear();
+            RimKataFlyingKickApproach.ResetGame();
+        }
 
         internal static void Clear(RimKataPawnCombatState combat)
         {
@@ -427,6 +467,7 @@ namespace KRWF.RimKata
         {
             if (combat?.flyingKick == null) return;
             Active[combat.pawn] = combat;
+            RimKataFlyingKickApproach.NotifyStarted(combat.pawn);
             combat.flyingKick.visual.frame = combat.flyingKick.frame;
             Publish(combat);
         }
@@ -504,7 +545,7 @@ namespace KRWF.RimKata
     {
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
-            Label original = generator.DefineLabel();
+            Label original = generator.DefineLabel(), autoSubdue = generator.DefineLabel();
             LocalBuilder result = generator.DeclareLocal(typeof(bool));
             var pawnField = AccessTools.Field(typeof(Pawn_MeleeVerbs), "pawn");
             var gate = RimKataRegisteredPawnGate.Branch(generator, new[] {
@@ -514,7 +555,7 @@ namespace KRWF.RimKata
             yield return new CodeInstruction(OpCodes.Ldloc, entry);
             yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(typeof(RimKataResponseVisualParticipantCache.BodyVisualEntry), "flyingKick"));
             yield return new CodeInstruction(OpCodes.Call, AccessTools.PropertyGetter(typeof(RimKataFlyingKickVisual?), "HasValue"));
-            yield return new CodeInstruction(OpCodes.Brfalse, original);
+            yield return new CodeInstruction(OpCodes.Brfalse, autoSubdue);
             yield return new CodeInstruction(OpCodes.Ldarg_0);
             yield return new CodeInstruction(OpCodes.Ldfld, pawnField);
             yield return new CodeInstruction(OpCodes.Ldarg_1);
@@ -522,6 +563,16 @@ namespace KRWF.RimKata
             yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataFlyingKick), nameof(RimKataFlyingKick.ReplaceUnarmedAttack)));
             yield return new CodeInstruction(OpCodes.Brfalse, original);
             yield return new CodeInstruction(OpCodes.Ldloc, result);
+            yield return new CodeInstruction(OpCodes.Ret);
+            yield return new CodeInstruction(OpCodes.Ldarg_0).WithLabels(autoSubdue);
+            yield return new CodeInstruction(OpCodes.Ldfld, pawnField);
+            yield return new CodeInstruction(OpCodes.Ldarg_1);
+            yield return new CodeInstruction(OpCodes.Isinst, typeof(Pawn));
+            yield return new CodeInstruction(OpCodes.Ldloc, entry);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(RimKataResponseVisualParticipantCache.BodyVisualEntry), "equipmentState"));
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataAutoSubdue), nameof(RimKataAutoSubdue.Request)));
+            yield return new CodeInstruction(OpCodes.Brfalse, original);
+            yield return new CodeInstruction(OpCodes.Ldc_I4_0);
             yield return new CodeInstruction(OpCodes.Ret);
             yield return new CodeInstruction(OpCodes.Nop).WithLabels(original);
             foreach (var code in instructions) yield return code;

@@ -14,14 +14,24 @@ namespace KRWF.RimKata
     {
         static RimKataBootstrap()
         {
+            try { Initialize(); }
+            finally { LongEventHandler.ExecuteWhenFinished(RimKataStartupDiagnostics.Complete); }
+        }
+
+        private static void Initialize()
+        {
+            RimKataActiveModTypes.Initialize();
             LongEventHandler.ExecuteWhenFinished(() =>
             {
-                if (!RimKataMod.EnsureProfilesInitialized())
+                using (RimKataStartupDiagnostics.Measure("preparation", "profiles_and_weapons"))
                 {
-                    RimKataPreparedWeaponData.RefreshDefinitions();
+                    if (!RimKataMod.EnsureProfilesInitialized())
+                    {
+                        RimKataPreparedWeaponData.RefreshDefinitions();
+                    }
                 }
             });
-            LongEventHandler.ExecuteWhenFinished(() => RimKataActivationSettings.Apply());
+            LongEventHandler.ExecuteWhenFinished(() => Run("preparation", "activation", () => RimKataActivationSettings.Apply()));
             Harmony harmony;
             try
             {
@@ -35,7 +45,7 @@ namespace KRWF.RimKata
 
             try
             {
-                harmony.PatchAll(Assembly.GetExecutingAssembly());
+                RimKataStartupPatches.Apply(harmony, Assembly.GetExecutingAssembly());
             }
             catch (Exception exception)
             {
@@ -44,18 +54,22 @@ namespace KRWF.RimKata
 
             try
             {
-                Patch_Projectile_Impact_Context.Apply(harmony);
+                Run("discovery", "projectile_targets", () => Patch_Projectile_Impact_Context.Apply(harmony));
             }
             catch (Exception exception)
             {
                 Log.Error("[RimKata] Projectile.Impact patch discovery failed; initialization will continue.\n" + exception);
             }
 
-            LongEventHandler.ExecuteWhenFinished(() => RimKataWeaponRenderProbe.Initialize(harmony));
-            LongEventHandler.ExecuteWhenFinished(RimKataStrengthUtility.Initialize);
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                Run("preparation", "weapon_render_setup", () => RimKataWeaponRenderProbe.Initialize(harmony));
+                RimKataEquipmentMemory.Flush();
+            });
+            LongEventHandler.ExecuteWhenFinished(() => Run("preparation", "strength", RimKataStrengthUtility.Initialize));
             try
             {
-                RimKataCombatExtendedCompat.Apply(harmony);
+                RunCompatibility("compat_ce_equipment", "CombatExtended.CompAmmoUser", () => RimKataCombatExtendedCompat.Apply(harmony));
             }
             catch (Exception exception)
             {
@@ -64,7 +78,7 @@ namespace KRWF.RimKata
 
             try
             {
-                RimKataRatkinCompat.Apply(harmony);
+                RunCompatibility("compat_ratkin", "NewRatkin.HediffComp_RatHolicGun", () => RimKataRatkinCompat.Apply(harmony));
             }
             catch (Exception exception)
             {
@@ -76,19 +90,19 @@ namespace KRWF.RimKata
             ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
             ApplyCombatExtended(harmony, RimKataCombatExtendedDirectionalFire.Apply, "directional firing");
             ApplyCombatExtended(harmony, RimKataCombatExtendedGroundPose.Apply, "ground-pose firing");
-            RimKataDynamicAnimeCombatCompat.Apply();
-            RimKataInkCombatCompat.Apply();
-            RimKataReboundCompat.Apply();
-            RimKataPocketSandCompat.Apply();
+            RunCompatibility("compat_dynamic_anime", "DynamicAnimeCombat.Core.CombatMechanics", RimKataDynamicAnimeCombatCompat.Apply);
+            RunCompatibility("compat_ink", "NinjaCombat.DamageReactions", RimKataInkCombatCompat.Apply);
+            RunCompatibility("compat_rebound", "ProjectileInversion.API", RimKataReboundCompat.Apply);
+            RunCompatibility("compat_pocketsand", "PocketSand.JobDriver_Equip", RimKataPocketSandCompat.Apply);
             LongEventHandler.ExecuteWhenFinished(() =>
             {
-                try { RimKataMuzzleFlashCompat.Apply(harmony); }
+                try { RunCompatibility("compat_muzzle_flash", "MuzzleFlash.MuzzleFlashUtility", () => RimKataMuzzleFlashCompat.Apply(harmony)); }
                 catch (Exception exception)
                 { Log.Error("[RimKata] Muzzle Flash ground-pose integration failed.\n" + exception); }
             });
             try
             {
-                RimKataMeleeAnimationCompat.Apply(harmony);
+                RunCompatibility("compat_melee_animation", "AM.AnimRenderer", () => RimKataMeleeAnimationCompat.Apply(harmony));
             }
             catch (Exception exception)
             {
@@ -98,11 +112,26 @@ namespace KRWF.RimKata
 
         private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)
         {
-            try { apply(harmony); }
+            try { RunCompatibility("compat_ce_" + component, "CombatExtended.Verb_LaunchProjectileCE", () => apply(harmony)); }
             catch (Exception exception)
             {
                 Log.Error("[RimKata] CE " + component + " integration failed.\n" + exception);
             }
+        }
+
+        private static void Run(string category, string stage, Action action)
+        {
+            using (RimKataStartupDiagnostics.Measure(category, stage)) action();
+        }
+
+        private static void RunCompatibility(string stage, string requiredType, Action action)
+        {
+            bool available;
+            using (RimKataStartupDiagnostics.Measure("discovery", "active_mod_detection"))
+                available = RimKataActiveModTypes.Find(requiredType) != null;
+            RimKataStartupDiagnostics.Detail(stage, available ? "active" : "skipped (required type not in active mods)");
+            RimKataStartupDiagnostics.Count(available ? "compatibility_entered" : "compatibility_skipped");
+            if (available) Run("discovery", stage, action);
         }
     }
 
@@ -118,6 +147,8 @@ namespace KRWF.RimKata
             private readonly bool enableRimKataI;
             private readonly bool enableRimKataG;
             private readonly bool enableSerumDependency;
+            private readonly bool enableShootingLevel, enableMeleeLevel;
+            private readonly int shootingLevelRequirement, meleeLevelRequirement;
             private readonly float aiSecondaryWeaponChancePercent;
             private readonly string activeProfileId;
             private readonly string[] enabledWeaponDefNames;
@@ -135,6 +166,10 @@ namespace KRWF.RimKata
                 enableRimKataI = settings?.enableRimKataI ?? true;
                 enableRimKataG = settings?.enableRimKataG ?? true;
                 enableSerumDependency = settings?.enableSerumDependency ?? true;
+                enableShootingLevel = settings?.enableShootingLevel == true;
+                enableMeleeLevel = settings?.enableMeleeLevel == true;
+                shootingLevelRequirement = settings?.shootingLevelRequirement ?? 0;
+                meleeLevelRequirement = settings?.meleeLevelRequirement ?? 0;
                 aiSecondaryWeaponChancePercent = settings?.aiSecondaryWeaponChancePercent ?? 0f;
                 activeProfileId = settings?.ActiveProfileId;
                 enabledWeaponDefNames = CaptureList(settings?.enabledWeaponDefNames);
@@ -159,6 +194,10 @@ namespace KRWF.RimKata
                     && enableRimKataI == settings.enableRimKataI
                     && enableRimKataG == settings.enableRimKataG
                     && enableSerumDependency == settings.enableSerumDependency
+                    && enableShootingLevel == settings.enableShootingLevel
+                    && enableMeleeLevel == settings.enableMeleeLevel
+                    && shootingLevelRequirement == settings.shootingLevelRequirement
+                    && meleeLevelRequirement == settings.meleeLevelRequirement
                     && aiSecondaryWeaponChancePercent == settings.aiSecondaryWeaponChancePercent
                     && string.Equals(activeProfileId, settings.ActiveProfileId, StringComparison.Ordinal)
                     && ListMatches(enabledWeaponDefNames, settings.enabledWeaponDefNames)
@@ -219,13 +258,18 @@ namespace KRWF.RimKata
 
         public RimKataMod(ModContentPack content) : base(content)
         {
-            instance = this;
-            Settings = GetSettings<RimKataSettings>();
-            RimKataAllowedWeaponStore.ConfigureRoot(content.RootDir);
-            RimKataAllowedWeaponStore.InstallCaptureHook();
-            RimKataDoorCache.ConfigureRoot(content.RootDir);
-            Profiles = new RimKataProfileStore(content.RootDir);
-            uiBuffers.SyncFrom(Settings);
+            RimKataStartupDiagnostics.Begin();
+            using (RimKataStartupDiagnostics.Measure("preparation", "mod_setup"))
+            {
+                instance = this;
+                Settings = GetSettings<RimKataSettings>();
+                RimKataEquipmentMemory.ConfigureRoot(content.RootDir);
+                RimKataAllowedWeaponStore.ConfigureRoot(content.RootDir);
+                RimKataAllowedWeaponStore.InstallCaptureHook();
+                RimKataDoorCache.ConfigureRoot(content.RootDir);
+                Profiles = new RimKataProfileStore(content.RootDir);
+                uiBuffers.SyncFrom(Settings);
+            }
         }
 
         public override string SettingsCategory()
@@ -300,6 +344,7 @@ namespace KRWF.RimKata
         {
             Settings.SanitizeGeneProbabilityRules();
             Settings.SanitizeStrengthRules();
+            Settings.SanitizePersonalActivation();
             if (Profiles?.IsInitialized == true)
             {
                 try

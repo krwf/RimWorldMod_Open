@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Anulează</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Resetați setările armelor?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Resetați setările îmbrăcămintei?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Mulțumesc XD\nApăsați „{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Ștergeți „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Dependență de serul de amorțire a minții</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Selectează trăsături</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Nivel tragere</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Nivel luptă corp la corp</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Resetează selecția</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Anticipează și reacționează la schimburile de focuri de aproape. Poate folosi RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Cerințe</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Trăsături ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Nivel de tragere</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Nivel de luptă corp la corp</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Limite pentru candidați</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Rază corp la corp</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Rază scurtă</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Durata deplasării în timpul spargerii ușii</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Timp de așteptare la destinație după spargerea ușii</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Valori implicite</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permite personajelor neostile să tragă în timp ce se târăsc</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permite personajelor ostile să tragă în timp ce se târăsc</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Permite implicit tragerea în timpul târârii</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permite tragerea în timpul târârii</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Eliberează țintele doborâte din imobilizarea automată</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Tranziții line de ochire</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Imobilizează</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Imobilizare automată</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Imobilizează</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Limită de masă pentru imobilizare</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Durata amețirii la impact după imobilizare</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Durata menținerii imobilizării automate</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Atac în timpul imobilizării</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Atacă personajul ținut. Dezactivat la începutul fiecărei imobilizări.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Acțiuni de imobilizare</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Resetează tot</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Resetează rezultatele filtrate</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Lovitură de picior din săritură</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Permite personajelor neostile lovituri de picior din săritură</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Permite personajelor ostile lovituri de picior din săritură</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Șansa de asomare a loviturii de picior din săritură</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Daunele loviturii de picior din săritură</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Lovitură de picior</KRWF_RimKata_FeatureKick>

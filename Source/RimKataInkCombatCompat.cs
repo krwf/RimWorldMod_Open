@@ -75,34 +75,34 @@ namespace KRWF.RimKata
 
         internal static void Apply()
         {
-            Type reactions = AccessTools.TypeByName("NinjaCombat.DamageReactions");
+            Type reactions = RimKataActiveModTypes.Find("NinjaCombat.DamageReactions");
             if (reactions == null) return;
             var harmony = new Harmony("krwf.rimkata.ink-combat");
             try
             {
                 MethodInfo damagePrefix = AccessTools.DeclaredMethod(reactions, "Prefix");
                 MethodInfo dodgePostfix = AccessTools.DeclaredMethod(
-                    AccessTools.TypeByName("NinjaCombat.DisableVanillaHumanlikeDodge"), "Postfix");
+                    RimKataActiveModTypes.Find("NinjaCombat.DisableVanillaHumanlikeDodge"), "Postfix");
                 Validate(damagePrefix, typeof(bool), typeof(Pawn),
                     typeof(DamageInfo).MakeByRefType(), typeof(bool).MakeByRefType());
                 Validate(dodgePostfix, typeof(void), typeof(Verb_MeleeAttack), typeof(float).MakeByRefType());
-                if (AccessTools.TypeByName("DynamicAnimeCombat.Core.CombatMechanics") != null)
+                if (RimKataActiveModTypes.Find("DynamicAnimeCombat.Core.CombatMechanics") != null)
                     recordSharedDefense = AccessTools.MethodDelegate<Action<Verb_MeleeAttack, bool, bool>>(
                         AccessTools.DeclaredMethod(typeof(RimKataDynamicAnimeCombatCompat), "RecordDefense"));
 
-                harmony.Patch(AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "TryCastShot"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "TryCastShot"),
                     prefix: Patch(nameof(MeleePrefix), Priority.First),
                     transpiler: Patch(nameof(MeleeTranspiler), Priority.Last),
                     finalizer: Patch(nameof(MeleeFinalizer), Priority.Last));
-                harmony.Patch(AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "GetDodgeChance"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "GetDodgeChance"),
                     prefix: Patch(nameof(DodgePrefix), Priority.First),
                     postfix: Patch(nameof(DeferDodge), Priority.Last),
                     finalizer: Patch(nameof(DodgeFinalizer), Priority.Last));
-                harmony.Patch(AccessTools.DeclaredMethod(typeof(RimKataCombatMath), "ApplyConfiguredMeleeDodgeBonus"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.DeclaredMethod(typeof(RimKataCombatMath), "ApplyConfiguredMeleeDodgeBonus"),
                     postfix: Patch(nameof(RecordDodgeEligibility)));
-                harmony.Patch(ParryMethod, prefix: Patch(nameof(DeferParry)));
-                harmony.Patch(dodgePostfix, prefix: Patch(nameof(KeepResolvedDodge)));
-                harmony.Patch(damagePrefix, prefix: Patch(nameof(ReuseDefense)),
+                RimKataStartupPatches.Patch(harmony, ParryMethod, prefix: Patch(nameof(DeferParry)));
+                RimKataStartupPatches.Patch(harmony, dodgePostfix, prefix: Patch(nameof(KeepResolvedDodge)));
+                RimKataStartupPatches.Patch(harmony, damagePrefix, prefix: Patch(nameof(ReuseDefense)),
                     postfix: Patch(nameof(ResolveAfterInk)));
             }
             catch (Exception exception)

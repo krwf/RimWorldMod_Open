@@ -16,7 +16,7 @@ namespace KRWF.RimKata
         internal static void Apply(Harmony harmony)
         {
             if (enabled || failed) return;
-            Type controller = AccessTools.TypeByName("AM.Idle.IdleControllerComp");
+            Type controller = RimKataActiveModTypes.Find("AM.Idle.IdleControllerComp");
             if (controller == null) return;
             try
             {
@@ -28,16 +28,16 @@ namespace KRWF.RimKata
                     || !typeof(ThingComp).IsAssignableFrom(controller) || completion == null)
                     throw new MissingMethodException("Melee Animation attack notification did not match.");
 
-                FieldInfo hitTarget = AccessTools.Field(AccessTools.TypeByName(
+                FieldInfo hitTarget = AccessTools.Field(RimKataActiveModTypes.Find(
                     "AM.Patches.Patch_Verb_MeleeAttack_ApplyMeleeDamageToTarget"), "lastTarget");
                 if (hitTarget == null || !hitTarget.IsStatic || hitTarget.FieldType != typeof(Thing))
                     throw new MissingFieldException("Melee Animation hit notification did not match.");
                 consumeHitNotification = Expression.Lambda<Action>(Expression.Assign(
                     Expression.Field(null, hitTarget), Expression.Constant(null, typeof(Thing)))).Compile();
 
-                harmony.Patch(completion, postfix: Hook(nameof(CompleteAttack)));
-                harmony.Patch(notification, prefix: Hook(nameof(BeforeMeleeNotification)));
-                harmony.Patch(AccessTools.Method(typeof(Pawn_DrawTracker), nameof(Pawn_DrawTracker.Notify_MeleeAttackOn)),
+                RimKataStartupPatches.Patch(harmony, completion, postfix: Hook(nameof(CompleteAttack)));
+                RimKataStartupPatches.Patch(harmony, notification, prefix: Hook(nameof(BeforeMeleeNotification)));
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(Pawn_DrawTracker), nameof(Pawn_DrawTracker.Notify_MeleeAttackOn)),
                     prefix: Hook(nameof(BeforeBodyJitter)));
                 enabled = true;
             }

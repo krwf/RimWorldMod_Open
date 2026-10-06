@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Tühista</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Kas lähtestada relvasätted?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Kas lähtestada rõivasätted?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Aitäh XD\nPalun vajutage „{0}“.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Kas lähtestada „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Kas lähtestada „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Kas kustutada „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Sõltuvus emotsioone tuimestavast seerumist</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Omaduste valimine</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Laskmise tase</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Lähivõitluse tase</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Lähtesta valik</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Ennetab lähimaa tulevahetusi ja reageerib neile. Saab kasutada RimKatat.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Nõuded</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Omadused ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Laskmise tase</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Lähivõitluse tase</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Kandidaatide piirangud</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Lähivõitluse ulatus</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Lühike ulatus</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Liikumisaeg läbimurde ajal</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Ooteaeg pärast läbimurde sihtkohta jõudmist</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Vaikeväärtused</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Luba mittevaenulikel tegelastel roomates tulistada</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Luba vaenulikel tegelastel roomates tulistada</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine vaikimisi</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Luba roomates tulistamine</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Vabasta langenud sihtmärgid automaatsest alistamisest</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Sujuvad sihtimisüleminekud</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Alista</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automaatne alistamine</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Alista</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Alistamise massipiir</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Alistamise kokkupõrke uimastusaeg</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Automaatse alistamise hoidmisaeg</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Rünnak alistamisel</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Ründa kinnihoitavat tegelast. Iga alistamise alguses välja lülitatud.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Alistamise tegevused</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Lähtesta kõik</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Lähtesta filtreeritud tulemused</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Hüppelöök</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Luba mittevaenulikel tegelastel hüppelööke teha</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Luba vaenulikel tegelastel hüppelööke teha</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Hüppelöögi uimastamise tõenäosus</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Hüppelöögi kahjustus</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Jalalöök</KRWF_RimKata_FeatureKick>

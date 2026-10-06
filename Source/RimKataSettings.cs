@@ -60,13 +60,13 @@ namespace KRWF.RimKata
                     throw new FormatException("Duplicate profile setting: " + name);
                 }
 
-                bool legacyCrawlDefault = name == "crawlFireDefaultAllowed";
-                if (!ProfileFieldsByName.TryGetValue(name, out FieldInfo field) && !legacyCrawlDefault)
+                bool legacyDefault = name == "crawlFireDefaultAllowedFriendly";
+                if (!ProfileFieldsByName.TryGetValue(name, out FieldInfo field) && !legacyDefault)
                 {
                     continue;
                 }
 
-                Type valueType = legacyCrawlDefault ? typeof(bool) : field.FieldType;
+                Type valueType = legacyDefault ? typeof(bool) : field.FieldType;
                 if (!TryDeserialize(entry.Substring(separator + 1).Trim(), valueType, out object value)
                     || (value is float number && (float.IsNaN(number) || float.IsInfinity(number))))
                 {
@@ -76,7 +76,7 @@ namespace KRWF.RimKata
                 profile.entries.Add(name + "=" + Serialize(value, valueType));
             }
 
-            profile.MigrateCrawlFireDefaults();
+            profile.MigrateDefaultPermissions();
             profile.entries.Sort(StringComparer.Ordinal);
             return profile;
         }
@@ -182,7 +182,7 @@ namespace KRWF.RimKata
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 entries ??= new List<string>();
-                MigrateCrawlFireDefaults();
+                MigrateDefaultPermissions();
                 entries.RemoveAll(entry =>
                 {
                     int separator = entry?.IndexOf('=') ?? -1;
@@ -191,30 +191,34 @@ namespace KRWF.RimKata
             }
         }
 
-        private void MigrateCrawlFireDefaults()
+        private void MigrateDefaultPermissions()
+        {
+            MigrateDefaultPermission(nameof(RimKataSettings.crawlFireDefaultAllowed),
+                "crawlFireDefaultAllowedFriendly", "crawlFireDefaultAllowedHostile");
+            entries.Sort(StringComparer.Ordinal);
+        }
+
+        private void MigrateDefaultPermission(string currentName, string friendlyName, string hostileName)
         {
             bool? legacy = null;
-            bool hasFriendly = false, hasHostile = false;
+            bool hasCurrent = false;
             for (int i = entries.Count - 1; i >= 0; i--)
             {
                 string entry = entries[i];
                 int separator = entry?.IndexOf('=') ?? -1;
                 if (separator <= 0) continue;
                 string name = entry.Substring(0, separator);
-                if (name == "crawlFireDefaultAllowed")
+                if (name == currentName) hasCurrent = true;
+                else if (name == friendlyName)
                 {
                     if (TryDeserialize(entry.Substring(separator + 1), typeof(bool), out object value))
                         legacy = (bool)value;
                     entries.RemoveAt(i);
                 }
-                else if (name == nameof(RimKataSettings.crawlFireDefaultAllowedFriendly)) hasFriendly = true;
-                else if (name == nameof(RimKataSettings.crawlFireDefaultAllowedHostile)) hasHostile = true;
+                else if (name == hostileName) entries.RemoveAt(i);
             }
-            if (!legacy.HasValue) return;
-            string serialized = Serialize(legacy.Value, typeof(bool));
-            if (!hasFriendly) entries.Add(nameof(RimKataSettings.crawlFireDefaultAllowedFriendly) + "=" + serialized);
-            if (!hasHostile) entries.Add(nameof(RimKataSettings.crawlFireDefaultAllowedHostile) + "=" + serialized);
-            entries.Sort(StringComparer.Ordinal);
+            if (!hasCurrent && legacy.HasValue)
+                entries.Add(currentName + "=" + Serialize(legacy.Value, typeof(bool)));
         }
 
         private static bool IsSupportedType(Type type)
@@ -234,6 +238,10 @@ namespace KRWF.RimKata
                 || name == nameof(RimKataSettings.enableRimKataI)
                 || name == nameof(RimKataSettings.enableRimKataG)
                 || name == nameof(RimKataSettings.enableSerumDependency)
+                || name == nameof(RimKataSettings.enableShootingLevel)
+                || name == nameof(RimKataSettings.enableMeleeLevel)
+                || name == nameof(RimKataSettings.shootingLevelRequirement)
+                || name == nameof(RimKataSettings.meleeLevelRequirement)
                 || name == nameof(RimKataSettings.aiSecondaryWeaponChancePercent);
         }
 
@@ -410,6 +418,7 @@ namespace KRWF.RimKata
         public const float DefaultKickChancePercent = 20f;
         public const float DefaultShakeOffChancePercent = 20f;
         public const int DefaultSubdueImpactStunTicks = 180;
+        public const int DefaultAutoSubdueHoldTicks = 1200;
         public const int MinimumGroundPoseDurationTicks = 0;
         public const int MaximumGroundPoseDurationTicks = int.MaxValue;
         public const float DefaultResponseWeaponDurabilityLossChancePercent = 0f;
@@ -456,6 +465,8 @@ namespace KRWF.RimKata
         public const bool DefaultKickEnabled = true;
         public const bool DefaultPushKickEnabled = true;
         public const bool DefaultSubdueEnabled = true;
+        public const bool DefaultAutoSubdueEnabled = false;
+        public const bool DefaultAutoSubdueReleaseDowned = true;
         public const bool DefaultSubdueDamageTransferEnabled = true;
         public const bool DefaultResponseEnabled = true;
         public const bool DefaultRangedDodgeEnabled = true;
@@ -466,8 +477,6 @@ namespace KRWF.RimKata
         public const bool DefaultShakeOffEnabled = true;
         public const bool DefaultDirectionalFireEnabled = true;
         public const bool DefaultCrawlFireDefaultAllowed = true;
-        public const bool DefaultFlyingKickAllowedFriendly = true;
-        public const bool DefaultFlyingKickAllowedHostile = false;
         public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
 
@@ -632,6 +641,7 @@ namespace KRWF.RimKata
         public float kickChancePercent = DefaultKickChancePercent;
         public float shakeOffChancePercent = DefaultShakeOffChancePercent;
         public int subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
+        public int autoSubdueHoldTicks = DefaultAutoSubdueHoldTicks;
         public float strengthIncreasePercent = 0f;
         private static readonly string[] DefaultStrengthApparelDefNames =
         {
@@ -656,6 +666,11 @@ namespace KRWF.RimKata
         public bool enableRimKataI = true;
         public bool enableRimKataG = true;
         public bool enableSerumDependency = true;
+        public bool enableShootingLevel;
+        public bool enableMeleeLevel;
+        public int shootingLevelRequirement;
+        public int meleeLevelRequirement;
+        public List<RimKataTraitActivationRule> traitActivationRules = new List<RimKataTraitActivationRule>();
         public float aiSecondaryWeaponChancePercent = DefaultAiSecondaryWeaponChancePercent;
 
         public float responseDisarmChancePercent = DefaultResponseDisarmChancePercent;
@@ -697,6 +712,8 @@ namespace KRWF.RimKata
         public bool kickEnabled = DefaultKickEnabled;
         public bool pushKickEnabled = DefaultPushKickEnabled;
         public bool subdueEnabled = DefaultSubdueEnabled;
+        public bool autoSubdueEnabled = DefaultAutoSubdueEnabled;
+        public bool autoSubdueReleaseDowned = DefaultAutoSubdueReleaseDowned;
         public bool subdueDamageTransferEnabled = DefaultSubdueDamageTransferEnabled;
         public bool responseEnabled = DefaultResponseEnabled;
         public bool rangedDodgeEnabled = DefaultRangedDodgeEnabled;
@@ -706,10 +723,7 @@ namespace KRWF.RimKata
         public bool slidingEnabled = DefaultSlidingEnabled;
         public bool shakeOffEnabled = DefaultShakeOffEnabled;
         public bool directionalFireEnabled = DefaultDirectionalFireEnabled;
-        public bool crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
-        public bool crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
-        public bool flyingKickAllowedFriendly = DefaultFlyingKickAllowedFriendly;
-        public bool flyingKickAllowedHostile = DefaultFlyingKickAllowedHostile;
+        public bool crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
         public bool smoothAimTransition = DefaultSmoothAimTransition;
         // Legacy blanket override is only read to migrate into the shared target list.
         internal bool accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
@@ -735,14 +749,6 @@ namespace KRWF.RimKata
         public float SerumDodgeMultiplier => MultiplierFromPercent(serumDodgeMultiplierPercent);
         public float SerumResponseMultiplier => MultiplierFromPercent(serumResponseMultiplierPercent);
         public float SerumInterceptionMultiplier => MultiplierFromPercent(serumInterceptionMultiplierPercent);
-
-        public bool GetCrawlFireDefaultAllowed(Pawn pawn) =>
-            RimKataEligibility.IsHostileToPlayerFaction(pawn)
-                ? crawlFireDefaultAllowedHostile : crawlFireDefaultAllowedFriendly;
-
-        public bool GetFlyingKickAllowed(Pawn pawn) =>
-            RimKataEligibility.IsHostileToPlayerFaction(pawn)
-                ? flyingKickAllowedHostile : flyingKickAllowedFriendly;
 
         public int GetRangedDodgeDurationTicks(Pawn pawn)
         {
@@ -956,6 +962,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref kickChancePercent, "kickChancePercent", DefaultKickChancePercent);
             Scribe_Values.Look(ref shakeOffChancePercent, "shakeOffChancePercent", DefaultShakeOffChancePercent);
             Scribe_Values.Look(ref subdueImpactStunTicks, "subdueImpactStunTicks", DefaultSubdueImpactStunTicks);
+            Scribe_Values.Look(ref autoSubdueHoldTicks, "autoSubdueHoldTicks", DefaultAutoSubdueHoldTicks);
             Scribe_Values.Look(ref strengthIncreasePercent, "strengthIncreasePercent", 0f);
             Scribe_Collections.Look(ref strengthRules, "strengthRules", LookMode.Deep);
             Scribe_Values.Look(ref strengthApparelDefaultsInitialized, "strengthApparelDefaultsInitialized", false);
@@ -969,6 +976,11 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref enableRimKataI, "enableRimKataI", true);
             Scribe_Values.Look(ref enableRimKataG, "enableRimKataG", true);
             Scribe_Values.Look(ref enableSerumDependency, "enableSerumDependency", true);
+            Scribe_Values.Look(ref enableShootingLevel, "enableShootingLevel", false);
+            Scribe_Values.Look(ref enableMeleeLevel, "enableMeleeLevel", false);
+            Scribe_Values.Look(ref shootingLevelRequirement, "shootingLevelRequirement", 0);
+            Scribe_Values.Look(ref meleeLevelRequirement, "meleeLevelRequirement", 0);
+            Scribe_Collections.Look(ref traitActivationRules, "traitActivationRules", LookMode.Deep);
             Scribe_Values.Look(ref aiSecondaryWeaponChancePercent, "aiSecondaryWeaponChancePercent", DefaultAiSecondaryWeaponChancePercent);
             Scribe_Values.Look(ref responseDisarmChancePercent, "responseDisarmChancePercent", DefaultResponseDisarmChancePercent);
             Scribe_Values.Look(ref responseDisarmChanceGrowthPerLevelPercent, "responseDisarmChanceGrowthPerLevelPercent", DefaultResponseDisarmChanceGrowthPerLevelPercent);
@@ -1003,6 +1015,8 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref kickEnabled, "kickEnabled", DefaultKickEnabled);
             Scribe_Values.Look(ref pushKickEnabled, "pushKickEnabled", DefaultPushKickEnabled);
             Scribe_Values.Look(ref subdueEnabled, "subdueEnabled", DefaultSubdueEnabled);
+            Scribe_Values.Look(ref autoSubdueEnabled, "autoSubdueEnabled", DefaultAutoSubdueEnabled);
+            Scribe_Values.Look(ref autoSubdueReleaseDowned, "autoSubdueReleaseDowned", DefaultAutoSubdueReleaseDowned);
             Scribe_Values.Look(ref subdueDamageTransferEnabled, "subdueDamageTransferEnabled", DefaultSubdueDamageTransferEnabled);
             Scribe_Values.Look(ref accessRestrictionsDisabled, "accessRestrictionsDisabled", DefaultAccessRestrictionsDisabled);
             Scribe_Values.Look(ref targetAccessInitialized, "targetAccessInitialized", false);
@@ -1017,11 +1031,10 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref directionalFireEnabled, "directionalFireEnabled", DefaultDirectionalFireEnabled);
             bool legacyCrawlDefault = DefaultCrawlFireDefaultAllowed;
             if (Scribe.mode == LoadSaveMode.LoadingVars)
-                Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowed", DefaultCrawlFireDefaultAllowed);
-            Scribe_Values.Look(ref crawlFireDefaultAllowedFriendly, "crawlFireDefaultAllowedFriendly", legacyCrawlDefault);
-            Scribe_Values.Look(ref crawlFireDefaultAllowedHostile, "crawlFireDefaultAllowedHostile", legacyCrawlDefault);
-            Scribe_Values.Look(ref flyingKickAllowedFriendly, "flyingKickAllowedFriendly", DefaultFlyingKickAllowedFriendly);
-            Scribe_Values.Look(ref flyingKickAllowedHostile, "flyingKickAllowedHostile", DefaultFlyingKickAllowedHostile);
+            {
+                Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowedFriendly", DefaultCrawlFireDefaultAllowed);
+            }
+            Scribe_Values.Look(ref crawlFireDefaultAllowed, "crawlFireDefaultAllowed", legacyCrawlDefault);
             Scribe_Values.Look(ref smoothAimTransition, "smoothAimTransition", DefaultSmoothAimTransition);
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
@@ -1083,6 +1096,7 @@ namespace KRWF.RimKata
                     MaximumResponseWeaponDurabilityLossAmount);
                 SanitizeGeneProbabilityRules();
                 SanitizeStrengthRules();
+                SanitizePersonalActivation();
                 aiSecondaryWeaponChancePercent = SanitizePercent(
                     aiSecondaryWeaponChancePercent,
                     DefaultAiSecondaryWeaponChancePercent);
@@ -1170,12 +1184,22 @@ namespace KRWF.RimKata
             kickChancePercent = SanitizePercent(kickChancePercent, DefaultKickChancePercent);
             shakeOffChancePercent = SanitizePercent(shakeOffChancePercent, DefaultShakeOffChancePercent);
             subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
+            autoSubdueHoldTicks = Mathf.Max(0, autoSubdueHoldTicks);
             strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
             subdueMassMultiplierPercent = SanitizeNonNegative(subdueMassMultiplierPercent, DefaultSubdueMassMultiplierPercent);
             subdueMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(subdueMassMultiplierGrowthPerLevelPercent, DefaultSubdueMassMultiplierGrowthPerLevelPercent);
             subdueMassMultiplierMinimumPercent = SanitizeNonNegative(subdueMassMultiplierMinimumPercent, DefaultSubdueMassMultiplierMinimumPercent);
             responseAccidentalFireChancePercent = SanitizePercent(
                 responseAccidentalFireChancePercent, DefaultResponseAccidentalFireChancePercent);
+        }
+
+        internal void SanitizePersonalActivation()
+        {
+            shootingLevelRequirement = Math.Max(0, shootingLevelRequirement);
+            meleeLevelRequirement = Math.Max(0, meleeLevelRequirement);
+            traitActivationRules ??= new List<RimKataTraitActivationRule>();
+            traitActivationRules.RemoveAll(rule => rule == null || string.IsNullOrEmpty(rule.defName)
+                || (!rule.friendly && !rule.hostile));
         }
 
         internal void SanitizeStrengthRules()
@@ -1318,6 +1342,7 @@ namespace KRWF.RimKata
             kickChancePercent = DefaultKickChancePercent;
             shakeOffChancePercent = DefaultShakeOffChancePercent;
             subdueImpactStunTicks = DefaultSubdueImpactStunTicks;
+            autoSubdueHoldTicks = DefaultAutoSubdueHoldTicks;
             strengthIncreasePercent = 0f;
             responseWeaponDurabilityLossChancePercent = DefaultResponseWeaponDurabilityLossChancePercent;
             responseWeaponDurabilityLossAmount = DefaultResponseWeaponDurabilityLossAmount;
@@ -1350,6 +1375,8 @@ namespace KRWF.RimKata
             targetRushEnabled = DefaultTargetRushEnabled;
             breachEnabled = DefaultBreachEnabled;
             subdueEnabled = DefaultSubdueEnabled;
+            autoSubdueEnabled = DefaultAutoSubdueEnabled;
+            autoSubdueReleaseDowned = DefaultAutoSubdueReleaseDowned;
             flyingKickEnabled = DefaultFlyingKickEnabled;
             kickEnabled = DefaultKickEnabled;
             pushKickEnabled = DefaultPushKickEnabled;
@@ -1359,10 +1386,7 @@ namespace KRWF.RimKata
             slidingEnabled = DefaultSlidingEnabled;
             shakeOffEnabled = DefaultShakeOffEnabled;
             directionalFireEnabled = DefaultDirectionalFireEnabled;
-            crawlFireDefaultAllowedFriendly = DefaultCrawlFireDefaultAllowed;
-            crawlFireDefaultAllowedHostile = DefaultCrawlFireDefaultAllowed;
-            flyingKickAllowedFriendly = DefaultFlyingKickAllowedFriendly;
-            flyingKickAllowedHostile = DefaultFlyingKickAllowedHostile;
+            crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
             smoothAimTransition = DefaultSmoothAimTransition;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }

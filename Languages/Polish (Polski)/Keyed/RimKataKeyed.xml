@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Anuluj</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Zresetować ustawienia broni?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Zresetować ustawienia odzieży?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Dziękuję XD\nProszę nacisnąć „{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Zresetować „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Zresetować „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Usunąć „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Uzależnienie od serum otępiającego umysł</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Wybierz cechy</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Poziom strzelania</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Poziom walki wręcz</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Wyczyść wybór</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Przewiduje strzelaniny na bliskim dystansie i reaguje na nie. Może używać RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Wymagania</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Cechy ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Poziom strzelania</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Poziom walki wręcz</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Limity kandydatów</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Zasięg walki wręcz</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Krótki zasięg</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Czas ruchu podczas wyważania drzwi</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Czas oczekiwania po dotarciu do celu wyważenia</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Wartości domyślne</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Zezwalaj niewrogim postaciom na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Zezwalaj wrogim postaciom na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Domyślnie zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Zezwalaj na strzelanie podczas czołgania</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Puść powalone cele przy automatycznym obezwładnianiu</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Płynne przejścia celowania</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Obezwładnij</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatyczne obezwładnianie</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Obezwładnij</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Limit masy do obezwładnienia</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Czas ogłuszenia przy uderzeniu po obezwładnieniu</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Czas przytrzymania przy automatycznym obezwładnianiu</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Atak podczas obezwładnienia</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Atakuje trzymaną postać. Wyłączony na początku każdego obezwładnienia.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Działania przy obezwładnieniu</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Resetuj wszystko</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Resetuj przefiltrowane wyniki</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Kopnięcie z wyskoku</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Zezwalaj niewrogim postaciom na kopnięcia z wyskoku</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Zezwalaj wrogim postaciom na kopnięcia z wyskoku</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Szansa ogłuszenia kopnięciem z wyskoku</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Obrażenia kopnięcia z wyskoku</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Kopnięcie</KRWF_RimKata_FeatureKick>

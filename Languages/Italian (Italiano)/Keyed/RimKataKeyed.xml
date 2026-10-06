@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Annulla</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Reimpostare le impostazioni delle armi?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Reimpostare le impostazioni degli indumenti?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Grazie XD\nPremi «{0}», per favore.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Reimpostare '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Reimpostare '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Eliminare '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Dipendenza dal siero anestetizzante</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Seleziona tratti</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Liv. tiro</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Liv. mischia</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Azzera selezione</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Prevede e affronta gli scontri a fuoco ravvicinati. Può usare RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Requisiti</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Tratti ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Livello di tiro</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Livello di mischia</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Limiti dei candidati</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Portata da mischia</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Corto raggio</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Durata del movimento durante l’irruzione</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Tempo di attesa all’arrivo dopo l’irruzione</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Valori predefiniti</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Consenti di sparare strisciando ai pedoni non ostili</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Consenti di sparare strisciando ai pedoni ostili</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Consenti di sparare strisciando per impostazione predefinita</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Consenti di sparare strisciando</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Rilascia i bersagli a terra durante la sopraffazione automatica</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Transizioni di mira fluide</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Sopraffare</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Sopraffazione automatica</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Sopraffare</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Massa massima da sopraffare</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Durata dello stordimento da impatto dopo sopraffazione</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Durata della presa durante la sopraffazione automatica</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Attacco di sopraffazione</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Attacca il personaggio trattenuto. Disattivato all&apos;inizio di ogni sopraffazione.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Azioni di sopraffazione</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Ripristina tutto</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Ripristina risultati filtrati</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Calcio volante</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Consenti calci volanti ai pedoni non ostili</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Consenti calci volanti ai pedoni ostili</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Probabilità di stordimento del calcio volante</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Danno del calcio volante</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Calcio</KRWF_RimKata_FeatureKick>

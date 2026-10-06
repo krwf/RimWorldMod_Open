@@ -58,13 +58,13 @@ namespace KRWF.RimKata
 
         internal static void Apply()
         {
-            Type mechanics = AccessTools.TypeByName("DynamicAnimeCombat.Core.CombatMechanics");
+            Type mechanics = RimKataActiveModTypes.Find("DynamicAnimeCombat.Core.CombatMechanics");
             if (mechanics == null) return;
             var harmony = new Harmony("krwf.rimkata.dynamic-anime-combat");
             try
             {
-                Type glancing = AccessTools.TypeByName("DynamicAnimeCombat.Core.GlancingBlowSystem");
-                Type spirit = AccessTools.TypeByName("DynamicAnimeCombat.Components.CompFightingSpirit");
+                Type glancing = RimKataActiveModTypes.Find("DynamicAnimeCombat.Core.GlancingBlowSystem");
+                Type spirit = RimKataActiveModTypes.Find("DynamicAnimeCombat.Components.CompFightingSpirit");
                 MethodInfo glance = AccessTools.DeclaredMethod(glancing, "PerformGlancingBlow",
                     new[] { typeof(Pawn), typeof(Pawn), typeof(Verb_MeleeAttack) });
                 MethodInfo parry = AccessTools.DeclaredMethod(mechanics, "TryParry");
@@ -84,24 +84,24 @@ namespace KRWF.RimKata
                     Expression.Call(Expression.Convert(comp, spirit), notifyDamageTaken, amount), comp, amount).Compile();
 
                 MethodInfo melee = AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "TryCastShot");
-                harmony.Patch(melee, prefix: Patch(nameof(MeleePrefix), Priority.First),
+                RimKataStartupPatches.Patch(harmony, melee, prefix: Patch(nameof(MeleePrefix), Priority.First),
                     transpiler: Patch(nameof(MeleeTranspiler)), finalizer: Patch(nameof(MeleeFinalizer), Priority.Last));
-                harmony.Patch(AccessTools.Method(typeof(RimKataDefenseUtility), nameof(RimKataDefenseUtility.TryResolveMeleeParry),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataDefenseUtility), nameof(RimKataDefenseUtility.TryResolveMeleeParry),
                     new[] { typeof(Verb_MeleeAttack) }), postfix: Patch(nameof(ParryPostfix)));
-                Type ce = AccessTools.TypeByName("CombatExtended.Verb_MeleeAttackCE");
+                Type ce = RimKataActiveModTypes.Find("CombatExtended.Verb_MeleeAttackCE");
                 MethodInfo ceAttack = ce == null ? null : AccessTools.DeclaredMethod(ce, "TryCastShot");
                 if (ceAttack != null)
                 {
-                    harmony.Patch(ceAttack, prefix: Patch(nameof(MeleePrefix), Priority.First),
+                    RimKataStartupPatches.Patch(harmony, ceAttack, prefix: Patch(nameof(MeleePrefix), Priority.First),
                         transpiler: Patch(nameof(MeleeTranspiler)), finalizer: Patch(nameof(MeleeFinalizer), Priority.Last));
-                    harmony.Patch(AccessTools.Method(typeof(RimKataDefenseUtility),
+                    RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataDefenseUtility),
                         nameof(RimKataDefenseUtility.TryResolveCombatExtendedMeleeDefense)), postfix: Patch(nameof(CeDefensePostfix)));
                 }
-                harmony.Patch(glance, prefix: Patch(nameof(GlancingPrefix)),
+                RimKataStartupPatches.Patch(harmony, glance, prefix: Patch(nameof(GlancingPrefix)),
                     transpiler: Patch(nameof(GlancingTranspiler)), finalizer: Patch(nameof(GlancingFinalizer)));
-                harmony.Patch(parry, prefix: Patch(nameof(SecondaryPrefix)),
+                RimKataStartupPatches.Patch(harmony, parry, prefix: Patch(nameof(SecondaryPrefix)),
                     transpiler: Patch(nameof(ParryTranspiler)), finalizer: Patch(nameof(SecondaryFinalizer)));
-                harmony.Patch(deflect, prefix: Patch(nameof(SecondaryPrefix)),
+                RimKataStartupPatches.Patch(harmony, deflect, prefix: Patch(nameof(SecondaryPrefix)),
                     transpiler: Patch(nameof(DeflectTranspiler)), finalizer: Patch(nameof(SecondaryFinalizer)));
             }
             catch (Exception exception)

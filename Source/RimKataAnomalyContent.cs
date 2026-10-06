@@ -76,7 +76,8 @@ namespace KRWF.RimKata
     {
         static RimKataAnomalyContentInitializer()
         {
-            RimKataAnomalyUtility.RefreshDependencyGeneLabel();
+            using (RimKataStartupDiagnostics.Measure("preparation", "dependency_gene_label"))
+                RimKataAnomalyUtility.RefreshDependencyGeneLabel();
         }
     }
 

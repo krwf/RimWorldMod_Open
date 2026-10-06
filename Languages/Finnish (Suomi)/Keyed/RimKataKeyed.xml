@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Peruuta</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Palautetaanko aseasetukset?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Palautetaanko vaateasetukset?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Kiitos XD\nPaina ”{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Poistetaanko '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Riippuvuus tunteita turruttavasta seerumista</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Valitse ominaisuudet</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Ampumistaso</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Lähitaistelutaso</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Nollaa valinta</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Ennakoi lähietäisyyden tulitaisteluja ja reagoi niihin. Voi käyttää RimKataa.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Vaatimukset</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Ominaisuudet ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Ampumistaso</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Lähitaistelutaso</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Kandidaattirajat</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Lähitaisteluetäisyys</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Lyhyt kantama</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Liikkumisaika läpimurron aikana</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Odotusaika läpimurron määränpäähän saavuttua</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Oletusarvot</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Salli ampuminen ryömiessä ei-vihamielisille hahmoille</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Salli ampuminen ryömiessä vihamielisille hahmoille</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä oletusarvoisesti</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Salli ampuminen ryömiessä</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Vapauta kaatuneet kohteet automaattisesta taltutuksesta</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Sulavat tähtäyssiirtymät</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Taltuta</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automaattinen taltutus</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Taltuta</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Taltuttamisen massaraja</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Taltutuksen törmäystainnutuksen kesto</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Automaattisen taltutuksen pitoaika</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Taltutushyökkäys</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Hyökkää kannetun hahmon kimppuun. Pois käytöstä jokaisen taltutuksen alussa.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Taltutustoiminnot</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Palauta kaikki</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Palauta suodatetut tulokset</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Hyppypotku</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Salli hyppypotkut ei-vihamielisille hahmoille</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Salli hyppypotkut vihamielisille hahmoille</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Hyppypotkun tainnutustodennäköisyys</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Hyppypotkun vahinko</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Potku</KRWF_RimKata_FeatureKick>

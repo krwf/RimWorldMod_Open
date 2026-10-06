@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Ακύρωση</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Επαναφορά ρυθμίσεων όπλων;</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Επαναφορά ρυθμίσεων ενδυμάτων;</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Ευχαριστώ XD\nΠατήστε «{0}».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Διαγραφή «{0}»;</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Εξάρτηση από ορό συναισθηματικού μουδιάσματος</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Επιλογή χαρακτηριστικών</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Επίπεδο σκοποβολής</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Επίπεδο μάχης σώμα με σώμα</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Επαναφορά επιλογής</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Προβλέπει και αντιμετωπίζει ανταλλαγές πυρών σε κοντινή απόσταση. Μπορεί να χρησιμοποιεί το RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Προϋποθέσεις</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Χαρακτηριστικά ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Επίπεδο σκοποβολής</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Επίπεδο μάχης σώμα με σώμα</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Όρια υποψήφιων στόχων</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Εμβέλεια σώμα με σώμα</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Μικρή εμβέλεια</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Διάρκεια κίνησης κατά τη διάρρηξη</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Χρόνος αναμονής μετά την άφιξη στον προορισμό της διάρρηξης</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Προεπιλογές</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Να επιτρέπεται η βολή κατά το σύρσιμο σε μη εχθρικούς χαρακτήρες</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Να επιτρέπεται η βολή κατά το σύρσιμο σε εχθρικούς χαρακτήρες</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Να επιτρέπεται η βολή κατά το σύρσιμο από προεπιλογή</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Να επιτρέπεται η βολή κατά το σύρσιμο</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Απελευθέρωση πεσμένων στόχων από την αυτόματη ακινητοποίηση</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Ομαλές μεταβάσεις στόχευσης</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Ακινητοποίηση</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Αυτόματη ακινητοποίηση</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Ακινητοποίηση</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Όριο μάζας ακινητοποίησης</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Διάρκεια αναισθητοποίησης από πρόσκρουση</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Διάρκεια κράτησης με αυτόματη ακινητοποίηση</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Επίθεση ακινητοποίησης</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Επιτίθεται στον κρατούμενο χαρακτήρα. Απενεργοποιημένη στην αρχή κάθε ακινητοποίησης.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Ενέργειες ακινητοποίησης</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Επαναφορά όλων</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Επαναφορά φιλτραρισμένων αποτελεσμάτων</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Ιπτάμενη κλωτσιά</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Να επιτρέπονται ιπτάμενες κλωτσιές σε μη εχθρικούς χαρακτήρες</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Να επιτρέπονται ιπτάμενες κλωτσιές σε εχθρικούς χαρακτήρες</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Πιθανότητα αναισθητοποίησης από ιπτάμενη κλωτσιά</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Ζημιά ιπτάμενης κλωτσιάς</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Κλωτσιά</KRWF_RimKata_FeatureKick>

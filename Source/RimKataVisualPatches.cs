@@ -2493,9 +2493,7 @@ namespace KRWF.RimKata
         public RimKataVisualSnapshot snapshot;
         public float aimAngle;
         public LocalTargetInfo fallAimTarget;
-        internal RimKataMapComponent visualOwner;
         internal RimKataPawnCombatState visualState;
-        internal bool visualStateRead;
     }
 
     internal static class RimKataGunReadyDrawUtility
@@ -2509,30 +2507,30 @@ namespace KRWF.RimKata
         internal static bool TryGetVisualData(Pawn pawn, ThingWithComps weapon,
             out RimKataWeaponVisualData visual)
         {
-            if (!current.active || current.pawn != pawn
-                || weapon != current.primary && weapon != current.secondary)
+            if (!current.scoped || current.scopePawn != pawn)
                 return RimKataDualWeaponController.TryGetVisualData(pawn, weapon, out visual);
-            return RimKataDualWeaponController.TryGetVisualData(pawn, ReadVisualState(pawn), weapon, out visual);
+            if (!current.active || weapon != current.primary && weapon != current.secondary)
+            {
+                visual = default;
+                return false;
+            }
+            return RimKataDualWeaponController.TryGetVisualData(pawn, current.visualState, weapon, out visual);
         }
 
         internal static bool TryGetNextAim(Pawn pawn, out ThingWithComps weapon, out LocalTargetInfo target)
         {
-            if (!current.active || current.pawn != pawn)
+            if (!current.scoped || current.scopePawn != pawn)
                 return RimKataDualWeaponController.TryGetNextAim(pawn, out weapon, out target);
-            bool found = RimKataDualWeaponController.TryGetNextAim(pawn, ReadVisualState(pawn),
+            if (!current.active)
+            {
+                weapon = null;
+                target = LocalTargetInfo.Invalid;
+                return false;
+            }
+            bool found = RimKataDualWeaponController.TryGetNextAim(pawn, current.visualState,
                 out RimKataWeaponCycleState cycle, out target);
             weapon = found ? cycle.weapon : null;
             return found;
-        }
-
-        private static RimKataPawnCombatState ReadVisualState(Pawn pawn)
-        {
-            if (!current.visualStateRead)
-            {
-                current.visualStateRead = true;
-                current.visualState = current.visualOwner?.GetState(pawn, false);
-            }
-            return current.visualState;
         }
 
         public static bool IsDrawingEquipmentFor(Pawn pawn)
@@ -2542,7 +2540,15 @@ namespace KRWF.RimKata
                 && ReferenceEquals(current.scopePawn, pawn);
         }
 
-        public static int Push(Pawn pawn, PawnRenderFlags flags)
+        internal static int PushInactive(Pawn pawn, PawnRenderFlags flags)
+        {
+            int token = EnterScope((flags & PawnRenderFlags.Portrait) != 0);
+            current.scopePawn = pawn;
+            return token;
+        }
+
+        internal static int Push(Pawn pawn, PawnRenderFlags flags,
+            RimKataResponseVisualParticipantCache.BodyVisualEntry visual)
         {
             bool portrait = (flags & PawnRenderFlags.Portrait) != 0;
             int scopeToken = EnterScope(portrait);
@@ -2555,45 +2561,23 @@ namespace KRWF.RimKata
                     return scopeToken;
                 }
 
-                var visual = RimKataWorldRenderContext.BodyFor(pawn);
                 bool rimKataUser = visual?.registeredQualified == true;
                 if ((!rimKataUser
-                        && !RimKataWorldRenderContext.ResponseFor(pawn))
+                        && visual?.response != true)
                     || !pawn.Spawned)
                 {
                     return scopeToken;
                 }
 
-                ThingWithComps primary = null;
-                ThingWithComps rawSecondary = null;
-                rimKataUser = rimKataUser && RimKataVisualUtility
-                    .TryGetCachedWorldLoadout(
-                        pawn,
-                        out primary,
-                        out rawSecondary);
-                RimKataMapComponent component = visual?.snapshotOwner;
-                bool statePresent = component != null
-                    ? visual.snapshotState?.ownerComponent == component && pawn.Map == component.map
-                    : RimKataCombatStatePresenceCache.TryGetOwner(pawn, out component);
+                ThingWithComps primary = rimKataUser ? visual.equipmentPrimary : null;
+                ThingWithComps secondary = rimKataUser ? visual.equipmentSecondary : null;
+                RimKataMapComponent component = visual?.equipmentOwner;
+                RimKataPawnCombatState state = visual?.equipmentState;
+                bool statePresent = component != null && state?.ownerComponent == component
+                    && pawn.Map == component.map;
                 if (!statePresent) component = null;
-                bool responseParticipant = false;
-                ThingWithComps participantPrimary = null;
-                ThingWithComps participantSecondary = null;
-                ThingWithComps secondary = rimKataUser
-                    && RimKataVisualUtility.IsSecondaryUsable(
-                        pawn,
-                        primary,
-                        rawSecondary)
-                            ? rawSecondary
-                            : null;
-                if (statePresent && (!rimKataUser || secondary == null))
-                {
-                    responseParticipant = RimKataVisualUtility
-                        .TryGetResponseParticipantLoadout(
-                            pawn,
-                            out participantPrimary,
-                            out participantSecondary);
-                }
+                bool responseParticipant = statePresent && (!rimKataUser || secondary == null)
+                    && visual.response && visual.responsePrimary != null;
 
                 if (!rimKataUser)
                 {
@@ -2602,8 +2586,8 @@ namespace KRWF.RimKata
                         return scopeToken;
                     }
 
-                    primary = participantPrimary;
-                    secondary = participantSecondary;
+                    primary = visual.responsePrimary;
+                    secondary = visual.responseSecondary;
                 }
 
                 if (primary == null)
@@ -2626,10 +2610,8 @@ namespace KRWF.RimKata
                     && (flags & PawnRenderFlags.NeverAimWeapon) == 0
                     && RimKataDualWeaponController.IsLiveVisualTarget(pawn, fallAimTarget.Thing);
 
-                bool mayNeedGunReadyTarget = rimKataUser
-                    && MayNeedGunReadyTarget(pawn, statePresent);
+                bool mayNeedGunReadyTarget = rimKataUser && statePresent;
                 bool gunReadyCandidate = mayNeedGunReadyTarget
-                    && !pawn.Dead
                     && !pawn.Downed
                     && !pawn.IsBurning()
                     && primary != null
@@ -2656,9 +2638,7 @@ namespace KRWF.RimKata
                 current.primary = primary;
                 current.secondary = secondary;
                 current.snapshotActive = snapshotActive;
-                current.visualOwner = component;
-                current.visualState = statePresent ? visual?.snapshotState : null;
-                current.visualStateRead = current.visualState != null || !statePresent;
+                current.visualState = statePresent ? state : null;
                 current.active = true;
                 if (fallAim)
                 {
@@ -2673,8 +2653,7 @@ namespace KRWF.RimKata
                     return scopeToken;
                 }
 
-                component = component ?? pawn.Map.GetComponent<RimKataMapComponent>();
-                if (component?.TryGetGunReadyTarget(pawn, out LocalTargetInfo target) != true)
+                if (component?.TryGetGunReadyTarget(pawn, state, out LocalTargetInfo target) != true)
                 {
                     return scopeToken;
                 }
@@ -2751,14 +2730,6 @@ namespace KRWF.RimKata
             Array.Resize(ref nestedContexts, newLength);
         }
 
-        private static bool MayNeedGunReadyTarget(
-            Pawn pawn,
-            bool statePresent)
-        {
-            return pawn?.CurJobDef == RimKataDefOf.RimKata_Attack
-                || statePresent;
-        }
-
         public static void Pop(int scopeToken)
         {
             if (scopeToken <= 0)
@@ -2795,47 +2766,6 @@ namespace KRWF.RimKata
             }
 
             scopeDepth = previousDepth;
-        }
-    }
-
-    [HarmonyPatch(typeof(RimKataEquipmentRenderHooks), nameof(RimKataEquipmentRenderHooks.DrawEquipmentAndApparelExtras))]
-    public static class Patch_PawnRenderUtility_RimKataGunReadyContext
-    {
-        public struct DrawScope
-        {
-            internal int gunReady;
-            internal int probe;
-            internal bool groundPose;
-        }
-
-        [HarmonyPriority(Priority.First)]
-        public static void Prefix(
-            Pawn pawn,
-            Vector3 drawPos,
-            Rot4 facing,
-            PawnRenderFlags flags,
-            out DrawScope __state)
-        {
-            __state = default(DrawScope);
-            __state.groundPose = RimKataGroundPoseRender.PushEquipment(pawn, flags);
-            __state.gunReady = RimKataGunReadyDrawUtility.Push(pawn, flags);
-            __state.probe = RimKataWeaponRenderProbe.BeginFrame(pawn, drawPos, facing, flags);
-        }
-
-        public static Exception Finalizer(
-            Exception __exception,
-            DrawScope __state)
-        {
-            try
-            {
-                RimKataWeaponRenderProbe.EndFrame(__state.probe, __exception == null);
-            }
-            finally
-            {
-                RimKataGunReadyDrawUtility.Pop(__state.gunReady);
-                RimKataGroundPoseRender.PopEquipment(__state.groundPose);
-            }
-            return __exception;
         }
     }
 

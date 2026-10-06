@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Cancel·la</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Voleu restablir la configuració de les armes?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Voleu restablir la configuració de la indumentària?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Moltes gràcies XD\nPremeu «{0}», si us plau.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Voleu restablir «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Voleu restablir «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Voleu eliminar «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Dependència del sèrum d’insensibilització emocional</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Selecció de trets</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Niv. de tir</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Niv. cos a cos</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Restablir selecció</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Preveu i respon als tirotejos a curta distància. Pot utilitzar RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Requisits</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Trets ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Nivell de tir</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Nivell cos a cos</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Límits de candidats</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Abast cos a cos</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Abast curt</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Temps de moviment durant la irrupció</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Temps d’espera en arribar al destí de la irrupció</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Valors per defecte</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permetre disparar mentre s&apos;arrosseguen als personatges no hostils</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permetre disparar mentre s&apos;arrosseguen als personatges hostils</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s'arrossega per defecte</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permetre disparar mentre s&apos;arrossega</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Alliberar els objectius abatuts del sotmetiment automàtic</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Transicions suaus de punteria</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Sotmetre</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Sotmetiment automàtic</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Sotmetre</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Límit de massa per sotmetre</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Durada de l&apos;atordiment per impacte en sotmetre</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Durada del sotmetiment automàtic</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Atac de submissió</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Ataca el personatge subjectat. Desactivat a l&apos;inici de cada submissió.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Accions de submissió</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Restableix-ho tot</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Restableix els resultats filtrats</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Puntada voladora</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Permetre puntades voladores als personatges no hostils</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Permetre puntades voladores als personatges hostils</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Probabilitat d'atordiment de la puntada voladora</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Dany de la puntada voladora</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Puntada</KRWF_RimKata_FeatureKick>

@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>キャンセル</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>武器設定をリセットしますか？</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>衣服設定をリセットしますか？</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>ありがとうございます XD\n「{0}」を押してください。</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>「{0}」を削除しますか？</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>感情麻痺血清依存</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>特性を選択</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>射撃Lv</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>格闘Lv</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>選択をリセット</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>近距離の銃撃戦を予測し、対応します。RimKataを使用できます。</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>資格要件</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>特性（{0}）</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>射撃レベル</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>格闘レベル</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>候補制限</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>近接範囲</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>短距離</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>突破時の移動時間</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>突破先に到達した後の待機時間</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>デフォルト</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>非敵対ポーンの這いながらの射撃を許可</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>敵対ポーンの這いながらの射撃を許可</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃をデフォルトで許可</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>這いながらの射撃を許可</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>倒れた対象の自動制圧を解除</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>滑らかな照準切り替え</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>制圧</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>自動制圧</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>制圧</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>制圧可能な重量</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>制圧時の衝突による気絶時間</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>自動制圧の維持時間</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>制圧攻撃</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>抱えている対象を攻撃します。制圧開始時は毎回無効です。</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>制圧行動</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>すべて初期化</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>絞り込み結果を初期化</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>飛び蹴り</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>非敵対ポーンの飛び蹴りを許可</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>敵対ポーンの飛び蹴りを許可</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>飛び蹴りの気絶確率</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>飛び蹴りのダメージ</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>蹴り</KRWF_RimKata_FeatureKick>

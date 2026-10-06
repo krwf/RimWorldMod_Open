@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Cancelar</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Redefinir as configurações das armas?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Redefinir as configurações das roupas?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Obrigado XD\nPor favor, clique em “{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Excluir '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Dependência de soro entorpecente</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Selecionar traços</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Nív. de tiro</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Nív. de combate corpo a corpo</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Redefinir seleção</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Prevê e reage a tiroteios a curta distância. Pode usar RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Requisitos</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Traços ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Nível de tiro</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Nível de combate corpo a corpo</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Limites de candidatos</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Alcance corpo a corpo</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Curto alcance</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Tempo de movimento durante o arrombamento</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Tempo de espera após chegar ao destino do arrombamento</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Valores padrão</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Permitir que peões não hostis disparem enquanto rastejam</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Permitir que peões hostis disparem enquanto rastejam</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja por padrão</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Permitir disparar enquanto rasteja</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Soltar alvos caídos da subjugação automática</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Transições suaves de mira</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Subjugar</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Subjugação automática</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Subjugar</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Limite de massa para subjugar</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Duração do atordoamento por impacto ao subjugar</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Tempo de retenção na subjugação automática</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Ataque de subjugação</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Ataca o personagem segurado. Desativado no início de cada subjugação.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Ações de subjugação</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Redefinir tudo</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Redefinir resultados filtrados</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Voadora</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Permitir voadoras para peões não hostis</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Permitir voadoras para peões hostis</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Chance de atordoamento da voadora</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Dano da voadora</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Chute</KRWF_RimKata_FeatureKick>

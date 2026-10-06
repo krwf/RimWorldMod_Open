@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Annuleren</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Wapeninstellingen herstellen?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Kledinginstellingen herstellen?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Bedankt XD\nKlik op ‘{0}’.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>'{0}' verwijderen?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Afhankelijkheid van gevoelsverdovend serum</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Eigenschappen kiezen</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Schietniveau</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Niveau lijf-aan-lijf</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Selectie wissen</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Anticipeert op vuurgevechten op korte afstand en reageert erop. Kan RimKata gebruiken.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Vereisten</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Eigenschappen ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Schietniveau</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Niveau lijf-aan-lijf</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Kandidaatlimieten</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Man-tegen-manbereik</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Kort bereik</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Bewegingsduur tijdens de doorbraak</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wachttijd na aankomst op de doorbraakbestemming</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Standaardwaarden</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Schieten tijdens het kruipen toestaan voor niet-vijandige pionnen</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Schieten tijdens het kruipen toestaan voor vijandige pionnen</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen standaard toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Schieten tijdens het kruipen toestaan</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Laat neergehaalde doelen los bij automatisch overmeesteren</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Vloeiende richtovergangen</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Overmeesteren</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatisch overmeesteren</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Overmeesteren</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Massalimiet voor overmeesteren</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Verdovingsduur bij botsing na overmeesteren</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Vasthoudduur bij automatisch overmeesteren</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Aanval tijdens overmeesteren</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Val de vastgehouden persoon aan. Uitgeschakeld aan het begin van elke overmeestering.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Overmeesteringsacties</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Alles herstellen</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Gefilterde resultaten herstellen</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Vliegende trap</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Vliegende trappen toestaan voor niet-vijandige pionnen</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Vliegende trappen toestaan voor vijandige pionnen</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Verdovingskans van vliegende trap</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Schade van vliegende trap</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Trap</KRWF_RimKata_FeatureKick>

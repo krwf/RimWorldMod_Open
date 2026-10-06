@@ -24,7 +24,7 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            ammoCompType = AccessTools.TypeByName("CombatExtended.CompAmmoUser");
+            ammoCompType = RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser");
             if (ammoCompType == null)
                 return;
 
@@ -32,10 +32,10 @@ namespace KRWF.RimKata
             RimKataCombatExtendedAssistedReload.Apply(harmony, ammoCompType);
             RimKataCombatExtendedLoadout.Apply(harmony);
 
-            Type pawnGizmoType = AccessTools.TypeByName("CombatExtended.CompPawnGizmo");
-            ammoStatusType = AccessTools.TypeByName("CombatExtended.GizmoAmmoStatus");
-            reloadCommandType = AccessTools.TypeByName("CombatExtended.Command_Reload");
-            Type reloadDriverType = AccessTools.TypeByName("CombatExtended.JobDriver_Reload");
+            Type pawnGizmoType = RimKataActiveModTypes.Find("CombatExtended.CompPawnGizmo");
+            ammoStatusType = RimKataActiveModTypes.Find("CombatExtended.GizmoAmmoStatus");
+            reloadCommandType = RimKataActiveModTypes.Find("CombatExtended.Command_Reload");
+            Type reloadDriverType = RimKataActiveModTypes.Find("CombatExtended.JobDriver_Reload");
             if (pawnGizmoType == null || ammoStatusType == null
                 || reloadCommandType == null || reloadDriverType == null)
             {
@@ -62,16 +62,16 @@ namespace KRWF.RimKata
                 return;
             }
 
-            harmony.Patch(pawnGizmos, postfix: Patch(nameof(PawnGizmosPostfix)));
-            harmony.Patch(title, postfix: Patch(nameof(AmmoTitlePostfix)));
-            harmony.Patch(groupsWith, postfix: Patch(nameof(ReloadGroupsPostfix)));
+            RimKataStartupPatches.Patch(harmony, pawnGizmos, postfix: Patch(nameof(PawnGizmosPostfix)));
+            RimKataStartupPatches.Patch(harmony, title, postfix: Patch(nameof(AmmoTitlePostfix)));
+            RimKataStartupPatches.Patch(harmony, groupsWith, postfix: Patch(nameof(ReloadGroupsPostfix)));
 
-            fireModesType = AccessTools.TypeByName("CombatExtended.CompFireModes");
+            fireModesType = RimKataActiveModTypes.Find("CombatExtended.CompFireModes");
             toggleFireMode = AccessTools.Method(fireModesType, "ToggleFireMode", Type.EmptyTypes);
             toggleAimMode = AccessTools.Method(fireModesType, "ToggleAimMode", Type.EmptyTypes);
             if (fireModesType != null && toggleFireMode?.ReturnType == typeof(void)
                 && toggleAimMode?.ReturnType == typeof(void))
-                harmony.Patch(AccessTools.Method(typeof(Command), nameof(Command.GroupsWith)),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(Command), nameof(Command.GroupsWith)),
                     postfix: Patch(nameof(ModeGroupsPostfix)));
             else
                 fireModesType = null;

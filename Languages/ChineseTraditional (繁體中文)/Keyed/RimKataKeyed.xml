@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>取消</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>重設武器設定？</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>重設服裝設定？</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>謝謝您 XD\n請點擊「{0}」。</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>重設「{0}」？</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>重設「{0}」？</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>刪除「{0}」？</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>情感麻痺血清依賴</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>選擇特性</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>射擊等級</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>格鬥等級</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>重設選擇</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>預判並應對近距離槍戰。可以使用 RimKata。</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>資格要求</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>特性（{0}）</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>射擊等級</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>格鬥等級</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>候選目標限制</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>近戰範圍</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>近距離</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>破門後的移動時間</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>到達突入終點後的等待時間</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>預設值</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>允許非敵對角色爬行射擊</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>允許敵對角色爬行射擊</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>預設允許爬行時射擊</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>允許爬行射擊</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>目標倒地後解除自動壓制</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>平滑瞄準過渡</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>壓制</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>自動壓制</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>壓制</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>可壓制重量</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>壓制撞擊暈眩時間</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>自動壓制持續時間</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>壓制攻擊</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>攻擊抱住的目標。每次開始壓制時預設關閉。</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>壓制行動</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>全部重設</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>重設篩選結果</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>飛踢</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>允許非敵對角色飛踢</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>允許敵對角色飛踢</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>飛踢擊暈機率</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>飛踢傷害</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>踢擊</KRWF_RimKata_FeatureKick>

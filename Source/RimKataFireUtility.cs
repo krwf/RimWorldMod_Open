@@ -569,40 +569,23 @@ namespace KRWF.RimKata
         public static IEnumerable<MethodBase> TargetMethods()
         {
             HashSet<MethodBase> methods = new HashSet<MethodBase>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
             {
-                if (assembly.IsDynamic)
+                if (type == typeof(Verb_RimKataKick) || type == typeof(Verb_RimKataFlyingKick)) continue;
+                if (typeof(Verb).IsAssignableFrom(type))
                 {
-                    continue;
-                }
-
-                IEnumerable<Type> types;
-                try
-                {
-                    types = AccessTools.GetTypesFromAssembly(assembly);
-                }
-                catch
-                {
-                    continue;
-                }
-
-                foreach (Type type in types)
-                {
-                    if (typeof(Verb).IsAssignableFrom(type))
+                    MethodInfo method = type.GetMethod(
+                        "TryCastShot",
+                        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                        null,
+                        Type.EmptyTypes,
+                        null);
+                    if (method != null
+                        && !method.IsAbstract
+                        && method.ReturnType == typeof(bool)
+                        && methods.Add(method))
                     {
-                        MethodInfo method = type.GetMethod(
-                            "TryCastShot",
-                            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
-                            null,
-                            Type.EmptyTypes,
-                            null);
-                        if (method != null
-                            && !method.IsAbstract
-                            && method.ReturnType == typeof(bool)
-                            && methods.Add(method))
-                        {
-                            yield return method;
-                        }
+                        yield return method;
                     }
                 }
             }
@@ -651,48 +634,30 @@ namespace KRWF.RimKata
         public static IEnumerable<MethodBase> TargetMethods()
         {
             HashSet<MethodBase> methods = new HashSet<MethodBase>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
             {
-                if (assembly.IsDynamic)
+                if (type == null
+                    || !typeof(Verb).IsAssignableFrom(type))
                 {
                     continue;
                 }
 
-                IEnumerable<Type> types;
-                try
+                MethodInfo method = type.GetMethod(
+                    nameof(Verb.WarmupComplete),
+                    BindingFlags.Instance
+                        | BindingFlags.Public
+                        | BindingFlags.NonPublic
+                        | BindingFlags.DeclaredOnly,
+                    null,
+                    Type.EmptyTypes,
+                    null);
+                if (method != null
+                    && !method.IsAbstract
+                    && !method.ContainsGenericParameters
+                    && method.ReturnType == typeof(void)
+                    && methods.Add(method))
                 {
-                    types = AccessTools.GetTypesFromAssembly(assembly);
-                }
-                catch
-                {
-                    continue;
-                }
-
-                foreach (Type type in types)
-                {
-                    if (type == null
-                        || !typeof(Verb).IsAssignableFrom(type))
-                    {
-                        continue;
-                    }
-
-                    MethodInfo method = type.GetMethod(
-                        nameof(Verb.WarmupComplete),
-                        BindingFlags.Instance
-                            | BindingFlags.Public
-                            | BindingFlags.NonPublic
-                            | BindingFlags.DeclaredOnly,
-                        null,
-                        Type.EmptyTypes,
-                        null);
-                    if (method != null
-                        && !method.IsAbstract
-                        && !method.ContainsGenericParameters
-                        && method.ReturnType == typeof(void)
-                        && methods.Add(method))
-                    {
-                        yield return method;
-                    }
+                    yield return method;
                 }
             }
         }
@@ -1091,7 +1056,7 @@ namespace KRWF.RimKata
                         continue;
                     }
 
-                    harmony.Patch(target, prefix: hasPrefix ? null : new HarmonyMethod(prefixMethod), finalizer: hasFinalizer ? null : new HarmonyMethod(finalizerMethod));
+                    RimKataStartupPatches.Patch(harmony, target, prefix: hasPrefix ? null : new HarmonyMethod(prefixMethod), finalizer: hasFinalizer ? null : new HarmonyMethod(finalizerMethod));
                 }
                 catch (Exception exception)
                 {
@@ -1107,50 +1072,32 @@ namespace KRWF.RimKata
         private static IEnumerable<MethodBase> FindTargetMethods()
         {
             HashSet<MethodBase> methods = new HashSet<MethodBase>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Projectile)))
             {
-                if (assembly.IsDynamic)
+                if (type == null || !typeof(Projectile).IsAssignableFrom(type))
                 {
                     continue;
                 }
 
-                IEnumerable<Type> types;
+                MethodInfo method;
                 try
                 {
-                    types = AccessTools.GetTypesFromAssembly(assembly);
+                    method = type.GetMethod("Impact", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null,
+                        new[]
+                        {
+                            typeof(Thing),
+                            typeof(bool)
+                        },
+                        null);
                 }
                 catch
                 {
                     continue;
                 }
 
-                foreach (Type type in types)
+                if (method != null && !method.IsAbstract && methods.Add(method))
                 {
-                    if (type == null || !typeof(Projectile).IsAssignableFrom(type))
-                    {
-                        continue;
-                    }
-
-                    MethodInfo method;
-                    try
-                    {
-                        method = type.GetMethod("Impact", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null,
-                            new[] 
-                            { 
-                                typeof(Thing), 
-                                typeof(bool) 
-                            },
-                            null);
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-
-                    if (method != null && !method.IsAbstract && methods.Add(method))
-                    {
-                        yield return method;
-                    }
+                    yield return method;
                 }
             }
         }

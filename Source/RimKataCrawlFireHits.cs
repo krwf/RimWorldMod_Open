@@ -94,7 +94,7 @@ namespace KRWF.RimKata
         // CE projectiles derive from Thing, not Verse.Projectile.
         internal static void ApplyCombatExtended(Harmony harmony)
         {
-            Type projectile = AccessTools.TypeByName("CombatExtended.ProjectileCE");
+            Type projectile = RimKataActiveModTypes.Find("CombatExtended.ProjectileCE");
             MethodInfo launch = AccessTools.DeclaredMethod(projectile, "Launch",
                 new[] { typeof(Thing), typeof(Vector2), typeof(Thing) });
             MethodInfo ray = AccessTools.DeclaredMethod(projectile, "RayCast", new[] {
@@ -103,9 +103,9 @@ namespace KRWF.RimKata
             if (launch?.ReturnType != typeof(void) || ray?.ReturnType != typeof(void))
                 throw new InvalidOperationException("CE crawling shot launch API does not match.");
             var prefix = new HarmonyMethod(typeof(RimKataCrawlFireHits), nameof(LaunchPrefix));
-            harmony.Patch(launch, prefix: prefix);
-            harmony.Patch(ray, prefix: prefix);
-            harmony.Patch(AccessTools.Method(typeof(RimKataCrawlFireHits), nameof(ImpactProjectile)),
+            RimKataStartupPatches.Patch(harmony, launch, prefix: prefix);
+            RimKataStartupPatches.Patch(harmony, ray, prefix: prefix);
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataCrawlFireHits), nameof(ImpactProjectile)),
                 postfix: new HarmonyMethod(typeof(RimKataCrawlFireHits), nameof(CEImpactPostfix)));
         }
 

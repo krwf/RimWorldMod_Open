@@ -40,8 +40,8 @@ namespace KRWF.RimKata
                 ValidateCalls(PatchProcessor.GetOriginalInstructions(damage), 0, 1);
                 applyMeleeDamage = AccessTools.MethodDelegate<Func<Verb_MeleeAttack, LocalTargetInfo, DamageResult>>(
                     MeleeDamage, virtualCall: true);
-                harmony.Patch(parry, transpiler: new HarmonyMethod(parryPatch));
-                harmony.Patch(damage, transpiler: new HarmonyMethod(damagePatch));
+                RimKataStartupPatches.Patch(harmony, parry, transpiler: new HarmonyMethod(parryPatch));
+                RimKataStartupPatches.Patch(harmony, damage, transpiler: new HarmonyMethod(damagePatch));
             }
             catch (Exception exception)
             {

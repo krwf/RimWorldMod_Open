@@ -16,7 +16,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 13f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
+        private const float ContentHeight = RowHeight * 11f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -30,10 +30,8 @@ namespace KRWF.RimKata
         private bool showMeleeWeaponAimTime;
         private bool showFocusedAttackLine;
         private bool smoothAimTransition;
-        private bool crawlFireDefaultAllowedFriendly;
-        private bool crawlFireDefaultAllowedHostile;
-        private bool flyingKickAllowedFriendly;
-        private bool flyingKickAllowedHostile;
+        private bool crawlFireDefaultAllowed;
+        private bool autoSubdueReleaseDowned;
         private string touchCandidateBuffer;
         private string shortCandidateBuffer;
         private string mediumCandidateBuffer;
@@ -55,10 +53,8 @@ namespace KRWF.RimKata
             "KRWF_RimKata_ShowMeleeWeaponAimTime",
             "KRWF_RimKata_ShowFocusedAttackLine",
             "KRWF_RimKata_SmoothAimTransition",
-            "KRWF_RimKata_CrawlFireDefaultAllowedFriendly",
-            "KRWF_RimKata_CrawlFireDefaultAllowedHostile",
-            "KRWF_RimKata_FlyingKickAllowedFriendly",
-            "KRWF_RimKata_FlyingKickAllowedHostile"
+            "KRWF_RimKata_CrawlFireDefaultAllowed",
+            "KRWF_RimKata_AutoSubdueReleaseDowned"
         };
 
         private static readonly string[] HeaderKeys =
@@ -83,10 +79,8 @@ namespace KRWF.RimKata
                 showMeleeWeaponAimTime = settings.showMeleeWeaponAimTime;
                 showFocusedAttackLine = settings.showFocusedAttackLine;
                 smoothAimTransition = settings.smoothAimTransition;
-                crawlFireDefaultAllowedFriendly = settings.crawlFireDefaultAllowedFriendly;
-                crawlFireDefaultAllowedHostile = settings.crawlFireDefaultAllowedHostile;
-                flyingKickAllowedFriendly = settings.flyingKickAllowedFriendly;
-                flyingKickAllowedHostile = settings.flyingKickAllowedHostile;
+                crawlFireDefaultAllowed = settings.crawlFireDefaultAllowed;
+                autoSubdueReleaseDowned = settings.autoSubdueReleaseDowned;
             }
             touchCandidateBuffer = touchCandidateLimit.ToString();
             shortCandidateBuffer = shortCandidateLimit.ToString();
@@ -161,10 +155,8 @@ namespace KRWF.RimKata
             Widgets.DrawLineHorizontal(0f, y, viewRect.width);
             y += HeaderLineGap;
             DrawHeader(viewRect.width, ref y, HeaderKeys[2]);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref crawlFireDefaultAllowedFriendly);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[5], ref crawlFireDefaultAllowedHostile);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[6], ref flyingKickAllowedFriendly);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[7], ref flyingKickAllowedHostile);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref crawlFireDefaultAllowed);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[5], ref autoSubdueReleaseDowned);
             Widgets.EndScrollView();
             DrawButtons(new Rect(inRect.x, inRect.yMax - ButtonHeight, inRect.width, ButtonHeight));
             Text.Font = previousFont;
@@ -185,10 +177,8 @@ namespace KRWF.RimKata
                 || settings.showMeleeWeaponAimTime != showMeleeWeaponAimTime
                 || settings.showFocusedAttackLine != showFocusedAttackLine
                 || settings.smoothAimTransition != smoothAimTransition
-                || settings.crawlFireDefaultAllowedFriendly != crawlFireDefaultAllowedFriendly
-                || settings.crawlFireDefaultAllowedHostile != crawlFireDefaultAllowedHostile
-                || settings.flyingKickAllowedFriendly != flyingKickAllowedFriendly
-                || settings.flyingKickAllowedHostile != flyingKickAllowedHostile;
+                || settings.crawlFireDefaultAllowed != crawlFireDefaultAllowed
+                || settings.autoSubdueReleaseDowned != autoSubdueReleaseDowned;
             settings.touchCandidateLimit = touchCandidateLimit;
             settings.shortCandidateLimit = shortCandidateLimit;
             settings.mediumCandidateLimit = mediumCandidateLimit;
@@ -198,10 +188,8 @@ namespace KRWF.RimKata
             settings.showMeleeWeaponAimTime = showMeleeWeaponAimTime;
             settings.showFocusedAttackLine = showFocusedAttackLine;
             settings.smoothAimTransition = smoothAimTransition;
-            settings.crawlFireDefaultAllowedFriendly = crawlFireDefaultAllowedFriendly;
-            settings.crawlFireDefaultAllowedHostile = crawlFireDefaultAllowedHostile;
-            settings.flyingKickAllowedFriendly = flyingKickAllowedFriendly;
-            settings.flyingKickAllowedHostile = flyingKickAllowedHostile;
+            settings.crawlFireDefaultAllowed = crawlFireDefaultAllowed;
+            settings.autoSubdueReleaseDowned = autoSubdueReleaseDowned;
             mainBuffers?.SyncFrom(settings);
             if (changed)
                 RimKataMod.ApplyCombatFeatureSettingsChange();

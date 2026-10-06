@@ -45,7 +45,7 @@ namespace KRWF.RimKata
             MethodInfo reload = AccessTools.Method(compType, "TryStartReload", Type.EmptyTypes);
             MethodInfo exhausted = AccessTools.Method(compType, "DoOutOfAmmoAction", Type.EmptyTypes);
             MethodInfo physicalMelee = AccessTools.Method(typeof(RimKataDualWeaponController), "UsesPhysicalMeleeAction");
-            Type inventoryType = AccessTools.TypeByName("CombatExtended.CompInventory");
+            Type inventoryType = RimKataActiveModTypes.Find("CombatExtended.CompInventory");
             Type predicateType = typeof(Func<,,>).MakeGenericType(typeof(ThingWithComps), compType, typeof(bool));
             findWeapon = AccessTools.Method(inventoryType, "TryFindViableWeapon",
                 new[] { typeof(ThingWithComps).MakeByRefType(), typeof(bool), predicateType });
@@ -82,11 +82,11 @@ namespace KRWF.RimKata
                     Expression.Call(Expression.Convert(inventory, inventoryType), switchWeapon,
                         fists, aoe, stop, Expression.Convert(predicate, predicateType)), inventory, fists, aoe, stop, predicate).Compile();
                 ValidateOutOfAmmoCalls(PatchProcessor.GetOriginalInstructions(exhausted));
-                harmony.Patch(exhausted, transpiler: new HarmonyMethod(
+                RimKataStartupPatches.Patch(harmony, exhausted, transpiler: new HarmonyMethod(
                     typeof(RimKataCombatExtendedAmmo), nameof(OutOfAmmoTranspiler)));
-                harmony.Patch(physicalMelee, postfix: new HarmonyMethod(
+                RimKataStartupPatches.Patch(harmony, physicalMelee, postfix: new HarmonyMethod(
                     typeof(RimKataCombatExtendedAmmo), nameof(PhysicalMeleePostfix)));
-                rangedVerbType = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
+                rangedVerbType = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
                 ammoType = compType;
             }
             catch (Exception exception)

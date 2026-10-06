@@ -45,8 +45,8 @@ namespace KRWF.RimKata
                     return false;
                 }
 
-                harmony.Patch(failureCheck, transpiler: new HarmonyMethod(failureTranspiler));
-                harmony.Patch(equippedGetter, postfix: new HarmonyMethod(equippedPostfix));
+                RimKataStartupPatches.Patch(harmony, failureCheck, transpiler: new HarmonyMethod(failureTranspiler));
+                RimKataStartupPatches.Patch(harmony, equippedGetter, postfix: new HarmonyMethod(equippedPostfix));
                 return true;
             }
             catch (Exception exception)

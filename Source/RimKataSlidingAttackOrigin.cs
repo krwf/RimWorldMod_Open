@@ -76,7 +76,7 @@ namespace KRWF.RimKata
         {
             yield return AccessTools.EnumeratorMoveNext(
                 AccessTools.DeclaredMethod(typeof(Verb_MeleeAttackDamage), "DamageInfosToApply"));
-            Type ce = AccessTools.TypeByName("CombatExtended.Verb_MeleeAttackCE");
+            Type ce = RimKataActiveModTypes.Find("CombatExtended.Verb_MeleeAttackCE");
             MethodInfo damage = ce == null ? null : AccessTools.DeclaredMethod(ce, "DamageInfosToApply");
             if (damage != null)
             {

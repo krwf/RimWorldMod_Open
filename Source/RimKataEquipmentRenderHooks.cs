@@ -13,6 +13,21 @@ namespace KRWF.RimKata
     {
         [ThreadStatic] private static int equipmentDepth;
 
+        internal static void DrawUnmodifiedEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing,
+            PawnRenderFlags flags)
+        {
+            // Keep lower weapon hooks from rediscovering an already-known empty render path.
+            int token = RimKataGunReadyDrawUtility.PushInactive(pawn, flags);
+            try
+            {
+                PawnRenderUtility.DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+            }
+            finally
+            {
+                RimKataGunReadyDrawUtility.Pop(token);
+            }
+        }
+
         internal static void DrawRegisteredEquipment(Pawn pawn, Vector3 drawPos, Rot4 facing,
             PawnRenderFlags flags, RimKataResponseVisualParticipantCache.BodyVisualEntry entry,
             float bodyAltitude)
@@ -39,14 +54,64 @@ namespace KRWF.RimKata
         internal static void DrawSpecialEquipmentAndApparelExtras(
             Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)
         {
-            DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+            RimKataBreachRender.EquipmentScope scope = default;
+            try
+            {
+                RimKataSpecialEquipmentRender.Begin(pawn, drawPos, ref facing, flags, out scope);
+                DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+                RimKataBreachWeaponRender.Draw();
+                RimKataReactiveRender.Draw();
+            }
+            finally
+            {
+                RimKataSpecialEquipmentRender.End(scope);
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         internal static void DrawEquipmentAndApparelExtras(
             Pawn pawn, Vector3 drawPos, Rot4 facing, PawnRenderFlags flags)
         {
-            PawnRenderUtility.DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+            var entry = RimKataWorldRenderContext.BodyFor(pawn);
+            bool nested = equipmentDepth > 1;
+            bool pair = entry?.equipmentSecondary != null;
+            bool meleeAnimation = pair && RimKataMeleeAnimationCompat.EquipmentRenderingEnabled;
+            RimKataMeleeAnimationCompat.EquipmentFrame animationFrame = null;
+            bool groundPose = false;
+            int gunReady = 0, probe = 0;
+            bool completed = false;
+            try
+            {
+                if (meleeAnimation)
+                    RimKataMeleeAnimationCompat.BeginEquipment(pawn, drawPos, facing, flags, out animationFrame);
+                if (nested || entry?.groundPose == true)
+                    groundPose = RimKataGroundPoseRender.PushEquipment(pawn, flags);
+                gunReady = RimKataGunReadyDrawUtility.Push(pawn, flags, entry);
+                if (nested || RimKataGunReadyDrawUtility.Current.secondary != null)
+                    probe = RimKataWeaponRenderProbe.BeginFrame(pawn, drawPos, facing, flags);
+                PawnRenderUtility.DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
+                completed = true;
+            }
+            finally
+            {
+                try
+                {
+                    if (meleeAnimation)
+                        RimKataMeleeAnimationCompat.EndEquipment(completed, animationFrame);
+                }
+                finally
+                {
+                    try
+                    {
+                        RimKataWeaponRenderProbe.EndFrame(probe, completed);
+                    }
+                    finally
+                    {
+                        RimKataGunReadyDrawUtility.Pop(gunReady);
+                        RimKataGroundPoseRender.PopEquipment(groundPose);
+                    }
+                }
+            }
         }
 
         internal static IEnumerable<CodeInstruction> ReplaceEquipmentCall(
@@ -56,6 +121,8 @@ namespace KRWF.RimKata
                 nameof(PawnRenderUtility.DrawEquipmentAndApparelExtras));
             MethodInfo registered = AccessTools.Method(typeof(RimKataEquipmentRenderHooks),
                 nameof(DrawRegisteredEquipment));
+            MethodInfo unmodified = AccessTools.Method(typeof(RimKataEquipmentRenderHooks),
+                nameof(DrawUnmodifiedEquipment));
             FieldInfo dead = AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.dead));
             FieldInfo results = cached ? AccessTools.Field(typeof(PawnRenderer), "results") : null;
             FieldInfo parms = cached ? AccessTools.Field(results.FieldType, "parms") : null;
@@ -71,6 +138,7 @@ namespace KRWF.RimKata
                 Label native = generator.DefineLabel();
                 Label absent = generator.DefineLabel();
                 Label finished = generator.DefineLabel();
+                Label prepare = generator.DefineLabel();
                 var first = new CodeInstruction(cached ? OpCodes.Ldarg_0 : OpCodes.Ldarga_S,
                     cached ? null : (object)(byte)2);
                 first.labels.AddRange(instruction.labels);
@@ -91,7 +159,16 @@ namespace KRWF.RimKata
                 LocalBuilder entry;
                 foreach (var code in RimKataRegisteredPawnGate.Branch(generator, loadPawn, absent, false, out entry))
                     yield return code;
+                yield return new CodeInstruction(OpCodes.Ldsfld,
+                    AccessTools.Field(typeof(RimKataEquipmentRenderHooks), nameof(equipmentDepth)));
+                yield return new CodeInstruction(OpCodes.Brtrue, prepare);
                 yield return new CodeInstruction(OpCodes.Ldloc, entry);
+                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(
+                    typeof(RimKataResponseVisualParticipantCache.BodyVisualEntry), "equipmentNeeded"));
+                yield return new CodeInstruction(OpCodes.Brtrue, prepare);
+                yield return new CodeInstruction(OpCodes.Call, unmodified);
+                yield return new CodeInstruction(OpCodes.Br, finished);
+                yield return new CodeInstruction(OpCodes.Ldloc, entry).WithLabels(prepare);
                 foreach (var code in LoadBodyAltitude(cached, results)) yield return code;
                 yield return new CodeInstruction(OpCodes.Call, registered);
                 yield return new CodeInstruction(OpCodes.Br, finished);

@@ -1009,7 +1009,12 @@ namespace KRWF.RimKata
         public static bool Prefix(Pawn ___pawn, ref Job job)
         {
             // The hold-specific StartJob hook must run before native carry cleanup.
-            if (RimKataSubdueUtility.IsHolding(___pawn)) return true;
+            RimKataSubdueState subdue = RimKataSubdueUtility.Get(___pawn);
+            if (subdue != null)
+            {
+                if (job != null) RimKataAutoSubdue.NotifyManualControl(subdue);
+                return true;
+            }
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
             {
                 return true;
@@ -1270,6 +1275,13 @@ namespace KRWF.RimKata
             Job newJob,
             ThinkNode jobGiver)
         {
+            if (___pawn?.CurJob == newJob && newJob?.def == JobDefOf.AttackMelee
+                && newJob.targetA.Pawn is Pawn stunnedTarget && stunnedTarget.stances?.stunner.Stunned == true)
+            {
+                var entry = RimKataResponseVisualParticipantCache.BodyVisualFor(___pawn);
+                if (entry?.registeredQualified == true)
+                    RimKataAutoSubdue.Request(___pawn, stunnedTarget, entry.equipmentState);
+            }
             ThinkNode effectiveJobGiver = jobGiver ?? newJob?.jobGiver;
             if (___pawn?.CurJob == newJob
                 && newJob?.def == RimKataDefOf.RimKata_Attack

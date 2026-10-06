@@ -15,6 +15,7 @@ namespace KRWF.RimKata
         {
             var state = RimKataSubdueUtility.Get(___pawn);
             if (state == null) return true;
+            keepCarryingThingOverride = true;
             bool automaticConflict = RimKataSubdueJobs.IsAttackJob(newJob)
                 && newJob.def != RimKataDefOf.RimKata_SubdueCombat && !newJob.playerForced
                 && (state.attackEnabled || state.HasExternalTarget);
@@ -110,7 +111,11 @@ namespace KRWF.RimKata
                             };
                             if (state.HasExternalTarget)
                                 options.Add(new FloatMenuOption("CommandStopForceAttack".Translate(),
-                                    () => RimKataSubdueCombat.StopExternalAttack(state)));
+                                    () =>
+                                    {
+                                        RimKataAutoSubdue.NotifyManualControl(state);
+                                        RimKataSubdueCombat.StopExternalAttack(state);
+                                    }));
                             Find.WindowStack.Add(new FloatMenu(options));
                         }
                     };

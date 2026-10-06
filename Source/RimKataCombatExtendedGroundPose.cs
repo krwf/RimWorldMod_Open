@@ -34,11 +34,11 @@ namespace KRWF.RimKata
         internal static void Apply(Harmony harmony)
         {
             if (applied) return;
-            Type verbType = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
+            Type verbType = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
             if (verbType == null) return;
-            Type projectileType = AccessTools.TypeByName("CombatExtended.ProjectileCE");
-            Type propsType = AccessTools.TypeByName("CombatExtended.ProjectilePropertiesCE");
-            Type workerType = AccessTools.TypeByName("CombatExtended.BaseTrajectoryWorker");
+            Type projectileType = RimKataActiveModTypes.Find("CombatExtended.ProjectileCE");
+            Type propsType = RimKataActiveModTypes.Find("CombatExtended.ProjectilePropertiesCE");
+            Type workerType = RimKataActiveModTypes.Find("CombatExtended.BaseTrajectoryWorker");
             if (projectileType == null || propsType == null || workerType == null)
                 throw new InvalidOperationException("CE ground-pose types did not match.");
 
@@ -117,10 +117,10 @@ namespace KRWF.RimKata
             var adapter = new Harmony(harmony.Id + ".groundPoseCE");
             try
             {
-                adapter.Patch(shot, prefix: Patch(nameof(ShotPrefix)), finalizer: Patch(nameof(ShotFinalizer)));
-                adapter.Patch(line, prefix: Patch(nameof(LinePrefix)));
-                adapter.Patch(launch, prefix: Patch(nameof(LaunchPrefix)));
-                adapter.Patch(ray, prefix: Patch(nameof(RayPrefix)));
+                RimKataStartupPatches.Patch(adapter, shot, prefix: Patch(nameof(ShotPrefix)), finalizer: Patch(nameof(ShotFinalizer)));
+                RimKataStartupPatches.Patch(adapter, line, prefix: Patch(nameof(LinePrefix)));
+                RimKataStartupPatches.Patch(adapter, launch, prefix: Patch(nameof(LaunchPrefix)));
+                RimKataStartupPatches.Patch(adapter, ray, prefix: Patch(nameof(RayPrefix)));
                 applied = true;
             }
             catch

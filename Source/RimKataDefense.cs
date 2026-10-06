@@ -1005,6 +1005,7 @@ namespace KRWF.RimKata
             if (!cooldownApplied)
             {
                 verb.Reset();
+                StopCompletedMeleeApproach(defender);
                 defender.stances.SetStance(new Stance_Cooldown(ticks, responseFocus, verb));
             }
 
@@ -1022,6 +1023,27 @@ namespace KRWF.RimKata
                 responseFocus,
                 weapon,
                 !responseTargetQueued);
+        }
+
+        private static void StopCompletedMeleeApproach(Pawn defender)
+        {
+            Job job = defender.CurJob;
+            Pawn_PathFollower pather = defender.pather;
+            if (job?.def != JobDefOf.AttackMelee
+                || !job.targetA.HasThing
+                || pather?.Moving != true
+                || pather.Destination != job.targetA
+                || !defender.CanReachImmediate(job.targetA, PathEndMode.Touch))
+                return;
+
+            RimKataPawnCombatState state = defender.Map?.GetComponent<RimKataMapComponent>()
+                ?.GetState(defender, false);
+            if (state?.DodgeMovementActive == true)
+                return;
+
+            // A busy stance prevents PatherTick from completing this already-arrived approach.
+            // An active flying kick keeps its own contact path and lands at the corrected DrawPos.
+            pather.StopDead();
         }
 
         private static ThingWithComps SelectResponseWeapon(Pawn defender)

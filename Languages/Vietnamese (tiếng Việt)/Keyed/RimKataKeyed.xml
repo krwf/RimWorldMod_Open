@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Hủy</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Đặt lại cài đặt vũ khí?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Đặt lại cài đặt trang phục?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Cảm ơn bạn XD\nVui lòng nhấn “{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Xóa “{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Phụ thuộc huyết thanh tê liệt cảm xúc</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Chọn đặc điểm</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Cấp bắn súng</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Cấp cận chiến</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Đặt lại lựa chọn</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Dự đoán và ứng phó với các cuộc đấu súng tầm gần. Có thể sử dụng RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Điều kiện</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Đặc điểm ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Cấp độ bắn súng</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Cấp độ cận chiến</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Giới hạn ứng viên</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Tầm cận chiến</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Tầm gần</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Thời gian di chuyển khi phá cửa</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Thời gian chờ sau khi đến đích đột phá</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Mặc định</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Cho phép nhân vật không thù địch bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Cho phép nhân vật thù địch bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Mặc định cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Cho phép bắn khi bò</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Thả mục tiêu gục ngã khi tự động khống chế</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Chuyển hướng ngắm mượt mà</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Khống chế</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Tự động khống chế</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Khống chế</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Giới hạn khối lượng khống chế</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Thời gian choáng do va chạm khi khống chế</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Thời gian duy trì tự động khống chế</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Tấn công khi khống chế</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Tấn công nhân vật đang bị giữ. Tắt khi bắt đầu mỗi lần khống chế.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Hành động khống chế</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Đặt lại tất cả</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Đặt lại kết quả đã lọc</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Đá bay</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Cho phép nhân vật không thù địch đá bay</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Cho phép nhân vật thù địch đá bay</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Xác suất gây choáng của đá bay</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Sát thương đá bay</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Đá</KRWF_RimKata_FeatureKick>

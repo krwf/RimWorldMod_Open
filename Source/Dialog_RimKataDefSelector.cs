@@ -227,6 +227,13 @@ namespace KRWF.RimKata
                     : "KRWF_RimKata_ResetApparelConfirmation";
                 RimKataConfirmationDialog.Show(confirmationKey.Translate(), ResetSelection);
             }
+            string refreshLabel = "KRWF_RimKata_EquipmentRefresh".Translate();
+            float refreshWidth = Mathf.Max(72f, Text.CalcSize(refreshLabel).x + 22f);
+            Rect refreshRect = new Rect(inRect.xMax - refreshWidth, resetRect.y, refreshWidth, resetRect.height);
+            if (Widgets.ButtonText(refreshRect, refreshLabel))
+            {
+                Find.WindowStack.Add(new Dialog_RimKataEquipmentRefresh());
+            }
             DrawButtons(new Rect(inRect.x, inRect.yMax - 30f, inRect.width, 30f));
         }
 

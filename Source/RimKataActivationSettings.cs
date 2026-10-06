@@ -94,8 +94,9 @@ namespace KRWF.RimKata
         {
             RimKataMod.Settings?.SanitizeGeneProbabilityRules();
             if (applying) return;
+            bool personalChanged = RimKataPersonalActivation.Rebuild(RimKataMod.Settings);
             int mask = Mask;
-            if (!force && appliedMask == mask && appliedGame == Current.Game) return;
+            if (!force && !personalChanged && appliedMask == mask && appliedGame == Current.Game) return;
             applying = true;
             try
             {

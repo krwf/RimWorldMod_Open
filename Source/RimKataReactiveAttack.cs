@@ -9,7 +9,7 @@ namespace KRWF.RimKata
 {
     internal static class RimKataReactiveAttack
     {
-        private static readonly Type AmmoType = AccessTools.TypeByName("CombatExtended.CompAmmoUser");
+        private static readonly Type AmmoType = RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser");
         private static readonly MethodInfo CanFire = AmmoType == null ? null
             : AccessTools.PropertyGetter(AmmoType, "CanBeFiredNow");
 
@@ -111,10 +111,10 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_CEAmmo_RimKataReactiveAttack
     {
-        private static bool Prepare() => AccessTools.TypeByName("CombatExtended.CompAmmoUser") != null;
+        private static bool Prepare() => RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser") != null;
         private static IEnumerable<MethodBase> TargetMethods()
         {
-            Type type = AccessTools.TypeByName("CombatExtended.CompAmmoUser");
+            Type type = RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser");
             MethodBase reload = AccessTools.Method(type, "TryStartReload", Type.EmptyTypes);
             MethodBase empty = AccessTools.Method(type, "DoOutOfAmmoAction", Type.EmptyTypes);
             if (reload != null) yield return reload;
@@ -126,11 +126,11 @@ namespace KRWF.RimKata
     [HarmonyPatch]
     internal static class Patch_CEShots_RimKataReactiveAttack
     {
-        private static bool Prepare() => AccessTools.TypeByName("CombatExtended.Verb_ShootCE") != null;
+        private static bool Prepare() => RimKataActiveModTypes.Find("CombatExtended.Verb_ShootCE") != null;
         private static IEnumerable<MethodBase> TargetMethods()
         {
-            MethodInfo launcher = AccessTools.PropertyGetter(AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE"), "ShotsPerBurst");
-            MethodInfo shooter = AccessTools.PropertyGetter(AccessTools.TypeByName("CombatExtended.Verb_ShootCE"), "ShotsPerBurst");
+            MethodInfo launcher = AccessTools.PropertyGetter(RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE"), "ShotsPerBurst");
+            MethodInfo shooter = AccessTools.PropertyGetter(RimKataActiveModTypes.Find("CombatExtended.Verb_ShootCE"), "ShotsPerBurst");
             if (launcher != null) yield return launcher;
             if (shooter != null && shooter != launcher) yield return shooter;
         }
@@ -144,7 +144,7 @@ namespace KRWF.RimKata
     internal static class Patch_CEAim_RimKataReactiveAttack
     {
         private static MethodBase Resolve() => AccessTools.PropertyGetter(
-            AccessTools.TypeByName("CombatExtended.Verb_ShootCE"), "ShouldAim");
+            RimKataActiveModTypes.Find("CombatExtended.Verb_ShootCE"), "ShouldAim");
         private static bool Prepare() => Resolve() != null;
         private static MethodBase TargetMethod() => Resolve();
         private static void Postfix(Verb __instance, ref bool __result)

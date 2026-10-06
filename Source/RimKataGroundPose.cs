@@ -294,6 +294,11 @@ namespace KRWF.RimKata
                 && state.groundPose?.PronePose == true) BeginRise(state);
         }
 
+        internal static void RiseForAutoSubdue(RimKataPawnCombatState state)
+        {
+            if (state?.groundPose?.PronePose == true) BeginRise(state);
+        }
+
         internal static void NotifyJobChanged(Pawn pawn)
         {
             NotifyMovement(pawn);

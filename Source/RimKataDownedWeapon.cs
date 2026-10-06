@@ -194,7 +194,7 @@ namespace KRWF.RimKata
                 pawn = pawn,
                 weapon = context.retained,
                 activeDowned = true,
-                fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.GetCrawlFireDefaultAllowed(pawn)
+                fireAllowed = RimKataTargetAccess.SettingsFor(pawn)?.crawlFireDefaultAllowed
                     ?? RimKataSettings.DefaultCrawlFireDefaultAllowed,
                 promotedSecondary = promoted,
                 originalPrimary = promoted && pawn.mindState?.droppedWeapon == context.primary
@@ -492,8 +492,18 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
     internal static class Patch_PawnJobTracker_RimKataRetainedWeaponRecoveryEnded
     {
-        public static void Prefix(Pawn ___pawn, bool releaseReservations, out bool __state) =>
+        public static void Prefix(Pawn ___pawn, bool releaseReservations, out bool __state)
+        {
+            int id = ___pawn?.thingIDNumber ?? 0;
+            int page = id >> RimKataFlyingKickApproach.PageShift;
+            if (id > 0 && page < RimKataFlyingKickApproach.pages.Length)
+            {
+                var slot = RimKataFlyingKickApproach.pages[page]?[id & RimKataFlyingKickApproach.PageMask];
+                if (slot?.pawn == ___pawn && (slot.approach != null || slot.usedJobId >= 0))
+                    RimKataFlyingKickApproach.NotifyJobEnded(___pawn);
+            }
             __state = releaseReservations && RimKataDownedWeaponUtility.IsRecoveryJob(___pawn, ___pawn.CurJob);
+        }
 
         public static void Postfix(Pawn ___pawn, bool __state)
         {

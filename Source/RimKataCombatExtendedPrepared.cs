@@ -20,18 +20,18 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            if (AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE") == null) return;
+            if (RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE") == null) return;
             Type data = typeof(RimKataPreparedWeaponData);
             HarmonyMethod burst = new HarmonyMethod(typeof(RimKataCombatExtendedPrepared), nameof(BurstCountTranspiler));
-            harmony.Patch(AccessTools.Method(data, nameof(RimKataPreparedWeaponData.Bind)),
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(data, nameof(RimKataPreparedWeaponData.Bind)),
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedPrepared), nameof(BindPrefix)),
                 transpiler: burst);
-            harmony.Patch(AccessTools.Method(data, nameof(RimKataPreparedWeaponData.CanPrepareSingleShot)), transpiler: burst);
-            harmony.Patch(AccessTools.Method(data, nameof(RimKataPreparedWeaponData.IsCurrent)),
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(data, nameof(RimKataPreparedWeaponData.CanPrepareSingleShot)), transpiler: burst);
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(data, nameof(RimKataPreparedWeaponData.IsCurrent)),
                 postfix: new HarmonyMethod(typeof(RimKataCombatExtendedPrepared), nameof(IsCurrentPostfix)),
                 transpiler: burst);
-            harmony.Patch(AccessTools.Method(data, nameof(RimKataPreparedWeaponData.GetOriginalBurstCount)), transpiler: burst);
-            harmony.Patch(AccessTools.Method(typeof(RimKataCombatMath), "AdjustedWarmupTicks",
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(data, nameof(RimKataPreparedWeaponData.GetOriginalBurstCount)), transpiler: burst);
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataCombatMath), "AdjustedWarmupTicks",
                 new[] { typeof(Verb), typeof(float) }),
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedPrepared), nameof(WarmupTranspiler)));
         }

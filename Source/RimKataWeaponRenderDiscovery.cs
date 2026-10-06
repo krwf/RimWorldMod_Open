@@ -10,7 +10,7 @@ using Verse;
 
 namespace KRWF.RimKata
 {
-    internal static class RimKataWeaponRenderDiscovery
+    internal static partial class RimKataWeaponRenderDiscovery
     {
         private const int MaximumDepth = 8;
         private const int MaximumMethodsPerRenderer = 96;
@@ -44,6 +44,8 @@ namespace KRWF.RimKata
 
         private static IReadOnlyList<Renderer> renderers = Array.Empty<Renderer>();
         private static bool initialized;
+        private static Harmony patcher;
+        private static readonly HashSet<MethodInfo> instrumented = new HashSet<MethodInfo>();
 
         internal static bool HasRenderers => renderers.Count != 0;
         internal static IReadOnlyList<Renderer> Renderers => renderers;
@@ -57,89 +59,15 @@ namespace KRWF.RimKata
             }
 
             initialized = true;
-            Patches patches = Harmony.GetPatchInfo(DrawExtras);
-            if (patches == null)
-            {
-                return;
-            }
-
-            List<Candidate> candidates = new List<Candidate>();
-            HashSet<MethodInfo> seenPrefixes = new HashSet<MethodInfo>();
-            foreach (Patch patch in patches.Prefixes)
-            {
-                MethodInfo prefix = patch.PatchMethod;
-                if (candidates.Count >= MaximumRenderers
-                    || prefix == null
-                    || !seenPrefixes.Add(prefix)
-                    || !IsExternalAssembly(prefix.DeclaringType?.Assembly)
-                    || !TryMapArguments(prefix, out int[] arguments))
-                {
-                    continue;
-                }
-
-                Candidate candidate = new Candidate(prefix, arguments);
-                try
-                {
-                    if (Visit(candidate, prefix, 0) && candidate.hasCustomDraw)
-                    {
-                        candidates.Add(candidate);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    ReportUnsupported(prefix, exception);
-                }
-            }
-
-            // The accessory-only SYS postfix uses delegates outside managed call-graph discovery.
-            foreach (Patch patch in patches.Postfixes)
-            {
-                MethodInfo postfix = patch.PatchMethod;
-                if (postfix?.DeclaringType?.FullName != "KRWF.SYSYayoCompat.SysSheathRenderPatch"
-                    || postfix.Name != "Postfix") continue;
-                try
-                {
-                    Candidate candidate = CreateSysSheathPostfix(postfix);
-                    if (candidate != null) candidates.Add(candidate);
-                }
-                catch (Exception exception) { ReportUnsupported(postfix, exception); }
-            }
-
-            // Classify candidates before our transpilers alter shared helper IL.
-            HashSet<MethodInfo> instrumented = new HashSet<MethodInfo>();
-            List<Renderer> discovered = new List<Renderer>();
-            foreach (Candidate candidate in candidates)
-            {
-                try
-                {
-                    foreach (MethodInfo method in candidate.methodsToInstrument)
-                    {
-                        if (instrumented.Contains(method))
-                        {
-                            continue;
-                        }
-
-                        harmony.Patch(method, transpiler: new HarmonyMethod(TranspilerMethod)
-                        {
-                            priority = Priority.Last
-                        });
-                        instrumented.Add(method);
-                    }
-
-                    discovered.Add(new Renderer(
-                        candidate.invoke ?? CompileInvoker(candidate.prefix, candidate.arguments),
-                        candidate.compTypes, candidate.accessoriesOnly));
-                }
-                catch (Exception exception)
-                {
-                    ReportUnsupported(candidate.prefix, exception);
-                }
-            }
-
-            renderers = discovered.AsReadOnly();
+            patcher = harmony;
+            var plan = new DiscoveryPlan(RimKataEquipmentMemory.Current);
+            using (RimKataStartupDiagnostics.Measure("discovery", "render_analysis"))
+                foreach (object unused in plan.Scan()) { }
+            Apply(plan.Install());
         }
 
-        private static Candidate CreateSysSheathPostfix(MethodInfo postfix)
+        private static Candidate CreateSysSheathPostfix(MethodInfo postfix,
+            RimKataEquipmentMemory.View memory, string environment)
         {
             Type patchType = postfix.DeclaringType;
             var adapters = AccessTools.Field(patchType, "adaptersByCompType")?.GetValue(null) as IDictionary;
@@ -154,19 +82,32 @@ namespace KRWF.RimKata
                 throw new InvalidOperationException("Unsupported SYS sheath postfix signature.");
 
             Candidate candidate = new Candidate(postfix, null) { accessoriesOnly = true };
-            candidate.methodsToInstrument.Add(postfix);
-            foreach (Type compType in adapters.Keys)
+            var adapterTypes = new List<string>();
+            foreach (Type compType in adapters.Keys) adapterTypes.Add(compType.AssemblyQualifiedName);
+            adapterTypes.Sort(StringComparer.Ordinal);
+            string fingerprint = RimKataEquipmentMemory.Fingerprint(environment + "\n" + string.Join("\n", adapterTypes));
+            bool restored = TryRestore(candidate, memory, fingerprint);
+            if (!restored)
             {
-                Type renderer = compType.Assembly.GetType("SYS.DrawEquipment_WeaponBackPatch");
-                MethodInfo draw = AccessTools.Method(renderer, "DrawSheath",
-                    new[] { compType, typeof(Pawn), typeof(Vector3), typeof(Graphic) });
-                if (draw == null) throw new InvalidOperationException("SYS sheath renderer was not found.");
-                Candidate helper = new Candidate(draw, null);
-                if (!Visit(helper, draw, 0) || !helper.hasCustomDraw)
-                    throw new InvalidOperationException("Unsupported SYS sheath drawing path.");
-                candidate.methodsToInstrument.UnionWith(helper.methodsToInstrument);
-                candidate.compTypes.Add(compType);
+                candidate.visited.Add(postfix);
+                candidate.visited.Add(prefix);
+                candidate.methodsToInstrument.Add(postfix);
+                foreach (Type compType in adapters.Keys)
+                {
+                    Type renderer = compType.Assembly.GetType("SYS.DrawEquipment_WeaponBackPatch");
+                    MethodInfo draw = AccessTools.Method(renderer, "DrawSheath",
+                        new[] { compType, typeof(Pawn), typeof(Vector3), typeof(Graphic) });
+                    if (draw == null) throw new InvalidOperationException("SYS sheath renderer was not found.");
+                    Candidate helper = new Candidate(draw, null);
+                    if (!Visit(helper, draw, 0) || !helper.hasCustomDraw)
+                        throw new InvalidOperationException("Unsupported SYS sheath drawing path.");
+                    candidate.methodsToInstrument.UnionWith(helper.methodsToInstrument);
+                    candidate.visited.UnionWith(helper.visited);
+                    candidate.compTypes.Add(compType);
+                }
+                candidate.hasCustomDraw = true;
             }
+            candidate.fingerprint = fingerprint;
 
             DynamicMethod invoker = new DynamicMethod("RimKataInvokeSysSheathPostfix", typeof(bool),
                 new[] { typeof(Pawn), typeof(Vector3), typeof(Rot4), typeof(PawnRenderFlags) },
@@ -225,6 +166,7 @@ namespace KRWF.RimKata
                     continue;
                 }
 
+                called = OriginalForProbe(called);
                 CollectCompType(candidate, called);
                 MethodInfo replacement = ReplacementFor(called);
                 if (replacement != null)
@@ -452,6 +394,9 @@ namespace KRWF.RimKata
             internal bool hasCustomDraw;
             internal bool accessoriesOnly;
             internal Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke;
+            internal string fingerprint;
+            internal string restoredKey;
+            internal Renderer renderer;
 
             internal Candidate(MethodInfo prefix, int[] arguments)
             {
@@ -466,12 +411,14 @@ namespace KRWF.RimKata
             private readonly Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke;
             private readonly Type[] compTypes;
             internal bool AccessoriesOnly { get; }
+            internal string Key { get; }
 
             internal Renderer(
                 Func<Pawn, Vector3, Rot4, PawnRenderFlags, bool> invoke,
-                HashSet<Type> compTypes, bool accessoriesOnly = false)
+                HashSet<Type> compTypes, bool accessoriesOnly = false, string key = null)
             {
                 this.invoke = invoke;
+                Key = key;
                 AccessoriesOnly = accessoriesOnly;
                 this.compTypes = new Type[compTypes.Count];
                 compTypes.CopyTo(this.compTypes);

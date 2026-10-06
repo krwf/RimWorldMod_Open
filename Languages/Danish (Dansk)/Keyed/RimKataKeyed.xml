@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Annuller</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Nulstil våbenindstillinger?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Nulstil beklædningsindstillinger?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Tak XD\nTryk på »{0}«.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Nulstil '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Nulstil '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Slet '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Afhængighed af følelsesdæmpende serum</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Vælg egenskaber</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Skydeniveau</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Nærkampsniveau</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Nulstil valg</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Forudser og reagerer på skudkampe på nært hold. Kan bruge RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Kvalifikationskrav</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Egenskaber ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Skydeniveau</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Nærkampsniveau</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Kandidatgrænser</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Nærkampsrækkevidde</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Kort rækkevidde</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Bevægelsestid under gennembrud</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Ventetid efter ankomst til gennembruddets mål</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Standardværdier</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Tillad skydning under kravlen for ikke-fjendtlige figurer</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Tillad skydning under kravlen for fjendtlige figurer</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Tillad skydning under kravlen som standard</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Tillad skydning under kravlen</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Slip nedkæmpede mål ved automatisk overmanding</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Glidende sigteovergange</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Overmand</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatisk overmanding</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Overmand</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Massegrænse for overmanding</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Bedøvelsestid ved sammenstød efter overmanding</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Holdetid ved automatisk overmanding</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Angreb under overmanding</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Angrib den fastholdte figur. Deaktiveret ved starten af hver overmanding.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Overmandingshandlinger</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Nulstil alle</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Nulstil filtrerede resultater</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Flyvespark</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Tillad flyvespark for ikke-fjendtlige figurer</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Tillad flyvespark for fjendtlige figurer</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Bedøvelseschance ved flyvespark</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Skade fra flyvespark</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Spark</KRWF_RimKata_FeatureKick>

@@ -33,15 +33,18 @@ namespace KRWF.RimKata
             Postfix(harmony, typeof(RimKataMapComponent), "HasHostileProjectileInRange", nameof(HostileInRangePostfix));
             Postfix(harmony, typeof(RimKataMapComponent), "TryGetValidHostileProjectile", nameof(FirstProjectilePostfix));
             Postfix(harmony, typeof(RimKataMapComponent), "AppendValidHostileProjectiles", nameof(AppendProjectilesPostfix));
-            LongEventHandler.ExecuteWhenFinished(RegisterMapComponents);
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                using (RimKataStartupDiagnostics.Measure("preparation", "ce_map_components")) RegisterMapComponents();
+            });
         }
 
         private static HarmonyMethod Hook(string name) => new HarmonyMethod(
             typeof(RimKataCombatExtendedProjectileHooks), name) { priority = Priority.First };
         private static void Prefix(Harmony harmony, Type type, string name, string hook) =>
-            harmony.Patch(AccessTools.Method(type, name), prefix: Hook(hook));
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(type, name), prefix: Hook(hook));
         private static void Postfix(Harmony harmony, Type type, string name, string hook) =>
-            harmony.Patch(AccessTools.Method(type, name), postfix: Hook(hook));
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(type, name), postfix: Hook(hook));
 
         private static void RegisterMapComponents()
         {

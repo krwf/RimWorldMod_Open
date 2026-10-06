@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>İptal</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Silah ayarları sıfırlansın mı?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Giysi ayarları sıfırlansın mı?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Teşekkürler XD\nLütfen &quot;{0}&quot; düğmesine basın.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>'{0}' silinsin mi?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Zihin uyuşturan serum bağımlılığı</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Özellik seç</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Atıcılık seviyesi</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Yakın dövüş seviyesi</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Seçimi sıfırla</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Yakın mesafeli silahlı çatışmaları öngörür ve bunlara karşılık verir. RimKata kullanabilir.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Gereksinimler</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Özellikler ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Atıcılık seviyesi</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Yakın dövüş seviyesi</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Aday sınırları</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Yakın dövüş menzili</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Kısa menzil</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Kapıyı kırarak girerken hareket süresi</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Kapıyı kırıp hedefe ulaştıktan sonra bekleme süresi</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Varsayılanlar</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Düşman olmayan piyonların sürünürken ateş etmesine izin ver</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Düşman piyonların sürünürken ateş etmesine izin ver</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye varsayılan olarak izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Sürünürken ateş etmeye izin ver</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Yere düşen hedefleri otomatik etkisizleştirmeden bırak</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Yumuşak nişan geçişleri</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Etkisizleştir</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Otomatik etkisizleştirme</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Etkisizleştir</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Etkisizleştirme kütle sınırı</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Etkisizleştirme çarpma sersemliği süresi</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Otomatik etkisizleştirme tutma süresi</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Etkisizleştirme saldırısı</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Tutulan karaktere saldırır. Her etkisizleştirmenin başında devre dışıdır.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Etkisizleştirme eylemleri</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Tümünü sıfırla</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Filtrelenen sonuçları sıfırla</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Uçan tekme</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Düşman olmayan piyonların uçan tekme atmasına izin ver</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Düşman piyonların uçan tekme atmasına izin ver</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Uçan tekme sersemletme şansı</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Uçan tekme hasarı</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Tekme</KRWF_RimKata_FeatureKick>

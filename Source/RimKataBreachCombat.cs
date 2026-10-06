@@ -171,22 +171,18 @@ namespace KRWF.RimKata
         // Mod overrides can bypass the base attack method.
         internal static IEnumerable<MethodBase> VerbMethods(string name, Type returnType, Type[] signature)
         {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
             {
-                if (assembly.IsDynamic) continue;
-                IEnumerable<Type> types;
-                try { types = AccessTools.GetTypesFromAssembly(assembly); }
-                catch { continue; }
-                foreach (Type type in types)
-                {
-                    if (type == null || !typeof(Verb).IsAssignableFrom(type)) continue;
-                    MethodInfo method = type.GetMethod(name,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
-                        null, signature, null);
-                    if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
-                        && method.ReturnType == returnType && method.GetMethodBody() != null)
-                        yield return method;
-                }
+                if (type == null || !typeof(Verb).IsAssignableFrom(type)) continue;
+                if (name == "TryCastShot" && (type == typeof(Verb_BeatFire)
+                    || type == typeof(Verb_RimKataKick)
+                    || type == typeof(Verb_RimKataFlyingKick))) continue;
+                MethodInfo method = type.GetMethod(name,
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly,
+                    null, signature, null);
+                if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
+                    && method.ReturnType == returnType && method.GetMethodBody() != null)
+                    yield return method;
             }
         }
     }

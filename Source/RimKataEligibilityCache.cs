@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using HarmonyLib;
 using RimWorld;
 using Verse;
@@ -33,6 +34,13 @@ namespace KRWF.RimKata
             public bool bond;
             public Map publishedMap;
             public bool qualified;
+            public bool unrestricted;
+            public bool traitsKnown;
+            public Trait[] qualifyingTraits = Array.Empty<Trait>();
+            public bool skillsKnown;
+            public bool shootingQualified;
+            public bool meleeQualified;
+            public string qualificationTooltip;
         }
 
         private sealed class RegisteredUser
@@ -103,13 +111,24 @@ namespace KRWF.RimKata
             if (users.initialized) return;
             users.initialized = true;
             IReadOnlyList<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
-            for (int i = 0; i < pawns.Count; i++) NotifyPawnSpawned(pawns[i]);
+            for (int i = 0; i < pawns.Count; i++) NotifyPawnSpawned(pawns[i], refreshPersonal: true);
         }
 
-        internal static void NotifyPawnSpawned(Pawn pawn)
+        internal static void NotifyPawnSpawned(Pawn pawn, bool refreshPersonal = false)
         {
             if (pawn?.Spawned != true || pawn.Dead) return;
             bool wasQualified = IsCachedQualifiedPawn(pawn);
+            if (refreshPersonal && TryGetEntry(pawn, out Entry entry))
+            {
+                lock (entry)
+                {
+                    entry.traitsKnown = false;
+                    entry.skillsKnown = false;
+                    entry.accessState = AccessUnknown;
+                    entry.qualificationTooltip = null;
+                }
+                RemoveRegisteredUser(pawn);
+            }
             bool hasSource = HasAnyAccessSource(pawn);
             PublishAccess(pawn, hasSource);
             if (wasQualified && IsCachedQualifiedPawn(pawn))
@@ -118,12 +137,20 @@ namespace KRWF.RimKata
 
         internal static void NotifyPawnDespawned(Pawn pawn)
         {
+            int id = pawn?.thingIDNumber ?? 0;
+            int page = id >> RimKataFlyingKickApproach.PageShift;
+            if (id > 0 && page < RimKataFlyingKickApproach.pages.Length
+                && RimKataFlyingKickApproach.pages[page]?[id & RimKataFlyingKickApproach.PageMask]?.pawn == pawn)
+                RimKataFlyingKickApproach.NotifyDespawned(pawn);
             if (TryGetEntry(pawn, out Entry entry)) RemovePublishedAccess(pawn, entry);
         }
 
         internal static void NotifyTargetChanged(Pawn pawn)
         {
-            if (pawn?.Spawned != true) return;
+            if (pawn == null) return;
+            RefreshPersonalSources(pawn, traits: true, skills: false);
+            if (TryGetEntry(pawn, out Entry entry)) entry.qualificationTooltip = null;
+            if (!pawn.Spawned) return;
             NotifyPawnSpawned(pawn);
             RimKataWeaponSlotUtility.NotifyTargetProfileChanged(pawn);
         }
@@ -216,7 +243,10 @@ namespace KRWF.RimKata
             if (pawn?.Spawned != true || pawn.Dead) return;
             Entry entry = entries.GetValue(pawn, CreateEntry);
             Map map = pawn.Map;
-            bool permittedSource = hasSource || RimKataTargetAccess.IsEnabled(pawn);
+            bool unrestricted = RimKataTargetAccess.IsEnabled(pawn);
+            if (entry.unrestricted != unrestricted) entry.qualificationTooltip = null;
+            entry.unrestricted = unrestricted;
+            bool permittedSource = hasSource || unrestricted;
             if (entry.publishedMap != null && (entry.publishedMap != map || !permittedSource))
                 RemovePublishedAccess(pawn, entry);
             if (!permittedSource || map == null) return;
@@ -236,6 +266,7 @@ namespace KRWF.RimKata
             {
                 users.qualifiedIndices.Add(pawn, users.qualified.Count);
                 users.qualified.Add(pawn);
+                RimKataFlyingKickApproach.NotifyQualifiedPath(pawn);
             }
             else if (users.qualifiedIndices.TryGetValue(pawn, out int index))
             {
@@ -364,6 +395,9 @@ namespace KRWF.RimKata
 
             RimKataColonistBarWeaponCache.Set(
                 pawn, secondaryWeapon, accessVerified, slotVerified, heldPairPrimary);
+            if (RimKataResponseVisualParticipantCache.BodyVisualFor(pawn) != null)
+                RimKataResponseVisualParticipantCache.PublishEquipment(
+                    pawn, heldPairPrimary ?? pawn.equipment?.Primary, secondaryWeapon, slotVerified);
         }
 
         public static bool HasActiveDependencyGene(Pawn pawn)
@@ -487,6 +521,8 @@ namespace KRWF.RimKata
                     entry.roleKnown = false;
                     entry.dependencyGeneKnown = false;
                     entry.dependencyGene = null;
+                    entry.traitsKnown = false;
+                    entry.skillsKnown = false;
                 }
             }
             FinishAccessInvalidation(pawn, secondary);
@@ -561,6 +597,7 @@ namespace KRWF.RimKata
 
         private static ThingWithComps BeginAccessInvalidation(Pawn pawn)
         {
+            if (TryGetEntry(pawn, out Entry entry)) entry.qualificationTooltip = null;
             RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
             ThingWithComps registeredSecondary = null;
             if (pawn?.Spawned == true
@@ -617,6 +654,9 @@ namespace KRWF.RimKata
 
         private static bool ResolveAccess(Pawn pawn, Entry entry)
         {
+            ResolvePersonalSources(pawn, entry);
+            if (entry.shootingQualified || entry.meleeQualified || entry.qualifyingTraits.Length != 0)
+                return true;
             ResolveRimKataGene(pawn, entry);
             if (entry.hasRimKataGene)
             {
@@ -643,6 +683,103 @@ namespace KRWF.RimKata
 
             ResolveDependencyGene(pawn, entry);
             return entry.hasDependencyGene;
+        }
+
+        private static void ResolvePersonalSources(Pawn pawn, Entry entry)
+        {
+            if (!entry.traitsKnown)
+            {
+                entry.qualifyingTraits = RimKataPersonalActivation.ReadTraits(pawn);
+                entry.traitsKnown = true;
+            }
+            if (!entry.skillsKnown)
+            {
+                RimKataPersonalActivation.ReadSkills(pawn, out entry.shootingQualified, out entry.meleeQualified);
+                entry.skillsKnown = true;
+            }
+        }
+
+        // Called only by a changed pawn's level, trait or aptitude event. No pawn tick polling.
+        internal static void RefreshPersonalSources(Pawn pawn, bool traits, bool skills)
+        {
+            traits &= RimKataPersonalActivation.TraitsEnabled;
+            skills &= RimKataPersonalActivation.SkillsEnabled;
+            if ((!traits && !skills) || pawn == null || pawn.Dead) return;
+            if (!TryGetEntry(pawn, out Entry entry))
+            {
+                if (pawn.Spawned) NotifyPawnSpawned(pawn);
+                return;
+            }
+            bool changed;
+            lock (entry)
+            {
+                if (traits) entry.traitsKnown = false;
+                if (skills) entry.skillsKnown = false;
+                bool hasAccess = ResolveAccess(pawn, entry);
+                int next = hasAccess ? AccessGranted : AccessDenied;
+                changed = entry.accessState != next;
+                entry.qualificationTooltip = null;
+                // Reuse source results in FinishAccessInvalidation without re-reading skills/traits.
+                entry.accessState = next;
+            }
+            if (!changed) return;
+            ThingWithComps secondary = BeginAccessInvalidation(pawn);
+            FinishAccessInvalidation(pawn, secondary);
+        }
+
+        internal static bool TryGetQualificationDisplay(Pawn pawn, out bool unrestricted)
+        {
+            unrestricted = false;
+            if (pawn == null || pawn.Dead) return false;
+            if (pawn.Spawned)
+            {
+                if (!TryGetEntry(pawn, out Entry entry) || !entry.qualified) return false;
+                unrestricted = entry.unrestricted;
+                return true;
+            }
+            // Character cards also show caravan/world pawns. Resolve only the opened card,
+            // using the same cached access sources; never create map combat/render registration.
+            unrestricted = RimKataTargetAccess.IsEnabled(pawn);
+            return RimKataEligibility.FactionEffectsEnabled(pawn)
+                && (unrestricted || HasAnyAccessSource(pawn));
+        }
+
+        internal static string GetQualificationTooltip(Pawn pawn)
+        {
+            if (!TryGetQualificationDisplay(pawn, out bool unrestricted)) return string.Empty;
+            Entry entry = entries.GetValue(pawn, CreateEntry);
+            lock (entry)
+            {
+                if (entry.unrestricted != unrestricted) entry.qualificationTooltip = null;
+                entry.unrestricted = unrestricted;
+                if (entry.qualificationTooltip != null) return entry.qualificationTooltip;
+                // Access checks short-circuit. Complete the other cached reasons only on hover.
+                ResolveRimKataGene(pawn, entry);
+                ResolveAmpoule(pawn, entry);
+                ResolvePsycast(pawn, entry);
+                ResolveRole(pawn, entry);
+                ResolveDependencyGene(pawn, entry);
+                ResolvePersonalSources(pawn, entry);
+                var text = new StringBuilder("KRWF_RimKata_QualificationDescription".Translate());
+                text.Append("\n\n").Append("KRWF_RimKata_QualificationRequirements".Translate()
+                    .Colorize(UnityEngine.Color.yellow));
+                if (unrestricted) text.Append("\n- ").Append("KRWF_RimKata_RemoveRestrictions".Translate()
+                    .Colorize(ColoredText.NameColor));
+                if (entry.hasAmpoule) text.Append("\n- RimKata-A");
+                if (entry.hasPsycast) text.Append("\n- RimKata-P");
+                if (entry.hasRole) text.Append("\n- RimKata-I");
+                if (entry.hasRimKataGene) text.Append("\n- RimKata-G");
+                if (entry.hasDependencyGene) text.Append("\n- ").Append("KRWF_RimKata_EnableSerumDependency".Translate());
+                if (entry.shootingQualified) text.Append("\n- ").Append("KRWF_RimKata_QualificationShooting".Translate());
+                if (entry.meleeQualified) text.Append("\n- ").Append("KRWF_RimKata_QualificationMelee".Translate());
+                if (entry.qualifyingTraits.Length != 0)
+                {
+                    var labels = new string[entry.qualifyingTraits.Length];
+                    for (int i = 0; i < labels.Length; i++) labels[i] = entry.qualifyingTraits[i].LabelCap;
+                    text.Append("\n- ").Append("KRWF_RimKata_QualificationTraits".Translate(string.Join(", ", labels)));
+                }
+                return entry.qualificationTooltip = text.ToString();
+            }
         }
 
         private static void UpdateRegisteredUser(Pawn pawn, bool hasAccess)

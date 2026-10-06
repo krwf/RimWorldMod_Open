@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Annuler</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Réinitialiser les paramètres des armes ?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Réinitialiser les paramètres des vêtements ?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Merci XD\nVeuillez appuyer sur « {0} ».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Réinitialiser « {0} » ?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Réinitialiser « {0} » ?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Supprimer « {0} » ?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Dépendance au sérum d'insensibilisation</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Choisir les traits</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Niv. de tir</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Niv. de mêlée</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Réinitialiser la sélection</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Anticipe les fusillades à courte distance et y réagit. Peut utiliser RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Conditions requises</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Traits ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Niveau de tir</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Niveau de mêlée</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Limites des cibles candidates</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Portée de mêlée</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Courte portée</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Durée de déplacement lors de l’effraction</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Temps d’attente à l’arrivée après l’effraction</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Valeurs par défaut</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Autoriser le tir en rampant pour les pions non hostiles</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Autoriser le tir en rampant pour les pions hostiles</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant par défaut</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Autoriser le tir en rampant</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Relâcher les cibles à terre lors de la maîtrise automatique</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Transitions de visée fluides</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Maîtriser</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Maîtrise automatique</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Maîtriser</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Masse maximale à maîtriser</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Durée d&apos;étourdissement à l&apos;impact après maîtrise</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Durée de maintien de la maîtrise automatique</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Attaque de maîtrise</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Attaque le personnage retenu. Désactivée au début de chaque maîtrise.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Actions de maîtrise</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Tout réinitialiser</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Réinitialiser les résultats filtrés</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Coup de pied sauté</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Autoriser les coups de pied sautés pour les pions non hostiles</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Autoriser les coups de pied sautés pour les pions hostiles</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Chance d'étourdissement du coup de pied sauté</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Dégâts du coup de pied sauté</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Coup de pied</KRWF_RimKata_FeatureKick>

@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Скасувати</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Скинути налаштування зброї?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Скинути налаштування одягу?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Дякую XD\nНатисніть «{0}».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Видалити «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Залежність від сироватки емоційного оніміння</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Вибрати риси</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Рівень стрільби</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Рівень ближнього бою</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Скинути вибір</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Передбачає перестрілки на короткій відстані та реагує на них. Може використовувати RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Вимоги</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Риси ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Рівень стрільби</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Рівень ближнього бою</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Обмеження цілей</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Дальність ближнього бою</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Близька дистанція</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Час руху під час прориву</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Час очікування після досягнення точки прориву</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Типові значення</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Дозволяти неворожим пішакам стріляти під час повзання</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Дозволяти ворожим пішакам стріляти під час повзання</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Типово дозволяти стрільбу під час повзання</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Дозволяти стрільбу під час повзання</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Відпускати повалених цілей при автоматичному захопленні</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Плавна зміна напрямку прицілювання</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Схопити</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Автоматичне захоплення</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Схопити</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Межа маси для захоплення</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Тривалість оглушення від удару після захоплення</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Тривалість утримання при автоматичному захопленні</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Атака під час захоплення</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Атакує утримуваного персонажа. Вимкнено на початку кожного захоплення.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Дії під час захоплення</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Скинути все</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Скинути результати фільтра</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Удар ногою в стрибку</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Дозволяти неворожим пішакам удари ногою в стрибку</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Дозволяти ворожим пішакам удари ногою в стрибку</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Шанс оглушення ударом ноги в стрибку</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Шкода від удару ногою в стрибку</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Удар ногою</KRWF_RimKata_FeatureKick>

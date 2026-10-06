@@ -256,6 +256,7 @@ namespace KRWF.RimKata
                 Messages.Message("CannotFire".Translate(), MessageTypeDefOf.RejectInput, false);
                 return true;
             }
+            RimKataAutoSubdue.NotifyManualControl(state);
             state.externalOrderJobId = -1;
             RimKataSubdueJobs.StopAttackJob(state.pawn);
             return true;
@@ -301,6 +302,7 @@ namespace KRWF.RimKata
         internal static void SetAttackEnabled(RimKataSubdueState state, bool enabled)
         {
             if (RimKataSubdueUtility.Get(state.pawn) != state || !state.attackAllowed) return;
+            RimKataAutoSubdue.NotifyManualControl(state);
             if (enabled && state.HasExternalTarget)
             {
                 StopExternalAttack(state);
@@ -315,6 +317,7 @@ namespace KRWF.RimKata
         internal static void SetAttackAllowed(RimKataSubdueState state, bool allowed)
         {
             if (RimKataSubdueUtility.Get(state.pawn) != state) return;
+            RimKataAutoSubdue.NotifyManualControl(state);
             state.attackAllowed = allowed;
             if (!allowed)
             {

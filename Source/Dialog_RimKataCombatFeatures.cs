@@ -29,6 +29,7 @@ namespace KRWF.RimKata
         private bool kickEnabled;
         private bool pushKickEnabled;
         private bool subdueEnabled;
+        private bool autoSubdueEnabled;
         private bool subdueDamageTransferEnabled;
         private bool responseEnabled;
         private bool rangedDodgeEnabled;
@@ -56,6 +57,7 @@ namespace KRWF.RimKata
             "KRWF_RimKata_FeatureKick",
             "KRWF_RimKata_FeaturePushKick",
             "KRWF_RimKata_FeatureSubdue",
+            "KRWF_RimKata_FeatureAutoSubdue",
             "KRWF_RimKata_FeatureSubdueDamageTransfer",
             "KRWF_RimKata_FeatureRangedDodge",
             "KRWF_RimKata_FeatureTumble",
@@ -83,6 +85,7 @@ namespace KRWF.RimKata
                 kickEnabled = settings.kickEnabled;
                 pushKickEnabled = settings.pushKickEnabled;
                 subdueEnabled = settings.subdueEnabled;
+                autoSubdueEnabled = settings.autoSubdueEnabled;
                 subdueDamageTransferEnabled = settings.subdueDamageTransferEnabled;
                 responseEnabled = settings.responseEnabled;
                 rangedDodgeEnabled = settings.rangedDodgeEnabled;
@@ -171,13 +174,14 @@ namespace KRWF.RimKata
             DrawCheckbox(inRect, ref y, LabelKeys[12], ref kickEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[13], ref pushKickEnabled);
             DrawCheckbox(inRect, ref y, LabelKeys[14], ref subdueEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[15], ref subdueDamageTransferEnabled,
+            DrawCheckbox(inRect, ref y, LabelKeys[15], ref autoSubdueEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[16], ref subdueDamageTransferEnabled,
                 "KRWF_RimKata_FeatureSubdueDamageTransferDesc");
-            DrawCheckbox(inRect, ref y, LabelKeys[16], ref rangedDodgeEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[17], ref tumbleEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[18], ref responseEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[19], ref shakeOffEnabled);
-            DrawCheckbox(inRect, ref y, LabelKeys[20], ref slidingEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[17], ref rangedDodgeEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[18], ref tumbleEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[19], ref responseEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[20], ref shakeOffEnabled);
+            DrawCheckbox(inRect, ref y, LabelKeys[21], ref slidingEnabled);
 
             y += 10f;
             string closeLabel = "Close".Translate();
@@ -251,6 +255,7 @@ namespace KRWF.RimKata
                 || settings.kickEnabled != kickEnabled
                 || settings.pushKickEnabled != pushKickEnabled
                 || settings.subdueEnabled != subdueEnabled
+                || settings.autoSubdueEnabled != autoSubdueEnabled
                 || settings.subdueDamageTransferEnabled != subdueDamageTransferEnabled
                 || settings.responseEnabled != responseEnabled
                 || settings.rangedDodgeEnabled != rangedDodgeEnabled
@@ -275,6 +280,7 @@ namespace KRWF.RimKata
             settings.kickEnabled = kickEnabled;
             settings.pushKickEnabled = pushKickEnabled;
             settings.subdueEnabled = subdueEnabled;
+            settings.autoSubdueEnabled = autoSubdueEnabled;
             settings.subdueDamageTransferEnabled = subdueDamageTransferEnabled;
             settings.responseEnabled = responseEnabled;
             settings.rangedDodgeEnabled = rangedDodgeEnabled;

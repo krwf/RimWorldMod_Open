@@ -28,10 +28,10 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            Type inventory = AccessTools.TypeByName("CombatExtended.CompInventory");
-            Type loadout = AccessTools.TypeByName("CombatExtended.LoadoutPropertiesExtension");
-            Type sidearm = AccessTools.TypeByName("CombatExtended.SidearmOption");
-            Type ammo = AccessTools.TypeByName("CombatExtended.CompAmmoUser");
+            Type inventory = RimKataActiveModTypes.Find("CombatExtended.CompInventory");
+            Type loadout = RimKataActiveModTypes.Find("CombatExtended.LoadoutPropertiesExtension");
+            Type sidearm = RimKataActiveModTypes.Find("CombatExtended.SidearmOption");
+            Type ammo = RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser");
             if (inventory == null || loadout == null || sidearm == null || ammo == null)
                 return;
 
@@ -98,11 +98,11 @@ namespace KRWF.RimKata
                     Expression.Call(Expression.Convert(extension, loadout), reserve,
                         weapon, Expression.Convert(comp, inventory), count), extension, weapon, comp, count).Compile();
 
-                harmony.Patch(update, postfix: new HarmonyMethod(
+                RimKataStartupPatches.Patch(harmony, update, postfix: new HarmonyMethod(
                     typeof(RimKataCombatExtendedLoadout), nameof(InventoryPostfix)));
-                harmony.Patch(loadoutChanged, postfix: new HarmonyMethod(
+                RimKataStartupPatches.Patch(harmony, loadoutChanged, postfix: new HarmonyMethod(
                     typeof(RimKataCombatExtendedLoadout), nameof(LoadoutChangedPostfix)));
-                harmony.Patch(generateSecondary,
+                RimKataStartupPatches.Patch(harmony, generateSecondary,
                     prefix: new HarmonyMethod(typeof(RimKataCombatExtendedLoadout), nameof(GenerateSecondaryPrefix)),
                     postfix: new HarmonyMethod(typeof(RimKataCombatExtendedLoadout), nameof(GenerateSecondaryPostfix)));
                 inventoryType = inventory;

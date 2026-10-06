@@ -23,13 +23,13 @@ namespace KRWF.RimKata
 
         internal static void Apply()
         {
-            Type api = AccessTools.TypeByName("ProjectileInversion.API");
+            Type api = RimKataActiveModTypes.Find("ProjectileInversion.API");
             if (api == null) return;
             var harmony = new Harmony("krwf.rimkata.rebound");
             try
             {
                 MethodInfo impact = AccessTools.DeclaredMethod(
-                    AccessTools.TypeByName("ProjectileInversion.Projectile_ImpactSomething"), "Prefix");
+                    RimKataActiveModTypes.Find("ProjectileInversion.Projectile_ImpactSomething"), "Prefix");
                 MethodInfo hasWeapon = AccessTools.DeclaredMethod(api, "hasWeapon", new[] { typeof(Pawn) });
                 MethodInfo chance = AccessTools.DeclaredMethod(api, "CheckPawnInverseChance", new[] { typeof(Pawn) });
                 MethodInfo damage = AccessTools.DeclaredMethod(api, "DamageWeapon", new[] { typeof(Pawn) });
@@ -37,7 +37,7 @@ namespace KRWF.RimKata
                 Validate(hasWeapon, typeof(bool), typeof(Pawn));
                 Validate(chance, typeof(bool), typeof(Pawn));
                 Validate(damage, typeof(void), typeof(Pawn));
-                Type ceImpactType = AccessTools.TypeByName("ProjectileInversion.BulletCE_Impact");
+                Type ceImpactType = RimKataActiveModTypes.Find("ProjectileInversion.BulletCE_Impact");
                 MethodInfo ceImpact = ceImpactType == null ? null : AccessTools.DeclaredMethod(ceImpactType, "Prefix");
                 if (ceImpactType != null && (ceImpact?.ReturnType != typeof(bool)
                     || !ceImpact.IsStatic || ceImpact.GetParameters().Length == 0
@@ -45,15 +45,15 @@ namespace KRWF.RimKata
                     throw new InvalidOperationException("Rebound CE impact API did not match.");
 
                 var transpiler = new HarmonyMethod(typeof(RimKataReboundCompat), nameof(WeaponTranspiler));
-                harmony.Patch(hasWeapon, transpiler: transpiler);
-                harmony.Patch(chance, transpiler: transpiler);
-                harmony.Patch(damage, transpiler: transpiler);
-                harmony.Patch(impact,
+                RimKataStartupPatches.Patch(harmony, hasWeapon, transpiler: transpiler);
+                RimKataStartupPatches.Patch(harmony, chance, transpiler: transpiler);
+                RimKataStartupPatches.Patch(harmony, damage, transpiler: transpiler);
+                RimKataStartupPatches.Patch(harmony, impact,
                     prefix: new HarmonyMethod(typeof(RimKataReboundCompat), nameof(ImpactPrefix)) { priority = Priority.First },
                     transpiler: transpiler,
                     finalizer: new HarmonyMethod(typeof(RimKataReboundCompat), nameof(ImpactFinalizer)) { priority = Priority.Last });
                 if (ceImpact != null)
-                    harmony.Patch(ceImpact,
+                    RimKataStartupPatches.Patch(harmony, ceImpact,
                         prefix: new HarmonyMethod(typeof(RimKataReboundCompat), nameof(CeImpactPrefix)) { priority = Priority.First },
                         finalizer: new HarmonyMethod(typeof(RimKataReboundCompat), nameof(ImpactFinalizer)) { priority = Priority.Last });
             }

@@ -64,6 +64,9 @@
   <KRWF_RimKata_ProfileCancel>Cancel</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Reset weapon settings?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Reset apparel settings?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefresh>Refresh</KRWF_RimKata_EquipmentRefresh>
+  <KRWF_RimKata_EquipmentRefreshReady>Thank you XD\nPlease press &quot;{0}&quot;.</KRWF_RimKata_EquipmentRefreshReady>
+  <KRWF_RimKata_EquipmentRefreshFailed>Could not refresh equipment data.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
   <KRWF_RimKata_ResetSectionConfirmation>Reset '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Reset '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Delete '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -153,6 +156,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Mind-numb serum dependency</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Select traits</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Shooting Lv.</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Melee Lv.</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Reset selection</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Predicts and responds to close-range gunfights. Can use RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Requirements</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Traits ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Shooting level</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Melee level</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Candidate limits</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Melee range</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Short range</KRWF_RimKata_ShortCandidateLimit>
@@ -179,9 +191,8 @@
   <KRWF_RimKata_BreachSlideDuration>Movement duration during breach</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Wait time after reaching the breach destination</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Defaults</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Allow crawl fire for friendlies</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Allow crawl fire for hostiles</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Allow firing while crawling by default</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Allow crawl fire</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Release downed targets from auto subdue</KRWF_RimKata_AutoSubdueReleaseDowned>
 
   <KRWF_RimKata_InspectSlotPrimary>Primary</KRWF_RimKata_InspectSlotPrimary>
   <KRWF_RimKata_InspectSlotSecondary>Secondary</KRWF_RimKata_InspectSlotSecondary>
@@ -205,9 +216,11 @@
   <KRWF_RimKata_CooldownArmorFactorInactive>Enabled armor modifier: ×100% (no enabled armor worn)</KRWF_RimKata_CooldownArmorFactorInactive>
   <KRWF_RimKata_SmoothAimTransition>Smooth aim transitions</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Subdue</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Auto subdue</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Subdue</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Subdue mass limit</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Subdue impact stun duration</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Auto subdue hold duration</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Subdue attack</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Attack the pawn being held. Disabled at the start of each subdual.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Subdue actions</KRWF_RimKata_SubdueActions>
@@ -244,8 +257,6 @@
   <KRWF_RimKata_ResetAllStrength>Reset all</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Reset filtered results</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Flying kick</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Allow flying kicks for friendlies</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Allow flying kicks for hostiles</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Flying kick stun chance</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Flying kick damage</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Kick</KRWF_RimKata_FeatureKick>

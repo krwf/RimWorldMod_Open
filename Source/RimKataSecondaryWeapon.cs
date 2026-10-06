@@ -1259,6 +1259,7 @@ namespace KRWF.RimKata
         {
             NotifyLoadoutChanged(
                 pawn, RimKataDualWeaponController.InvalidateWeaponBindings(pawn));
+            RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
         }
 
         private static void NotifyLoadoutChanged(
@@ -1298,6 +1299,7 @@ namespace KRWF.RimKata
                 {
                     Pawn pawn = pawns[pawnIndex];
                     InvalidateTargetProfileCaches(pawn);
+                    RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
                 }
             }
         }
@@ -1318,6 +1320,7 @@ namespace KRWF.RimKata
                 ValidateRegisteredSecondary(pawn, secondary);
             }
             RimKataColonistBarWeaponCache.Refresh(pawn);
+            RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
         }
 
         private static void InvalidateTargetProfileCaches(Pawn pawn)
@@ -1340,6 +1343,7 @@ namespace KRWF.RimKata
                 if (changedEquipment != null)
                     RimKataCaravanEquipment.NotifyEquipmentChanged(pawn);
                 RimKataColonistBarWeaponCache.Refresh(pawn);
+                RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
                 return;
             }
 
@@ -1352,6 +1356,7 @@ namespace KRWF.RimKata
                     RimKataDualWeaponController.NotifyLoadoutChanged(pawn, state);
                 }
                 RimKataColonistBarWeaponCache.Refresh(pawn);
+                RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
                 return;
             }
 
@@ -1359,6 +1364,7 @@ namespace KRWF.RimKata
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;
             if (registry == null)
             {
+                RimKataResponseVisualParticipantCache.RefreshEquipment(pawn);
                 return;
             }
 
@@ -1472,7 +1478,7 @@ namespace KRWF.RimKata
         public static void Postfix(Pawn __instance, bool respawningAfterLoad, bool __state)
         {
             RimKataGeneProbability.NotifySpawned(__instance, respawningAfterLoad, __state);
-            RimKataEligibilityCache.NotifyPawnSpawned(__instance);
+            RimKataEligibilityCache.NotifyPawnSpawned(__instance, refreshPersonal: true);
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(__instance);
             if (respawningAfterLoad
                 || __state

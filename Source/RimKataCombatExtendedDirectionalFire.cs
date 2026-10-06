@@ -12,13 +12,13 @@ namespace KRWF.RimKata
     {
         internal static void Apply(Harmony harmony)
         {
-            Type launcher = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
+            Type launcher = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
             if (launcher == null) return;
             MethodInfo method = AccessTools.DeclaredMethod(launcher, "CanHitCellFromCellIgnoringRange",
                 new[] { typeof(Vector3), typeof(IntVec3), typeof(Thing) });
             if (method?.ReturnType != typeof(bool) || method.IsStatic)
                 throw new InvalidOperationException("CE directional-fire line-of-sight API does not match.");
-            harmony.Patch(method, transpiler: new HarmonyMethod(
+            RimKataStartupPatches.Patch(harmony, method, transpiler: new HarmonyMethod(
                 typeof(RimKataCombatExtendedDirectionalFire), nameof(LineOfSightTranspiler)));
         }
 

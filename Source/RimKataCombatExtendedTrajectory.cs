@@ -32,8 +32,8 @@ namespace KRWF.RimKata
         internal static bool Initialize()
         {
             Type projectile = RimKataCombatExtendedProjectiles.ProjectileType;
-            Type worker = AccessTools.TypeByName("CombatExtended.BaseTrajectoryWorker");
-            Type props = AccessTools.TypeByName("CombatExtended.ProjectilePropertiesCE");
+            Type worker = RimKataActiveModTypes.Find("CombatExtended.BaseTrajectoryWorker");
+            Type props = RimKataActiveModTypes.Find("CombatExtended.ProjectilePropertiesCE");
             if (worker == null || props == null) return false;
             workerGetter = AccessTools.PropertyGetter(projectile, "TrajectoryWorker");
             propsWorkerGetter = AccessTools.PropertyGetter(props, "TrajectoryWorker");

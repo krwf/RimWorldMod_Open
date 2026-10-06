@@ -777,6 +777,45 @@ namespace KRWF.RimKata
                 RimKataCrawlFireUtility.NotifyPathStarted(___pawn);
             }
         }
+
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,
+            ILGenerator generator)
+        {
+            Label finished = generator.DefineLabel(), done = generator.DefineLabel();
+            Label attackJob = generator.DefineLabel();
+            LocalBuilder job = generator.DeclareLocal(typeof(Job));
+            foreach (CodeInstruction code in instructions)
+            {
+                if (code.opcode == OpCodes.Ret) { code.opcode = OpCodes.Br; code.operand = finished; }
+                yield return code;
+            }
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(finished);
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"));
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Pawn), nameof(Pawn.CurJob)));
+            yield return new CodeInstruction(OpCodes.Stloc, job);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Job), nameof(Job.def)));
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(JobDefOf), nameof(JobDefOf.AttackMelee)));
+            yield return new CodeInstruction(OpCodes.Beq, attackJob);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Job), nameof(Job.def)));
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(RimKataDefOf), nameof(RimKataDefOf.RimKata_Attack)));
+            yield return new CodeInstruction(OpCodes.Bne_Un, done);
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(attackJob);
+            var gate = RimKataRegisteredPawnGate.Branch(generator, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"))
+            }, done, true, out LocalBuilder entry);
+            foreach (CodeInstruction code in gate) yield return code;
+            yield return new CodeInstruction(OpCodes.Ldloc, entry);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataFlyingKickApproach),
+                nameof(RimKataFlyingKickApproach.RegisterPath)));
+            yield return new CodeInstruction(OpCodes.Ret).WithLabels(done);
+        }
     }
 
     [HarmonyPatch(typeof(Pawn_PathFollower), "TryEnterNextPathCell")]
@@ -807,6 +846,14 @@ namespace KRWF.RimKata
         {
             RimKataDormantHostileMovementRegistry.NotifyPathStopped(___pawn);
             RimKataCrawlFireUtility.NotifyPathStopped(___pawn);
+            int id = ___pawn?.thingIDNumber ?? 0;
+            int page = id >> RimKataFlyingKickApproach.PageShift;
+            if (id > 0 && page < RimKataFlyingKickApproach.pages.Length)
+            {
+                var slot = RimKataFlyingKickApproach.pages[page]?[id & RimKataFlyingKickApproach.PageMask];
+                if (slot?.pawn == ___pawn && slot.approach != null)
+                    RimKataFlyingKickApproach.Remove(___pawn);
+            }
         }
     }
 }

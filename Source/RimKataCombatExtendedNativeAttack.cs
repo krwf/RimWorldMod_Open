@@ -27,17 +27,17 @@ namespace KRWF.RimKata
             if (startCast?.ReturnType != typeof(bool))
                 throw new InvalidOperationException("CE opening cast API does not match.");
 
-            harmony.Patch(startCast,
+            RimKataStartupPatches.Patch(harmony, startCast,
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningPrefix)),
                 postfix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningPostfix)),
                 finalizer: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningFinalizer)));
-            harmony.Patch(AccessTools.Method(typeof(Patch_Verb_TryStartCastOn_RimKataOpening), "Postfix"),
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(Patch_Verb_TryStartCastOn_RimKataOpening), "Postfix"),
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningTranspiler)));
             Patch(harmony, nameof(RimKataNativeAttack.Queue), nameof(QueueTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.CanBeginNativeTick), nameof(BeginTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.FinishNativeCast), nameof(FinishTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.Cancel), nameof(CancelTranspiler));
-            harmony.Patch(AccessTools.Method(typeof(RimKataNativeAttack), "CompleteRequest"),
+            RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataNativeAttack), "CompleteRequest"),
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(CompletePrefix)));
         }
 
@@ -94,7 +94,7 @@ namespace KRWF.RimKata
                 nameof(NotifyOrDeferAim));
 
         private static void Patch(Harmony harmony, string target, string transpiler)
-            => harmony.Patch(AccessTools.Method(typeof(RimKataNativeAttack), target),
+            => RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataNativeAttack), target),
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), transpiler));
 
         private static bool PrepareAmmo(RimKataNativeAttack request)

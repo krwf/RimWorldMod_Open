@@ -187,7 +187,7 @@ namespace KRWF.RimKata
         internal static void StaggerApplied(Pawn pawn)
         {
             var combat = ExistingCombat(pawn);
-            if (!IsFighting(combat) || pawn.Dead || pawn.Downed
+            if (combat?.flyingKick != null || !IsFighting(combat) || pawn.Dead || pawn.Downed
                 || RimKataTemporaryInactivity.IsInactive(pawn) || BlocksCombat(combat)
                 || RimKataReactiveMovement.entering == pawn
                 || RimKataBreachUtility.Get(pawn) != null || RimKataSubdueUtility.IsHolding(pawn)
@@ -217,7 +217,8 @@ namespace KRWF.RimKata
         internal static void AttackStarting(RimKataNativeAttack request)
         {
             RimKataPawnCombatState combat = request.state;
-            if (request.reactiveMotion != null || combat == null || !combat.shakeOffPending) return;
+            if (request.reactiveMotion != null || combat == null || combat.flyingKick != null
+                || !combat.shakeOffPending) return;
             if (!RimKataReactiveAttack.HasAmmo(request.verb, request.weapon)) return;
             combat.shakeOffPending = false;
             Pawn pawn = combat.pawn;

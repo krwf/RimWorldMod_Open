@@ -13,6 +13,8 @@ namespace KRWF.RimKata
         internal Pawn pawn, target;
         internal Rot4 facing;
         internal bool attackEnabled, hostile;
+        internal bool automatic;
+        internal int automaticReleaseTick = -1;
         internal int struggleStartTick, struggleSign;
         internal ThingWithComps weapon;
         internal Verb attackVerb;
@@ -29,6 +31,8 @@ namespace KRWF.RimKata
             Scribe_References.Look(ref target, "heldPawn");
             Scribe_Values.Look(ref facing, "facing");
             Scribe_Values.Look(ref attackEnabled, "attackEnabled");
+            Scribe_Values.Look(ref automatic, "automatic");
+            Scribe_Values.Look(ref automaticReleaseTick, "automaticReleaseTick", -1);
             Scribe_Values.Look(ref struggleStartTick, "struggleStartTick");
             Scribe_Values.Look(ref struggleSign, "struggleSign", 1);
             Scribe_Values.Look(ref suspendedJobId, "suspendedJobId", -1);
@@ -85,6 +89,7 @@ namespace KRWF.RimKata
         private readonly Game game;
         internal readonly Dictionary<Pawn, RimKataSubdueState> states = new Dictionary<Pawn, RimKataSubdueState>();
         internal readonly List<RimKataSubdueState> active = new List<RimKataSubdueState>();
+        internal readonly List<RimKataAutoSubdue.Pending> pending = new List<RimKataAutoSubdue.Pending>();
         private List<RimKataSubdueState> saved;
         internal bool IsCurrent => ReferenceEquals(game, Current.Game);
 
@@ -125,6 +130,7 @@ namespace KRWF.RimKata
                         state.lastPosition = state.pawn.Position;
                         state.hostile = state.target.HostileTo(state.pawn);
                         state.Attach();
+                        RimKataAutoSubdue.ClearHeldStun(state);
                         RimKataSubdueCombat.Begin(state, restoring: true);
                         state.SuspendAutomaticFire();
                         RimKataSubdueRender.Publish(state);
@@ -135,12 +141,16 @@ namespace KRWF.RimKata
 
         public override void GameComponentTick()
         {
+            if (pending.Count != 0) RimKataAutoSubdue.ProcessPending(this);
             for (int i = active.Count - 1; i >= 0; --i)
             {
                 if (i >= active.Count) continue;
                 var state = active[i];
                 if (!RimKataSubdueUtility.IsRelationValid(state))
                 { RimKataSubdueUtility.Remove(state); continue; }
+                int now = Find.TickManager.TicksGame;
+                if (RimKataAutoSubdue.ShouldRelease(state, now))
+                { RimKataSubdueUtility.Release(state); continue; }
                 Pawn pawn = state.pawn;
                 if (pawn.Position != state.lastPosition)
                 {
@@ -148,7 +158,6 @@ namespace KRWF.RimKata
                     state.facing = Rot4.FromAngleFlat(delta.ToVector3().AngleFlat());
                     state.lastPosition = pawn.Position;
                 }
-                int now = Find.TickManager.TicksGame;
                 if (state.hostile && now - state.struggleStartTick >= 20)
                 {
                     state.struggleStartTick = now;
@@ -214,18 +223,27 @@ namespace KRWF.RimKata
             return null;
         }
 
-        internal static bool Take(Pawn pawn, Pawn target)
+        internal static bool Take(Pawn pawn, Pawn target, bool automatic = false)
         {
             var current = Registry;
             if (current == null) return false;
-            if (Unavailable(pawn, target) != null || !pawn.CanReachImmediate(target, PathEndMode.Touch)) return false;
+            RimKataSettings settings = null;
+            if (automatic)
+            {
+                if (!RimKataEligibility.HasActiveRimKataAccess(pawn)
+                    || !RimKataAutoSubdue.CanTake(pawn, target, out settings)) return false;
+            }
+            else if (Unavailable(pawn, target) != null || !pawn.CanReachImmediate(target, PathEndMode.Touch)) return false;
             Rot4 facing = pawn.Rotation;
             if (pawn.carryTracker.TryStartCarry(target, 1, true) != 1 || pawn.carryTracker.CarriedThing != target) return false;
             var state = new RimKataSubdueState
             {
                 pawn = pawn, target = target, facing = facing, lastPosition = pawn.Position,
                 hostile = target.HostileTo(pawn), struggleStartTick = Find.TickManager.TicksGame,
-                struggleSign = Rand.Bool ? 1 : -1, attackEnabled = false
+                struggleSign = Rand.Bool ? 1 : -1, attackEnabled = automatic,
+                automatic = automatic,
+                automaticReleaseTick = automatic
+                    ? RimKataAutoSubdue.ReleaseTick(Find.TickManager.TicksGame, settings.autoSubdueHoldTicks) : -1
             };
             current.states.Add(pawn, state);
             current.active.Add(state);
@@ -233,6 +251,7 @@ namespace KRWF.RimKata
             state.Attach();
             RimKataSubdueCombat.Begin(state);
             state.SuspendAutomaticFire();
+            RimKataAutoSubdue.ClearHeldStun(state);
             RimKataSubdueRender.Publish(state);
             return true;
         }
@@ -252,6 +271,8 @@ namespace KRWF.RimKata
         internal static void Release(RimKataSubdueState state)
         {
             if (!IsRelationValid(state)) { Remove(state); return; }
+            // A held attack can stun again while the target's own ticks are suspended.
+            RimKataAutoSubdue.ClearHeldStun(state);
             state.pawn.carryTracker.TryDropCarriedThing(state.pawn.Position, ThingPlaceMode.Near, out _);
             if (!IsRelationValid(state)) Remove(state);
         }
@@ -328,23 +349,35 @@ namespace KRWF.RimKata
     public sealed class JobDriver_RimKataSubdue : JobDriver
     {
         public override bool TryMakePreToilReservations(bool errorOnFailed)
-            => pawn.Reserve(job.targetA, job, errorOnFailed: errorOnFailed);
+            => job.count == 1 && pawn.carryTracker?.CarriedThing == job.targetA.Thing
+                || pawn.Reserve(job.targetA, job, errorOnFailed: errorOnFailed);
 
         protected override IEnumerable<Toil> MakeNewToils()
         {
-            this.FailOnDestroyedOrNull(TargetIndex.A);
-            Toil approach = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
-            approach.FailOn(() => !RimKataSubdueUtility.CanOrder(pawn)
-                || job.targetA.Pawn?.Spawned != true || job.targetA.Pawn.Dead);
-            yield return approach;
+            bool automatic = job.count == 1;
+            if (!automatic)
+            {
+                this.FailOnDestroyedOrNull(TargetIndex.A);
+                Toil approach = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+                approach.FailOn(() => !RimKataSubdueUtility.CanOrder(pawn)
+                    || job.targetA.Pawn?.Spawned != true || job.targetA.Pawn.Dead);
+                yield return approach;
+            }
             Toil take = ToilMaker.MakeToil("RimKataSubdueTake");
             take.initAction = () =>
             {
-                if (!RimKataSubdueUtility.Take(pawn, job.targetA.Pawn))
+                if (!RimKataSubdueUtility.Take(pawn, job.targetA.Pawn, automatic))
                     EndJobWith(JobCondition.Incompletable);
             };
             take.defaultCompleteMode = ToilCompleteMode.Instant;
             yield return take;
+            if (automatic)
+            {
+                Toil hold = ToilMaker.MakeToil("RimKataAutoSubdueHold");
+                hold.defaultCompleteMode = ToilCompleteMode.Never;
+                hold.FailOn(() => pawn.carryTracker?.CarriedThing != job.targetA.Thing);
+                yield return hold;
+            }
         }
     }
 

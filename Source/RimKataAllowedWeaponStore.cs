@@ -154,13 +154,13 @@ namespace KRWF.RimKata
                 }
                 if (modern != null)
                 {
-                    harmony.Patch(modern, postfix: capture);
+                    RimKataStartupPatches.Patch(harmony, modern, postfix: capture);
                 }
                 if (legacy != null)
                 {
-                    harmony.Patch(legacy, postfix: capture);
+                    RimKataStartupPatches.Patch(harmony, legacy, postfix: capture);
                 }
-                harmony.Patch(AccessTools.Method(typeof(LoadedModManager), "ParseAndProcessXML"),
+                RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(LoadedModManager), "ParseAndProcessXML"),
                     prefix: new HarmonyMethod(AccessTools.Method(
                         typeof(RimKataAllowedWeaponStore), nameof(BeginXmlLoad))));
                 captureHookInstalled = true;
@@ -185,18 +185,22 @@ namespace KRWF.RimKata
             {
                 return;
             }
-            try
+            using (RimKataStartupDiagnostics.Measure("preparation", "weapon_xml_capture"))
             {
-                XmlNode resolved = XmlInheritance.GetResolvedNodeFor(node);
-                if (resolved != null)
+                try
                 {
-                    CapturedXml[definition.defName] = resolved.OuterXml;
+                    XmlNode resolved = XmlInheritance.GetResolvedNodeFor(node);
+                    if (resolved != null)
+                    {
+                        CapturedXml[definition.defName] = resolved.OuterXml;
+                        RimKataStartupDiagnostics.Count("weapon_xml_captured");
+                    }
                 }
-            }
-            catch (Exception exception)
-            {
-                WarnOnce("capture:" + definition.defName,
-                    "Could not capture XML for " + definition.defName + ". " + exception.Message);
+                catch (Exception exception)
+                {
+                    WarnOnce("capture:" + definition.defName,
+                        "Could not capture XML for " + definition.defName + ". " + exception.Message);
+                }
             }
         }
 

@@ -341,11 +341,9 @@ namespace KRWF.RimKata
         }
     }
 
-    [HarmonyPatch(typeof(RimKataEquipmentRenderHooks), nameof(RimKataEquipmentRenderHooks.DrawSpecialEquipmentAndApparelExtras))]
-    internal static class Patch_PawnRenderUtility_RimKataBreachEquipment
+    internal static class RimKataSpecialEquipmentRender
     {
-        [HarmonyPriority(Priority.First + 200)]
-        private static void Prefix(Pawn pawn, Vector3 drawPos, ref Rot4 facing, PawnRenderFlags flags,
+        internal static void Begin(Pawn pawn, Vector3 drawPos, ref Rot4 facing, PawnRenderFlags flags,
             out RimKataBreachRender.EquipmentScope __state)
         {
             __state = default;
@@ -379,15 +377,7 @@ namespace KRWF.RimKata
                 && participant && (visual.poseActive || visual.protectedPose)) facing = visual.facing;
         }
 
-        [HarmonyPriority(Priority.Last)]
-        private static void Postfix()
-        {
-            RimKataBreachWeaponRender.Draw();
-            RimKataReactiveRender.Draw();
-        }
-
-        [HarmonyPriority(Priority.Last)]
-        private static void Finalizer(RimKataBreachRender.EquipmentScope __state)
+        internal static void End(RimKataBreachRender.EquipmentScope __state)
         {
             RimKataBreachWeaponRender.End(__state.weapons);
             RimKataSubdueWeaponRender.End(__state.subdueWeapons);

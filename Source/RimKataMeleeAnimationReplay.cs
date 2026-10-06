@@ -44,7 +44,7 @@ namespace KRWF.RimKata
         {
             try
             {
-                Type renderer = AccessTools.TypeByName("AM.AnimRenderer");
+                Type renderer = RimKataActiveModTypes.Find("AM.AnimRenderer");
                 if (renderer == null) return;
                 BindApi(renderer);
                 mainTexture = Shader.PropertyToID("_MainTex"); mainColor = Shader.PropertyToID("_Color");
@@ -56,11 +56,11 @@ namespace KRWF.RimKata
 
         private static void BindApi(Type renderer)
         {
-            Type def = AccessTools.TypeByName("AM.AnimDef");
-            Type tweak = AccessTools.TypeByName("AM.Tweaks.ItemTweakData");
-            Type part = AccessTools.TypeByName("AnimPartData");
-            Type snapshot = AccessTools.TypeByName("AnimPartSnapshot");
-            Type ov = AccessTools.TypeByName("AnimPartOverrideData");
+            Type def = RimKataActiveModTypes.Find("AM.AnimDef");
+            Type tweak = RimKataActiveModTypes.Find("AM.Tweaks.ItemTweakData");
+            Type part = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartData");
+            Type snapshot = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartSnapshot");
+            Type ov = RimKataActiveModTypes.Find(renderer.Assembly, "AnimPartOverrideData");
             createRenderer = Bind<Func<object, Map, object>>(renderer.GetConstructor(new[] { def, typeof(Map) }));
             attacks = Bind<Func<object, Rot4, IList>>(AccessTools.Method(tweak, "GetAttackAnimations"));
             idle = Bind<Func<object, object>>(AccessTools.Method(tweak, "GetIdleAnimation"));
@@ -83,9 +83,9 @@ namespace KRWF.RimKata
             setRoot = Expression.Lambda<Action<object, Matrix4x4>>(Expression.Assign(
                 Expression.Field(Expression.Convert(r, renderer), "RootTransform"), m), r, m).Compile();
             var pawn = Expression.Parameter(typeof(Pawn), "pawn");
-            Type controller = AccessTools.TypeByName("AM.Idle.IdleControllerComp");
+            Type controller = RimKataActiveModTypes.Find("AM.Idle.IdleControllerComp");
             animationsEnabled = Expression.Lambda<Func<bool>>(Expression.Field(Expression.Field(null,
-                AccessTools.Field(AccessTools.TypeByName("AM.Core"), "Settings")), "AnimateAtIdle")).Compile();
+                AccessTools.Field(RimKataActiveModTypes.Find("AM.Core"), "Settings")), "AnimateAtIdle")).Compile();
             var handIndex = Expression.Parameter(typeof(int), "handIndex");
             configureHands = Expression.Lambda<Action<object, Pawn, int>>(Expression.Call(
                 Expression.Convert(r, renderer), AccessTools.Method(renderer, "ConfigureHandsForPawn"), pawn, handIndex),

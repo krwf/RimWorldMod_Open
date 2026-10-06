@@ -20,12 +20,12 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            Type utility = AccessTools.TypeByName("MuzzleFlash.MuzzleFlashUtility");
+            Type utility = RimKataActiveModTypes.Find("MuzzleFlash.MuzzleFlashUtility");
             if (utility == null)
                 return;
 
-            Type flashDef = AccessTools.TypeByName("MuzzleFlash.MuzzleFlashDef");
-            Type burstPatch = AccessTools.TypeByName("MuzzleFlash.Patch.HarmonyPatch_Verb");
+            Type flashDef = RimKataActiveModTypes.Find("MuzzleFlash.MuzzleFlashDef");
+            Type burstPatch = RimKataActiveModTypes.Find("MuzzleFlash.Patch.HarmonyPatch_Verb");
             MethodInfo burst = burstPatch == null ? null : AccessTools.Method(
                 burstPatch, "Postfix", new[] { typeof(Verb), typeof(int) });
             MethodInfo indexed = AccessTools.Method(utility, "SpawnMuzzleFlashByVerbIndex",
@@ -46,11 +46,11 @@ namespace KRWF.RimKata
             var adapter = new Harmony(harmony.Id + ".groundPoseMuzzleFlash");
             try
             {
-                adapter.Patch(burst, prefix: Patch(nameof(BeginFlash)), finalizer: Patch(nameof(EndFlash)));
-                adapter.Patch(indexed, prefix: Patch(nameof(BeginFlash)), finalizer: Patch(nameof(EndFlash)));
-                adapter.Patch(spawn, prefix: Patch(nameof(SpawnFlashPrefix)));
-                adapter.Patch(primary, postfix: Patch(nameof(IsPrimaryVerbPostfix)));
-                adapter.Patch(available, postfix: Patch(nameof(FlashAvailablePostfix)));
+                RimKataStartupPatches.Patch(adapter, burst, prefix: Patch(nameof(BeginFlash)), finalizer: Patch(nameof(EndFlash)));
+                RimKataStartupPatches.Patch(adapter, indexed, prefix: Patch(nameof(BeginFlash)), finalizer: Patch(nameof(EndFlash)));
+                RimKataStartupPatches.Patch(adapter, spawn, prefix: Patch(nameof(SpawnFlashPrefix)));
+                RimKataStartupPatches.Patch(adapter, primary, postfix: Patch(nameof(IsPrimaryVerbPostfix)));
+                RimKataStartupPatches.Patch(adapter, available, postfix: Patch(nameof(FlashAvailablePostfix)));
             }
             catch
             {

@@ -26,7 +26,7 @@ namespace KRWF.RimKata
 
         internal static bool Apply(Harmony harmony)
         {
-            Type ceMelee = AccessTools.TypeByName("CombatExtended.Verb_MeleeAttackCE");
+            Type ceMelee = RimKataActiveModTypes.Find("CombatExtended.Verb_MeleeAttackCE");
             if (ceMelee == null) return true;
 
             MethodInfo attack = AccessTools.DeclaredMethod(ceMelee, "TryCastShot");
@@ -41,7 +41,7 @@ namespace KRWF.RimKata
 
             // CE's override never calls vanilla TryCastShot.
             Type context = typeof(Patch_Verb_MeleeAttack_Context);
-            harmony.Patch(attack,
+            RimKataStartupPatches.Patch(harmony, attack,
                 prefix: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Prefix)),
                 postfix: new HarmonyMethod(context, nameof(Patch_Verb_MeleeAttack_Context.Postfix)),
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedMelee), nameof(Transpiler)),
@@ -50,7 +50,7 @@ namespace KRWF.RimKata
             {
                 // Common TryCastShot discovery covers only non-public overrides.
                 Type shot = typeof(Patch_Verb_TryCastShot_RimKata);
-                harmony.Patch(attack,
+                RimKataStartupPatches.Patch(harmony, attack,
                     prefix: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Prefix)),
                     postfix: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Postfix)),
                     finalizer: new HarmonyMethod(shot, nameof(Patch_Verb_TryCastShot_RimKata.Finalizer)));

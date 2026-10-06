@@ -226,6 +226,11 @@ namespace KRWF.RimKata
             internal Map map;
             internal bool body, groundPose, response, qualified, registeredQualified;
             internal bool enhancedGrip;
+            internal bool equipmentNeeded;
+            internal ThingWithComps equipmentPrimary, equipmentSecondary, equipmentRawSecondary;
+            internal ThingWithComps responsePrimary, responseSecondary;
+            internal RimKataPawnCombatState equipmentState;
+            internal RimKataMapComponent equipmentOwner;
             internal RimKataPawnCombatState snapshotState;
             internal RimKataMapComponent snapshotOwner;
             internal RimKataBreachVisual? breach;
@@ -295,6 +300,11 @@ namespace KRWF.RimKata
                 response = old?.response == true, qualified = old?.qualified == true,
                 registeredQualified = old?.registeredQualified == true,
                 enhancedGrip = old?.enhancedGrip == true,
+                equipmentNeeded = old?.equipmentNeeded == true,
+                equipmentPrimary = old?.equipmentPrimary, equipmentSecondary = old?.equipmentSecondary,
+                equipmentRawSecondary = old?.equipmentRawSecondary,
+                responsePrimary = old?.responsePrimary, responseSecondary = old?.responseSecondary,
+                equipmentState = old?.equipmentState, equipmentOwner = old?.equipmentOwner,
                 snapshotState = old?.snapshotState, snapshotOwner = old?.snapshotOwner,
                 groundPose = old?.groundPose == true, breach = old?.breach, subdue = old?.subdue, reactive = old?.reactive,
                 flyingKick = old?.flyingKick,
@@ -310,6 +320,11 @@ namespace KRWF.RimKata
                 entry.snapshotOwner = null;
                 entry.qualified = false;
             }
+            entry.equipmentNeeded = entry.equipmentSecondary != null
+                || entry.equipmentPrimary != null && entry.equipmentState != null
+                || entry.body || entry.response || entry.groundPose
+                || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue
+                || entry.flyingKick.HasValue || entry.kick.HasValue || entry.crawlWeapon != null;
             if (entry.registeredQualified || entry.body || entry.response || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue || entry.flyingKick.HasValue || entry.kick.HasValue || entry.crawlWeapon != null)
             {
                 entry.pawn = pawn;
@@ -343,6 +358,9 @@ namespace KRWF.RimKata
         internal static void NotifyQualificationChanged(Pawn pawn, bool qualified)
         {
             if (pawn == null) return;
+            RimKataPawnCombatState state = null;
+            if (qualified && RimKataCombatStatePresenceCache.TryGetOwner(pawn, out RimKataMapComponent owner))
+                state = owner.GetState(pawn, false);
             lock (UpdateLock)
             {
                 BodyVisualEntry old = BodyVisualFor(pawn);
@@ -354,6 +372,10 @@ namespace KRWF.RimKata
                 entry.enhancedGrip = qualified && RimKataStrengthUtility.HasEnhancedGrip(pawn);
                 if (qualified) entry.map = pawn.Map;
                 if (entry.snapshotState != null) entry.qualified = qualified;
+                entry.equipmentState = qualified ? state : entry.response ? entry.equipmentState : null;
+                entry.equipmentOwner = entry.equipmentState?.ownerComponent;
+                SetEquipment(pawn, entry, qualified ? pawn.equipment?.Primary : null,
+                    qualified ? RegisteredSecondary(pawn) : null);
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -367,8 +389,97 @@ namespace KRWF.RimKata
                 if (previous == null || previous.enhancedGrip == enhancedGrip) return;
                 BodyVisualEntry entry = CopyBodyVisual(previous);
                 entry.enhancedGrip = enhancedGrip;
+                entry.equipmentSecondary = UsableSecondary(pawn, entry, entry.equipmentRawSecondary);
                 StoreBodyVisual(pawn, entry);
             }
+        }
+
+        internal static void RefreshEquipment(Pawn pawn)
+        {
+            BodyVisualEntry entry = BodyVisualFor(pawn);
+            if (entry == null) return;
+            PublishEquipment(pawn, pawn.equipment?.Primary,
+                entry.registeredQualified ? RegisteredSecondary(pawn) : null);
+        }
+
+        internal static void PublishEquipment(
+            Pawn pawn, ThingWithComps primary, ThingWithComps secondary, bool slotVerified = false)
+        {
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null) return;
+                ThingWithComps rawSecondary = old.registeredQualified
+                    && (slotVerified || IsHeldNonPrimary(pawn, primary, secondary)) ? secondary : null;
+                ThingWithComps equipmentPrimary = old.registeredQualified ? primary : null;
+                ThingWithComps equipmentSecondary = UsableSecondary(pawn, old, rawSecondary, equipmentPrimary);
+                Entry response = null;
+                if (old.response) ByPawn.TryGetValue(pawn, out response);
+                ThingWithComps responsePrimary = response != null ? primary : null;
+                ThingWithComps responseSecondary = ResponseSecondary(pawn, primary, response);
+                if (old.equipmentPrimary == equipmentPrimary && old.equipmentSecondary == equipmentSecondary
+                    && old.equipmentRawSecondary == rawSecondary
+                    && old.responsePrimary == responsePrimary && old.responseSecondary == responseSecondary) return;
+                BodyVisualEntry entry = CopyBodyVisual(old);
+                entry.equipmentPrimary = equipmentPrimary;
+                entry.equipmentSecondary = equipmentSecondary;
+                entry.equipmentRawSecondary = rawSecondary;
+                entry.responsePrimary = responsePrimary;
+                entry.responseSecondary = responseSecondary;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        internal static void PublishEquipmentState(RimKataPawnCombatState state)
+        {
+            Pawn pawn = state?.pawn;
+            if (pawn == null) return;
+            lock (UpdateLock)
+            {
+                BodyVisualEntry old = BodyVisualFor(pawn);
+                if (old == null || old.equipmentState == state && old.equipmentOwner == state.ownerComponent) return;
+                BodyVisualEntry entry = CopyBodyVisual(old);
+                entry.equipmentState = state;
+                entry.equipmentOwner = state.ownerComponent;
+                StoreBodyVisual(pawn, entry);
+            }
+        }
+
+        private static ThingWithComps RegisteredSecondary(Pawn pawn)
+            => RimKataEligibilityCache.TryGetRegisteredSecondaryWeapon(pawn, out ThingWithComps secondary)
+                ? secondary : RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
+
+        private static void SetEquipment(
+            Pawn pawn, BodyVisualEntry entry, ThingWithComps primary, ThingWithComps secondary)
+        {
+            entry.equipmentPrimary = primary;
+            entry.equipmentRawSecondary = IsHeldNonPrimary(pawn, primary, secondary) ? secondary : null;
+            entry.equipmentSecondary = UsableSecondary(pawn, entry, entry.equipmentRawSecondary);
+        }
+
+        private static ThingWithComps UsableSecondary(
+            Pawn pawn, BodyVisualEntry entry, ThingWithComps secondary)
+            => UsableSecondary(pawn, entry, secondary, entry.equipmentPrimary);
+
+        private static ThingWithComps UsableSecondary(
+            Pawn pawn, BodyVisualEntry entry, ThingWithComps secondary, ThingWithComps primary)
+            => entry.registeredQualified && secondary != null
+                && RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
+                && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
+                && (RimKataGripUtility.GripTypeFor(primary?.def) == RimKataGripType.OneHand || entry.enhancedGrip)
+                    ? secondary : null;
+
+        private static bool IsHeldNonPrimary(Pawn pawn, ThingWithComps primary, ThingWithComps weapon)
+            => weapon != null && !weapon.Destroyed && weapon != primary
+                && pawn?.equipment?.AllEquipmentListForReading?.Contains(weapon) == true;
+
+        private static ThingWithComps ResponseSecondary(Pawn pawn, ThingWithComps primary, Entry entry)
+        {
+            if (entry == null) return null;
+            if (IsHeldNonPrimary(pawn, primary, entry.spinSecondaryWeapon)) return entry.spinSecondaryWeapon;
+            if (IsHeldNonPrimary(pawn, primary, entry.responsePoseWeapon)) return entry.responsePoseWeapon;
+            return IsHeldNonPrimary(pawn, primary, entry.deflectionWeapon) ? entry.deflectionWeapon : null;
         }
 
         internal static void ResetGame()
@@ -522,13 +633,14 @@ namespace KRWF.RimKata
 
             lock (UpdateLock)
             {
-                RefreshBodyVisual(state);
                 RemoveEntry(pawn);
                 if (!state.DeflectionActive && !state.DeflectionSpinActive && !state.ResponsePoseActive)
                 {
+                    RefreshBodyVisual(state, null, null, true);
                     return;
                 }
 
+                ThingWithComps primary = pawn.equipment?.Primary;
                 Entry entry = new Entry
                 {
                     pawn = pawn,
@@ -540,7 +652,7 @@ namespace KRWF.RimKata
                         ? state.responsePoseWeapon
                         : null,
                     spinPrimaryWeapon = state.DeflectionSpinActive
-                        ? pawn.equipment?.Primary
+                        ? primary
                         : null,
                     spinSecondaryWeapon = state.DeflectionSpinActive
                         ? RimKataWeaponSlotUtility.SecondaryWeapon(pawn)
@@ -551,11 +663,19 @@ namespace KRWF.RimKata
                 AddWeapon(entry.responsePoseWeapon, pawn);
                 AddWeapon(entry.spinPrimaryWeapon, pawn);
                 AddWeapon(entry.spinSecondaryWeapon, pawn);
+                RefreshBodyVisual(state, primary, ResponseSecondary(pawn, primary, entry), true);
             }
         }
 
         internal static void RefreshBodyVisual(
             RimKataPawnCombatState state)
+        {
+            RefreshBodyVisual(state, null, null, false);
+        }
+
+        private static void RefreshBodyVisual(
+            RimKataPawnCombatState state, ThingWithComps responsePrimary,
+            ThingWithComps responseSecondary, bool updateResponse)
         {
             Pawn pawn = state?.pawn;
             if (pawn == null) return;
@@ -567,9 +687,16 @@ namespace KRWF.RimKata
                 bool response = map != null && (state.DeflectionActive || state.DeflectionSpinActive || state.ResponsePoseActive);
                 BodyVisualEntry old = BodyVisualFor(pawn);
                 if (old == null && !body && !response) return;
-                bool qualified = (body || response) && RimKataEligibilityCache.IsCachedQualifiedPawn(pawn);
+                bool qualified = (body || response) && old?.registeredQualified == true;
+                if (!updateResponse && response)
+                {
+                    responsePrimary = old?.responsePrimary;
+                    responseSecondary = old?.responseSecondary;
+                }
                 if (old != null && old.body == body && old.response == response
                     && old.groundPose == ground && old.map == map && old.qualified == qualified
+                    && old.responsePrimary == responsePrimary && old.responseSecondary == responseSecondary
+                    && old.equipmentState == state && old.equipmentOwner == state.ownerComponent
                     && (!(body || response) || old.snapshotState == state && old.snapshotOwner == state.ownerComponent)) return;
                 BodyVisualEntry entry = CopyBodyVisual(old);
                 entry.map = map;
@@ -579,6 +706,10 @@ namespace KRWF.RimKata
                 entry.qualified = qualified;
                 entry.snapshotState = state;
                 entry.snapshotOwner = state.ownerComponent;
+                entry.equipmentState = state;
+                entry.equipmentOwner = state.ownerComponent;
+                entry.responsePrimary = responsePrimary;
+                entry.responseSecondary = responseSecondary;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -598,9 +729,14 @@ namespace KRWF.RimKata
             lock (UpdateLock)
             {
                 BodyVisualEntry old = BodyVisualFor(pawn);
-                if (old == null || !old.body && !old.groundPose && !old.response && old.snapshotState == null) return;
+                if (old == null || !old.body && !old.groundPose && !old.response
+                    && old.snapshotState == null && old.equipmentState == null) return;
                 BodyVisualEntry entry = CopyBodyVisual(old);
                 entry.body = entry.groundPose = entry.response = false;
+                entry.equipmentState = null;
+                entry.equipmentOwner = null;
+                entry.responsePrimary = null;
+                entry.responseSecondary = null;
                 StoreBodyVisual(pawn, entry);
             }
         }
@@ -766,6 +902,7 @@ namespace KRWF.RimKata
         public int movementFireContinuityUntilTick = -1;
         public int staggerSearchLastCheckTick = -1;
         internal bool shakeOffPending;
+        internal bool autoSubduePending;
         internal RimKataReactiveMotionState reactiveMotion;
         public Pawn incomingThreatSource;
         public int incomingThreatTicksRemaining;
@@ -2009,12 +2146,14 @@ namespace KRWF.RimKata
                     }
                 }
             }
+            RimKataFlyingKickApproach.Rebuild(map);
             SubscribeProjectileEvents();
             projectileInitialRefreshPending = true;
         }
 
         public override void MapRemoved()
         {
+            RimKataFlyingKickApproach.ClearMap(map);
             RimKataEligibilityCache.ForgetMap(map);
             RimKataDormantHostileMovementRegistry.NotifyMapRemoved(map);
             RimKataGroundPoseUtility.ClearMap(map);
@@ -3321,6 +3460,7 @@ namespace KRWF.RimKata
                 RimKataCombatStatePresenceCache.Mark(pawn, this);
                 states.Add(state);
                 statesByPawn[pawn] = state;
+                RimKataResponseVisualParticipantCache.PublishEquipmentState(state);
                 state.temporaryInactive = RimKataTemporaryInactivity.IsInactive(pawn);
                 state.temporaryInactivityCleanupPending = state.temporaryInactive;
                 return state;
@@ -3366,6 +3506,7 @@ namespace KRWF.RimKata
                     state.ownerComponent = this;
                     RimKataCombatStatePresenceCache.Mark(state.pawn, this);
                     statesByPawn[state.pawn] = state;
+                    RimKataResponseVisualParticipantCache.PublishEquipmentState(state);
                     if (RimKataEligibilityCache.IsCachedQualifiedPawn(state.pawn))
                         RimKataMotionJobGate.Refresh(state);
                     RimKataGroundPoseUtility.Rebuild(state);
@@ -3746,14 +3887,22 @@ namespace KRWF.RimKata
 
         public bool TryGetGunReadyTarget(Pawn pawn, out LocalTargetInfo target)
         {
+            lock (statesLock)
+            {
+                return TryGetGunReadyTarget(pawn, GetState(pawn, false), out target);
+            }
+        }
+
+        internal bool TryGetGunReadyTarget(
+            Pawn pawn, RimKataPawnCombatState state, out LocalTargetInfo target)
+        {
             target = LocalTargetInfo.Invalid;
             Job currentJob = pawn?.CurJob;
             bool combatJob = currentJob?.def == RimKataDefOf.RimKata_Attack;
 
             lock (statesLock)
             {
-                RimKataPawnCombatState state = GetState(pawn, false);
-                if (state == null)
+                if (state == null || state.pawn != pawn || state.ownerComponent != this || pawn?.Map != map)
                 {
                     return false;
                 }

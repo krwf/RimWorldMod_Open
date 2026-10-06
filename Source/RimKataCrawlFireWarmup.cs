@@ -30,33 +30,18 @@ namespace KRWF.RimKata
         public static IEnumerable<MethodBase> TargetMethods()
         {
             var methods = new HashSet<MethodBase>();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
             {
-                if (assembly.IsDynamic)
+                if (type == null || !typeof(Verb).IsAssignableFrom(type))
                     continue;
-                IEnumerable<Type> types;
-                try
-                {
-                    types = AccessTools.GetTypesFromAssembly(assembly);
-                }
-                catch
-                {
-                    continue;
-                }
-
-                foreach (Type type in types)
-                {
-                    if (type == null || !typeof(Verb).IsAssignableFrom(type))
-                        continue;
-                    MethodInfo cast = DeclaredMethod(type, nameof(Verb.TryStartCastOn),
-                        CastSignature, typeof(bool));
-                    if (cast != null && methods.Add(cast))
-                        yield return cast;
-                    MethodInfo warmup = DeclaredMethod(type, nameof(Verb.WarmupComplete),
-                        Type.EmptyTypes, typeof(void));
-                    if (warmup != null && methods.Add(warmup))
-                        yield return warmup;
-                }
+                MethodInfo cast = DeclaredMethod(type, nameof(Verb.TryStartCastOn),
+                    CastSignature, typeof(bool));
+                if (cast != null && methods.Add(cast))
+                    yield return cast;
+                MethodInfo warmup = DeclaredMethod(type, nameof(Verb.WarmupComplete),
+                    Type.EmptyTypes, typeof(void));
+                if (warmup != null && methods.Add(warmup))
+                    yield return warmup;
             }
         }
 

@@ -64,6 +64,7 @@
   <KRWF_RimKata_ProfileCancel>Zrušiť</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Obnoviť nastavenia zbraní?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Obnoviť nastavenia oblečenia?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefreshReady>Ďakujem XD\nStlačte „{0}“.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_ResetSectionConfirmation>Obnoviť „{0}“?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Obnoviť „{0}“?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Odstrániť „{0}“?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -151,6 +152,15 @@
   <KRWF_RimKata_EnableRimKataI>RimKata-I</KRWF_RimKata_EnableRimKataI>
   <KRWF_RimKata_EnableRimKataG>RimKata-G</KRWF_RimKata_EnableRimKataG>
   <KRWF_RimKata_EnableSerumDependency>Závislosť od séra na otupenie emócií</KRWF_RimKata_EnableSerumDependency>
+  <KRWF_RimKata_TraitSelection>Výber vlastností</KRWF_RimKata_TraitSelection>
+  <KRWF_RimKata_ShootingLevelRequirement>Úroveň streľby</KRWF_RimKata_ShootingLevelRequirement>
+  <KRWF_RimKata_MeleeLevelRequirement>Úroveň boja zblízka</KRWF_RimKata_MeleeLevelRequirement>
+  <KRWF_RimKata_ResetTraitSelection>Obnoviť výber</KRWF_RimKata_ResetTraitSelection>
+  <KRWF_RimKata_QualificationDescription>Predvída prestrelky na krátku vzdialenosť a reaguje na ne. Môže používať RimKata.</KRWF_RimKata_QualificationDescription>
+  <KRWF_RimKata_QualificationRequirements>Požiadavky</KRWF_RimKata_QualificationRequirements>
+  <KRWF_RimKata_QualificationTraits>Vlastnosti ({0})</KRWF_RimKata_QualificationTraits>
+  <KRWF_RimKata_QualificationShooting>Úroveň streľby</KRWF_RimKata_QualificationShooting>
+  <KRWF_RimKata_QualificationMelee>Úroveň boja zblízka</KRWF_RimKata_QualificationMelee>
   <KRWF_RimKata_CandidateLimitHeader>Obmedzenia kandidátov</KRWF_RimKata_CandidateLimitHeader>
   <KRWF_RimKata_TouchCandidateLimit>Dosah boja na blízko</KRWF_RimKata_TouchCandidateLimit>
   <KRWF_RimKata_ShortCandidateLimit>Krátky dosah</KRWF_RimKata_ShortCandidateLimit>
@@ -200,14 +210,15 @@
   <KRWF_RimKata_BreachSlideDuration>Čas pohybu počas prielomu</KRWF_RimKata_BreachSlideDuration>
   <KRWF_RimKata_BreachWaitDuration>Čas čakania po dosiahnutí cieľa prielomu</KRWF_RimKata_BreachWaitDuration>
   <KRWF_RimKata_DefaultsHeader>Predvolené hodnoty</KRWF_RimKata_DefaultsHeader>
-  <KRWF_RimKata_CrawlFireDefaultAllowedFriendly>Povoliť streľbu pri plazení postavám, ktoré nie sú nepriateľské</KRWF_RimKata_CrawlFireDefaultAllowedFriendly>
-  <KRWF_RimKata_CrawlFireDefaultAllowedHostile>Povoliť streľbu pri plazení nepriateľským postavám</KRWF_RimKata_CrawlFireDefaultAllowedHostile>
-  <KRWF_RimKata_CrawlFireDefaultAllowed>Predvolene povoliť streľbu pri plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_CrawlFireDefaultAllowed>Povoliť streľbu pri plazení</KRWF_RimKata_CrawlFireDefaultAllowed>
+  <KRWF_RimKata_AutoSubdueReleaseDowned>Pustiť padlé ciele pri automatickom spacifikovaní</KRWF_RimKata_AutoSubdueReleaseDowned>
   <KRWF_RimKata_SmoothAimTransition>Plynulé prechody mierenia</KRWF_RimKata_SmoothAimTransition>
   <KRWF_RimKata_FeatureSubdue>Spacifikovať</KRWF_RimKata_FeatureSubdue>
+  <KRWF_RimKata_FeatureAutoSubdue>Automatické spacifikovanie</KRWF_RimKata_FeatureAutoSubdue>
   <KRWF_RimKata_Subdue>Spacifikovať</KRWF_RimKata_Subdue>
   <KRWF_RimKata_SubdueMassLimit>Hmotnostný limit pre spacifikovanie</KRWF_RimKata_SubdueMassLimit>
   <KRWF_RimKata_SubdueImpactStunDuration>Trvanie omráčenia nárazom pri spacifikovaní</KRWF_RimKata_SubdueImpactStunDuration>
+  <KRWF_RimKata_AutoSubdueHoldDuration>Doba držania pri automatickom spacifikovaní</KRWF_RimKata_AutoSubdueHoldDuration>
   <KRWF_RimKata_SubdueAttack>Útok pri spacifikovaní</KRWF_RimKata_SubdueAttack>
   <KRWF_RimKata_SubdueAttackDesc>Útočí na držanú postavu. Na začiatku každého spacifikovania je vypnuté.</KRWF_RimKata_SubdueAttackDesc>
   <KRWF_RimKata_SubdueActions>Akcie spacifikovania</KRWF_RimKata_SubdueActions>
@@ -244,8 +255,6 @@
   <KRWF_RimKata_ResetAllStrength>Obnoviť všetko</KRWF_RimKata_ResetAllStrength>
   <KRWF_RimKata_ResetFilteredStrength>Obnoviť filtrované výsledky</KRWF_RimKata_ResetFilteredStrength>
   <KRWF_RimKata_FeatureFlyingKick>Kop vo výskoku</KRWF_RimKata_FeatureFlyingKick>
-  <KRWF_RimKata_FlyingKickAllowedFriendly>Povoliť kopy vo výskoku postavám, ktoré nie sú nepriateľské</KRWF_RimKata_FlyingKickAllowedFriendly>
-  <KRWF_RimKata_FlyingKickAllowedHostile>Povoliť kopy vo výskoku nepriateľským postavám</KRWF_RimKata_FlyingKickAllowedHostile>
   <KRWF_RimKata_FlyingKickStunChance>Šanca na omráčenie kopom vo výskoku</KRWF_RimKata_FlyingKickStunChance>
   <KRWF_RimKata_FlyingKickDamage>Poškodenie kopu vo výskoku</KRWF_RimKata_FlyingKickDamage>
   <KRWF_RimKata_FeatureKick>Kop</KRWF_RimKata_FeatureKick>

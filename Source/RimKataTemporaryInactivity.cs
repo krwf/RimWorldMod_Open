@@ -267,13 +267,14 @@ namespace KRWF.RimKata
         })]
     public static class Patch_StunHandler_StunFor_RimKataTemporaryInactivity
     {
-        public static void Postfix(StunHandler __instance)
+        public static void Postfix(StunHandler __instance, Thing instigator)
         {
             if (__instance?.Stunned == true
                 && __instance.parent is Pawn pawn)
             {
                 RimKataTemporaryInactivity.NotifyPotentiallyInactive(
                     pawn);
+                RimKataAutoSubdue.RequestFromStun(pawn, instigator);
             }
         }
     }

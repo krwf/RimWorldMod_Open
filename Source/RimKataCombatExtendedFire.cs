@@ -38,8 +38,8 @@ namespace KRWF.RimKata
 
         internal static void Apply(Harmony harmony)
         {
-            Type launcher = AccessTools.TypeByName("CombatExtended.Verb_LaunchProjectileCE");
-            Type shooter = AccessTools.TypeByName("CombatExtended.Verb_ShootCE");
+            Type launcher = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
+            Type shooter = RimKataActiveModTypes.Find("CombatExtended.Verb_ShootCE");
             if (launcher == null || shooter == null) return;
             MethodInfo shots = AccessTools.PropertyGetter(launcher, "ShotsPerBurst");
             MethodInfo shootShots = AccessTools.PropertyGetter(shooter, "ShotsPerBurst");
@@ -52,7 +52,7 @@ namespace KRWF.RimKata
             MethodInfo shootLine = AccessTools.DeclaredMethod(launcher, "TryFindCEShootLineFromTo",
                 new[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(ShootLine).MakeByRefType(),
                     typeof(Vector3).MakeByRefType() });
-            Type reportType = AccessTools.TypeByName("CombatExtended.ShiftVecReport");
+            Type reportType = RimKataActiveModTypes.Find("CombatExtended.ShiftVecReport");
             if (shots == null || shootShots == null || aim == null || aiming?.FieldType != typeof(bool)
                 || report?.ReturnType != reportType || reportType == null || swayVector == null
                 || shootLine?.ReturnType != typeof(bool))
@@ -90,17 +90,17 @@ namespace KRWF.RimKata
             shootType = shooter;
 
             HarmonyMethod countPatch = new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(ShotsPostfix));
-            harmony.Patch(shots, postfix: countPatch);
-            if (shootShots != shots) harmony.Patch(shootShots, postfix: countPatch);
-            harmony.Patch(report, postfix: new HarmonyMethod(
+            RimKataStartupPatches.Patch(harmony, shots, postfix: countPatch);
+            if (shootShots != shots) RimKataStartupPatches.Patch(harmony, shootShots, postfix: countPatch);
+            RimKataStartupPatches.Patch(harmony, report, postfix: new HarmonyMethod(
                 typeof(RimKataCombatExtendedFire), nameof(ReportPostfix)));
-            harmony.Patch(swayVector,
+            RimKataStartupPatches.Patch(harmony, swayVector,
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPrefix)),
                 postfix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPostfix)));
             var modePatch = new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(ModeChangedPostfix));
-            harmony.Patch(setMode, postfix: modePatch);
-            harmony.Patch(toggleMode, postfix: modePatch);
-            harmony.Patch(shootLine, transpiler: new HarmonyMethod(
+            RimKataStartupPatches.Patch(harmony, setMode, postfix: modePatch);
+            RimKataStartupPatches.Patch(harmony, toggleMode, postfix: modePatch);
+            RimKataStartupPatches.Patch(harmony, shootLine, transpiler: new HarmonyMethod(
                 typeof(RimKataCombatExtendedFire), nameof(CloseRangeTranspiler)));
             ApplyPublicShotPatches(harmony, launcher);
             RimKataCombatExtendedPrepared.Apply(harmony);
@@ -114,23 +114,16 @@ namespace KRWF.RimKata
             var prefix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Prefix));
             var postfix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Postfix));
             var finalizer = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Finalizer));
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
             {
-                if (assembly.IsDynamic) continue;
-                IEnumerable<Type> types;
-                try { types = AccessTools.GetTypesFromAssembly(assembly); }
-                catch { continue; }
-                foreach (Type type in types)
-                {
-                    if (type == null || !launcher.IsAssignableFrom(type)) continue;
-                    // Common TryCastShot discovery covers only non-public overrides.
-                    MethodInfo method = type.GetMethod("TryCastShot",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
-                        null, Type.EmptyTypes, null);
-                    if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
-                        && method.ReturnType == typeof(bool))
-                        harmony.Patch(method, prefix: prefix, postfix: postfix, finalizer: finalizer);
-                }
+                if (type == null || !launcher.IsAssignableFrom(type)) continue;
+                // Common TryCastShot discovery covers only non-public overrides.
+                MethodInfo method = type.GetMethod("TryCastShot",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
+                    null, Type.EmptyTypes, null);
+                if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
+                    && method.ReturnType == typeof(bool))
+                    RimKataStartupPatches.Patch(harmony, method, prefix: prefix, postfix: postfix, finalizer: finalizer);
             }
         }
 

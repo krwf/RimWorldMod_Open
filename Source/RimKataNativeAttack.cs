@@ -194,6 +194,7 @@ namespace KRWF.RimKata
             if (kickAttack != null) return kickAttack.CanContinue();
             if (reactiveMotion != null) return RimKataReactiveAttack.CanContinue(this);
             if (subdueState != null) return RimKataSubdueCombat.CanContinueAttack(this);
+            if (state?.autoSubduePending == true) return false;
             if (pawn?.Spawned != true || pawn.Dead || pawn.Downed || pawn.InMentalState
                 || pawn.stances.stunner.Stunned || pawn.CurJob != job
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)

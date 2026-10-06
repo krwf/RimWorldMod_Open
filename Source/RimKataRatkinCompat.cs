@@ -9,7 +9,7 @@ namespace KRWF.RimKata
     {
         internal static void Apply(Harmony harmony)
         {
-            Type compType = AccessTools.TypeByName("NewRatkin.HediffComp_RatHolicGun");
+            Type compType = RimKataActiveModTypes.Find("NewRatkin.HediffComp_RatHolicGun");
             if (compType == null)
                 return;
 
@@ -23,9 +23,9 @@ namespace KRWF.RimKata
                 return;
             }
 
-            harmony.Patch(isPawnFiring, postfix: Patch(nameof(IsPawnFiringPostfix)));
-            harmony.Patch(isPawnReloading, postfix: Patch(nameof(IsPawnReloadingPostfix)));
-            harmony.Patch(getCurrentAimingTarget, postfix: Patch(nameof(GetCurrentAimingTargetPostfix)));
+            RimKataStartupPatches.Patch(harmony, isPawnFiring, postfix: Patch(nameof(IsPawnFiringPostfix)));
+            RimKataStartupPatches.Patch(harmony, isPawnReloading, postfix: Patch(nameof(IsPawnReloadingPostfix)));
+            RimKataStartupPatches.Patch(harmony, getCurrentAimingTarget, postfix: Patch(nameof(GetCurrentAimingTargetPostfix)));
         }
 
         private static MethodInfo FindMethod(Type type, string name, Type returnType)

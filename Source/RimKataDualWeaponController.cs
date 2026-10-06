@@ -947,6 +947,8 @@ namespace KRWF.RimKata
                 closeTarget,
                 !playerForced);
 
+            if (state.autoSubduePending) return;
+
             CycleVerbAvailability primaryAvailability = default;
             CycleVerbAvailability secondaryAvailability = default;
             if ((state.primaryWeaponCycle.weapon != null
@@ -2270,7 +2272,9 @@ namespace KRWF.RimKata
             }
 
             state.weaponSwapPending = false;
-            RimKataWeaponSlotUtility.TrySwapPrimarySecondary(pawn);
+            if (RimKataWeaponSlotUtility.TrySwapPrimarySecondary(pawn)
+                && RimKataSubdueUtility.Any)
+                RimKataAutoSubdue.NotifyManualControl(RimKataSubdueUtility.Get(pawn));
         }
 
         public static bool IsWeaponSwapBlocked(Pawn pawn)
@@ -5861,6 +5865,7 @@ namespace KRWF.RimKata
                 state.dualCloseCombatActive = true;
                 state.dualCloseTarget = closeTarget;
                 state.EnterCloseCombat(closeTarget);
+                RimKataAutoSubdue.Request(pawn, closeTarget as Pawn, state);
                 if (restartCloseContext)
                 {
                     SanitizeCycleForCloseCombat(
@@ -8309,6 +8314,9 @@ namespace KRWF.RimKata
         {
             if (__state != __0)
             {
+                Pawn pawn = __instance?.pawn;
+                if (RimKataSubdueUtility.Any && pawn?.IsPlayerControlled == true)
+                    RimKataAutoSubdue.NotifyManualControl(RimKataSubdueUtility.Get(pawn));
                 RimKataDualWeaponController.NotifyDraftStatusChanged(__instance?.pawn);
             }
         }

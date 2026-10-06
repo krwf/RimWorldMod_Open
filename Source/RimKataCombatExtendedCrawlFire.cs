@@ -13,7 +13,7 @@ namespace KRWF.RimKata
         {
             RimKataCrawlFireUtility.ResolveOriginalWarmup = RimKataCombatExtendedFire.OriginalWarmup;
             MethodInfo tick = AccessTools.DeclaredMethod(shooter, "VerbTickCE", Type.EmptyTypes);
-            Type ammo = AccessTools.TypeByName("CombatExtended.CompAmmoUser");
+            Type ammo = RimKataActiveModTypes.Find("CombatExtended.CompAmmoUser");
             MethodInfo reload = ammo == null ? null : AccessTools.DeclaredMethod(
                 ammo, "TryStartReload", Type.EmptyTypes);
             MethodInfo outOfAmmo = ammo == null ? null : AccessTools.DeclaredMethod(
@@ -22,12 +22,12 @@ namespace KRWF.RimKata
                 || outOfAmmo?.ReturnType != typeof(void))
                 throw new InvalidOperationException("CE crawl warmup API does not match.");
 
-            harmony.Patch(tick, transpiler: new HarmonyMethod(
+            RimKataStartupPatches.Patch(harmony, tick, transpiler: new HarmonyMethod(
                 typeof(RimKataCombatExtendedCrawlFire), nameof(WarmupTypeTranspiler)));
             var preserveCrawlJob = new HarmonyMethod(
                 typeof(RimKataCombatExtendedCrawlFire), nameof(AmmoActionPrefix));
-            harmony.Patch(reload, prefix: preserveCrawlJob);
-            harmony.Patch(outOfAmmo, prefix: preserveCrawlJob);
+            RimKataStartupPatches.Patch(harmony, reload, prefix: preserveCrawlJob);
+            RimKataStartupPatches.Patch(harmony, outOfAmmo, prefix: preserveCrawlJob);
             RimKataCrawlFireHits.ApplyCombatExtended(harmony);
         }
 

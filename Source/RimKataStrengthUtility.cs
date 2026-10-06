@@ -33,7 +33,7 @@ namespace KRWF.RimKata
         internal static void Initialize()
         {
             ceCarryWeight = DefDatabase<StatDef>.GetNamedSilentFail("CarryWeight");
-            if (AccessTools.TypeByName("CombatExtended.CompInventory") == null)
+            if (RimKataActiveModTypes.Find("CombatExtended.CompInventory") == null)
                 ceCarryWeight = null;
             if (ceCarryWeight != null)
             {

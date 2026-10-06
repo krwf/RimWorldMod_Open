@@ -81,14 +81,14 @@ namespace KRWF.RimKata
                 MethodInfo method = AccessTools.Method(typeof(RimKataCombatExtendedAssistedReload), name);
                 installed.Add((target, method));
                 var patch = new HarmonyMethod(method);
-                harmony.Patch(target, prefix: postfix ? null : patch, postfix: postfix ? patch : null);
+                RimKataStartupPatches.Patch(harmony, target, prefix: postfix ? null : patch, postfix: postfix ? patch : null);
             }
         }
 
         private static void Bind(Type compType)
         {
             ammoType = compType;
-            reloadDriverType = AccessTools.TypeByName("CombatExtended.JobDriver_Reload");
+            reloadDriverType = RimKataActiveModTypes.Find("CombatExtended.JobDriver_Reload");
             hasMagazine = Getter<bool>(compType, "HasMagazine");
             useAmmo = Getter<bool>(compType, "UseAmmo");
             fullMagazine = Getter<bool>(compType, "FullMagazine");
@@ -99,10 +99,10 @@ namespace KRWF.RimKata
             props = AccessTools.Property(compType, "Props");
             reloadTime = AccessTools.Field(props.PropertyType, "reloadTime");
             oneAtATime = AccessTools.Field(props.PropertyType, "reloadOneAtATime");
-            Type ceUtility = AccessTools.TypeByName("CombatExtended.CE_Utility");
+            Type ceUtility = RimKataActiveModTypes.Find("CombatExtended.CE_Utility");
             primaryProperties = AccessTools.Method(ceUtility, "GetPrimaryVerbPropsCE", new[] { typeof(Thing) });
             equipmentStats = AccessTools.Field(primaryProperties.ReturnType, "useEquipmentStatValues");
-            Type stats = AccessTools.TypeByName("CombatExtended.CE_StatDefOf");
+            Type stats = RimKataActiveModTypes.Find("CombatExtended.CE_StatDefOf");
             // DefOf fields are populated after mod constructors install these hooks.
             reloadTimeDef = AccessTools.Field(stats, "ReloadTime");
             reloadFactorDef = AccessTools.Field(stats, "CE_RangedWeapon_ReloadFactor");
