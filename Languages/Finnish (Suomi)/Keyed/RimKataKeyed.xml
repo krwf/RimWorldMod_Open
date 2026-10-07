@@ -64,7 +64,9 @@
   <KRWF_RimKata_ProfileCancel>Peruuta</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Palautetaanko aseasetukset?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Palautetaanko vaateasetukset?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefresh>Päivitä</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Kiitos XD\nPaina ”{0}”.</KRWF_RimKata_EquipmentRefreshReady>
+  <KRWF_RimKata_EquipmentRefreshFailed>Varustetietojen päivittäminen epäonnistui.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
   <KRWF_RimKata_ResetSectionConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Poistetaanko '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>

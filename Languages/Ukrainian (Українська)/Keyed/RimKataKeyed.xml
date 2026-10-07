@@ -64,7 +64,9 @@
   <KRWF_RimKata_ProfileCancel>Скасувати</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Скинути налаштування зброї?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Скинути налаштування одягу?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefresh>Оновити</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Дякую XD\nНатисніть «{0}».</KRWF_RimKata_EquipmentRefreshReady>
+  <KRWF_RimKata_EquipmentRefreshFailed>Не вдалося оновити дані спорядження.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
   <KRWF_RimKata_ResetSectionConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Видалити «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>

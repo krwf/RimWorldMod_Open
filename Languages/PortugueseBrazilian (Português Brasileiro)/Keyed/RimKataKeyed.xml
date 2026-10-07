@@ -64,7 +64,9 @@
   <KRWF_RimKata_ProfileCancel>Cancelar</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Redefinir as configurações das armas?</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Redefinir as configurações das roupas?</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefresh>Atualizar</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Obrigado XD\nPor favor, clique em “{0}”.</KRWF_RimKata_EquipmentRefreshReady>
+  <KRWF_RimKata_EquipmentRefreshFailed>Não foi possível atualizar os dados do equipamento.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
   <KRWF_RimKata_ResetSectionConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Excluir '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>

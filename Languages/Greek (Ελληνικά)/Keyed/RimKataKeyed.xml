@@ -64,7 +64,9 @@
   <KRWF_RimKata_ProfileCancel>Ακύρωση</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Επαναφορά ρυθμίσεων όπλων;</KRWF_RimKata_ResetWeaponConfirmation>
   <KRWF_RimKata_ResetApparelConfirmation>Επαναφορά ρυθμίσεων ενδυμάτων;</KRWF_RimKata_ResetApparelConfirmation>
+  <KRWF_RimKata_EquipmentRefresh>Ανανέωση</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Ευχαριστώ XD\nΠατήστε «{0}».</KRWF_RimKata_EquipmentRefreshReady>
+  <KRWF_RimKata_EquipmentRefreshFailed>Δεν ήταν δυνατή η ανανέωση των δεδομένων εξοπλισμού.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
   <KRWF_RimKata_ResetSectionConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Διαγραφή «{0}»;</KRWF_RimKata_DeleteProfileConfirmation>
