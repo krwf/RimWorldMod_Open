@@ -470,3 +470,17 @@
 - 실제 SpawnSetup와 InitializeMap만 refreshPersonal=true로 이전 개인 조건 캐시를 무효화합니다. 자격 갱신 완료·일반 설정 호출은 이미 얻은 결과를 사용해 특성/스킬을 중복 조회하지 않습니다. 기준 아래로 떨어져도 다른 허용 특성이나 기존 A/P/I/G/의존성 등 원천이 남으면 자격을 유지합니다. 원천 OR 결과가 달라질 때만 기존 장비·전투 등록을 갱신합니다.
 - 캐릭터 카드의 특성 목록에 표시 전용 RimKata 항목을 넣습니다. 자격자의 UI 목록만 복사하며 높이 계산·배치·출력이 같은 목록을 공유합니다. 원본 allTraits·공유 tmpTraits·DefDatabase는 바꾸지 않습니다. 마우스를 올릴 때에만 조기 반환 때문에 미확인인 나머지 원천까지 채워 모든 충족 사유를 문자열로 캐시합니다. 원천·설정·세력 변경은 기존 경계에서 툴팁을 비웁니다. 제약 해제는 NameColor로 우선 표시하고 자격요건 제목은 노란색입니다. 실제 Trait를 부여하거나 일반 월드 렌더 훅을 추가하지 않습니다.
 - 특성 편집 목록은 창 생성 시 실제 degreeDatas로 준비하고 검색 변경 때만 필터하며 보이는 행만 출력합니다. 확인 전에는 복사본을 편집하고 닫으면 폐기합니다. 특성 규칙과 기술 기준 변경은 Apply(true)→공통 자격 갱신→설정 저장으로 연결합니다. 새 조건을 전투 프로필마다 복제하지 않습니다.
+
+<a id="close-fire-melee-preparation"></a>
+
+## 32. 허용 원거리 무기의 추가 근접공격은 준비 자료와 기존 슬롯 주기 재사용 (2026-10-08)
+
+- 이번 부분 갱신은 추가 근접공격 경로만 다룹니다. [메서드 색인](RimKata_method_index.md#file-close-fire-melee)과 [구현·검증 기록](RimKata_development_memory.md#close-fire-melee-20261008)을 함께 확인합니다. 전체 파일·메서드·패치 수와 실제 실행 비용은 재집계·계측하지 않았습니다.
+- 기존 허용 무기 목록 준비에서 원거리 무기만 `RimKataCloseFireMeleeStore.PrepareDefinition`으로 보냅니다. Tool 원문명의 `handle(s)/grip(s)/stock(s)/barrel(s)`는 대소문자 구분 없는 정확한 이름 비교로 제외하고, 나머지 근접 Tool·직접 근접 Verb의 인덱스를 준비합니다. 실제 피해·Tool 하위 타입·사용자 정의 Verb는 원본 무기에 유지합니다.
+- 추가 근접공격이 있는 무기만 `equipment-memory/close-fire-melee/<def>.xml`을 저장합니다. 없는 결과는 기존 공용 `equipment-memory/cache.xml`의 `close_fire_melee_absent` 범주에 defName·fingerprint·빈 data로 기록합니다. 유효한 공용 없음 기록은 개별 파일 존재 확인·Read·Extract·Write와 중복 Store도 생략합니다. schema·기존 수집 XML·Tool/Verb 구조·Maneuver fingerprint가 맞는 메모리·개별 파일 자료도 추출·쓰기를 생략하며, 준비 단계의 fingerprint 확인은 유지합니다. 기존 빈 개별 XML을 읽으면 공용 없음 기록으로 기억하되, 기존 파일 삭제·마이그레이션 순회는 추가하지 않습니다. 분류·추출·XML 읽기/쓰기를 전투 Tick·렌더·기즈모로 옮기지 않습니다.
+- 기존 장비 dirty/revision 바인딩에서 허용 슬롯의 실제 `Verb[]`를 준비하고, 슬롯의 전투 계획은 배열만 사용합니다. 빈 배열도 확정 결과입니다. 새 Harmony 패치, 일반 폰 자격/상태 조회, 전체 폰 순회, 파일 감시를 추가하지 않습니다.
+- closeFire ON의 일반 근접 계획에서만 사격과 추가 근접공격 그룹을 각 50%로 고릅니다. 추가 그룹 안은 기존 `VerbEntry`의 초기·대상별 가중치를 유지하여 Tool의 Maneuver 수가 그룹 선택 확률을 늘리지 않습니다. 사용 가능한 추가 후보가 없으면 사격으로 진행합니다. 선택 인덱스를 계획에 보존하고 저장·로드 시 기존 바인딩에서 복원하므로 대기 중 매 틱 재추첨하지 않습니다.
+- 실제 공격은 원본 Verb의 기존 native `VerbTick` 요청 경로를 사용합니다. 추가 근접공격의 완료·중단 쿨다운만 원거리 슬롯 `cycleVerb`로 계산합니다. 실행 직전에는 이미 전달된 close 문맥과 현재 Verb 가용성·목표 및 Touch를 재검사합니다. 미시작 요청의 후보가 불가해지면 선택·예열을 비워 재선택하고, 계획 취소·무기 교체·리셋도 관련 참조와 선택을 함께 정리합니다.
+- closeFire OFF의 기존 물리 근접 선택, 기어 사격·제압·반응·사냥 전용 경로를 유지합니다. `groundPose.VisualActive`일 때는 새 그룹 선택을 제외합니다. 새 공격을 특수 전투의 수명주기로 편입하거나 선택 단계에서 직접 피해를 주지 않습니다.
+- 수동 장비 갱신은 기존 패치 대상 재탐색·렌더 Discovery/Definition 스캔·패치 설치·렌더 자료 적용을 모두 유지합니다. 이번 추가 근접공격 XML 갱신은 그 준비 결과의 확인·적용 뒤 추가하는 단계입니다. 확인 뒤 `Commit → InvalidatePreparedCache → RefreshPreparedWeapons`로 연결합니다. 취소·닫기는 기존 자료를 유지합니다. 공용 없음 기록은 기존 시작 준비 완료, Mod.WriteSettings·CommitListSettings 및 수동 Commit 성공 경계에서 Flush합니다. `RefreshPreparedWeapons`는 revision 증가·공격 자료 준비만 담당하므로 이미 끝난 `definitions.Apply`를 렌더 `RefreshDefinitions`로 반복하지 않습니다.
+- Release 빌드 성공은 인게임·성능 검증이 아닙니다. 실제 DLL의 임시 캐시 실행 검사는 ThingDef 구성 중 Unity `Resources.Load`의 ECall `SecurityException`으로 준비 함수 진입 전에 중단되어, 최초 생성·재사용·없음 캐시·수동 재생성의 실행 결과는 미확인입니다.

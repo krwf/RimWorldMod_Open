@@ -51,6 +51,8 @@ namespace KRWF.RimKata
         internal ThingWithComps weapon;
         internal Verb verb;
         internal Verb cycleVerb;
+        internal bool closeFireMelee;
+        internal Verb CooldownVerb => closeFireMelee ? cycleVerb : verb;
         internal Job job;
         internal Thing assignedTarget;
         internal Thing firedTarget;
@@ -215,7 +217,7 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            return (!closeShot || pawn.CanReachImmediate(target, PathEndMode.Touch))
+            return (!(closeShot || closeFireMelee) || pawn.CanReachImmediate(target, PathEndMode.Touch))
                 && (!interceptionShot || RimKataTargeting.IsInterceptionTargetActive(interceptionTarget));
         }
 
@@ -381,6 +383,11 @@ namespace KRWF.RimKata
             if (subdueState != null)
                 RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution);
             previousSubdueExecution = default;
+            CompleteNativeCast(exception, rangedShot);
+        }
+
+        internal void CompleteNativeCast(Exception exception, bool rangedShot)
+        {
             RestoreAimAfterShot();
             if (rangedShot) NotifyKickAttackStarting();
             if (exception != null)
@@ -562,6 +569,7 @@ namespace KRWF.RimKata
             weapon = null;
             verb = null;
             cycleVerb = null;
+            closeFireMelee = false;
             job = null;
             assignedTarget = null;
             firedTarget = null;

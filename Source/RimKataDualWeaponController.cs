@@ -57,6 +57,9 @@ namespace KRWF.RimKata
         public bool plannedCloseAttack;
         public bool plannedCloseContext;
         public Verb plannedActionVerb;
+        // -2: not selected; -1: shooting; otherwise an index in the prepared melee list.
+        internal int plannedCloseFireAction = -2;
+        internal Verb[] closeFireMeleeVerbs = Array.Empty<Verb>();
         public Thing visualTarget;
         public int visualAimTicksRemaining;
         internal Thing cooldownTurnTarget;
@@ -163,6 +166,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref plannedInterception, "plannedInterception");
             Scribe_Values.Look(ref plannedCloseAttack, "plannedCloseAttack");
             Scribe_Values.Look(ref plannedCloseContext, "plannedCloseContext");
+            Scribe_Values.Look(ref plannedCloseFireAction, "plannedCloseFireAction", -2);
             Scribe_References.Look(ref visualTarget, "visualTarget");
             Scribe_Values.Look(ref visualAimTicksRemaining, "visualAimTicksRemaining");
             Scribe_References.Look(ref cooldownTurnTarget, "cooldownTurnTarget");
@@ -188,6 +192,8 @@ namespace KRWF.RimKata
                 NormalizeAutomaticCandidateValidationIndex();
                 lastTimerTick = -1;
                 plannedActionVerb = null;
+                closeFireMeleeVerbs = Array.Empty<Verb>();
+                if (!HasPlan) plannedCloseFireAction = -2;
                 cooldownTicksRemaining = Mathf.Max(0, cooldownTicksRemaining);
                 cooldownTurnTicks = Mathf.Max(0, cooldownTurnTicks);
                 rangedCooldown &= cooldownTicksRemaining > 0;
@@ -321,13 +327,19 @@ namespace KRWF.RimKata
             plannedInterception = false;
             plannedCloseAttack = false;
             plannedCloseContext = false;
-            plannedActionVerb = null;
+            ClearPlannedAction();
             if (resetWarmup
                 && !openingWarmupPending)
             {
                 warmupTicksRemaining = -1;
                 warmupTotalTicks = 0;
             }
+        }
+
+        internal void ClearPlannedAction()
+        {
+            plannedActionVerb = null;
+            plannedCloseFireAction = -2;
         }
 
         public bool HasAutomaticCandidates => automaticCandidates != null
@@ -448,6 +460,7 @@ namespace KRWF.RimKata
                 RimKataPreparedWeaponData.Restore(boundVerb);
             weapon = null;
             boundVerb = null;
+            closeFireMeleeVerbs = Array.Empty<Verb>();
             ordinaryWeaponEnabled = false;
             lastDrivenTick = -1;
 
@@ -3579,7 +3592,7 @@ namespace KRWF.RimKata
             cycle.plannedInterception = false;
             cycle.plannedCloseAttack = false;
             cycle.plannedCloseContext = false;
-            cycle.plannedActionVerb = null;
+            cycle.ClearPlannedAction();
             cycle.warmupTicksRemaining = -1;
             cycle.warmupTotalTicks = 0;
             cycle.openingWarmupBonusTicks = 0;
@@ -4647,6 +4660,13 @@ namespace KRWF.RimKata
             if (pawn == null || target == null || weapon == null
                 || !RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)) return null;
             List<Verb> verbs = weapon.TryGetComp<CompEquippable>()?.AllVerbs;
+            return SelectMeleeVerb(pawn, verbs, target, damageOnly);
+        }
+
+        private static Verb SelectMeleeVerb(
+            Pawn pawn, IReadOnlyList<Verb> verbs, Thing target,
+            bool damageOnly = false, bool checkTargetUsability = false)
+        {
             if (verbs == null) return null;
             MeleeSelectionBuffer buffer = meleeSelectionBuffers;
             if (buffer == null) buffer = new MeleeSelectionBuffer();
@@ -4664,6 +4684,7 @@ namespace KRWF.RimKata
                     if (verb?.IsMeleeAttack != true
                         || (damageOnly && !(verb is Verb_MeleeAttackDamage))
                         || !verb.IsStillUsableBy(pawn)
+                        || (checkTargetUsability && !verb.IsUsableOn(target))
                         || !verb.Available()) continue;
                     usable.Add(verb);
                     buffer.highestWeight = Mathf.Max(buffer.highestWeight, VerbUtility.InitialVerbWeight(verb, pawn));
@@ -4982,7 +5003,7 @@ namespace KRWF.RimKata
                 cycle.plannedInterception = interception;
                 cycle.plannedCloseAttack = closeAttack;
                 cycle.plannedCloseContext = closeContext;
-                cycle.plannedActionVerb = null;
+                cycle.ClearPlannedAction();
                 cycle.warmupTicksRemaining = Mathf.Max(1, warmupTicks);
                 cycle.warmupTotalTicks = cycle.warmupTicksRemaining;
             }
@@ -6016,7 +6037,7 @@ namespace KRWF.RimKata
             cycle.plannedInterception = state.draftedPlannedInterception;
             cycle.plannedCloseAttack = state.draftedPlannedCloseAttack;
             cycle.plannedCloseContext = state.draftedPlannedCloseContext;
-            cycle.plannedActionVerb = null;
+            cycle.ClearPlannedAction();
             state.draftedCooldownTicksRemaining = 0;
             state.draftedWarmupTicksRemaining = -1;
             state.draftedPlannedTarget = null;
@@ -6150,12 +6171,33 @@ namespace KRWF.RimKata
             cycle.boundVerb = cycle.weapon == null
                 ? null
                 : RimKataWeaponSlotUtility.CombatVerb(pawn, cycle.weapon);
+            cycle.closeFireMeleeVerbs = cycle.ordinaryWeaponEnabled
+                    && cycle.boundVerb?.IsMeleeAttack == false
+                ? RimKataCloseFireMeleeStore.Bind(cycle.weapon)
+                : Array.Empty<Verb>();
             if (previousVerb != cycle.boundVerb)
             {
                 cycle.nativeAttack?.Cancel();
                 if (cycle.nativeAttack?.Executing != true)
                     RimKataPreparedWeaponData.Restore(previousVerb);
-                cycle.plannedActionVerb = null;
+                // A null previous binding also occurs when restoring a saved choice.
+                if (previousVerb != null) cycle.ClearPlannedAction();
+                else cycle.plannedActionVerb = null;
+            }
+            if (cycle.plannedCloseFireAction >= -1 && cycle.HasPlan)
+            {
+                int selectedIndex = cycle.plannedCloseFireAction;
+                Verb selected = selectedIndex == -1 ? cycle.boundVerb
+                    : selectedIndex < cycle.closeFireMeleeVerbs.Length
+                        ? cycle.closeFireMeleeVerbs[selectedIndex] : null;
+                if (selected == null || (cycle.plannedActionVerb != null
+                        && selected != cycle.plannedActionVerb))
+                {
+                    cycle.nativeAttack?.Cancel();
+                    cycle.ClearPlannedAction();
+                    cycle.warmupTicksRemaining = -1;
+                }
+                else cycle.plannedActionVerb = selected;
             }
             if (cycle.NativeAttackPending
                 && !RimKataPreparedWeaponData.IsCurrent(cycle.boundVerb))
@@ -6459,13 +6501,19 @@ namespace KRWF.RimKata
             {
                 rangeCheckedTarget = null;
             }
-            if (cycle.plannedActionVerb != null
-                && !verb.IsMeleeAttack
-                && cycle.plannedActionVerb.IsMeleeAttack
-                    != UsesPhysicalMeleeAction(
-                        pawn, verb, closeCombatContext && cycle.plannedCloseAttack))
+            if (cycle.plannedActionVerb != null && !verb.IsMeleeAttack)
             {
-                cycle.plannedActionVerb = null;
+                bool physicalMelee = UsesPhysicalMeleeAction(
+                    pawn, verb, closeCombatContext && cycle.plannedCloseAttack);
+                bool preparedMelee = cycle.plannedCloseFireAction >= 0;
+                if (preparedMelee
+                    ? physicalMelee || !CanPlanCloseFireMelee(pawn, state, cycle, closeCombatContext)
+                    : cycle.plannedActionVerb.IsMeleeAttack != physicalMelee)
+                {
+                    cycle.ClearPlannedAction();
+                    // Do not reuse a melee windup for a newly selected shooting action.
+                    if (preparedMelee) cycle.warmupTicksRemaining = -1;
+                }
             }
             Thing checkedTarget = null;
             bool checkedDirectionalPlan = false;
@@ -6652,6 +6700,7 @@ namespace KRWF.RimKata
 
                 cycle.plannedActionVerb = ResolveCycleActionVerb(
                     pawn,
+                    state,
                     cycle,
                     verb,
                     closeCombatContext);
@@ -6712,6 +6761,7 @@ namespace KRWF.RimKata
             Verb actionVerb = cycle.plannedActionVerb
                 ?? ResolveCycleActionVerb(
                     pawn,
+                    state,
                     cycle,
                     verb,
                     closeCombatContext);
@@ -6751,6 +6801,7 @@ namespace KRWF.RimKata
             attack.weapon = cycle.weapon;
             attack.verb = actionVerb;
             attack.cycleVerb = verb;
+            attack.closeFireMelee = cycle.plannedCloseFireAction >= 0;
             attack.job = pawn.CurJob;
             attack.assignedTarget = assignedTarget;
             attack.firedTarget = cycle.plannedTarget;
@@ -6779,6 +6830,23 @@ namespace KRWF.RimKata
         {
             if (RimKataReactiveMotion.BlocksCombat(attack.state)) return false;
             if (attack.huntingSession != null) return attack.huntingSession.CanContinue();
+            if (attack.closeFireMelee
+                && (!CanPlanCloseFireMelee(attack.pawn, attack.state, attack.cycle,
+                        attack.closeCombatContext)
+                    || UsesPhysicalMeleeAction(attack.pawn, attack.cycleVerb, true)
+                    || !attack.verb.IsStillUsableBy(attack.pawn)
+                    || !attack.verb.IsUsableOn(attack.firedTarget)
+                    || !attack.verb.Available()))
+            {
+                // A queued attack can become unusable before its native tick.
+                // Keep the target, but do not queue the same rejected choice forever.
+                if (!attack.Started)
+                {
+                    attack.cycle.ClearPlannedAction();
+                    attack.cycle.warmupTicksRemaining = -1;
+                }
+                return false;
+            }
             if (attack.pawn.jobs?.curDriver is JobDriver_RimKataAttack driver
                 && driver.IsStructureMelee && driver.StructureMeleeLimitReached) return false;
             return !attack.cycle.ResponseCooldownAppliedThisTick
@@ -6869,7 +6937,7 @@ namespace KRWF.RimKata
             cycle.openingWarmupPending = false;
 
             Thing firedTarget = attack.firedTarget;
-            int cooldown = RimKataCombatMath.CooldownTicksForSingleShot(actionVerb, pawn, false);
+            int cooldown = RimKataCombatMath.CooldownTicksForSingleShot(attack.CooldownVerb, pawn, false);
             cycle.cooldownTicksRemaining = cooldown;
             cycle.rangedCooldown = !actionVerb.IsMeleeAttack;
             cycle.lastFiredTarget = firedTarget;
@@ -7383,7 +7451,7 @@ namespace KRWF.RimKata
             cycle.plannedInterception = interception;
             cycle.plannedCloseAttack = closeAttack;
             cycle.plannedCloseContext = closeContext;
-            cycle.plannedActionVerb = null;
+            cycle.ClearPlannedAction();
             if (updateVisualTarget)
             {
                 cycle.visualTarget = target;
@@ -7676,6 +7744,7 @@ namespace KRWF.RimKata
 
         private static Verb ResolveCycleActionVerb(
             Pawn pawn,
+            RimKataPawnCombatState state,
             RimKataWeaponCycleState cycle,
             Verb slotVerb,
             bool closeCombatContext)
@@ -7692,6 +7761,27 @@ namespace KRWF.RimKata
             if (!UsesPhysicalMeleeAction(
                     pawn, slotVerb, closeCombatContext && cycle?.plannedCloseAttack == true))
             {
+                if (CanPlanCloseFireMelee(pawn, state, cycle, closeCombatContext))
+                {
+                    if (cycle.plannedCloseFireAction >= 0)
+                        return cycle.closeFireMeleeVerbs[cycle.plannedCloseFireAction];
+                    if (cycle.plannedCloseFireAction == -2)
+                    {
+                        // Shooting and the extra-melee group each get one choice;
+                        // multiple maneuvers on one bayonet do not multiply its chance.
+                        cycle.plannedCloseFireAction = -1;
+                        if (Rand.Bool)
+                        {
+                            Verb melee = SelectMeleeVerb(pawn, cycle.closeFireMeleeVerbs,
+                                cycle.plannedTarget, checkTargetUsability: true);
+                            if (melee != null)
+                            {
+                                cycle.plannedCloseFireAction = Array.IndexOf(cycle.closeFireMeleeVerbs, melee);
+                                return melee;
+                            }
+                        }
+                    }
+                }
                 return slotVerb;
             }
 
@@ -7700,6 +7790,15 @@ namespace KRWF.RimKata
                 ? pawn?.meleeVerbs?.TryGetMeleeVerb(target)
                 : null;
         }
+
+        private static bool CanPlanCloseFireMelee(Pawn pawn, RimKataPawnCombatState state,
+            RimKataWeaponCycleState cycle, bool closeCombatContext)
+            => cycle?.closeFireMeleeVerbs.Length > 0
+                && cycle.ordinaryWeaponEnabled
+                && closeCombatContext && cycle.plannedCloseAttack && cycle.plannedCloseContext
+                && !cycle.plannedInterception && !cycle.plannedDirectionalFireCell.IsValid
+                && cycle.plannedTarget != null && pawn.kindDef.canMeleeAttack
+                && state?.groundPose?.VisualActive != true;
 
         private static bool ReadyToAct(RimKataWeaponCycleState cycle)
         {
@@ -7755,7 +7854,9 @@ namespace KRWF.RimKata
             if (cycle?.NativeAttackPending == true && cycle.nativeAttack.HasFired
                 && pawn != null && verb != null)
             {
-                cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining, RimKataCombatMath.CooldownTicksForSingleShot(verb, pawn, false));
+                Verb cooldownVerb = cycle.nativeAttack.closeFireMelee
+                    ? cycle.nativeAttack.CooldownVerb : verb;
+                cycle.cooldownTicksRemaining = Mathf.Max(cycle.cooldownTicksRemaining, RimKataCombatMath.CooldownTicksForSingleShot(cooldownVerb, pawn, false));
                 cycle.rangedCooldown = cycle.nativeAttack.verb?.IsMeleeAttack == false;
             }
         }

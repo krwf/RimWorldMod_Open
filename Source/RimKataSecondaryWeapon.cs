@@ -1360,6 +1360,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            RimKataSimpleSidearmsCompat.NotifyEquipmentChanged(pawn);
             RimKataSecondaryWeaponRegistry registry =
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;
             if (registry == null)

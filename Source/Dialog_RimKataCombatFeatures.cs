@@ -101,7 +101,7 @@ namespace KRWF.RimKata
             doCloseButton = false;
             closeOnClickedOutside = true;
             closeOnAccept = false;
-            closeOnCancel = false;
+            closeOnCancel = true;
             absorbInputAroundWindow = true;
             resizeable = false;
             draggable = true;

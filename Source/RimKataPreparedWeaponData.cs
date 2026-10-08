@@ -74,6 +74,7 @@ namespace KRWF.RimKata
         {
             PreparedDefinitions.Clear();
             PreparedVariants.Clear();
+            bool refreshCloseFireMelee = RimKataCloseFireMeleeStore.BeginPreparation();
             preparedRevision = RimKataEquipmentUtility.WeaponConfigurationRevision;
             List<string> selected = RimKataMod.Settings?.enabledWeaponDefNames;
             if (selected == null)
@@ -96,6 +97,7 @@ namespace KRWF.RimKata
                     continue;
                 }
 
+                RimKataCloseFireMeleeStore.PrepareDefinition(originalDefinition, refreshCloseFireMelee);
                 RimKataAllowedWeaponDef stored = RimKataAllowedWeaponStore.LoadOrCreate(originalDefinition);
                 List<VerbProperties> originalVerbs = originalDefinition.Verbs;
                 if (stored == null || originalVerbs == null)

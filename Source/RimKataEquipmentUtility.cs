@@ -110,16 +110,18 @@ namespace KRWF.RimKata
 
         public static void InvalidateCaches()
         {
-            unchecked
-            {
-                WeaponConfigurationRevision++;
-            }
             enabledWeaponDefNames = null;
             enabledArmorDefNames = null;
             enabledOneHandGeneratableWeapons = null;
             RimKataGripUtility.InvalidateCache();
-            RimKataPreparedWeaponData.RefreshDefinitions();
+            RefreshPreparedWeapons();
             RimKataWeaponRenderProbe.RefreshDefinitions();
+        }
+
+        internal static void RefreshPreparedWeapons()
+        {
+            unchecked { WeaponConfigurationRevision++; }
+            RimKataPreparedWeaponData.RefreshDefinitions();
         }
 
         private static void EnsureCaches()

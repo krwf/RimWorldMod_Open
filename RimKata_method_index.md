@@ -14,6 +14,18 @@
 
 추가 부분 갱신: **2026-10-07** 날아 차기 공통 시작·대상 접근 사건·발동 후 stagger 유지와 쳐내기 도착 보간을 관련 항목에 반영했습니다. 전체 계수는 재산출하지 않았습니다.
 
+추가 부분 갱신: **2026-10-08** CE 사격 종료 연결에서 `FinishNativeCast`의 문맥 정리와 `CompleteNativeCast`의 후처리를 분리하고, CE가 후처리 호출을 `CompleteOrDeferCast`로 교체하도록 수정했습니다. Release IL의 평가 스택에 계산값이 남을 수 있는 위치에 조기 `ret`를 삽입하지 않습니다. 관련 두 파일의 항목·줄 번호만 갱신했으며 전체 계수는 재산출하지 않았습니다. 이 기록은 소스 경계를 설명하며 인게임 검증 완료를 뜻하지 않습니다.
+
+추가 부분 갱신: **2026-10-08** PocketSand 주먹 명령의 맨손 전환에서 기존 임시 교체 기록으로 식별한 부 무기도 소지품 보관·실패 시 드롭하도록 연결했습니다. 새 주 무기 교체의 부 무기 보존과 실제 잔여 장비 오류 검사는 유지하며 관련 항목만 부분 갱신했습니다.
+
+추가 부분 갱신: **2026-10-08** Simple Sidearms의 주먹 싸움 강제 사건에서 자격자의 주·부 무기를 수납하고, 강제 해제·소집 해제 사건에서 원래 쌍수를 한 번 복원하도록 연결했습니다. 다른 무기 선택·실제 장비 변경 시 복원 기록을 취소하며 저장·불러오기에도 기록을 연결합니다. 신규 파일의 일반 메서드 11개와 관련 항목만 추가했으며 전체 계수는 재산출하지 않았습니다.
+
+추가 부분 갱신: **2026-10-08** PocketSand·Simple Sidearms의 무기 아이콘 휠 클릭을 공용 소지품 부 슬롯 장착으로 연결했습니다. 두 모드가 이미 처리한 입력 사건의 `button == 2`를 사용하며 `EventType.Used`도 전달되므로 `MouseDown` 조건을 추가하지 않습니다. 기존 `CanEquipAsSecondary`·`TryEquipSecondary`로 자격·허용 무기·부 슬롯 설정을 유지하고, 단체 선택도 각 폰 본인의 소지품만 장착합니다. 렌더·매 틱 조회는 추가하지 않았으며 관련 3파일의 항목·줄 번호만 부분 갱신했습니다. 전체 계수는 재산출하지 않았습니다.
+
+추가 부분 갱신: **2026-10-08** 허용 원거리 무기의 추가 근접공격 캐시·일반 근접 사격 그룹 선택·native 실행과 슬롯 쿨다운·저장 복원 및 수동 갱신 확인 경계를 반영했습니다. 신규 Store 16개와 관련 신규 메서드만 추가하고 기존 관련 항목을 부분 수정했습니다. 아래 기존 전체 수·호출 수는 재집계하지 않았으며 `추가` 항목은 원래 선언 순서에 끼워 넣었습니다. [준비·선택 흐름](#file-close-fire-melee) · [최적화 원칙](RimKata_optimization_reference_20260901-20261001.md#close-fire-melee-preparation)
+
+추가 부분 갱신: **2026-10-08** 활성·전투·모드·연출 요소 창의 생성자에서 `closeOnCancel = true`로 변경했습니다. ESC는 기존 `닫기`와 같은 `Close → PostClose` 경로이며 `commitChangesOnClose`를 켜지 않습니다. `확인`을 누른 경우에만 설정을 반영하는 기존 동작을 유지합니다. 일반 메서드·호출 수의 변화는 없습니다.
+
 ## 검토 시 주의사항
 
 **이 색인은 관련 소스를 빠르게 따라가기 위한 안내입니다. 메서드 하나를 읽고 연결된 링크 하나만 추가로 확인한 뒤, 전체 동작·원인·수정 방향을 확정하지 마십시오. 검토 범위는 확인한 링크 수가 아니라 해당 증상을 설명하는 실제 처리 흐름으로 정합니다.**
@@ -56,7 +68,7 @@
 | [RimKataAccessContent.cs](#file-07) | 8 | 권한 부여 콘텐츠와 사이링크 후보 처리 |
 | [RimKataActivationSettings.cs](#file-08) | 24 | 공통 활성 플래그 적용과 비활성 권한 제거 |
 | [RimKataActivationSourceEvents.cs](#file-activation-source-events) | 16 | 실제 기술 레벨 기록·특성/적성 변경 사건 통합과 자격 갱신 |
-| [RimKataAllowedWeaponStore.cs](#file-09) | 26 | 허용 연발 무기의 원본 XML·단발 변환값 저장 |
+| [RimKataAllowedWeaponStore.cs](#file-09) | 28 | 허용 연발 무기의 원본 XML·단발 변환값 저장 |
 | [RimKataAnomalyContent.cs](#file-10) | 14 | 혈청 의존성 유전자·생각과 관련 콘텐츠 |
 | [RimKataAutoSubdue.cs](#file-auto-subdue) | 9 | 기절한 근접 대상의 자동 제압 예약·다음 틱 인계·시간 및 다운 해제·수동 전환 |
 | [RimKataBattleLog.cs](#file-11) | 4 | 신체 부위가 누락된 림카타 전투 일지 문법 처리 |
@@ -71,6 +83,7 @@
 | [RimKataCaravanEquipment.cs](#file-12) | 10 | 상단에서의 부 슬롯 장착·무기 순환·실패 복구 |
 | [RimKataCaravanFormationWeapons.cs](#file-13) | 4 | 상단 구성 목록의 주·부 무기 아이콘 |
 | [RimKataCaravanGearTab.cs](#file-14) | 3 | 상단 장비 탭의 부 슬롯 표시와 드래그 장착 |
+| [RimKataCloseFireMeleeStore.cs](#file-close-fire-melee) | 16 | 허용 원거리 무기의 추가 근접공격 있음/없음 캐시·실제 Verb 배열 준비 |
 | [RimKataColonistBarWeapons.cs](#file-15) | 16 | 정착민 바 무기 쌍 캐시·양손 아이콘·공격 표시 |
 | [RimKataCombatExtendedAmmo.cs](#file-16) | 9 | CE 탄약 준비·자동 장전·부 무기 소진 처리·완전 소진 시 근접 전환 |
 | [RimKataCombatExtendedAssistedReload.cs](#file-17) | 15 | CE 허용 의류의 슬롯별 보조 장전·시간·탄약 소모·저장 복원 |
@@ -81,7 +94,7 @@
 | [RimKataCombatExtendedGroundPose.cs](#file-21) | 11 | CE 선택적 사선·탄도 원점 보정 |
 | [RimKataCombatExtendedLoadout.cs](#file-22) | 8 | CE 부 무기 무게·부피 및 AI 탄약 생성 |
 | [RimKataCombatExtendedMelee.cs](#file-23) | 6 | CE 근접 공격의 림카타 우선 방어 연결 |
-| [RimKataCombatExtendedNativeAttack.cs](#file-24) | 19 | CE 사용 시에만 등록하는 첫 사격 인계·발사 요청·조준 연결 |
+| [RimKataCombatExtendedNativeAttack.cs](#file-24) | 20 | CE 사용 시에만 등록하는 첫 사격 인계·발사 요청·조준 연결 |
 | [RimKataCombatExtendedPrepared.cs](#file-25) | 6 | CE 사용 시에만 등록하는 준비값·발사 모드 연결 |
 | [RimKataCombatExtendedProjectileHooks.cs](#file-26) | 28 | CE 사용 시에만 등록하는 공통 투사체·방어 연결 |
 | [RimKataCombatExtendedProjectiles.cs](#file-27) | 33 | CE 탄환·폭발탄 기록과 충돌·피해 문맥 |
@@ -107,12 +120,13 @@
 | [RimKataDoorCacheStore.cs](#file-96) | 8 | 게임·환경별 문 캐시 XML 쌍의 해시·중복 제거·검증·저장·복구 |
 | [RimKataDownedWeapon.cs](#file-42) | 44 | 다운 원거리 한 자루 보존과 저장·재스폰·원래 양손 배치 회수 |
 | [RimKataDraftedFire.cs](#file-43) | 43 | 소집·자동 사격 진입과 바닐라 공격 연결 |
-| [RimKataDualWeaponController.cs](#file-44) | 253 | 양손 무기 주기·자동 표적·근접/원거리 전환 제어 |
+| [RimKataDualWeaponController.cs](#file-44) | 256 | 양손 무기 주기·자동 표적·근접/원거리 전환 제어 |
 | [RimKataDynamicAnimeCombatCompat.cs](#file-45) | 29 | DAC 스친 피해·직접 반격·부분 방어 피해의 판정 재사용·기력 알림·일지 연결 |
 | [RimKataEligibility.cs](#file-46) | 20 | 자격·세력 효과·행동 가능 조건 판정 |
 | [RimKataEligibilityCache.cs](#file-47) | 65 | 자격·유전자·권한 원천과 샴블러 변이·복귀의 이벤트 기반 캐시 |
+| [RimKataEquipmentRefreshOperation.cs](#file-equipment-refresh-operation) | 부분: 1 | 수동 장비 기억 갱신 확인 후 캐시 무효화·공격 자료 갱신 |
 | [RimKataEquipmentRenderHooks.cs](#file-124) | 7 | 기존 렌더값으로 시체 장비 호출을 바닐라에 남기고 살아 있는 폰만 림카타 장비 문맥에 연결 |
-| [RimKataEquipmentUtility.cs](#file-48) | 15 | 허용 장비·그립·방어구 판정 |
+| [RimKataEquipmentUtility.cs](#file-48) | 16 | 허용 장비·그립·방어구 판정 |
 | [RimKataExternalPatchGuard.cs](#file-108) | 3 | 외부 모드 메서드의 Harmony 등록 실패 격리와 재시도 차단 |
 | [RimKataFeatureWindowUtility.cs](#file-129) | 1 | 요소 창 체크박스 연속 칠하기와 창 드래그 시작 입력 분리 |
 | [RimKataFireUtility.cs](#file-49) | 49 | 발사 문맥·투사체 조작·주기 및 기본 사격 패치 |
@@ -139,14 +153,14 @@
 | [RimKataMeleeAnimationCompat.cs](#file-59) | 25 | Melee Animation의 손·무기 제출과 림카타 부 무기 렌더 연결 |
 | [RimKataMeleeAnimationReplay.cs](#file-60) | 22 | 부 슬롯 전용 게임 틱 시계·파트 평가·전투 모션 재생 |
 | [RimKataMeleeAnimationWeaponDraw.cs](#file-61) | 2 | 부 슬롯 전용 잘림 재질·분할 패스 제출 |
-| [RimKataMod.cs](#file-62) | 24 | 시작 및 DAC·Rebound·PocketSand·PocketSand 호환 등록·설정 저장·프로필 적용·설정 창 연결 |
+| [RimKataMod.cs](#file-62) | 24 | 시작 및 DAC·Rebound·PocketSand·Simple Sidearms 호환 등록·설정 저장·프로필 적용·설정 창 연결 |
 | [RimKataMotionJobGate.cs](#file-127) | 9 | 회피·슬라이딩·떨치기 시작 시 등록한 상태와 담당 작업을 직접 소비하는 작업 제어 및 비참가자 호출 제외 |
 | [RimKataMuzzleFlashCompat.cs](#file-63) | 7 | Muzzle Flash 선택적 화염 기준 좌표 보정 |
-| [RimKataNativeAttack.cs](#file-64) | 33 | 실제 Verb 소유자에게 전달하는 림카타 발사 요청 |
+| [RimKataNativeAttack.cs](#file-64) | 34 | 실제 Verb 소유자에게 전달하는 림카타 발사 요청 |
 | [RimKataNeutralTargetCache.cs](#file-65) | 5 | 중립 표적 탐색 무효화를 위한 맵·전역 버전 관리 |
 | [RimKataNonHumanEquipmentCatalog.cs](#file-66) | 10 | 메카노이드·곤충·동물·기타 장비 분류 |
 | [RimKataPersonalActivation.cs](#file-personal-activation) | 5 | 특성 degree·진영별 허용 및 사격/격투 숫자 기준의 공통 자격 원천 |
-| [RimKataPocketSandCompat.cs](#file-93) | 5 | PocketSand 장비 교체의 부 무기 보존 및 기존 임시 교체 기록 연결 |
+| [RimKataPocketSandCompat.cs](#file-93) | 10 | PocketSand 장비 교체·맨손 수납 보존과 무기 휠 클릭의 부 슬롯 연결 |
 | [RimKataPreparedWeaponData.cs](#file-67) | 15 | 복제 VerbProperties·원본 시점 값 준비와 복원 |
 | [RimKataPreviewInfoCard.cs](#file-68) | 9 | 메인 메뉴 장비 미리보기 정보 카드 |
 | [RimKataProfileMenu.cs](#file-69) | 6 | 프로필 선택·이름 편집·추가·삭제 메뉴 |
@@ -172,6 +186,8 @@
 | [RimKataSettings.cs](#file-80) | 57 | 공통·프로필 설정 값과 저장·마이그레이션 |
 | [RimKataSettingsDrawer.cs](#file-81) | 30 | 메인 설정 창의 가변 너비·수치 입력·섹션 표시 |
 | [RimKataSharedTargetSearch.cs](#file-82) | 89 | 공유 자동 표적 탐색·후보 관리·범위 전환 |
+| [RimKataSidearmInventoryEquip.cs](#file-146) | 5 | 본인 소지품의 부 슬롯 교체·기존 무기 수납·Persona 확인·실패 복구 |
+| [RimKataSimpleSidearmsCompat.cs](#file-145) | 13 | Simple Sidearms 강제 맨손의 쌍수 수납·복원과 무기 휠 클릭의 부 슬롯 연결 |
 | [RimKataSlidingAttackOrigin.cs](#file-123) | 9 | 슬라이딩 공격의 중간 좌표 문맥, 근접 타격 방향 및 총구 섬광 보정 |
 | [RimKataStrengthRule.cs](#file-132) | 5 | 종류별 강화 허용과 독립 추가 근력 저장 |
 | [RimKataStrengthUtility.cs](#file-133) | 35 | 장비·이식물 사건 기반 근력 등록, 폰별 유효 그립, 제압 몸 질량 및 바닐라·CE 질량 한도 |
@@ -2912,7 +2928,7 @@
 
 ## 09. RimKataAllowedWeaponStore.cs
 
-[Source/RimKataAllowedWeaponStore.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs) · 메서드 **26개** · 허용 연발 무기의 원본 XML·단발 변환값 저장 · [파일 목차](#files)
+[Source/RimKataAllowedWeaponStore.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs) · 메서드 **28개** · 허용 연발 무기의 원본 XML·단발 변환값 저장 · [파일 목차](#files)
 
 <a id="m-0176"></a>
 
@@ -2964,9 +2980,9 @@
 
 `internal static void ConfigureRoot(string modRoot)` · [L127](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:127)
 
-- **역할:** 허용 무기 저장 폴더의 기준 모드 경로를 설정합니다.
+- **역할:** 허용 무기 저장 폴더의 기준 모드 경로를 설정합니다. [RimKataCloseFireMeleeStore.ConfigureRoot](#m-close-fire-configure)에도 같은 modRoot를 전달합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **호출 — 프로젝트 내부:** [RimKataCloseFireMeleeStore.ConfigureRoot](#m-close-fire-configure)
 - **호출 — 외부:** `System.IO.Path.Combine(string path1, string path2, string path3)` · `System.IO.Path.GetFullPath(string path)` · `string.IsNullOrWhiteSpace(string value)`
 
 <a id="m-0181"></a>
@@ -2986,10 +3002,18 @@
 
 `private static void BeginXmlLoad()` · [L175](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:175)
 
-- **역할:** 새 XML 로딩이 시작될 때 이전 원본 정의 수집 상태를 초기화합니다.
+- **역할:** 새 XML 로딩이 시작될 때 이전 원본 정의 수집 상태를 초기화합니다. 기존 XML 수집 초기화에서 [추가 근접공격 자료 초기화](#m-close-fire-reset)도 수행합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **호출 — 프로젝트 내부:** [RimKataCloseFireMeleeStore.ResetForXmlLoad](#m-close-fire-reset)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()` ×2
+
+<a id="m-allowed-captured-source"></a>
+
+### 007-추가. RimKataAllowedWeaponStore.CapturedSourceXml
+
+`internal static string CapturedSourceXml(ThingDef definition)` · [L183](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:183)
+
+- **역할:** 기존 XML 수집 사건이 확보한 최종 정의 원문을 추가 근접공격 fingerprint에 전달합니다. 새 XML 로드 패치를 만들지 않습니다.
 
 <a id="m-0183"></a>
 
@@ -3094,9 +3118,9 @@
 
 ### 017. RimKataAllowedWeaponStore.FileStem
 
-`private static string FileStem(string defName)` · [L427](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:427)
+`internal static string FileStem(string defName)` · [L439](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:439)
 
-- **역할:** 무기 defName에서 저장 파일의 이름 부분을 만듭니다.
+- **역할:** 무기 defName에서 저장 파일의 이름 부분을 만듭니다. 추가 근접공격 캐시도 동일한 안전 파일명 변환을 재사용합니다.
 - **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.Hash(string value)](#m-0190)
 - **호출 — 외부:** `System.Array.IndexOf<T>(T[] array, T value)` · `System.IO.Path.GetInvalidFileNameChars()` · `string.Substring(int startIndex, int length)` · `System.Text.StringBuilder.Append(char value)` · `System.Text.StringBuilder.ToString()`
@@ -3105,9 +3129,9 @@
 
 ### 018. RimKataAllowedWeaponStore.ReadDocument
 
-`private static XmlDocument ReadDocument(string path)` · [L440](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:440)
+`internal static XmlDocument ReadDocument(string path)` · [L452](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:452)
 
-- **역할:** 파일을 XML 문서로 읽습니다.
+- **역할:** 파일을 XML 문서로 읽습니다. 추가 근접공격 캐시의 XML 읽기도 동일한 외부 해석 금지 설정을 재사용합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Xml.XmlDocument.Load(System.Xml.XmlReader reader)` · `System.Xml.XmlReader.Create(string inputUri, System.Xml.XmlReaderSettings settings)`
@@ -3129,10 +3153,18 @@
 
 `private static void Write(string path, RimKataAllowedWeaponDef value)` · [L507](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:507)
 
-- **역할:** 허용 무기의 원본 payload와 단발 변환값을 XML 파일에 기록합니다.
+- **역할:** 허용 무기의 원본 payload와 단발 변환값을 XML 파일에 기록합니다. 최종 파일 기록은 [WriteDocument](#m-allowed-write-document)에 위임합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.Append(System.Xml.XmlDocument document, System.Xml.XmlNode parent, string name, object value)](#m-0200) ×21
+- **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.Append(System.Xml.XmlDocument document, System.Xml.XmlNode parent, string name, object value)](#m-0200) ×21 · [RimKataAllowedWeaponStore.WriteDocument](#m-allowed-write-document)
 - **호출 — 외부:** `System.Xml.XmlNode.AppendChild(System.Xml.XmlNode newChild)` ×6 · `System.Xml.XmlDocument.CreateElement(string name)` ×5 · `System.IO.File.Exists(string path)` ×2 · `System.Guid.NewGuid()` · `System.Guid.ToString(string format)` · `System.IO.Directory.CreateDirectory(string path)` · `System.IO.File.Delete(string path)` · `System.IO.File.Move(string sourceFileName, string destFileName)` · `System.IO.File.Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName)` · `System.IO.Path.GetDirectoryName(string path)` · `System.Xml.XmlDocument.ImportNode(System.Xml.XmlNode node, bool deep)` · `System.Xml.XmlDocument.LoadXml(string xml)` · `System.Xml.XmlDocument.Save(System.Xml.XmlWriter w)` · `System.Xml.XmlWriter.Create(string outputFileName, System.Xml.XmlWriterSettings settings)`
+
+<a id="m-allowed-write-document"></a>
+
+### 020-추가. RimKataAllowedWeaponStore.WriteDocument
+
+`internal static void WriteDocument(string path, XmlDocument document)` · [L567](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataAllowedWeaponStore.cs:567)
+
+- **역할:** 기존 임시 파일 작성·교체·정리 경로를 공용화하여 허용 연발 무기 XML과 추가 근접공격 XML을 같은 방식으로 저장합니다.
 
 <a id="m-0196"></a>
 
@@ -5233,6 +5265,150 @@
 - **호출 — 외부:** `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` ×2 · `HarmonyLib.AccessTools.Field(System.Type type, string name)` · `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` · `HarmonyLib.CodeInstructionExtensions.MoveBlocksFrom(HarmonyLib.CodeInstruction code, HarmonyLib.CodeInstruction other)` · `HarmonyLib.CodeInstructionExtensions.MoveLabelsFrom(HarmonyLib.CodeInstruction code, HarmonyLib.CodeInstruction other)` · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)` · `object.Equals(object objA, object objB)` · `Verse.Log.Warning(string text)`
 
 
+<a id="file-close-fire-melee"></a>
+
+## 추가. RimKataCloseFireMeleeStore.cs
+
+[Source/RimKataCloseFireMeleeStore.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs) · 메서드 **16개** · 허용 원거리 무기의 추가 근접공격 있음/없음 자료 준비·검증·슬롯 바인딩 · [파일 목차](#files)
+
+- **부분 갱신(2026-10-08):** 신규 파일의 일반 메서드만 추가했습니다. 전체 소스·호출 수는 다시 집계하지 않았습니다.
+- **주요 흐름:** [허용 목록 준비](#m-1543) → [PrepareDefinition](#m-close-fire-prepare) → [기존 슬롯 바인딩](#m-1067) → [그룹 선택](#m-1094) → [기존 native 요청](#m-1499). XML 작업은 준비 단계에서 끝내고 전투 실행은 실제 원본 Verb를 사용합니다.
+
+<a id="m-close-fire-configure"></a>
+
+### 001. RimKataCloseFireMeleeStore.ConfigureRoot
+
+`internal static void ConfigureRoot(string modRoot)` · [L43](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:43)
+
+- **역할:** 모드 루트 아래 equipment-memory/close-fire-melee 경로를 설정하고 XML 로드 준비 자료를 초기화합니다.
+- **호출 — 프로젝트 내부:** [ResetForXmlLoad](#m-close-fire-reset)
+
+<a id="m-close-fire-reset"></a>
+
+### 002. RimKataCloseFireMeleeStore.ResetForXmlLoad
+
+`internal static void ResetForXmlLoad()` · [L50](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:50)
+
+- **역할:** 현재 준비·메모리 재사용 자료와 Maneuver fingerprint·강제 갱신 표시를 초기화합니다.
+
+<a id="m-close-fire-invalidate"></a>
+
+### 003. RimKataCloseFireMeleeStore.InvalidatePreparedCache
+
+`internal static void InvalidatePreparedCache()` · [L59](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:59)
+
+- **역할:** 수동 갱신 확인이 끝난 뒤에만 메모리 자료를 비우고 다음 준비에서 디스크 캐시도 건너뛰도록 표시합니다. 취소·닫기는 이 메서드를 호출하지 않습니다.
+
+<a id="m-close-fire-begin"></a>
+
+### 004. RimKataCloseFireMeleeStore.BeginPreparation
+
+`internal static bool BeginPreparation()` · [L67](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:67)
+
+- **역할:** 이번 허용 목록의 Prepared 집합을 비우고 한 번의 강제 갱신 표시를 소비합니다. 일반 설정 변경은 Loaded 재사용 자료를 보존합니다.
+
+<a id="m-close-fire-prepare"></a>
+
+### 005. RimKataCloseFireMeleeStore.PrepareDefinition
+
+`internal static void PrepareDefinition(ThingDef definition, bool refresh)` · [L75](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:75)
+
+- **역할:** 허용 목록에서 전달된 원거리 정의의 fingerprint를 확인합니다. 유효한 메모리 자료를 먼저 재사용하고, 공용 cache.xml의 close_fire_melee_absent 기록이 맞으면 개별 File.Exists·Read·Extract·Write와 중복 Store를 모두 생략합니다. 추가 근접공격이 있는 결과만 개별 XML로 저장하며 이전 없음 기록은 제거합니다. 없는 결과는 defName·fingerprint·빈 data를 공용 캐시에 기록하고, 기존 빈 개별 XML을 읽은 경우도 공용 없음 기록으로 전환합니다. 기존 파일 삭제·마이그레이션 순회는 하지 않으며 쓰기 실패 시 메모리 결과는 유지합니다.
+- **호출 — 프로젝트 내부:** [Fingerprint](#m-close-fire-fingerprint) · [ResolveReferences](#m-close-fire-references) · [Read](#m-close-fire-read) · [Extract](#m-close-fire-extract) · [Write](#m-close-fire-write) · [WarnOnce](#m-close-fire-warn) · [RimKataAllowedWeaponStore.FileStem](#m-0192)
+
+<a id="m-close-fire-bind"></a>
+
+### 006. RimKataCloseFireMeleeStore.Bind
+
+`internal static Verb[] Bind(ThingWithComps weapon)` · [L132](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:132)
+
+- **역할:** 기존 장비 dirty/revision 바인딩에서 준비 자료와 실제 무기의 AllVerbs를 연결해 추가 근접공격 Verb[]를 한 번 만듭니다. 준비 자료·후보가 없으면 빈 배열을 반환하며 XML이나 Tool 이름 판정은 하지 않습니다.
+
+<a id="m-close-fire-extract"></a>
+
+### 007. RimKataCloseFireMeleeStore.Extract
+
+`private static PreparedDefinition Extract(ThingDef definition, string fingerprint)` · [L151](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:151)
+
+- **역할:** Tool 원문명의 handle/handles·grip/grips·stock/stocks·barrel/barrels를 대소문자 구분 없이 정확히 제외하고, 나머지 근접 Maneuver Tool과 직접 근접 VerbProperties의 인덱스를 기록합니다. 부분 문자열·번역 이름 기반 분류는 하지 않습니다.
+- **호출 — 프로젝트 내부:** [OriginalLabel](#m-close-fire-label)
+
+<a id="m-close-fire-references"></a>
+
+### 008. RimKataCloseFireMeleeStore.ResolveReferences
+
+`private static void ResolveReferences(ThingDef definition, PreparedDefinition prepared)` · [L178](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:178)
+
+- **역할:** 저장한 인덱스를 현재 원본 정의의 Tool·VerbProperties 참조 집합으로 복원합니다.
+
+<a id="m-close-fire-fingerprint"></a>
+
+### 009. RimKataCloseFireMeleeStore.Fingerprint
+
+`private static string Fingerprint(ThingDef definition)` · [L189](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:189)
+
+- **역할:** schema·def/원본 타입·모드 ID·수집한 최종 XML·Tool 타입/원문명/용량·직접 Verb 타입과 Maneuver 목록의 fingerprint를 묶습니다. Maneuver 공통 fingerprint는 준비 수명 동안 재사용합니다.
+- **호출 — 프로젝트 내부:** [OriginalLabel](#m-close-fire-label) · [RimKataAllowedWeaponStore.CapturedSourceXml](#m-allowed-captured-source) · `RimKataEquipmentMemory.Fingerprint`
+
+<a id="m-close-fire-label"></a>
+
+### 010. RimKataCloseFireMeleeStore.OriginalLabel
+
+`private static string OriginalLabel(Tool tool)` · [L231](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:231)
+
+- **역할:** untranslatedLabel을 우선하고 없으면 label 또는 빈 문자열로 원문명 비교 입력을 만듭니다.
+
+<a id="m-close-fire-read"></a>
+
+### 011. RimKataCloseFireMeleeStore.Read
+
+`private static PreparedDefinition Read(string path, ThingDef definition, string fingerprint)` · [L236](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:236)
+
+- **역할:** schema·원본 def·fingerprint·closeFireOnly·cooldownSource를 확인하고 인덱스 목록과 있음/없음 플래그의 일치를 검증합니다.
+- **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.ReadDocument](#m-0193) · [ReadIndices](#m-close-fire-read-indices) · [Text](#m-close-fire-text)
+
+<a id="m-close-fire-read-indices"></a>
+
+### 012. RimKataCloseFireMeleeStore.ReadIndices
+
+`private static void ReadIndices(XmlNode root, string name, int count, List<int> indices)` · [L253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:253)
+
+- **역할:** 캐시 인덱스의 목록 존재·현재 원본 범위·중복을 검증하고 유효한 인덱스를 읽습니다.
+- **호출 — 프로젝트 내부:** [Text](#m-close-fire-text)
+
+<a id="m-close-fire-write"></a>
+
+### 013. RimKataCloseFireMeleeStore.Write
+
+`private static void Write(string path, ThingDef definition, PreparedDefinition prepared)` · [L267](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:267)
+
+- **역할:** 추가 근접공격이 있는 무기에만 호출되어 근접 사격 전용·원거리 슬롯 쿨다운 메타데이터, 후보 있음 플래그, Tool 원문명·인덱스 및 직접 근접 Verb 타입·인덱스를 개별 XML로 기록합니다. 실제 무기·피해·Verb 클래스를 복제하거나 교체하지 않습니다.
+- **호출 — 프로젝트 내부:** [Append](#m-close-fire-append) · [OriginalLabel](#m-close-fire-label) · [RimKataAllowedWeaponStore.WriteDocument](#m-allowed-write-document)
+
+<a id="m-close-fire-text"></a>
+
+### 014. RimKataCloseFireMeleeStore.Text
+
+`private static string Text(XmlNode root, string name)` · [L305](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:305)
+
+- **역할:** 캐시 XML의 지정 자식 요소 텍스트를 읽습니다.
+
+<a id="m-close-fire-append"></a>
+
+### 015. RimKataCloseFireMeleeStore.Append
+
+`private static void Append(XmlDocument document, XmlNode parent, string name, string value)` · [L307](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:307)
+
+- **역할:** 문자열 메타데이터를 XML 자식 요소로 추가합니다.
+
+<a id="m-close-fire-warn"></a>
+
+### 016. RimKataCloseFireMeleeStore.WarnOnce
+
+`private static void WarnOnce(string key, string message)` · [L314](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCloseFireMeleeStore.cs:314)
+
+- **역할:** 정의별 읽기·쓰기 실패 경고를 같은 키당 한 번만 출력합니다.
+
 <a id="file-15"></a>
 
 ## 15. RimKataColonistBarWeapons.cs
@@ -6486,7 +6662,7 @@
 
 ## 24. RimKataCombatExtendedNativeAttack.cs
 
-[Source/RimKataCombatExtendedNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs) · 메서드 **19개** · CE 사용 시에만 등록하는 첫 사격 인계·발사 요청·조준 연결 · [파일 목차](#files)
+[Source/RimKataCombatExtendedNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs) · 메서드 **20개** · CE 사용 시에만 등록하는 첫 사격 인계·발사 요청·조준 연결 · [파일 목차](#files)
 
 <a id="m-0340"></a>
 
@@ -6605,8 +6781,19 @@
 `private static bool DeferAim(RimKataNativeAttack request, Exception exception)` · [L128](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:128)
 
 - **역할:** CE 일반 요청이 추가 조준만 시작한 경우 남은 시간을 대기 요청으로 보존하며 슬라이딩·떨치기 요청은 이 지연에서 제외합니다.
-- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatExtendedFire.SuspendExtraAim(Verse.Verb verb, out int ticks)](#m-0307) · [RimKataNativeAttack.RestoreAimAfterShot()](#m-1509)
+- **호출 — 외부:** 없음
+
+<a id="m-ce-complete-or-defer-cast"></a>
+
+### 011-A. RimKataCombatExtendedNativeAttack.CompleteOrDeferCast
+
+`private static void CompleteOrDeferCast(RimKataNativeAttack request, Exception exception, bool rangedShot)` · [L139](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:139)
+
+- **역할:** 공격 문맥 정리 뒤 CE 추가 조준을 유예할 수 있으면 요청을 유지하고, 유예하지 않으면 기존 자세 복구·발차기 기회 알림·취소 및 완료 후처리를 실행합니다. 인스턴스 후처리 호출과 같은 인자를 소비하는 정적 교체 경계이며 조기 반환 IL을 삽입하지 않습니다.
+- **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**. `FinishTranspiler`가 런타임 호출을 연결합니다.
+- **호출 — 프로젝트 내부:** [RimKataCombatExtendedNativeAttack.DeferAim(RimKataNativeAttack request, System.Exception exception)](#m-0350) · [RimKataNativeAttack.CompleteNativeCast(System.Exception exception, bool rangedShot)](#m-native-complete-native-cast)
 - **호출 — 외부:** 없음
 
 <a id="m-0351"></a>
@@ -6668,10 +6855,10 @@
 
 ### 017. RimKataCombatExtendedNativeAttack.ReplaceCall
 
-`private static IEnumerable<CodeInstruction> ReplaceCall( IEnumerable<CodeInstruction> instructions, MethodInfo original, string replacement)` · [L179](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:179)
+`private static IEnumerable<CodeInstruction> ReplaceCall( IEnumerable<CodeInstruction> instructions, MethodInfo original, string replacement)` · [L185](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:185)
 
 - **역할:** IL에서 지정 호출 하나를 호환 래퍼로 교체하고 일치 개수를 검증합니다.
-- **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **5곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` · `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)`
 
@@ -6679,21 +6866,21 @@
 
 ### 018. RimKataCombatExtendedNativeAttack.FinishTranspiler
 
-`private static IEnumerable<CodeInstruction> FinishTranspiler( IEnumerable<CodeInstruction> instructions, ILGenerator generator)` · [L196](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:196)
+`private static IEnumerable<CodeInstruction> FinishTranspiler(IEnumerable<CodeInstruction> instructions)` · [L204](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:204)
 
-- **역할:** 공격 종료 시 CE 추가 조준이 남아 있으면 요청을 유지하도록 지연 분기를 삽입합니다.
+- **역할:** `FinishNativeCast`의 `CompleteNativeCast(exception, rangedShot)` 호출 하나를 인자 소비가 같은 `CompleteOrDeferCast(request, exception, rangedShot)` 호출로 교체합니다. Release 컴파일러가 보존한 계산값을 남기고 반환하는 IL 오류를 피하도록 조기 `ret` 삽입을 제거했으며, 모든 발사 문맥 정리는 교체 호출 전에 끝납니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataCombatExtendedNativeAttack.InsertBefore(System.Collections.Generic.List&lt;HarmonyLib.CodeInstruction&gt; codes, int index, System.Collections.Generic.List&lt;HarmonyLib.CodeInstruction&gt; inserted, System.Reflection.Emit.Label proceed)](#m-0358)
-- **호출 — 외부:** `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])` ×2 · `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` · `System.Collections.Generic.List<T>.FindIndex(System.Predicate<T> match)` · `System.Reflection.Emit.ILGenerator.DefineLabel()`
+- **호출 — 프로젝트 내부:** [RimKataCombatExtendedNativeAttack.ReplaceCall(System.Collections.Generic.IEnumerable&lt;HarmonyLib.CodeInstruction&gt; instructions, System.Reflection.MethodInfo original, string replacement)](#m-0356)
+- **호출 — 외부:** `HarmonyLib.AccessTools.Method(System.Type type, string name, [System.Type[] parameters = null], [System.Type[] generics = null])`
 
 <a id="m-0358"></a>
 
 ### 019. RimKataCombatExtendedNativeAttack.InsertBefore
 
-`private static void InsertBefore(List<CodeInstruction> codes, int index, List<CodeInstruction> inserted, Label proceed)` · [L217](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:217)
+`private static void InsertBefore(List<CodeInstruction> codes, int index, List<CodeInstruction> inserted, Label proceed)` · [L209](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataCombatExtendedNativeAttack.cs:209)
 
-- **역할:** 기존 분기 라벨을 보존하면서 지정 IL 위치 앞에 조건부 실행 명령을 삽입합니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **역할:** 공격 요청 등록 시 기존 분기 라벨을 보존하면서 지정 IL 위치 앞에 CE 탄약 준비 분기를 삽입합니다. 발사 종료 후처리에서는 사용하지 않습니다.
+- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** 없음
 - **호출 — 외부:** `System.Collections.Generic.List<T>.Add(T item)` · `System.Collections.Generic.List<T>.AddRange(System.Collections.Generic.IEnumerable<T> collection)` · `System.Collections.Generic.List<T>.Clear()` · `System.Collections.Generic.List<T>.InsertRange(int index, System.Collections.Generic.IEnumerable<T> collection)`
 
@@ -13758,15 +13945,15 @@
 
 ## 44. RimKataDualWeaponController.cs
 
-[Source/RimKataDualWeaponController.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs) · 메서드 **253개** · 양손 무기 주기·자동 표적·근접/원거리 전환 제어 · [파일 목차](#files)
+[Source/RimKataDualWeaponController.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs) · 메서드 **256개** · 양손 무기 주기·자동 표적·근접/원거리 전환 제어 · [파일 목차](#files)
 
 <a id="m-0878"></a>
 
 ### 001. RimKataWeaponCycleState.ExposeData
 
-`public void ExposeData()` · [L107](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:107)
+`public void ExposeData()` · [L110](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:110)
 
-- **역할:** 무기 사이클의 타이머·후보·계획·시각 정보와 쿨다운 회전 표적·시작각·기간을 저장하고 로드 후 후보·중단 공격·음수 기간을 정리합니다. 난사 지정·후보·계획·시각·쿨다운 전환 셀도 저장하고 불러옵니다.
+- **역할:** 무기 사이클의 타이머·후보·계획·시각 정보와 쿨다운 회전 표적·시작각·기간을 저장하고 로드 후 후보·중단 공격·음수 기간을 정리합니다. 난사 지정·후보·계획·시각·쿨다운 전환 셀도 저장하고 불러옵니다. plannedCloseFireAction을 저장하며 로드 때 실제 Verb 참조·배열을 비우고 기존 바인딩에서 인덱스를 복원합니다. 계획이 없으면 미선택(-2)으로 정리합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataTargeting.IsProjectile(Verse.Thing thing)](#m-1955) ×2 · [RimKataWeaponCycleState.ClearPlan(\[bool resetWarmup = true\])](#m-0884) · [RimKataWeaponCycleState.NormalizeAutomaticCandidateValidationIndex()](#m-0891) · [RimKataWeaponCycleState.RemoveAutomaticCandidateAt(int index)](#m-0889)
 - **호출 — 외부:** `Verse.Scribe_Values.Look<T>(ref T value, string label, [T defaultValue = default(T)], [bool forceSave = false])` ×28 · `Verse.Scribe_References.Look<T>(ref T refee, string label, [bool saveDestroyedThings = false])` ×7 · `UnityEngine.Mathf.Max(int a, int b)` ×5 · `System.Collections.Generic.HashSet<T>.Add(T item)` · `Verse.Scribe_Collections.Look<T>(ref System.Collections.Generic.List<T> list, string label, [Verse.LookMode lookMode = Verse.LookMode.Undefined], params object[] ctorArgs)`
@@ -13830,12 +14017,20 @@
 
 ### 007. RimKataWeaponCycleState.ClearPlan
 
-`public void ClearPlan(bool resetWarmup = true)` · [L316](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:316)
+`public void ClearPlan(bool resetWarmup = true)` · [L322](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:322)
 
-- **역할:** 진행 중 바닐라 공격을 취소하고 계획·상황·행동 Verb 및 필요한 예열을 초기화합니다. 미실행 난사 계획 셀도 함께 비웁니다.
+- **역할:** 진행 중 바닐라 공격을 취소하고 계획·상황·행동 Verb 및 필요한 예열을 초기화합니다. 미실행 난사 계획 셀도 함께 비웁니다. [ClearPlannedAction](#m-cycle-clear-action)으로 추가 근접공격 선택 인덱스도 함께 비웁니다.
 - **호출받음:** 직접 **21곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511)
+- **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataWeaponCycleState.ClearPlannedAction](#m-cycle-clear-action)
 - **호출 — 외부:** 없음
+
+<a id="m-cycle-clear-action"></a>
+
+### 007-추가. RimKataWeaponCycleState.ClearPlannedAction
+
+`internal void ClearPlannedAction()` · [L339](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:339)
+
+- **역할:** 계획 Verb와 추가 근접공격 선택 인덱스를 함께 초기화합니다. -2는 미선택, -1은 사격, 0 이상은 준비된 추가 근접공격 배열의 인덱스입니다.
 
 <a id="m-0885"></a>
 
@@ -13929,9 +14124,9 @@
 
 ### 016. RimKataWeaponCycleState.Reset
 
-`public void Reset()` · [L443](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:443)
+`public void Reset()` · [L455](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:455)
 
-- **역할:** 무기 바인딩·바닐라 공격·타이머·후보·집중·계획·시각 상태를 전부 초기화합니다. 쿨다운 예약 회전 대상·시작각·기간도 초기화합니다. 난사 등록·후보·시각·조준 전환 자료도 함께 초기화합니다.
+- **역할:** 무기 바인딩·바닐라 공격·타이머·후보·집중·계획·시각 상태를 전부 초기화합니다. 쿨다운 예약 회전 대상·시작각·기간도 초기화합니다. 난사 등록·후보·시각·조준 전환 자료도 함께 초기화합니다. 장비·사이클 리셋에서 closeFireMeleeVerbs 참조 배열도 비웁니다.
 - **호출받음:** 직접 **8곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataNativeAttack.ForgetBinding()](#m-1512) · [RimKataPreparedWeaponData.Restore(Verse.Verb verb)](#m-1548) · [RimKataWeaponCycleState.ClearPlan(\[bool resetWarmup = true\])](#m-0884) · [RimKataWeaponCycleState.ClearStoredAutomaticCandidates()](#m-0890)
 - **호출 — 외부:** 없음
@@ -15370,12 +15565,20 @@
 
 ### 147. RimKataDualWeaponController.ResolveWeaponMeleeVerb
 
-`internal static Verb ResolveWeaponMeleeVerb( Pawn pawn, ThingWithComps weapon, Thing target, bool damageOnly = false)` · [L4634](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4634)
+`internal static Verb ResolveWeaponMeleeVerb( Pawn pawn, ThingWithComps weapon, Thing target, bool damageOnly = false)` · [L4657](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4657)
 
-- **역할:** 허용된 해당 무기의 사용 가능한 근접 Verb만 모아 바닐라 초기·대상별 가중치로 무작위 선택하고 재사용 버퍼를 반환하며, damageOnly이면 피해형 Verb로 제한합니다.
+- **역할:** 허용된 해당 무기의 AllVerbs를 받아 공용 SelectMeleeVerb에 전달합니다. 기존 일반·특수 물리 근접의 damageOnly 조건을 유지합니다.
 - **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataEquipmentUtility.IsWeaponEnabled(Verse.ThingDef def)](#m-1234)
+- **호출 — 프로젝트 내부:** [RimKataEquipmentUtility.IsWeaponEnabled(Verse.ThingDef def)](#m-1234) · [RimKataDualWeaponController.SelectMeleeVerb](#m-cycle-select-melee)
 - **호출 — 외부:** `System.Collections.Generic.List<T>.Add(T item)` · `System.Collections.Generic.List<T>.Clear()` · `UnityEngine.Mathf.Max(float a, float b)` · `Verse.GenCollection.TryRandomElementByWeight<T>(System.Collections.Generic.IEnumerable<T> source, System.Func<T, float> weightSelector, out T result)` · `Verse.ThingCompUtility.TryGetComp<T>(Verse.Thing thing)` · `Verse.Verb.Available()` · `Verse.Verb.IsStillUsableBy(Verse.Pawn pawn)` · `Verse.VerbUtility.InitialVerbWeight(Verse.Verb v, Verse.Pawn p)`
+
+<a id="m-cycle-select-melee"></a>
+
+### 147-추가. RimKataDualWeaponController.SelectMeleeVerb
+
+`private static Verb SelectMeleeVerb(Pawn pawn, IReadOnlyList<Verb> verbs, Thing target, bool damageOnly = false, bool checkTargetUsability = false)` · [L4666](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:4666)
+
+- **역할:** 전달된 원본 Verb 목록에서 사용 가능한 근접공격을 기존 VerbEntry 가중치로 선택하고 재사용 버퍼를 반환합니다. 추가 근접공격 선택에만 IsUsableOn(target) 검사를 켜며 기존 전체 무기 근접 선택은 동일한 규칙을 유지합니다.
 
 <a id="m-2312"></a>
 
@@ -15931,11 +16134,11 @@
 
 ### 198. RimKataDualWeaponController.ResolveWeaponBinding
 
-`private static void ResolveWeaponBinding( Pawn pawn, RimKataWeaponCycleState cycle)` · [L6124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6124)
+`private static void ResolveWeaponBinding( Pawn pawn, RimKataWeaponCycleState cycle)` · [L6164](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6164)
 
-- **역할:** 사이클의 Verb·무기 허용 여부를 갱신하고 준비 데이터·로드 후 중단 공격 쿨다운을 정리합니다.
+- **역할:** 사이클의 Verb·무기 허용 여부를 갱신하고 준비 데이터·로드 후 중단 공격 쿨다운을 정리합니다. 허용 원거리 슬롯에만 [Bind](#m-close-fire-bind)로 추가 근접공격 배열을 준비합니다. 저장한 선택 인덱스를 실제 Verb로 복원하고 후보 소실·참조 변경 시 선택과 예열을 비워 다시 고릅니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataCombatMath.CooldownTicksForSingleShot(Verse.Verb verb, Verse.Pawn pawn, bool afterSuccessfulResponse)](#m-0472) · [RimKataDualWeaponController.ApplyInterruptedBurstCooldown(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb)](#m-1097) · [RimKataEquipmentUtility.IsWeaponEnabled(Verse.ThingDef def)](#m-1234) · [RimKataNativeAttack.Bind(Verse.Verb verb)](#m-1498) · [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataNativeAttack.ConsumeInterruptedBurstAfterLoad(Verse.Verb verb)](#m-1516) · [RimKataPreparedWeaponData.IsCurrent(Verse.Verb verb)](#m-1547) · [RimKataPreparedWeaponData.Restore(Verse.Verb verb)](#m-1548) · [RimKataWeaponCycleState.ClearPlan(\[bool resetWarmup = true\])](#m-0884) · [RimKataWeaponSlotUtility.CombatVerb(Verse.Pawn pawn, Verse.ThingWithComps weapon)](#m-1691)
+- **호출 — 프로젝트 내부:** [RimKataCombatMath.CooldownTicksForSingleShot(Verse.Verb verb, Verse.Pawn pawn, bool afterSuccessfulResponse)](#m-0472) · [RimKataDualWeaponController.ApplyInterruptedBurstCooldown(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb)](#m-1097) · [RimKataEquipmentUtility.IsWeaponEnabled(Verse.ThingDef def)](#m-1234) · [RimKataNativeAttack.Bind(Verse.Verb verb)](#m-1498) · [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataNativeAttack.ConsumeInterruptedBurstAfterLoad(Verse.Verb verb)](#m-1516) · [RimKataPreparedWeaponData.IsCurrent(Verse.Verb verb)](#m-1547) · [RimKataPreparedWeaponData.Restore(Verse.Verb verb)](#m-1548) · [RimKataWeaponCycleState.ClearPlan(\[bool resetWarmup = true\])](#m-0884) · [RimKataWeaponSlotUtility.CombatVerb(Verse.Pawn pawn, Verse.ThingWithComps weapon)](#m-1691) · [RimKataCloseFireMeleeStore.Bind](#m-close-fire-bind) · [RimKataWeaponCycleState.ClearPlannedAction](#m-cycle-clear-action)
 - **호출 — 외부:** `UnityEngine.Mathf.Max(int a, int b)`
 
 <a id="m-1068"></a>
@@ -15990,18 +16193,18 @@
 
 - **역할:** 무기별 목표 선택·계획 검증·예열·요격 가능성을 처리해 준비된 바닐라 공격을 예약·시작합니다. Thing 후보와 난사 셀 후보를 같은 기존 발사 준비 경로에 연결합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.ClearTargetPreservingCycle(RimKataWeaponCycleState cycle)](#m-1012) ×4 · [RimKataDualWeaponController.HandleInvalidPlanAtExecution(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool allowAutomaticRangedFire)](#m-1096) ×3 · [RimKataDualWeaponController.ValidPlan(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1089) ×3 · [RimKataDualWeaponController.InterruptMovingFireOutsideAutomaticRange(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing target, bool requestRefill, \[bool? randomAttackEnabled = null\])](#m-1101) ×2 · [RimKataDualWeaponController.ResolveCycleActionVerb(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb slotVerb, bool closeCombatContext)](#m-1094) ×2 · [RimKataDualWeaponController.TargetInfo(RimKataWeaponCycleState cycle)](#m-1104) ×2 · [RimKataDualWeaponController.TrySetKnownTarget(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool automaticRangeRequired, bool updateVisualTarget, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1087) ×2 · [RimKataCombatMath.WarmupTicksForSingleShot(Verse.Verb verb)](#m-0469) · [RimKataDualWeaponController.AllowsNonRandomMovingSearch(Verse.Pawn pawn)](#m-0918) · [RimKataDualWeaponController.BoundCombatVerb(Verse.Pawn pawn, RimKataWeaponCycleState cycle)](#m-1068) · [RimKataDualWeaponController.HasActiveInterceptionWork(Verse.Pawn pawn, RimKataWeaponCycleState cycle)](#m-1055) · [RimKataDualWeaponController.IsCycleVerbUsable(Verse.Pawn pawn, Verse.Verb verb, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1070) · [RimKataDualWeaponController.IsVanillaAutomaticWeaponBusy(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)](#m-1098) · [RimKataDualWeaponController.NormalizeUnavailableCycleWork(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, bool randomAttackEnabled, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1071) · [RimKataDualWeaponController.PrepareFocusedTarget(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1082) · [RimKataDualWeaponController.PromoteApproachingShotToCloseContext(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, bool closeCombatContext)](#m-1085) · [RimKataDualWeaponController.ReadyToAct(RimKataWeaponCycleState cycle)](#m-1095) · [RimKataDualWeaponController.ResolveOpeningSupportBonus(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)](#m-1080) · [RimKataDualWeaponController.TryCacheSharedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Thing preferredTarget, bool? randomAttackEnabled, Verse.Verb preparedVerb, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-0960) · [RimKataDualWeaponController.TryPromoteCachedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, bool killIncappedTarget, bool closeCombatContext, bool requestRefill, bool automaticRangeRequired, out Verse.Thing promotedAutomaticTarget, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1078) · [RimKataDualWeaponController.UsesPhysicalMeleeAction(Verse.Pawn pawn, Verse.Verb slotVerb, bool closeCombatContext)](#m-1092) · [RimKataGroundPoseUtility.NotifyAimStarted(Verse.Pawn pawn, Verse.Verb verb, Verse.LocalTargetInfo target, \[bool knownInsideCandidateRange = false\], \[RimKataPawnCombatState knownState = null\])](#m-1299) · [RimKataInterceptionTrajectory.CanIntercept(Verse.Pawn pawn, Verse.Verb verb, Verse.Thing target, int delayTicks, \[float? knownRangeSquared = null\])](#m-1401) · [RimKataNativeAttack.ClearCompletedReferences()](#m-1519) · [RimKataNativeAttack.Queue()](#m-1499) · [RimKataPawnCombatState.ResetCandidateSaturationExpansion(bool clearOverrides)](#m-0532) · [RimKataSharedTargetSearch.Begin(Verse.Pawn pawn, RimKataPawnCombatState combatState, Verse.IntVec3 origin)](#m-1874) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsProjectileVerb(Verse.Verb verb)](#m-1956) · [RimKataVerbUtility.RequestNormalSpeedForCombat(Verse.Verb verb, Verse.LocalTargetInfo target)](#m-1258)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.ClearTargetPreservingCycle(RimKataWeaponCycleState cycle)](#m-1012) ×4 · [RimKataDualWeaponController.HandleInvalidPlanAtExecution(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool allowAutomaticRangedFire)](#m-1096) ×3 · [RimKataDualWeaponController.ValidPlan(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1089) ×3 · [RimKataDualWeaponController.InterruptMovingFireOutsideAutomaticRange(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing target, bool requestRefill, \[bool? randomAttackEnabled = null\])](#m-1101) ×2 · [RimKataDualWeaponController.ResolveCycleActionVerb(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb slotVerb, bool closeCombatContext)](#m-1094) ×2 · [RimKataDualWeaponController.TargetInfo(RimKataWeaponCycleState cycle)](#m-1104) ×2 · [RimKataDualWeaponController.TrySetKnownTarget(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, Verse.Thing assignedTarget, bool playerForced, bool killIncappedTarget, bool closeCombatContext, bool automaticRangeRequired, bool updateVisualTarget, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1087) ×2 · [RimKataCombatMath.WarmupTicksForSingleShot(Verse.Verb verb)](#m-0469) · [RimKataDualWeaponController.AllowsNonRandomMovingSearch(Verse.Pawn pawn)](#m-0918) · [RimKataDualWeaponController.BoundCombatVerb(Verse.Pawn pawn, RimKataWeaponCycleState cycle)](#m-1068) · [RimKataDualWeaponController.HasActiveInterceptionWork(Verse.Pawn pawn, RimKataWeaponCycleState cycle)](#m-1055) · [RimKataDualWeaponController.IsCycleVerbUsable(Verse.Pawn pawn, Verse.Verb verb, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1070) · [RimKataDualWeaponController.IsVanillaAutomaticWeaponBusy(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)](#m-1098) · [RimKataDualWeaponController.NormalizeUnavailableCycleWork(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, bool randomAttackEnabled, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1071) · [RimKataDualWeaponController.PrepareFocusedTarget(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, bool closeCombatContext, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1082) · [RimKataDualWeaponController.PromoteApproachingShotToCloseContext(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb, bool closeCombatContext)](#m-1085) · [RimKataDualWeaponController.ReadyToAct(RimKataWeaponCycleState cycle)](#m-1095) · [RimKataDualWeaponController.ResolveOpeningSupportBonus(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle)](#m-1080) · [RimKataDualWeaponController.TryCacheSharedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Thing preferredTarget, bool? randomAttackEnabled, Verse.Verb preparedVerb, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-0960) · [RimKataDualWeaponController.TryPromoteCachedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, bool killIncappedTarget, bool closeCombatContext, bool requestRefill, bool automaticRangeRequired, out Verse.Thing promotedAutomaticTarget, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1078) · [RimKataDualWeaponController.UsesPhysicalMeleeAction(Verse.Pawn pawn, Verse.Verb slotVerb, bool closeCombatContext)](#m-1092) · [RimKataGroundPoseUtility.NotifyAimStarted(Verse.Pawn pawn, Verse.Verb verb, Verse.LocalTargetInfo target, \[bool knownInsideCandidateRange = false\], \[RimKataPawnCombatState knownState = null\])](#m-1299) · [RimKataInterceptionTrajectory.CanIntercept(Verse.Pawn pawn, Verse.Verb verb, Verse.Thing target, int delayTicks, \[float? knownRangeSquared = null\])](#m-1401) · [RimKataNativeAttack.ClearCompletedReferences()](#m-1519) · [RimKataNativeAttack.Queue()](#m-1499) · [RimKataPawnCombatState.ResetCandidateSaturationExpansion(bool clearOverrides)](#m-0532) · [RimKataSharedTargetSearch.Begin(Verse.Pawn pawn, RimKataPawnCombatState combatState, Verse.IntVec3 origin)](#m-1874) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsProjectileVerb(Verse.Verb verb)](#m-1956) · [RimKataVerbUtility.RequestNormalSpeedForCombat(Verse.Verb verb, Verse.LocalTargetInfo target)](#m-1258)
 - **호출 — 외부:** 없음
 
 <a id="m-1073"></a>
 
 ### 204. RimKataDualWeaponController.NativeAttackStillAllowed
 
-`internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)` · [L6759](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6759)
+`internal static bool NativeAttackStillAllowed(RimKataNativeAttack attack)` · [L6829](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6829)
 
-- **역할:** 특수 동작이 본체 전투를 차단하는지 확인한 뒤 사냥 또는 일반 요청의 이동·회피·자세·구조물 공격 횟수 조건을 판정합니다.
+- **역할:** 특수 동작이 본체 전투를 차단하는지 확인한 뒤 사냥 또는 일반 요청의 이동·회피·자세·구조물 공격 횟수 조건을 판정합니다. 추가 근접공격은 현재 계획·closeFire/물리 근접 전환·실제 Verb의 소유자/목표/가용성을 실행 직전에 다시 확인합니다. 아직 시작하지 않은 요청이 실패하면 목표는 유지하고 선택·예열만 초기화해 같은 불가 후보가 반복 예약되지 않게 합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.MovementBlocksFire(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1100) · [RimKataDualWeaponController.ShouldPauseFireForDodge(Verse.Pawn pawn)](#m-0940) · [RimKataDualWeaponController.StanceBlocksRimKata(Verse.Pawn pawn)](#m-1099) · [RimKataHuntingSession.CanContinue()](#m-2186) · [RimKataReactiveMotion.BlocksCombat(RimKataPawnCombatState state)](#m-2513)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.MovementBlocksFire(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1100) · [RimKataDualWeaponController.ShouldPauseFireForDodge(Verse.Pawn pawn)](#m-0940) · [RimKataDualWeaponController.StanceBlocksRimKata(Verse.Pawn pawn)](#m-1099) · [RimKataHuntingSession.CanContinue()](#m-2186) · [RimKataReactiveMotion.BlocksCombat(RimKataPawnCombatState state)](#m-2513) · [RimKataDualWeaponController.CanPlanCloseFireMelee](#m-cycle-can-close-fire-melee) · [RimKataWeaponCycleState.ClearPlannedAction](#m-cycle-clear-action)
 - **호출 — 외부:** 없음
 
 <a id="m-1074"></a>
@@ -16019,9 +16222,9 @@
 
 ### 206. RimKataDualWeaponController.FinishCycleAction
 
-`private static void FinishCycleAction( RimKataNativeAttack attack, bool acted, bool cancelled, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L6797](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6797)
+`private static void FinishCycleAction( RimKataNativeAttack attack, bool acted, bool cancelled, out Thing promotedAutomaticTarget, ref CycleVerbAvailability availability)` · [L6884](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:6884)
 
-- **역할:** 완료된 네이티브 공격을 쿨다운·후속 후보·표적 전환에 반영합니다. 부드러운 조준 전환이 허용될 때만 기존 발사 표적이 정리되기 전에 시작각을 캡처하고 쿨다운 중 회전 시간을 기록합니다. 공격 주기는 유지합니다. 마지막 난사 셀을 시각 조준에 남기고 다음 셀 후보도 기존 쿨다운 흐름에서 승격합니다.
+- **역할:** 완료된 네이티브 공격을 쿨다운·후속 후보·표적 전환에 반영합니다. 부드러운 조준 전환이 허용될 때만 기존 발사 표적이 정리되기 전에 시작각을 캡처하고 쿨다운 중 회전 시간을 기록합니다. 공격 주기는 유지합니다. 마지막 난사 셀을 시각 조준에 남기고 다음 셀 후보도 기존 쿨다운 흐름에서 승격합니다. 추가 근접공격의 완료 쿨다운은 실제 공격 Verb 대신 요청의 CooldownVerb(원거리 슬롯 cycleVerb)를 사용합니다. 피해·실제 근접 판정은 원본 actionVerb를 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataWeaponCycleState.ClearPlan(\[bool resetWarmup = true\])](#m-0884) ×2 · [RimKataCombatMath.CooldownTicksForSingleShot(Verse.Verb verb, Verse.Pawn pawn, bool afterSuccessfulResponse)](#m-0472) · [RimKataDualWeaponController.AllowsNonRandomMovingSearch(Verse.Pawn pawn)](#m-0918) · [RimKataDualWeaponController.ApplyInterruptedBurstCooldown(Verse.Pawn pawn, RimKataWeaponCycleState cycle, Verse.Verb verb)](#m-1097) · [RimKataDualWeaponController.BindCurrentWeapons(Verse.Pawn pawn, RimKataPawnCombatState state, \[bool accessVerified = false\])](#m-1064) · [RimKataDualWeaponController.EvictAutomaticCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Thing target, bool requestRefill)](#m-1079) · [RimKataDualWeaponController.RecordFirstFiredWeapon(RimKataPawnCombatState state, Verse.ThingWithComps weapon)](#m-1013) · [RimKataDualWeaponController.TryCacheSharedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Thing preferredTarget, bool? randomAttackEnabled, Verse.Verb preparedVerb, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-0960) · [RimKataDualWeaponController.TryPromoteCachedCandidate(Verse.Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verse.Verb verb, bool killIncappedTarget, bool closeCombatContext, bool requestRefill, bool automaticRangeRequired, out Verse.Thing promotedAutomaticTarget, ref RimKataDualWeaponController.CycleVerbAvailability availability)](#m-1078) · [RimKataDualWeaponRenderUtility.AngleToTarget(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.LocalTargetInfo target, float fallback)](#m-2036) · [RimKataSharedTargetSearch.Begin(Verse.Pawn pawn, RimKataPawnCombatState combatState, Verse.IntVec3 origin)](#m-1874) · [RimKataSharedTargetSearch.IsLiveRegisteredCandidate(Verse.Pawn pawn, Verse.Thing target)](#m-1904) · [RimKataTargetAccess.SettingsFor(Verse.Pawn pawn)](#m-1949) · [RimKataTargeting.IsProjectile(Verse.Thing thing)](#m-1955) · [RimKataWeaponCycleState.StampNativeActionTick()](#m-0882)
 - **호출 — 외부:** 없음
@@ -16228,12 +16431,20 @@
 
 ### 225. RimKataDualWeaponController.ResolveCycleActionVerb
 
-`private static Verb ResolveCycleActionVerb( Pawn pawn, RimKataWeaponCycleState cycle, Verb slotVerb, bool closeCombatContext)` · [L7658](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7658)
+`private static Verb ResolveCycleActionVerb(Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, Verb slotVerb, bool closeCombatContext)` · [L7745](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7745)
 
-- **역할:** 근접 무기는 구조물 작업의 선택을 보존하거나 해당 무기의 가중치 선택을 수행하고, 물리 근접으로 전환할 원거리 무기는 기존 대체 Verb 규칙을 적용합니다.
+- **역할:** 근접 무기는 구조물 작업의 선택을 보존하거나 해당 무기의 가중치 선택을 수행하고, 물리 근접으로 전환할 원거리 무기는 기존 대체 Verb 규칙을 적용합니다. closeFire ON의 일반 근접 계획에서 사격과 추가 근접공격 그룹을 각 50%로 선택하고 추가 그룹 안은 기존 VerbEntry 가중치를 사용합니다. 사용 가능한 추가 후보가 없으면 사격을 유지하며 한번 고른 인덱스는 해당 계획 동안 보존합니다. 기어 사격·제압·반응·사냥 전용 실행에는 이 그룹 선택을 추가하지 않습니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.ResolveWeaponMeleeVerb(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.Thing target, \[bool damageOnly = false\])](#m-2311) · [RimKataDualWeaponController.UsesPhysicalMeleeAction(Verse.Pawn pawn, Verse.Verb slotVerb, bool closeCombatContext)](#m-1092)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.ResolveWeaponMeleeVerb(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.Thing target, \[bool damageOnly = false\])](#m-2311) · [RimKataDualWeaponController.UsesPhysicalMeleeAction(Verse.Pawn pawn, Verse.Verb slotVerb, bool closeCombatContext)](#m-1092) · [RimKataDualWeaponController.CanPlanCloseFireMelee](#m-cycle-can-close-fire-melee) · [RimKataDualWeaponController.SelectMeleeVerb](#m-cycle-select-melee)
 - **호출 — 외부:** `RimWorld.Pawn_MeleeVerbs.TryGetMeleeVerb(Verse.Thing target)`
+
+<a id="m-cycle-can-close-fire-melee"></a>
+
+### 225-추가. RimKataDualWeaponController.CanPlanCloseFireMelee
+
+`private static bool CanPlanCloseFireMelee(Pawn pawn, RimKataPawnCombatState state, RimKataWeaponCycleState cycle, bool closeCombatContext)` · [L7794](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7794)
+
+- **역할:** 준비된 추가 근접공격·허용 슬롯·일반 근접 계획·실제 목표·종족 근접 허용을 확인합니다. 요격·난사 셀·groundPose.VisualActive는 제외합니다. closeFire 및 기존 물리 근접 전환 조건은 호출부의 UsesPhysicalMeleeAction과 함께 판단합니다.
 
 <a id="m-1095"></a>
 
@@ -16261,9 +16472,9 @@
 
 ### 228. RimKataDualWeaponController.ApplyInterruptedBurstCooldown
 
-`private static void ApplyInterruptedBurstCooldown( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)` · [L7731](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7731)
+`private static void ApplyInterruptedBurstCooldown( Pawn pawn, RimKataWeaponCycleState cycle, Verb verb)` · [L7849](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataDualWeaponController.cs:7849)
 
-- **역할:** 이미 발사한 바닐라 연사를 중단할 때 최소 무기 쿨다운을 사이클에 반영합니다.
+- **역할:** 이미 발사한 바닐라 연사를 중단할 때 최소 무기 쿨다운을 사이클에 반영합니다. 이미 발동한 추가 근접공격이 중단되는 경우에도 요청의 원거리 슬롯 CooldownVerb 기준 쿨다운을 보존합니다.
 - **호출받음:** 직접 **10곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataCombatMath.CooldownTicksForSingleShot(Verse.Verb verb, Verse.Pawn pawn, bool afterSuccessfulResponse)](#m-0472)
 - **호출 — 외부:** `UnityEngine.Mathf.Max(int a, int b)`
@@ -17856,6 +18067,21 @@
 - **호출 — 외부:** 없음
 
 
+<a id="file-equipment-refresh-operation"></a>
+
+## 부분. RimKataEquipmentRefreshOperation.cs
+
+[Source/RimKataEquipmentRefreshOperation.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRefreshOperation.cs) · 이번 관련 메서드 **1개만 부분 색인** · 수동 장비 기억의 기존 렌더 갱신과 확인 후 추가 근접공격 자료 적용 · [파일 목차](#files)
+
+<a id="m-equipment-refresh-commit"></a>
+
+### 부분. RimKataEquipmentRefreshOperation.Commit
+
+`internal void Commit()` · [L61](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentRefreshOperation.cs:61)
+
+- **역할:** 기존 수동 갱신의 패치 대상 ScanRefresh·렌더 Discovery.Scan·DefinitionPlan.Scan과 Install/Apply를 모두 유지합니다. 완료된 임시 렌더 준비를 확인 후 저장·적용한 뒤, 이번 추가 근접공격 캐시를 무효화하고 공격 준비 자료와 revision도 갱신합니다. 취소·닫기는 Commit을 호출하지 않아 기존 자료를 유지합니다. 이미 끝낸 definitions.Apply를 전체 렌더 RefreshDefinitions로 반복하지 않습니다. 성공 경로 끝에서 공용 장비 기억도 Flush하여 추가 근접공격 없음 기록을 저장합니다.
+- **호출 — 프로젝트 내부:** [RimKataCloseFireMeleeStore.InvalidatePreparedCache](#m-close-fire-invalidate) · [RimKataEquipmentUtility.RefreshPreparedWeapons](#m-equipment-refresh-prepared)
+
 <a id="file-124"></a>
 
 ## 124. RimKataEquipmentRenderHooks.cs
@@ -17955,7 +18181,7 @@
 
 ## 48. RimKataEquipmentUtility.cs
 
-[Source/RimKataEquipmentUtility.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentUtility.cs) · 메서드 **15개** · 허용 장비·그립·방어구 판정 · [파일 목차](#files)
+[Source/RimKataEquipmentUtility.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentUtility.cs) · 메서드 **16개** · 허용 장비·그립·방어구 판정 · [파일 목차](#files)
 
 <a id="m-1233"></a>
 
@@ -18018,10 +18244,19 @@
 
 `public static void InvalidateCaches()` · [L111](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentUtility.cs:111)
 
-- **역할:** 장비 설정 리비전을 올리고 허용·손잡이 캐시와 준비 무기·렌더 정의를 갱신합니다.
+- **역할:** 장비 설정 리비전을 올리고 허용·손잡이 캐시와 준비 무기·렌더 정의를 갱신합니다. 공격 revision·자료 갱신은 [RefreshPreparedWeapons](#m-equipment-refresh-prepared)에 위임하고 기존 허용/그립 캐시·렌더 정의 갱신 순서를 유지합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataGripUtility.InvalidateCache()](#m-1242) · [RimKataPreparedWeaponData.RefreshDefinitions()](#m-1543) · [RimKataWeaponRenderProbe.RefreshDefinitions()](#m-2115)
+- **호출 — 프로젝트 내부:** [RimKataGripUtility.InvalidateCache()](#m-1242) · [RimKataEquipmentUtility.RefreshPreparedWeapons](#m-equipment-refresh-prepared) · [RimKataWeaponRenderProbe.RefreshDefinitions()](#m-2115)
 - **호출 — 외부:** 없음
+
+<a id="m-equipment-refresh-prepared"></a>
+
+### 006-추가. RimKataEquipmentUtility.RefreshPreparedWeapons
+
+`internal static void RefreshPreparedWeapons()` · [L121](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataEquipmentUtility.cs:121)
+
+- **역할:** 장비 설정 revision을 증가시키고 허용 목록의 공격 준비 자료만 갱신합니다. 수동 갱신의 Commit은 이미 적용한 렌더 정의를 다시 준비하지 않고 이 좁은 경로를 사용합니다.
+- **호출 — 프로젝트 내부:** [RimKataPreparedWeaponData.RefreshDefinitions](#m-1543)
 
 <a id="m-1239"></a>
 
@@ -22957,7 +23192,9 @@
 
 ## 62. RimKataMod.cs
 
-[Source/RimKataMod.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataMod.cs) · 메서드 **24개** · 시작 및 DAC·Rebound·PocketSand·PocketSand 호환 등록·설정 저장·프로필 적용·설정 창 연결 · [파일 목차](#files)
+[Source/RimKataMod.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataMod.cs) · 메서드 **24개** · 시작 및 DAC·Rebound·PocketSand·Simple Sidearms 호환 등록·설정 저장·프로필 적용·설정 창 연결 · [파일 목차](#files)
+
+- **Simple Sidearms 시작 연결:** [부트스트랩의 `RunCompatibility` 등록 L97](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataMod.cs:97)은 활성 모드의 `SimpleSidearms.rimworld.CompSidearmMemory`가 있을 때만 [RimKataSimpleSidearmsCompat.Apply](#m-3033)를 실행합니다. 무기 목록을 순회하거나 일반 폰의 틱·렌더에 맨손 상태 검사를 추가하지 않습니다.
 
 <a id="m-1468"></a>
 
@@ -23419,7 +23656,9 @@
 
 ## 64. RimKataNativeAttack.cs
 
-[Source/RimKataNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs) · 메서드 **33개** · 실제 Verb 소유자에게 전달하는 림카타 발사 요청 · [파일 목차](#files)
+[Source/RimKataNativeAttack.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs) · 메서드 **34개** · 실제 Verb 소유자에게 전달하는 림카타 발사 요청 · [파일 목차](#files)
+
+- **부분 갱신(2026-10-08):** closeFireMelee 요청은 원본 근접 Verb로 실행하고 CooldownVerb 프로퍼티만 원거리 슬롯 cycleVerb를 반환합니다. 이 프로퍼티는 일반 메서드 개별 색인에서 제외하며 기존 native VerbTick 패치를 그대로 사용합니다.
 
 <a id="m-1498"></a>
 
@@ -23505,9 +23744,9 @@
 
 ### 008. RimKataNativeAttack.CanContinue
 
-`private bool CanContinue()` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:193)
+`private bool CanContinue()` · [L194](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:194)
 
-- **역할:** 슬라이딩/떨치기·제압 요청은 각 전용 지속 판정에 위임하고 일반·사냥 요청은 작업·장비·표적·공격 권한과 거리 조건을 확인합니다. Thing 없는 난사 예약은 방향 등록과 현재 계획 셀이 예약 표적과 일치하는지도 확인합니다. 날아 차기 요청은 전용 공격의 작업·대상·Touch 조건으로 계속 가능 여부를 확인합니다. 발차기 전용 요청은 독립 발차기 작업·대상·Touch 검증을 사용합니다.
+- **역할:** 슬라이딩/떨치기·제압 요청은 각 전용 지속 판정에 위임하고 일반·사냥 요청은 작업·장비·표적·공격 권한과 거리 조건을 확인합니다. Thing 없는 난사 예약은 방향 등록과 현재 계획 셀이 예약 표적과 일치하는지도 확인합니다. 날아 차기 요청은 전용 공격의 작업·대상·Touch 조건으로 계속 가능 여부를 확인합니다. 발차기 전용 요청은 독립 발차기 작업·대상·Touch 검증을 사용합니다. 추가 근접공격 요청에도 현재 대상의 Touch 도달 조건을 적용하며 실행 직전 일반 슬롯 허용 검사는 NativeAttackStillAllowed로 전달합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponController.NativeAttackStillAllowed(RimKataNativeAttack attack)](#m-1073) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataKickAttack.CanContinue()](#m-2972) · [RimKataReactiveAttack.CanContinue(RimKataNativeAttack request)](#m-2487) · [RimKataSubdueCombat.CanContinueAttack(RimKataNativeAttack request)](#m-2628) · [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) · [RimKataTargeting.IsInterceptionTargetActive(Verse.Thing projectile)](#m-1969)
 - **호출 — 외부:** `Verse.ReachabilityImmediate.CanReachImmediate(Verse.Pawn pawn, Verse.LocalTargetInfo target, Verse.AI.PathEndMode peMode)`
@@ -23594,11 +23833,22 @@
 
 ### 016. RimKataNativeAttack.FinishNativeCast
 
-`internal void FinishNativeCast(Exception exception)` · [L367](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:367)
+`internal void FinishNativeCast(Exception exception)` · [L366](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:366)
 
-- **역할:** native 발사 결과와 제압 실행 문맥을 정리하고 자세를 복원한 뒤 연사 지속 또는 요청 완료를 결정합니다. FireContext 종료 뒤 슬라이딩 좌표 문맥을 복원하며 CE의 조준 연기 분기보다 먼저 해제합니다. 결과 처리와 연사·CE 조준 연기 분기 전에 난사 발사 문맥도 복원합니다. 네이티브 공격 실행이 끝나면 날아 차기 발사 원점 문맥도 복원합니다. 발차기 발사 중심 문맥도 복구하며 실제 원거리 발사 성공을 기록한 일반 요청에서만 발차기 기회를 전달합니다.
+- **역할:** 실제 원거리 발사 성공을 보존하고 난사·FireContext·슬라이딩·날아 차기·발차기·제압 실행 문맥을 정리한 뒤 `CompleteNativeCast`로 후처리를 인계합니다. CE의 추가 조준 유예 판단은 이 문맥 정리가 모두 끝난 호출 경계에서만 개입합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.EndNativeExecution(RimKataDirectionalFire.ExecutionScope previous)](#m-2841) · [RimKataFireContext.End(Verse.Verb ownerVerb, RimKataFireContext.ScopeState previous)](#m-1254) · [RimKataFlyingKickRender.EndShot(RimKataFlyingKickRender.ShotScope previous)](#m-2937) · [RimKataKickRender.EndShot(RimKataKickRender.ShotScope previous)](#m-2999) · [RimKataNativeAttack.CompleteRequest(bool resetNative)](#m-1510) · [RimKataNativeAttack.NotifyKickAttackStarting()](#m-3002) · [RimKataNativeAttack.RestoreAimAfterShot()](#m-1509) · [RimKataSlidingAttackOrigin.End(RimKataSlidingAttackOrigin.Scope previous)](#m-2704) · [RimKataSubdueCombat.EndNativeExecution(RimKataSubdueCombat.ExecutionScope scope)](#m-2608)
+- **호출 — 프로젝트 내부:** [RimKataDirectionalFire.EndNativeExecution(RimKataDirectionalFire.ExecutionScope previous)](#m-2841) · [RimKataFireContext.End(Verse.Verb ownerVerb, RimKataFireContext.ScopeState previous)](#m-1254) · [RimKataFlyingKickRender.EndShot(RimKataFlyingKickRender.ShotScope previous)](#m-2937) · [RimKataKickRender.EndShot(RimKataKickRender.ShotScope previous)](#m-2999) · [RimKataNativeAttack.CompleteNativeCast(System.Exception exception, bool rangedShot)](#m-native-complete-native-cast) · [RimKataSlidingAttackOrigin.End(RimKataSlidingAttackOrigin.Scope previous)](#m-2704) · [RimKataSubdueCombat.EndNativeExecution(RimKataSubdueCombat.ExecutionScope scope)](#m-2608)
+- **호출 — 외부:** 없음
+
+<a id="m-native-complete-native-cast"></a>
+
+### 016-A. RimKataNativeAttack.CompleteNativeCast
+
+`internal void CompleteNativeCast(Exception exception, bool rangedShot)` · [L387](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:387)
+
+- **역할:** 정리된 발사 문맥 뒤 자세를 복구하고 실제 원거리 발사 성공 시 발차기 기회를 알린 다음, 예외에 따른 취소 표시와 연사 지속·요청 완료를 처리합니다. CE 추가 조준이 유예된 호출에서는 실행하지 않으며, CE가 없을 때는 `FinishNativeCast`에서 바로 호출합니다.
+- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출 — 프로젝트 내부:** [RimKataNativeAttack.RestoreAimAfterShot()](#m-1509) · [RimKataNativeAttack.NotifyKickAttackStarting()](#m-3002) · [RimKataNativeAttack.CompleteRequest(bool resetNative)](#m-1510)
 - **호출 — 외부:** 없음
 
 <a id="m-1509"></a>
@@ -23709,9 +23959,9 @@
 
 ### 026. RimKataNativeAttack.ReleaseReferences
 
-`private void ReleaseReferences()` · [L550](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:550)
+`private void ReleaseReferences()` · [L555](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataNativeAttack.cs:555)
 
-- **역할:** 특수 연출에 연결된 공격을 해제하고 폰·무기·표적·작업·사냥·제압·슬라이딩/떨치기·저장 자세 참조를 비웁니다. 보관된 슬라이딩 좌표 문맥 참조도 비웁니다. 미완료 날아 차기는 취소 완료를 알린 뒤 요청 참조를 해제합니다. 미완료 발차기를 취소하고 전용 요청 참조·기회 전달 표시를 비웁니다.
+- **역할:** 특수 연출에 연결된 공격을 해제하고 폰·무기·표적·작업·사냥·제압·슬라이딩/떨치기·저장 자세 참조를 비웁니다. 보관된 슬라이딩 좌표 문맥 참조도 비웁니다. 미완료 날아 차기는 취소 완료를 알린 뒤 요청 참조를 해제합니다. 미완료 발차기를 취소하고 전용 요청 참조·기회 전달 표시를 비웁니다. 요청 재사용 전에 closeFireMelee도 false로 초기화합니다.
 - **호출받음:** 직접 **4곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataKickAttack.Complete(bool cancelled)](#m-2973) · [RimKataReactiveMotion.ReleaseAttack(RimKataNativeAttack request)](#m-2532)
 - **호출 — 외부:** 없음
@@ -23994,24 +24244,68 @@
 
 ## 93. RimKataPocketSandCompat.cs
 
-[Source/RimKataPocketSandCompat.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs) · 메서드 **5개** · PocketSand 장비 교체의 부 무기 보존 및 기존 임시 교체 기록 연결 · [파일 목차](#files)
+[Source/RimKataPocketSandCompat.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs) · 메서드 **10개** · PocketSand 장비 교체·맨손 수납 보존과 무기 휠 클릭의 부 슬롯 연결 · [파일 목차](#files)
 
 <a id="m-2149"></a>
 
 ### 001. RimKataPocketSandCompat.Apply
 
-`internal static void Apply()` · [L22](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:22)
+`internal static void Apply()` · [L38](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:38)
 
-- **역할:** PocketSand가 로드됐을 때만 실제 장비 교체 실행부를 호출 형태로 식별하여 선택적으로 패치하며, 다른 형태나 중복 대상은 경고 후 적용을 취소합니다.
+- **역할:** PocketSand가 로드됐을 때만 실제 장비 교체 실행부를 호출 형태로 식별하여 선택적으로 패치하며, 다른 형태나 중복 대상은 경고 후 적용을 취소합니다. 무기 클릭 연결은 별도 Harmony ID로 설치하여 장비 교체 연결과 실패 범위를 분리합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **호출 — 프로젝트 내부:** [ApplySecondaryClicks](#m-pocket-secondary-apply) · `RimKataActiveModTypes.Find` · `RimKataStartupPatches.Patch`
 - **호출 — 외부:** `HarmonyLib.CodeInstructionExtensions.Calls(HarmonyLib.CodeInstruction code, System.Reflection.MethodInfo method)` ×3 · `HarmonyLib.AccessTools.GetDeclaredMethods(System.Type type)` · `HarmonyLib.AccessTools.TypeByName(string name)` · `HarmonyLib.Harmony.Patch(System.Reflection.MethodBase original, [HarmonyLib.HarmonyMethod prefix = null], [HarmonyLib.HarmonyMethod postfix = null], [HarmonyLib.HarmonyMethod transpiler = null], [HarmonyLib.HarmonyMethod finalizer = null])` · `HarmonyLib.Harmony.UnpatchAll([string harmonyID = null])` · `HarmonyLib.PatchProcessor.GetOriginalInstructions(System.Reflection.MethodBase original, [System.Reflection.Emit.ILGenerator generator = null])` · `System.Reflection.MethodBase.GetParameters()` · `System.Type.IsAssignableFrom(System.Type c)` · `Verse.Log.Warning(string text)`
+
+<a id="m-pocket-secondary-apply"></a>
+
+### 002. RimKataPocketSandCompat.ApplySecondaryClicks
+
+`private static void ApplySecondaryClicks(Assembly assembly)` · [L75](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:75)
+
+- **역할:** 활성 PocketSand의 단일·단체 무기 선택기 필드와 상호작용 enum, 기존 소지품 검색 델리게이트를 시작 시 한 번 준비하고 두 `ProcessInput(Event)`에만 Prefix를 설치합니다. 실패 시 클릭 호환의 패치만 되돌립니다. 출력 메서드를 패치하거나 일반 폰을 순회하지 않습니다.
+- **호출 — 프로젝트 내부:** [InteractionValue](#m-pocket-secondary-value) ×4 · `RimKataActiveModTypes.Find` ×3 · `RimKataStartupPatches.Patch` ×2
+
+<a id="m-pocket-secondary-value"></a>
+
+### 003. RimKataPocketSandCompat.InteractionValue
+
+`private static int InteractionValue(Type selector, string name)` · [L120](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:120)
+
+- **역할:** 선택기의 실제 `m_Interaction`이 int 기반 enum인지와 지정 값의 존재를 설치 시 확인하여 `EquipWeapon`·`None` 값을 준비합니다.
+
+<a id="m-pocket-secondary-single"></a>
+
+### 004. RimKataPocketSandCompat.SingleInputPrefix
+
+`private static bool SingleInputPrefix(object __instance, Event __0)` · [L130](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:130)
+
+- **역할:** 이미 무기 아이콘 클릭으로 판정된 `button == 2`와 `EquipWeapon` 사건만 처리합니다. 이벤트는 `Used`일 수 있어 `MouseDown`을 재검사하지 않습니다. 단독 선택은 전달된 실제 무기를 사용하고 합쳐진 기즈모는 폰 중복을 제거하여 각 본인 소지품에서 같은 종류를 찾습니다. 처리 후 상호작용을 `None`으로 돌리고 이벤트를 소비합니다.
+- **호출 — 프로젝트 내부:** [RimKataSidearmInventoryEquip.TryEquip](#m-sidearm-inventory-try) · [EquipInventoryWeapon](#m-pocket-secondary-inventory)
+
+<a id="m-pocket-secondary-multi"></a>
+
+### 005. RimKataPocketSandCompat.MultiInputPrefix
+
+`private static bool MultiInputPrefix(object __instance, Event __0)` · [L165](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:165)
+
+- **역할:** 단체 선택기의 실제 무기 휠 클릭 사건에서 전달된 선택 폰만 중복 없이 처리합니다. 폰마다 본인 소지품을 사용하며 처리 뒤 상호작용을 초기화합니다. 일반 GUI 출력·전체 폰 탐색 경로를 만들지 않습니다.
+- **호출 — 프로젝트 내부:** [EquipInventoryWeapon](#m-pocket-secondary-inventory)
+
+<a id="m-pocket-secondary-inventory"></a>
+
+### 006. RimKataPocketSandCompat.EquipInventoryWeapon
+
+`private static void EquipInventoryWeapon(Pawn pawn, ThingDef def)` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:193)
+
+- **역할:** PocketSand의 기존 `TryFindInInventory`에 `includeEquipped: false`를 전달하여 해당 폰의 소지품 무기만 찾고 공용 부 슬롯 장착으로 전달합니다. 다른 폰의 무기를 가져오지 않으며 설정·자격 판정은 공용 장착 조건을 따릅니다.
+- **호출 — 프로젝트 내부:** [RimKataSidearmInventoryEquip.TryEquip](#m-sidearm-inventory-try)
 
 <a id="m-2150"></a>
 
-### 002. RimKataPocketSandCompat.ExchangeTranspiler
+### 007. RimKataPocketSandCompat.ExchangeTranspiler
 
-`private static IEnumerable<CodeInstruction> ExchangeTranspiler(IEnumerable<CodeInstruction> instructions)` · [L58](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:58)
+`private static IEnumerable<CodeInstruction> ExchangeTranspiler(IEnumerable<CodeInstruction> instructions)` · [L200](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:200)
 
 - **역할:** PocketSand 교체 실행부의 잔여 주 무기 검사와 장착 공간 비우기를 전용 함수로 바꾸고 원래 새 무기 장착·이동·효과음 처리는 보존합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -24020,20 +24314,20 @@
 
 <a id="m-2151"></a>
 
-### 003. RimKataPocketSandCompat.PrimaryAfterStoring
+### 008. RimKataPocketSandCompat.PrimaryAfterStoring
 
-`private static ThingWithComps PrimaryAfterStoring(Pawn_EquipmentTracker tracker, JobDriver driver)` · [L87](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:87)
+`private static ThingWithComps PrimaryAfterStoring(Pawn_EquipmentTracker tracker, JobDriver driver)` · [L229](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:229)
 
-- **역할:** 새 주 무기와 유효한 림카타 임시 교체 기록이 있는 경우에만 PocketSand의 잔여 무기 중단 검사를 통과시킵니다.
+- **역할:** 새 주 무기 교체는 기존 임시 교체 기록을 AddEquipment로 인계합니다. 장착 대상이 없는 주먹 명령은 TryTakePrimaryReplacement로 검증된 승격 부 무기만 소비하여 PocketSand와 같은 TryAddOrTransfer→실패 시 TryDropEquipment 순서로 보관합니다. 실제 Primary를 반환하여 보관·드롭 실패를 숨기지 않으며 일반 폰/관련 기록 없는 장비는 이동하지 않습니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataPocketSandCompat.CanCompleteReplacement(Verse.Pawn_EquipmentTracker tracker, Verse.ThingWithComps incoming)](#m-2153)
-- **호출 — 외부:** 없음
+- **호출 — 프로젝트 내부:** [RimKataPocketSandCompat.CanCompleteReplacement(Verse.Pawn_EquipmentTracker tracker, Verse.ThingWithComps incoming)](#m-2153) · [RimKataSecondaryWeaponRegistry.TryTakePrimaryReplacement(Verse.Pawn pawn, out Verse.ThingWithComps secondary)](#m-1654)
+- **호출 — 외부:** `Verse.ThingOwner.TryAddOrTransfer` · `Verse.Pawn_EquipmentTracker.TryDropEquipment`
 
 <a id="m-2152"></a>
 
-### 004. RimKataPocketSandCompat.MakeRoomForReplacement
+### 009. RimKataPocketSandCompat.MakeRoomForReplacement
 
-`private static void MakeRoomForReplacement(Pawn_EquipmentTracker tracker, ThingWithComps incoming)` · [L93](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:93)
+`private static void MakeRoomForReplacement(Pawn_EquipmentTracker tracker, ThingWithComps incoming)` · [L248](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:248)
 
 - **역할:** 유효한 교체 대기 중이면 부 무기를 내려놓지 않고 뒤의 AddEquipment가 기존 기록을 소비하도록 하며, 그 외에는 원래 MakeRoomFor를 호출합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -24042,9 +24336,9 @@
 
 <a id="m-2153"></a>
 
-### 005. RimKataPocketSandCompat.CanCompleteReplacement
+### 010. RimKataPocketSandCompat.CanCompleteReplacement
 
-`private static bool CanCompleteReplacement(Pawn_EquipmentTracker tracker, ThingWithComps incoming)` · [L98](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:98)
+`private static bool CanCompleteReplacement(Pawn_EquipmentTracker tracker, ThingWithComps incoming)` · [L253](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPocketSandCompat.cs:253)
 
 - **역할:** 새 주 무기가 보존 부 무기와 다르고 파괴되지 않았으며 기존 임시 교체 기록이 유효한지 읽기 전용으로 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -24086,9 +24380,9 @@
 
 `internal static void RefreshDefinitions()` · [L73](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataPreparedWeaponData.cs:73)
 
-- **역할:** 현재 허용 무기 설정을 바탕으로 단발 변환용 정의·속성 캐시를 재구성합니다.
+- **역할:** 현재 허용 무기 설정을 바탕으로 단발 변환용 정의·속성 캐시를 재구성합니다. 같은 허용 목록 순회에서 원거리 무기의 추가 근접공격 있음/없음 자료도 준비합니다. 연사 단발 변환 대상 여부와 별개로 PrepareDefinition을 먼저 호출합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.LoadOrCreate(Verse.ThingDef definition)](#m-0186) · [RimKataAllowedWeaponStore.RemoveDisallowedWeapons(System.Collections.Generic.ICollection&lt;string&gt; selected)](#m-0184) · [RimKataPreparedWeaponData.CloneDefinition(Verse.ThingDef original)](#m-1553) · [RimKataPreparedWeaponData.CloneProperties(Verse.VerbProperties original, RimKataStoredVerbTiming timing)](#m-1554)
+- **호출 — 프로젝트 내부:** [RimKataAllowedWeaponStore.LoadOrCreate(Verse.ThingDef definition)](#m-0186) · [RimKataAllowedWeaponStore.RemoveDisallowedWeapons(System.Collections.Generic.ICollection&lt;string&gt; selected)](#m-0184) · [RimKataPreparedWeaponData.CloneDefinition(Verse.ThingDef original)](#m-1553) · [RimKataPreparedWeaponData.CloneProperties(Verse.VerbProperties original, RimKataStoredVerbTiming timing)](#m-1554) · [RimKataCloseFireMeleeStore.BeginPreparation](#m-close-fire-begin) · [RimKataCloseFireMeleeStore.PrepareDefinition](#m-close-fire-prepare)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Clear()` ×2 · `System.Collections.Generic.HashSet<T>.Add(T item)` · `System.Runtime.CompilerServices.ConditionalWeakTable<TKey, TValue>.Add(TKey key, TValue value)` · `Verse.DefDatabase<T>.GetNamedSilentFail(string defName)` · `Verse.GenText.NullOrEmpty(string str)`
 - **델리게이트 호출:** `HarmonyLib.AccessTools.FieldRef<T, F>.Invoke([T instance = default(T)])`
 
@@ -26414,7 +26708,7 @@
 `internal bool TryTakePrimaryReplacement(Pawn pawn, out ThingWithComps secondary)` · [L152](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSecondaryWeapon.cs:152)
 
 - **역할:** 보조 무기가 여전히 주무기 위치에 보존된 경우 임시 교체 기록을 한 번 소비하여 반환합니다.
-- **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
+- **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSecondaryWeaponRegistry.StillHeld(Verse.Pawn pawn, Verse.ThingWithComps weapon)](#m-1675)
 - **호출 — 외부:** `System.Collections.Generic.Dictionary<TKey, TValue>.Remove(TKey key)` · `System.Collections.Generic.Dictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value)`
 
@@ -27093,9 +27387,9 @@
 
 ### 072. RimKataWeaponSlotUtility.NotifyEquipmentChanged
 
-`internal static void NotifyEquipmentChanged( Pawn pawn, ThingWithComps changedEquipment, bool removed)` · [L1330](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSecondaryWeapon.cs:1330)
+`internal static void NotifyEquipmentChanged( Pawn pawn, ThingWithComps changedEquipment, bool removed)` · [L1333](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSecondaryWeapon.cs:1333)
 
-- **역할:** 실제 장비 추가·제거 사건에서 기존 바인딩을 무효화하고 비자격 연출 참가자도 기존 상태의 무기 상실을 정리합니다. 자격자는 슬롯 검증·임시 주 슬롯 교체와 표시 갱신을 이어 수행합니다. 다운 보존 총과 원래 주 무기 복구 기록에도 실제 장비 변경을 통지합니다.
+- **역할:** 실제 장비 추가·제거 사건에서 기존 바인딩을 무효화하고 비자격 연출 참가자도 기존 상태의 무기 상실을 정리합니다. 자격자는 슬롯 검증·임시 주 슬롯 교체와 표시 갱신을 이어 수행합니다. 다운 보존 총과 원래 주 무기 복구 기록에도 실제 장비 변경을 통지합니다. 기존 자격 캐시 확인을 통과한 뒤 [Simple Sidearms 쌍수 복원 취소 알림](#m-3041)을 전달하여 강제 맨손 중 다른 장비로 바뀐 경우 옛 부 슬롯을 다시 맞추지 않습니다. 자체 수납 중에는 재진입 가드로 기록을 유지합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataColonistBarWeaponCache.Refresh(Verse.Pawn pawn)](#m-0239) ×2 · [Patch_DebugToolsPawns_RimKataSecondaryWeapon.HasActivePrimaryReplacement(Verse.Pawn_EquipmentTracker tracker)](#m-1768) · [Patch_PawnEquipmentTracker_RimKataMakeRoom.HasPendingReplacement(Verse.Pawn_EquipmentTracker tracker, Verse.ThingWithComps secondary)](#m-1730) · [Patch_PawnEquipmentTracker_RimKataRestoreSecondary.CompleteExternalPrimaryReplacement(Verse.Pawn_EquipmentTracker tracker, Verse.Pawn pawn, Verse.ThingWithComps incoming, Verse.ThingWithComps secondary, \[bool alreadyAdded = false\])](#m-1765) · [RimKataCaravanEquipment.NotifyEquipmentChanged(Verse.Pawn pawn)](#m-0225) · [RimKataDownedWeaponUtility.NotifyEquipmentChanged(Verse.Pawn pawn, Verse.ThingWithComps equipment, bool removed)](#m-0819) · [RimKataDualWeaponController.InvalidateWeaponBindings(Verse.Pawn pawn)](#m-1065) · [RimKataDualWeaponController.NotifyLoadoutChanged(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1040) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataEligibilityCache.UpdateRegisteredSecondaryWeapon(Verse.Pawn pawn, Verse.ThingWithComps secondaryWeapon, \[bool accessVerified = false\], \[bool slotVerified = false\], \[Verse.ThingWithComps heldPairPrimary = null\])](#m-1187) · [RimKataSecondaryWeaponRegistry.CancelPrimaryReplacement(Verse.Pawn pawn, \[Verse.ThingWithComps removed = null\])](#m-1653) · [RimKataSecondaryWeaponRegistry.Clear(Verse.Pawn pawn, Verse.ThingWithComps expectedWeapon, bool invalidateBindings)](#m-1661) · [RimKataSecondaryWeaponRegistry.GetRegistered(Verse.Pawn pawn)](#m-1657) · [RimKataSecondaryWeaponRegistry.RememberPrimaryReplacement(Verse.Pawn pawn, Verse.ThingWithComps secondary)](#m-1652) · [RimKataSecondaryWeaponRegistry.TryTakePrimaryReplacement(Verse.Pawn pawn, out Verse.ThingWithComps secondary)](#m-1654) · [RimKataSubdueUtility.NotifyEquipmentChanged(Verse.Pawn pawn)](#m-2583) · [RimKataWeaponSlotUtility.NotifyLoadoutChanged(Verse.Pawn pawn, RimKataPawnCombatState state)](#m-1711) · [RimKataWeaponSlotUtility.PrimaryWeapon(Verse.Pawn pawn)](#m-1686)
 - **호출 — 외부:** `System.Collections.Generic.List<T>.Contains(T item)` ×2
@@ -29728,6 +30022,185 @@
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
 - **호출 — 프로젝트 내부:** [RimKataSharedTargetSearchState.ClearRingRuntime()](#m-1859)
 - **호출 — 외부:** 없음
+
+
+<a id="file-146"></a>
+
+## 146. RimKataSidearmInventoryEquip.cs
+
+[Source/RimKataSidearmInventoryEquip.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs) · 메서드 **5개** · 본인 소지품의 부 슬롯 교체·기존 무기 수납·Persona 확인·실패 복구 · [파일 목차](#files)
+
+- **주요 흐름:** PocketSand·Simple Sidearms 무기 휠 클릭 사건 → 본인 소지품과 기존 장착 조건 → 필요 시 Persona 확인 → 기존 부 무기를 소지품에 보관 → 새 무기 한 개체 분리·장착. **2026-10-08 후속 수정:** 바닥 장착용 공용 함수의 기존 부 무기 드롭 분기를 그대로 사용하지 않습니다. 수납 실패 시 교체를 중단하고 새 장착 실패 시 원래 슬롯을 복구합니다. `secondaryWeaponEnabled` 비활성·비자격·비허용 무기는 공용 조건에서 거절하며 단체 선택도 각 폰 본인 소지품만 처리합니다. 클릭 이외의 GUI·렌더·틱 조회는 없습니다.
+
+<a id="m-sidearm-inventory-try"></a>
+
+### 001. RimKataSidearmInventoryEquip.TryEquip
+
+`internal static void TryEquip(Pawn pawn, ThingWithComps weapon)` · [L9](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs:9)
+
+- **역할:** 공용 조건을 확인하고 Persona 무기라면 기존 확인문을 표시합니다. 즉시 장착은 확인한 값을 이어 사용하며 확인창 콜백은 그동안 달라질 수 있는 소유권·장착 조건을 다시 확인합니다.
+- **호출 — 프로젝트 내부:** [CanEquipFromInventory](#m-sidearm-inventory-can) ×2 · [EquipFromInventory](#m-sidearm-inventory-equip) ×2
+- **외부 연결:** `EquipmentUtility.GetPersonaWeaponConfirmationText` · `Dialog_MessageBox.CreateConfirmation`
+
+<a id="m-sidearm-inventory-can"></a>
+
+### 002. RimKataSidearmInventoryEquip.CanEquipFromInventory
+
+`private static bool CanEquipFromInventory(Pawn pawn, ThingWithComps weapon)` · [L28](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs:28)
+
+- **역할:** 스폰·플레이어 조작·생존·다운 여부와 실제 본인 소지품 소유권을 선행 확인합니다. 기존 부 슬롯의 자격·설정·허용 무기·그립, 손 상실, 폭력·사격·조작 능력, 퀘스트 손님·바이오코딩·Persona 결속 등 바닐라 장착 조건을 유지합니다. 이미 주·부 슬롯에 장착된 물건은 본인 소지품 조건에서 제외됩니다.
+- **호출 — 프로젝트 내부:** [CanEquipAsSecondary](#m-1703) · [HasMissingHand](#m-1641)
+- **외부 연결:** `Pawn.WorkTagIsDisabled` · `PawnCapacityTracker.CapableOf` · `EquipmentUtility.QuestLodgerCanEquip` · `EquipmentUtility.CanEquip`
+
+<a id="m-sidearm-inventory-equip"></a>
+
+### 003. RimKataSidearmInventoryEquip.EquipFromInventory
+
+`private static void EquipFromInventory(Pawn pawn, ThingWithComps source)` · [L43](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs:43)
+
+- **역할:** 기존 부 무기를 병합 없이 소지품에 먼저 보관하여 공용 장착 함수에 빈 부 슬롯을 넘깁니다. 수납 실패 시 새 무기는 손대지 않습니다. 성공 시 무기 장착음을 재생하고 실패 시 새 무기 반환과 원래 부 슬롯 복구를 수행합니다. 일반 바닥 장착 Job의 교체·드롭 정책은 변경하지 않습니다.
+- **호출 — 프로젝트 내부:** [TryEquipSecondary](#m-1704) · [RestorePreviousSecondary](#m-sidearm-inventory-restore) · [ReturnToInventory](#m-sidearm-inventory-return)
+- **외부 연결:** `Thing.SplitOff` · `ThingOwner.Remove` · `ThingOwner.TryAddOrTransfer` · `SoundStarter.PlayOneShot`
+
+<a id="m-sidearm-inventory-restore"></a>
+
+### 004. RimKataSidearmInventoryEquip.RestorePreviousSecondary
+
+`private static void RestorePreviousSecondary(Pawn pawn, ThingWithComps primary, ThingWithComps previous)` · [L78](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs:78)
+
+- **역할:** 주 무기가 유지되고 부 슬롯이 비었으며 현재 장착 조건을 만족할 때 원래 부 무기를 복구합니다. ThingOwner가 실패한 수납을 장비 컨테이너로 이미 되돌렸다면 누락된 부 슬롯 등록·장비 게시만 복구합니다. 소지품에 있다면 공용 장착 함수를 사용하며 다른 장비로 바뀐 상태를 덮어쓰지 않습니다.
+
+<a id="m-sidearm-inventory-return"></a>
+
+### 005. RimKataSidearmInventoryEquip.ReturnToInventory
+
+`private static void ReturnToInventory(Pawn pawn, ThingWithComps weapon)` · [L101](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSidearmInventoryEquip.cs:101)
+
+- **역할:** 장착에 실패하여 소유자가 없는 무기를 소지품으로 반환합니다. 반환까지 거절된 물건에만 유실 방지용 주변 배치를 적용합니다. 이미 다른 소유자에게 옮겨진 무기는 가져오지 않습니다.
+
+
+<a id="file-145"></a>
+
+## 145. RimKataSimpleSidearmsCompat.cs
+
+[Source/RimKataSimpleSidearmsCompat.cs](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs) · 메서드 **13개** · Simple Sidearms 강제 맨손의 쌍수 수납·복원과 무기 휠 클릭의 부 슬롯 연결 · [파일 목차](#files)
+
+- **주요 흐름:** 활성 모드 시작 등록 → SS 강제 맨손 설정 사건 → 이미 확인된 자격자의 원래 두 무기 기록 → 부 무기부터 수납 → SS의 주 무기 수납. 강제 해제·소집 해제 사건에서는 남은 강제 플래그를 확인하고 기록을 한 번 소비한 뒤 주 무기, 부 무기 순서로 복원합니다. 다른 무기 선택·기존 장비 변경 사건은 기록을 취소하며 일반 폰의 틱·렌더·기즈모 출력에 조회를 추가하지 않습니다.
+
+<a id="m-3033"></a>
+
+### 001. RimKataSimpleSidearmsCompat.Apply
+
+`internal static void Apply()` · [L22](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:22)
+
+- **역할:** 활성 SS의 장비 교체 델리게이트와 강제 플래그 판정식을 한 번 준비하고 설정·해제·소집 해제·무기 선택·저장 메서드 7개에 패치를 설치합니다. 강제 맨손 연결 실패 시 해당 패치를 되돌리고 경고를 남깁니다. 무기 클릭 연결은 별도 Harmony ID로 설치해 실패 범위를 분리합니다.
+- **호출 — 프로젝트 내부:** [Patch](#m-3034) ×7 · [CompileForceCheck](#m-3035) · [ApplyWeaponInteraction](#m-ss-weapon-apply) · `RimKataActiveModTypes.Find` ×2
+
+<a id="m-ss-weapon-apply"></a>
+
+### 002. RimKataSimpleSidearmsCompat.ApplyWeaponInteraction
+
+`private static void ApplyWeaponInteraction()` · [L56](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:56)
+
+- **역할:** 활성 SS의 `Gizmo_SidearmsList.handleInteraction` 시그니처, 폰·실제 무기 필드 및 `Weapon`·`UnmemorisedWeapon` 값을 시작 시 확인하고 입력 Prefix를 설치합니다. 실패하면 무기 클릭 호환 패치만 취소합니다. 렌더 메서드는 패치하지 않습니다.
+- **호출 — 프로젝트 내부:** `RimKataActiveModTypes.Find` · `RimKataStartupPatches.Patch`
+
+<a id="m-ss-weapon-prefix"></a>
+
+### 003. RimKataSimpleSidearmsCompat.WeaponInteractionPrefix
+
+`private static bool WeaponInteractionPrefix(object __0, Event __1, Pawn ___parent, ThingWithComps ___interactionWeapon)` · [L87](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:87)
+
+- **역할:** 실제 무기 아이콘의 `button == 2` 사건만 공용 소지품 부 슬롯 장착으로 보냅니다. GUI와 단체 선택 전달에서 이벤트가 이미 `Used`여도 버튼 값은 남으므로 `MouseDown` 조건을 추가하지 않습니다. 전달된 본인 폰·무기만 사용하고 주 무기 교체 동작을 실행하지 않습니다. 상호작용 초기화는 SS의 기존 `ProcessInput`이 완료합니다.
+- **호출 — 프로젝트 내부:** [RimKataSidearmInventoryEquip.TryEquip](#m-sidearm-inventory-try)
+
+<a id="m-3034"></a>
+
+### 004. RimKataSimpleSidearmsCompat.Patch
+
+`private static void Patch(Harmony harmony, Type type, string method, string hook, bool prefix = false)` · [L102](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:102)
+
+- **역할:** SS 타입의 지정 메서드와 전용 훅을 연결합니다. 대상 메서드가 없으면 설치를 실패시켜 부분 호환 상태를 남기지 않습니다.
+- **호출 — 프로젝트 내부:** `RimKataStartupPatches.Patch`
+
+<a id="m-3035"></a>
+
+### 005. RimKataSimpleSidearmsCompat.CompileForceCheck
+
+`private static Func<ThingComp, Pawn, bool> CompileForceCheck(Type type)` · [L111](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:111)
+
+- **역할:** SS의 기존 프로퍼티를 읽는 델리게이트를 시작 시 컴파일합니다. 비소집은 `ForcedUnarmed`, 소집은 `ForcedUnarmedWhileDrafted || (ForcedUnarmed && !ForcedWeaponWhileDrafted.HasValue)`를 사용하여 강제 상태가 겹쳐 있으면 조기에 복원하지 않습니다.
+
+<a id="m-3036"></a>
+
+### 006. RimKataSimpleSidearmsCompat.ForceUnarmedPostfix
+
+`private static void ForceUnarmedPostfix(ThingComp __instance)` · [L126](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:126)
+
+- **역할:** SS의 `SetUnarmedAsForced` 직후 현재 자격과 등록된 쌍수를 한 번 확인해 두 무기 참조를 보관합니다. 부 무기를 먼저 수납하여 주 무기 제거 시 부 무기가 승격되는 교체 경로를 피하고, 주 무기는 SS의 기존 교체 함수를 이용해 수납합니다. 재차 강제 설정은 원래 기록을 덮어쓰지 않으며 수납 실패 시 기록을 지우고 가능한 부 슬롯을 복구합니다. 자체 수납 중 장비 변경 알림은 `changingEquipment`로 구분합니다.
+- **호출 — 프로젝트 내부:** [IsCachedQualifiedPawn](#m-1170) · [SecondaryWeaponWithVerifiedAccess](#m-1688) · [InInventory](#m-3039) ×2 · [RestoreSecondary](#m-3038)
+- **외부 연결:** `ThingOwner.TryAddOrTransfer` · SS `equipSpecificWeapon` 델리게이트
+
+<a id="m-3037"></a>
+
+### 007. RimKataSimpleSidearmsCompat.ReleaseUnarmedPostfix
+
+`private static void ReleaseUnarmedPostfix(ThingComp __instance)` · [L159](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:159)
+
+- **역할:** SS의 `UnsetUnarmedAsForced` 또는 `InformOfUndraft` 직후 남아 있는 강제 맨손 조건을 확인합니다. 실제로 해제됐으면 복원 기록을 먼저 한 번 소비하고, 주 슬롯이 비었고 기존 주 무기가 본인 소지품에 있으며 장착 가능한 경우 주 무기부터 복원합니다. 실패·변경된 기록을 남겨 나중에 옛 부 슬롯을 강제로 맞추지 않습니다.
+- **호출 — 프로젝트 내부:** [InInventory](#m-3039) · [IsCachedQualifiedPawn](#m-1170) · [RestoreSecondary](#m-3038)
+- **외부 연결:** `EquipmentUtility.CanEquip` · SS `equipSpecificWeapon` 델리게이트
+
+<a id="m-3038"></a>
+
+### 008. RimKataSimpleSidearmsCompat.RestoreSecondary
+
+`private static void RestoreSecondary(Pawn pawn, ThingWithComps secondary)` · [L179](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:179)
+
+- **역할:** 원래 부 무기가 본인 소지품에 있고 손·현재 부 슬롯·장착 조건이 유효한 경우에만 기존 부 슬롯 장착 함수를 사용합니다. 장착 실패 시 소지품으로 되돌리고, 그것도 실패한 실제 무기만 주변에 배치합니다.
+- **호출 — 프로젝트 내부:** [InInventory](#m-3039) · [HasMissingHand](#m-1641) · [SecondaryWeaponWithVerifiedAccess](#m-1688) · [CanEquipAsSecondary](#m-1703) · [TryEquipSecondary](#m-1704)
+
+<a id="m-3039"></a>
+
+### 009. RimKataSimpleSidearmsCompat.InInventory
+
+`private static bool InInventory(Pawn pawn, ThingWithComps weapon)` · [L193](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:193)
+
+- **역할:** 보관한 무기가 파괴되지 않았고 현재 본인의 소지품 컨테이너에 있는지 소유자 참조로 확인합니다. 같은 종류의 다른 무기를 탐색하지 않습니다.
+
+<a id="m-3040"></a>
+
+### 010. RimKataSimpleSidearmsCompat.SelectWeaponPrefix
+
+`private static void SelectWeaponPrefix(ThingComp __instance)` · [L199](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:199)
+
+- **역할:** SS의 `SetWeaponAsForced`, `SetMeleeWeaponTypeAsPreferred`, `SetRangedWeaponTypeAsDefault`가 처리되기 전에 기존 쌍수 복원 의도를 취소합니다. 근접 선호 변경 안에서 맨손 강제가 해제되어도 옛 쌍수를 먼저 복원하지 않습니다. 폰은 전달된 컴포넌트의 `parent`를 그대로 사용합니다.
+- **호출 — 프로젝트 내부:** [NotifyEquipmentChanged](#m-3041)
+
+<a id="m-3041"></a>
+
+### 011. RimKataSimpleSidearmsCompat.NotifyEquipmentChanged
+
+`internal static void NotifyEquipmentChanged(Pawn pawn)` · [L204](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:204)
+
+- **역할:** 이 호환 기능이 설치됐고 해당 폰의 쌍수 보관 기록이 있을 때만 기록을 지웁니다. 자체 수납이 발생시킨 변경은 재진입 가드로 제외합니다. SS 선택 사건 외에도 [기존 장비 변경 알림](#m-1716)의 자격 확인 이후에 연결되어 다른 경로의 장비 교체를 반영합니다.
+
+<a id="m-3042"></a>
+
+### 012. RimKataSimpleSidearmsCompat.ExposeDataPostfix
+
+`private static void ExposeDataPostfix(ThingComp __instance)` · [L210](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:210)
+
+- **역할:** SS 컴포넌트의 기존 저장 사건에서 `rimKataForcedUnarmedPair`를 함께 저장하고 불러오기 단계에 폰별 기록을 복원합니다. 상시 폰 순회 없이 SS 강제 플래그의 저장 수명과 원래 쌍수 참조를 맞춥니다.
+- **외부 연결:** `Scribe_Deep.Look` → [StoredPair.ExposeData](#m-3043)
+
+<a id="m-3043"></a>
+
+### 013. RimKataSimpleSidearmsCompat.StoredPair.ExposeData
+
+`public void ExposeData()` · [L231](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/RimKataSimpleSidearmsCompat.cs:231)
+
+- **역할:** 원래 주 무기와 부 무기를 `Scribe_References.Look`로 저장합니다. 수납 중 재진입 상태는 일시 실행 상태이므로 저장하지 않습니다.
 
 
 <a id="file-123"></a>

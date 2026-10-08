@@ -136,6 +136,12 @@ namespace KRWF.RimKata
             return true;
         }
 
+        private static void CompleteOrDeferCast(RimKataNativeAttack request, Exception exception, bool rangedShot)
+        {
+            if (!DeferAim(request, exception))
+                request.CompleteNativeCast(exception, rangedShot);
+        }
+
         private static void CompletePrefix(RimKataNativeAttack __instance)
             => RimKataCombatExtendedFire.ClearExtraAim(__instance.verb);
 
@@ -193,26 +199,12 @@ namespace KRWF.RimKata
             return codes;
         }
 
-        private static IEnumerable<CodeInstruction> FinishTranspiler(
-            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            var codes = new List<CodeInstruction>(instructions);
-            MethodInfo restore = AccessTools.Method(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.RestoreAimAfterShot));
-            int call = codes.FindIndex(c => c.Calls(restore));
-            if (call < 1 || codes[call - 1].opcode != OpCodes.Ldarg_0)
-                throw new InvalidOperationException("RimKata CE deferred aim insertion point was not found.");
-            Label finish = generator.DefineLabel();
-            var inserted = new List<CodeInstruction>
-            {
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Ldarg_1),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataCombatExtendedNativeAttack), nameof(DeferAim))),
-                new CodeInstruction(OpCodes.Brfalse, finish),
-                new CodeInstruction(OpCodes.Ret)
-            };
-            InsertBefore(codes, call - 1, inserted, finish);
-            return codes;
-        }
+        // Replace a complete call boundary: Release IL can keep rangedShot on the
+        // evaluation stack across cleanup, so an injected early ret is not valid here.
+        private static IEnumerable<CodeInstruction> FinishTranspiler(IEnumerable<CodeInstruction> instructions)
+            => ReplaceCall(instructions,
+                AccessTools.Method(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.CompleteNativeCast)),
+                nameof(CompleteOrDeferCast));
 
         private static void InsertBefore(List<CodeInstruction> codes, int index,
             List<CodeInstruction> inserted, Label proceed)

@@ -128,6 +128,7 @@ namespace KRWF.RimKata
         {
             directory = string.IsNullOrWhiteSpace(modRoot)
                 ? null : Path.GetFullPath(Path.Combine(modRoot, "Defs", "AllowedWeapons"));
+            RimKataCloseFireMeleeStore.ConfigureRoot(modRoot);
         }
 
         // Mod classes are constructed before XML patches/inheritance are applied.
@@ -176,6 +177,13 @@ namespace KRWF.RimKata
         {
             CapturedXml.Clear();
             Loaded.Clear();
+            RimKataCloseFireMeleeStore.ResetForXmlLoad();
+        }
+
+        internal static string CapturedSourceXml(ThingDef definition)
+        {
+            return definition != null && CapturedXml.TryGetValue(definition.defName, out string xml)
+                ? xml : null;
         }
 
         private static void CaptureDefinition(XmlNode node, Def __result)
@@ -428,7 +436,7 @@ namespace KRWF.RimKata
             return document.DocumentElement.OuterXml;
         }
 
-        private static string FileStem(string defName)
+        internal static string FileStem(string defName)
         {
             char[] invalid = Path.GetInvalidFileNameChars();
             StringBuilder result = new StringBuilder(defName.Length);
@@ -441,7 +449,7 @@ namespace KRWF.RimKata
             return stem == defName ? stem : stem + "_" + Hash(defName).Substring(0, 8);
         }
 
-        private static XmlDocument ReadDocument(string path)
+        internal static XmlDocument ReadDocument(string path)
         {
             XmlDocument document = new XmlDocument { XmlResolver = null, PreserveWhitespace = true };
             using (XmlReader reader = XmlReader.Create(path,
@@ -553,6 +561,11 @@ namespace KRWF.RimKata
                 Append(document, entry, "experienceCycleCorrectionSeconds", timing.experienceCycleCorrectionSeconds);
             }
 
+            WriteDocument(path, document);
+        }
+
+        internal static void WriteDocument(string path, XmlDocument document)
+        {
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             string temporary = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try

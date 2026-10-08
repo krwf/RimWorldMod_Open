@@ -94,6 +94,7 @@ namespace KRWF.RimKata
             RunCompatibility("compat_ink", "NinjaCombat.DamageReactions", RimKataInkCombatCompat.Apply);
             RunCompatibility("compat_rebound", "ProjectileInversion.API", RimKataReboundCompat.Apply);
             RunCompatibility("compat_pocketsand", "PocketSand.JobDriver_Equip", RimKataPocketSandCompat.Apply);
+            RunCompatibility("compat_simple_sidearms", "SimpleSidearms.rimworld.CompSidearmMemory", RimKataSimpleSidearmsCompat.Apply);
             LongEventHandler.ExecuteWhenFinished(() =>
             {
                 try { RunCompatibility("compat_muzzle_flash", "MuzzleFlash.MuzzleFlashUtility", () => RimKataMuzzleFlashCompat.Apply(harmony)); }
@@ -373,6 +374,7 @@ namespace KRWF.RimKata
             }
 
             settingsBeforeEdit = null;
+            RimKataEquipmentMemory.Flush();
         }
 
         internal static bool EnsureProfilesInitialized()
@@ -422,6 +424,7 @@ namespace KRWF.RimKata
         {
             ApplyCombatFeatureSettingsChange();
             instance?.PersistSettings();
+            RimKataEquipmentMemory.Flush();
         }
 
         internal static void CommitGeneProbabilitySettings()

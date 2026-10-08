@@ -67,6 +67,9 @@ namespace KRWF.RimKata
             RimKataWeaponRenderDiscovery.Apply(installed);
             definitions.Apply(installed);
             RimKataPatchTargetCatalog.Invalidate();
+            RimKataCloseFireMeleeStore.InvalidatePreparedCache();
+            RimKataEquipmentUtility.RefreshPreparedWeapons();
+            RimKataEquipmentMemory.Flush();
             committed = true;
         }
 
