@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Εξ αποστάσεως</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Πανοπλία και ενδύματα RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Η ενεργοποίηση του «{0}» μειώνει τον χρόνο επαναφοράς των ενεργών όπλων.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Τύπος ενδύματος</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Καλύμματα κεφαλής</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Πανοπλία</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Αποεπιλογή όλων</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Δεν υπάρχουν ορισμοί που να ταιριάζουν.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Δίχειρο</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Περιορίζει τον εξοπλισμό σε ένα μόνο όπλο.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Χρήση</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Πληροφορίες</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Απόκοσμος νεοφερμένος</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Μυϊκή ενίσχυση</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Η ενεργοποίηση του «{0}» επιτρέπει τον εξοπλισμό δύο όπλων με την ένδειξη «{1}».</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Αύξηση δύναμης</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Αύξηση δύναμης από επιτρεπόμενο εξοπλισμό</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Πρόσθετη δύναμη ανεξάρτητα από την άδεια</KRWF_RimKata_IndependentStrengthIncrease>

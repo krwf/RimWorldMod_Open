@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Дальнобійна</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Броня та одяг RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Увімкнення «{0}» скорочує час відновлення дозволеної зброї.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Тип одягу</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Головні убори</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Броня</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Зняти вибір</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Відповідних визначень немає.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Дворучна</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Обмежує спорядження однією одиницею зброї.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Використовувати</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Інформація</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Таємничий новоприбулий</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Посилення м’язів</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Увімкнення «{0}» дозволяє екіпірувати дві одиниці зброї з позначкою «{1}».</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Приріст сили</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Приріст сили від дозволеного спорядження</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Додаткова сила незалежно від дозволу</KRWF_RimKata_IndependentStrengthIncrease>

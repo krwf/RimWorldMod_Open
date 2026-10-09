@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>A distanza</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armature e indumenti RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Attivare «{0}» riduce il tempo di recupero delle armi abilitate.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Tipo di indumento</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Copricapo</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armatura</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Deseleziona tutto</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Nessuna definizione corrispondente.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>A due mani</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Limita l&apos;equipaggiamento a una sola arma.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Usa</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Info</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Nuovo arrivato inquietante</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Potenziamento muscolare</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Attivare «{0}» consente di equipaggiare due armi contrassegnate con «{1}».</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Aumento della forza</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Aumento della forza dall'equipaggiamento consentito</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Forza aggiuntiva indipendente dall'autorizzazione</KRWF_RimKata_IndependentStrengthIncrease>

@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Kaugvõitlus</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata soomus ja rõivad</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Valiku „{0}“ lubamine lühendab lubatud relvade jahtumisaega.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Rõiva tüüp</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Peakate</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Soomus</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Tühista kõik valikud</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Sobivaid definitsioone pole.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Kahekäeline</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Piirab varustuse ühe relvaga.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Kasuta</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Teave</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Lihasjõu tugevdamine</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Kui „{0}“ on lubatud, saab varustusse võtta kaks relva märkega „{1}“.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Jõu suurenemine</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Lubatud varustuse jõulisandus</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Lisajõud sõltumata lubamisest</KRWF_RimKata_IndependentStrengthIncrease>

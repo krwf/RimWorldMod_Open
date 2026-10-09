@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Dystansowa</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Pancerz i odzież RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Włączenie „{0}” skraca czas odnowienia dozwolonych broni.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Typ odzieży</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Nakrycie głowy</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Pancerz</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Odznacz wszystkie</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Brak pasujących definicji.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Dwuręczna</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Ogranicza wyposażenie do jednej broni.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Użyj</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Informacje</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Upiorny przybysz</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Wzmocnienie siły</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Włączenie „{0}” pozwala wyposażyć dwie bronie oznaczone „{1}”.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Przyrost siły</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Przyrost siły z dozwolonego wyposażenia</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Dodatkowa siła niezależnie od zezwolenia</KRWF_RimKata_IndependentStrengthIncrease>

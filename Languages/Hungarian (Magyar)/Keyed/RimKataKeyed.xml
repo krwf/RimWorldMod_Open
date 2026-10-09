@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Távolsági</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-páncél és -ruházat</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>„{0}” engedélyezése csökkenti az engedélyezett fegyverek visszatöltési idejét.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Ruházat típusa</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Fejfedő</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Páncél</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Kijelölések törlése</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Nincs megfelelő definíció.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Kétkezes</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Egyetlen fegyverre korlátozza a felszerelést.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Használat</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Információ</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Izomerősítés</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>„{0}” engedélyezésével két „{1}” jelölésű fegyver szerelhető fel.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Erőnövekedés</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Erőnövekedés az engedélyezett felszerelésből</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>További erő az engedélytől függetlenül</KRWF_RimKata_IndependentStrengthIncrease>

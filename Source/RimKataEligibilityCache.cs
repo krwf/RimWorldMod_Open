@@ -950,7 +950,7 @@ namespace KRWF.RimKata
     }
 
     [HarmonyPatch]
-    internal static class Patch_PawnMutantTracker_RimKataShamblerAccess
+    internal static class Patch_PawnMutantTracker_RimKataTargetAccess
     {
         private static bool Prepare() => ModsConfig.AnomalyActive;
 
@@ -960,11 +960,10 @@ namespace KRWF.RimKata
             yield return AccessTools.Method(typeof(Pawn_MutantTracker), nameof(Pawn_MutantTracker.Revert));
         }
 
-        private static void Postfix(Pawn_MutantTracker __instance, Pawn ___pawn)
+        private static void Postfix(Pawn ___pawn)
         {
-            // Revert clears pawn.mutant before this postfix; __instance still identifies the mutation.
-            if (__instance.Def == MutantDefOf.Shambler)
-                RimKataEligibilityCache.NotifyTargetChanged(___pawn);
+            // Revert has already cleared pawn.mutant; both transitions must refresh the target.
+            RimKataEligibilityCache.NotifyTargetChanged(___pawn);
         }
     }
 

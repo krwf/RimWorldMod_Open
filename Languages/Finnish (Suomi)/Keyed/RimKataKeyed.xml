@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Etätaistelu</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-haarniskat ja -vaatteet</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>”{0}”-valinnan käyttöönotto lyhentää käytössä olevien aseiden palautumisaikaa.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Vaatetyyppi</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Päähine</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Haarniska</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Poista kaikki valinnat</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Vastaavia määritelmiä ei ole.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Kaksikätinen</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Rajoittaa varustuksen yhteen aseeseen.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Käytä</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Tiedot</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Lihasvoiman vahvistus</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Kun ”{0}” on käytössä, voidaan varustautua kahdella ”{1}”-aseella.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Voiman lisäys</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Sallitun varustuksen voiman lisäys</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Lisävoima sallimisesta riippumatta</KRWF_RimKata_IndependentStrengthIncrease>

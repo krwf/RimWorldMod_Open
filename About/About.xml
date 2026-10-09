@@ -3,11 +3,12 @@
   <name>RimKata</name>
   <author>KRWF</author>
   <packageId>krwf.rimkata</packageId>
-  <modIconPath>RimKata_Icon</modIconPath>
-  <description>GUN-KATA</description>
   <supportedVersions>
     <li>1.6</li>
   </supportedVersions>
+  <modVersion>1.0.0</modVersion>
+  <description>GUN-KATA</description>
+  <modIconPath>RimKata_Icon</modIconPath>
   <modDependencies>
     <li>
       <packageId>brrainz.harmony</packageId>

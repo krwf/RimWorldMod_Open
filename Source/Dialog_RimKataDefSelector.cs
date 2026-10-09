@@ -234,6 +234,12 @@ namespace KRWF.RimKata
             {
                 Find.WindowStack.Add(new Dialog_RimKataEquipmentRefresh());
             }
+            Rect explanationRect = new Rect(resetRect.xMax + ButtonGap, resetRect.y,
+                Mathf.Max(0f, refreshRect.x - resetRect.xMax - ButtonGap * 2f), resetRect.height);
+            string explanation = kind == RimKataDefSelectionKind.Weapon
+                ? "KRWF_RimKata_TwoHandedWeaponExplanation".Translate("KRWF_RimKata_TwoHandedWeapon".Translate())
+                : "KRWF_RimKata_ApparelPermissionExplanation".Translate("KRWF_RimKata_EquipmentAllowed".Translate());
+            RimKataFeatureWindowUtility.DrawCenteredExplanation(explanationRect, explanation);
             DrawButtons(new Rect(inRect.x, inRect.yMax - 30f, inRect.width, 30f));
         }
 

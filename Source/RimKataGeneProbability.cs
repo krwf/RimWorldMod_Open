@@ -100,7 +100,8 @@ namespace KRWF.RimKata
             if (pawn.IsShambler)
                 return RimKataTargetCatalog.TryGetEntry(ShamblerKey, out RimKataTargetEntry shambler) ? shambler : null;
             if (pawn.IsCreepJoiner) return CreepJoinerEntry;
-            return RimKataTargetCatalog.Resolve(pawn);
+            // Restriction overrides classify every mutation; gene chances retain their existing groups.
+            return RimKataTargetCatalog.Resolve(pawn, includeMutants: false);
         }
 
         internal static void InvalidateSettings()

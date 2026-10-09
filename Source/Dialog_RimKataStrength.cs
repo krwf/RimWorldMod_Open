@@ -22,6 +22,8 @@ namespace KRWF.RimKata
         private const float RowHeight = 32f;
         private const float Gap = 8f;
         private const float FieldWidth = 86f;
+        private const float ButtonHeight = 30f;
+        private const float BottomButtonsHeight = ButtonHeight * 2f + Gap;
         private const int ImplantCategory = 7;
         private readonly RimKataSettings settings;
         private readonly List<RowEditor> rows = new List<RowEditor>();
@@ -133,7 +135,7 @@ namespace KRWF.RimKata
                 y += RowHeight;
                 Widgets.DrawLineHorizontal(inRect.x, y, contentWidth);
                 y += 5f;
-                Rect outRect = new Rect(inRect.x, y, inRect.width, Mathf.Max(0f, inRect.yMax - y - 44f));
+                Rect outRect = new Rect(inRect.x, y, inRect.width, Mathf.Max(0f, inRect.yMax - y - BottomButtonsHeight - 14f));
                 Rect viewRect = new Rect(0f, 0f, contentWidth, Mathf.Max(outRect.height, filtered.Count * RowHeight));
                 scrollPosition.y = Mathf.Clamp(scrollPosition.y, 0f, Mathf.Max(0f, viewRect.height - outRect.height));
                 Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
@@ -148,7 +150,7 @@ namespace KRWF.RimKata
                     DrawRow(row, filtered[i]);
                 }
                 Widgets.EndScrollView();
-                DrawButtons(new Rect(inRect.x, inRect.yMax - 30f, inRect.width, 30f));
+                DrawButtons(new Rect(inRect.x, inRect.yMax - BottomButtonsHeight, inRect.width, ButtonHeight));
             }
             finally { Text.Font = previousFont; }
         }
@@ -286,24 +288,32 @@ namespace KRWF.RimKata
             float filteredWidth = Mathf.Max(90f, Text.CalcSize(filteredReset).x + 24f);
             float closeWidth = Mathf.Max(90f, Text.CalcSize("Close".Translate()).x + 28f);
             float confirmWidth = Mathf.Max(90f, Text.CalcSize("Confirm".Translate()).x + 28f);
-            float total = 2f * Mathf.Max(resetWidth, filteredWidth) + closeWidth + confirmWidth;
-            float scale = Mathf.Min(1f, Mathf.Max(0f, rect.width - Gap * 3f) / total);
-            resetWidth *= scale; filteredWidth *= scale; closeWidth *= scale; confirmWidth *= scale;
-            if (Widgets.ButtonText(new Rect(rect.x, rect.y, resetWidth, rect.height), reset))
+            Rect resetRect = new Rect(rect.x, rect.y, resetWidth, rect.height);
+            Rect filteredRect = new Rect(rect.xMax - filteredWidth, rect.y, filteredWidth, rect.height);
+            if (Widgets.ButtonText(resetRect, reset))
                 RimKataConfirmationDialog.Show("KRWF_RimKata_ResetSectionConfirmation".Translate(
                     "KRWF_RimKata_StrengthEnhancement".Translate()), () => Reset(false));
+            if (Widgets.ButtonText(filteredRect, filteredReset, active: filtered.Count > 0))
+                RimKataConfirmationDialog.Show("KRWF_RimKata_ResetSectionConfirmation".Translate(
+                    "KRWF_RimKata_StrengthEnhancement".Translate() + " (" + "KRWF_RimKata_FilteredResults".Translate() + ")"),
+                    () => Reset(true));
+            Rect explanationRect = new Rect(resetRect.xMax + Gap, rect.y,
+                Mathf.Max(0f, filteredRect.x - resetRect.xMax - Gap * 2f), rect.height);
+            RimKataFeatureWindowUtility.DrawCenteredExplanation(explanationRect,
+                "KRWF_RimKata_StrengthPermissionExplanation".Translate(
+                    "KRWF_RimKata_EquipmentAllowed".Translate(), "KRWF_RimKata_TwoHandedWeapon".Translate()));
+
+            float scale = Mathf.Min(1f, Mathf.Max(0f, rect.width - Gap) / (closeWidth + confirmWidth));
+            closeWidth *= scale;
+            confirmWidth *= scale;
             float center = rect.x + (rect.width - closeWidth - Gap - confirmWidth) * 0.5f;
-            if (Widgets.ButtonText(new Rect(center, rect.y, closeWidth, rect.height), "Close".Translate())) Close();
-            else if (Widgets.ButtonText(new Rect(center + closeWidth + Gap, rect.y, confirmWidth, rect.height), "Confirm".Translate()))
+            float bottomY = rect.yMax + Gap;
+            if (Widgets.ButtonText(new Rect(center, bottomY, closeWidth, rect.height), "Close".Translate())) Close();
+            else if (Widgets.ButtonText(new Rect(center + closeWidth + Gap, bottomY, confirmWidth, rect.height), "Confirm".Translate()))
             {
                 commitChangesOnClose = true;
                 Close();
             }
-            else if (Widgets.ButtonText(new Rect(rect.xMax - filteredWidth, rect.y, filteredWidth, rect.height), filteredReset,
-                active: filtered.Count > 0))
-                RimKataConfirmationDialog.Show("KRWF_RimKata_ResetSectionConfirmation".Translate(
-                    "KRWF_RimKata_StrengthEnhancement".Translate() + " (" + "KRWF_RimKata_FilteredResults".Translate() + ")"),
-                    () => Reset(true));
         }
 
         private void Reset(bool onlyFiltered)

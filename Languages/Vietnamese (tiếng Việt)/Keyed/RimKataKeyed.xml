@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Tầm xa</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Giáp và trang phục RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Bật “{0}” giúp giảm thời gian hồi chiêu của vũ khí được bật.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Loại trang phục</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Đồ đội đầu</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Giáp</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Bỏ chọn tất cả</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Không có định nghĩa phù hợp.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Hai tay</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Giới hạn trang bị ở một vũ khí.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Sử dụng</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Thông tin</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Kẻ gia nhập bí ẩn</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Tăng cường cơ bắp</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Bật “{0}” cho phép trang bị hai vũ khí được đánh dấu “{1}”.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Mức tăng sức mạnh</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Mức tăng sức mạnh từ trang bị được phép</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Sức mạnh bổ sung bất kể cho phép</KRWF_RimKata_IndependentStrengthIncrease>

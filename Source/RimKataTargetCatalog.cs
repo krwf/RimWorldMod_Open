@@ -47,12 +47,12 @@ namespace KRWF.RimKata
         private static IReadOnlyList<RimKataTargetEntry> entries;
         private static Dictionary<ThingDef, RimKataTargetEntry> raceEntries;
         private static Dictionary<XenotypeDef, RimKataTargetEntry> xenotypeEntries;
+        private static Dictionary<MutantDef, RimKataTargetEntry> mutantEntries;
         private static Dictionary<string, RimKataTargetEntry> entriesByKey;
         private static ThingDef humanDef;
         private static RimKataTargetEntry baselinerEntry;
         private static RimKataTargetEntry customEntry;
         private static RimKataTargetEntry hybridEntry;
-        private static RimKataTargetEntry shamblerEntry;
 
         public static IReadOnlyList<RimKataTargetEntry> Entries
         {
@@ -63,14 +63,15 @@ namespace KRWF.RimKata
             }
         }
 
-        public static RimKataTargetEntry Resolve(Pawn pawn)
+        public static RimKataTargetEntry Resolve(Pawn pawn, bool includeMutants = true)
         {
             if (pawn?.def == null)
                 return null;
 
             EnsureInitialized();
-            if (shamblerEntry != null && pawn.IsShambler)
-                return shamblerEntry;
+            MutantDef mutant = includeMutants ? pawn.mutant?.Def : null;
+            if (mutant != null && mutantEntries.TryGetValue(mutant, out RimKataTargetEntry mutantEntry))
+                return mutantEntry;
             if (pawn.def != humanDef)
             {
                 raceEntries.TryGetValue(pawn.def, out RimKataTargetEntry raceEntry);
@@ -109,15 +110,20 @@ namespace KRWF.RimKata
             List<RimKataTargetEntry> result = new List<RimKataTargetEntry>();
             raceEntries = new Dictionary<ThingDef, RimKataTargetEntry>();
             xenotypeEntries = new Dictionary<XenotypeDef, RimKataTargetEntry>();
+            mutantEntries = new Dictionary<MutantDef, RimKataTargetEntry>();
             entriesByKey = new Dictionary<string, RimKataTargetEntry>(StringComparer.Ordinal);
             humanDef = ThingDefOf.Human;
 
-            if (ModsConfig.AnomalyActive && MutantDefOf.Shambler != null)
+            List<MutantDef> mutants = DefDatabase<MutantDef>.AllDefsListForReading;
+            for (int i = 0; i < mutants.Count; i++)
             {
-                MutantDef shambler = MutantDefOf.Shambler;
-                shamblerEntry = new RimKataTargetEntry("mutant:" + shambler.defName,
-                    shambler.LabelCap.ToString(), RimKataTargetCategory.Other, null, mutantDef: shambler);
-                Add(result, shamblerEntry);
+                MutantDef mutant = mutants[i];
+                if (string.IsNullOrEmpty(mutant.defName))
+                    continue;
+                RimKataTargetEntry entry = new RimKataTargetEntry("mutant:" + mutant.defName,
+                    mutant.LabelCap.ToString(), RimKataTargetCategory.Other, null, mutantDef: mutant);
+                Add(result, entry);
+                mutantEntries.Add(mutant, entry);
             }
 
             List<XenotypeDef> xenotypes = DefDatabase<XenotypeDef>.AllDefsListForReading;

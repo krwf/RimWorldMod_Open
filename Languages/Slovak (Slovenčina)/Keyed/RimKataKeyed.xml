@@ -87,6 +87,7 @@
   <KRWF_RimKata_WeaponKindRanged>Na diaľku</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Brnenie a oblečenie RimKata</KRWF_RimKata_ArmorDialogTitle>
+  <KRWF_RimKata_ApparelPermissionExplanation>Zapnutie „{0}“ skracuje čas obnovenia povolených zbraní.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Typ oblečenia</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Pokrývka hlavy</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Brnenie</KRWF_RimKata_ApparelKindArmor>
@@ -100,6 +101,7 @@
   <KRWF_RimKata_ClearFiltered>Zrušiť celý výber</KRWF_RimKata_ClearFiltered>
   <KRWF_RimKata_NoMatchingDefs>Žiadne zodpovedajúce definície.</KRWF_RimKata_NoMatchingDefs>
   <KRWF_RimKata_TwoHandedWeapon>Obojručná</KRWF_RimKata_TwoHandedWeapon>
+  <KRWF_RimKata_TwoHandedWeaponExplanation>{0}: Obmedzuje výbavu na jedinú zbraň.</KRWF_RimKata_TwoHandedWeaponExplanation>
   <KRWF_RimKata_EquipmentAllowed>Použiť</KRWF_RimKata_EquipmentAllowed>
   <KRWF_RimKata_EquipmentInfo>Informácie</KRWF_RimKata_EquipmentInfo>
 
@@ -249,6 +251,7 @@
   <KRWF_RimKata_GeneProbabilityCreepJoiner>Creepjoiner</KRWF_RimKata_GeneProbabilityCreepJoiner>
 
   <KRWF_RimKata_StrengthEnhancement>Posilnenie svalov</KRWF_RimKata_StrengthEnhancement>
+  <KRWF_RimKata_StrengthPermissionExplanation>Zapnutie „{0}“ umožní vybaviť dve zbrane označené „{1}“.</KRWF_RimKata_StrengthPermissionExplanation>
   <KRWF_RimKata_StrengthIncrease>Zvýšenie sily</KRWF_RimKata_StrengthIncrease>
   <KRWF_RimKata_AllowedStrengthIncrease>Zvýšenie sily z povoleného vybavenia</KRWF_RimKata_AllowedStrengthIncrease>
   <KRWF_RimKata_IndependentStrengthIncrease>Dodatočná sila bez ohľadu na povolenie</KRWF_RimKata_IndependentStrengthIncrease>
