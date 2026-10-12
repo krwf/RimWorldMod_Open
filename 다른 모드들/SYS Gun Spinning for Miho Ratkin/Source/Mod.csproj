@@ -1,28 +1,54 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
+    <RimWorldVersion Condition="'$(RimWorldVersion)' == ''">1.7</RimWorldVersion>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.6'">net472</TargetFramework>
+    <TargetFramework Condition="'$(RimWorldVersion)' == '1.7'">net10.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <AssemblyName>SYSYayoCompat</AssemblyName>
     <RootNamespace>KRWF.SYSYayoCompat</RootNamespace>
-    <OutputPath>../Assemblies/</OutputPath>
+    <OutputPath>../$(RimWorldVersion)/Assemblies/</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
     <Deterministic>true</Deterministic>
-    <RimWorldDir>C:\Program Files (x86)\Steam\steamapps\common\RimWorld</RimWorldDir>
+    <RimWorldDir Condition="'$(RimWorldDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\RimWorld</RimWorldDir>
+    <HarmonyWorkshopDir Condition="'$(HarmonyWorkshopDir)' == ''">C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077</HarmonyWorkshopDir>
+    <GameAssemblyPath Condition="'$(RimWorldVersion)' == '1.6'">$(RimWorldDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</GameAssemblyPath>
+    <GameAssemblyPath Condition="'$(RimWorldVersion)' == '1.7'">$(RimWorldDir)\Assembly-CSharp.dll</GameAssemblyPath>
+    <UnityAssemblyPath Condition="'$(RimWorldVersion)' == '1.6'">$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</UnityAssemblyPath>
+    <UnityAssemblyPath Condition="'$(RimWorldVersion)' == '1.7'">$(RimWorldDir)\UnityStubs.dll</UnityAssemblyPath>
+    <HarmonyAssemblyPath>$(HarmonyWorkshopDir)\$(RimWorldVersion)\Assemblies\0Harmony.dll</HarmonyAssemblyPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(GameAssemblyPath)</HintPath>
       <Private>false</Private>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>$(RimWorldDir)\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    <Reference Include="UnityEngine.CoreModule" Condition="'$(RimWorldVersion)' == '1.6'">
+      <HintPath>$(UnityAssemblyPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityStubs" Condition="'$(RimWorldVersion)' == '1.7'">
+      <HintPath>$(UnityAssemblyPath)</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="0Harmony">
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\workshop\content\294100\2009463077\Current\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>$(HarmonyAssemblyPath)</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <Target Name="ValidateRimWorldBuildInputs" BeforeTargets="ResolveReferences">
+    <Error Condition="'$(RimWorldVersion)' != '1.6' and '$(RimWorldVersion)' != '1.7'"
+           Text="RimWorldVersion must be 1.6 or 1.7." />
+    <Error Condition="!Exists('$(GameAssemblyPath)')"
+           Text="RimWorld game assembly was not found at $(GameAssemblyPath). Set RimWorldDir to the matching game installation." />
+    <Error Condition="!Exists('$(UnityAssemblyPath)')"
+           Text="RimWorld Unity/Waylith compatibility assembly was not found at $(UnityAssemblyPath)." />
+    <Error Condition="!Exists('$(HarmonyAssemblyPath)')"
+           Text="Harmony for RimWorld $(RimWorldVersion) was not found at $(HarmonyAssemblyPath). Set HarmonyWorkshopDir if needed." />
+  </Target>
 </Project>

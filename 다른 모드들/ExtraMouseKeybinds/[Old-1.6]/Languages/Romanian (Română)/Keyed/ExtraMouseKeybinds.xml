@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <KRWF_EMK_CameraDollyButtons>Butoane pentru deplasarea camerei</KRWF_EMK_CameraDollyButtons>
+  <KRWF_EMK_CameraDollyKeys>Taste pentru deplasarea camerei</KRWF_EMK_CameraDollyKeys>
+  <KRWF_EMK_m0Click>[m0] - Clic stânga</KRWF_EMK_m0Click>
+  <KRWF_EMK_m1Click>[m1] - Clic dreapta</KRWF_EMK_m1Click>
+  <KRWF_EMK_m2Click>[m2] - Clic cu butonul din mijloc</KRWF_EMK_m2Click>
+  <KRWF_EMK_m3Click>[m3] - Suplimentar 1</KRWF_EMK_m3Click>
+  <KRWF_EMK_m4Click>[m4] - Suplimentar 2</KRWF_EMK_m4Click>
+  <KRWF_EMK_m5Click>[m5] - Suplimentar 3</KRWF_EMK_m5Click>
+  <KRWF_EMK_m6Click>[m6] - Suplimentar 4</KRWF_EMK_m6Click>
+  <KRWF_EMK_DisableTabClosing>Împiedică închiderea filelor</KRWF_EMK_DisableTabClosing>
+  <KRWF_EMK_HoldInputMode>Repetare la menținerea apăsării</KRWF_EMK_HoldInputMode>
+</LanguageData>

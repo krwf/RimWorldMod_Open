@@ -1,0 +1,9 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Assemblies\HoldsRoofRadius.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Assemblies\HoldsRoofRadius.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.AssemblyInfoInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.AssemblyInfo.cs
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Holds roof radius\Source\obj\Debug\HoldsRoofRadius.pdb

@@ -1,0 +1,11 @@
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Assemblies\RenameHomeAndUnrestrictedAreas.dll
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.csproj.AssemblyReference.cache
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.AssemblyInfoInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.AssemblyInfo.cs
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\RenameHomeAndUnrestrictedAreas.dll
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\1.7\Assemblies\RenameHomeAndUnrestrictedAreas.deps.json
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\1.7\Assemblies\RenameHomeAndUnrestrictedAreas.dll
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\refint\RenameHomeAndUnrestrictedAreas.dll
+C:\Users\user\Documents\RimworldModsFolder\RenameHomeAndUnrestrictedAreas\Source\obj\Release\ref\RenameHomeAndUnrestrictedAreas.dll

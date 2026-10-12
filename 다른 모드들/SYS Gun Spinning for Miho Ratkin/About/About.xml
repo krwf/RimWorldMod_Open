@@ -5,6 +5,7 @@
   <packageId>krwf.sysgunspinningcompat</packageId>
   <supportedVersions>
     <li>1.6</li>
+    <li>1.7</li>
   </supportedVersions>
   <description>미호와 랫킨에 포함된 SYS 무기 렌더 패치가 Yayo's Animation 및 다른 무기 렌더 패치를 전역으로 막는 문제를 해결합니다.
 

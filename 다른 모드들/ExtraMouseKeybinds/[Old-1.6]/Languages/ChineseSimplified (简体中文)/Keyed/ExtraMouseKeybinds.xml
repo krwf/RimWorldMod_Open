@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <KRWF_EMK_CameraDollyButtons>拖动视角的鼠标按键</KRWF_EMK_CameraDollyButtons>
+  <KRWF_EMK_CameraDollyKeys>拖动视角的键盘按键</KRWF_EMK_CameraDollyKeys>
+  <KRWF_EMK_m0Click>[m0] - 左键点击</KRWF_EMK_m0Click>
+  <KRWF_EMK_m1Click>[m1] - 右键点击</KRWF_EMK_m1Click>
+  <KRWF_EMK_m2Click>[m2] - 中键点击</KRWF_EMK_m2Click>
+  <KRWF_EMK_m3Click>[m3] - 额外按键 1</KRWF_EMK_m3Click>
+  <KRWF_EMK_m4Click>[m4] - 额外按键 2</KRWF_EMK_m4Click>
+  <KRWF_EMK_m5Click>[m5] - 额外按键 3</KRWF_EMK_m5Click>
+  <KRWF_EMK_m6Click>[m6] - 额外按键 4</KRWF_EMK_m6Click>
+  <KRWF_EMK_DisableTabClosing>防止关闭标签页</KRWF_EMK_DisableTabClosing>
+  <KRWF_EMK_HoldInputMode>按住时重复输入</KRWF_EMK_HoldInputMode>
+</LanguageData>

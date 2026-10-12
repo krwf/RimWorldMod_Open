@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <KRWF_EMK_CameraDollyButtons>Musknappar för kameraförflyttning</KRWF_EMK_CameraDollyButtons>
+  <KRWF_EMK_CameraDollyKeys>Tangenter för kameraförflyttning</KRWF_EMK_CameraDollyKeys>
+  <KRWF_EMK_m0Click>[m0] - Vänsterklick</KRWF_EMK_m0Click>
+  <KRWF_EMK_m1Click>[m1] - Högerklick</KRWF_EMK_m1Click>
+  <KRWF_EMK_m2Click>[m2] - Mittenklick</KRWF_EMK_m2Click>
+  <KRWF_EMK_m3Click>[m3] - Extra 1</KRWF_EMK_m3Click>
+  <KRWF_EMK_m4Click>[m4] - Extra 2</KRWF_EMK_m4Click>
+  <KRWF_EMK_m5Click>[m5] - Extra 3</KRWF_EMK_m5Click>
+  <KRWF_EMK_m6Click>[m6] - Extra 4</KRWF_EMK_m6Click>
+  <KRWF_EMK_DisableTabClosing>Förhindra stängning av flikar</KRWF_EMK_DisableTabClosing>
+  <KRWF_EMK_HoldInputMode>Upprepa medan knappen hålls ned</KRWF_EMK_HoldInputMode>
+</LanguageData>

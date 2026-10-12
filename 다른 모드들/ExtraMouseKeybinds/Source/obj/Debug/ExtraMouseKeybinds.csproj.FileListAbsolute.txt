@@ -1,0 +1,27 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.AssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.GeneratedMSBuildEditorConfig.editorconfig
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfoInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfo.cs
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.pdb
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.dll
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.pdb
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.AssemblyReference.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfoInputs.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfo.cs
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.dll
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.pdb
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.dll
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Assemblies\ExtraMouseKeybinds.pdb
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.AssemblyReference.cache
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfoInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.AssemblyInfo.cs
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.dll
+C:\Users\user\Documents\RimworldModsFolder\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Debug\ExtraMouseKeybinds.pdb

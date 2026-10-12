@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Extra Mouse Keybinds</name>
+  <author>KRWF</author>
+  <packageId>KRWF.ExtraMouseKeybinds</packageId>
+  <supportedVersions>
+    <li>1.6</li>
+  </supportedVersions>
+  <modDependencies>
+    <li>
+      <packageId>brrainz.harmony</packageId>
+      <displayName>Harmony</displayName>
+      <steamWorkshopUrl>https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077</steamWorkshopUrl>
+    </li>
+  </modDependencies>
+  <loadAfter>
+    <li>brrainz.harmony</li>
+  </loadAfter>
+  <description>  조작 설정에 마우스 버튼 등록이 가능해지고,
+  화면 이동 버튼을 늘릴 수 있습니다.
+  Bind extra mouse buttons in RimWorld's key settings and
+  use configurable mouse buttons for camera dolly controls.</description>
+  <modIconPath>EMK_Icon</modIconPath>
+</ModMetaData>

@@ -102,7 +102,7 @@ namespace KRWF.SYSYayoCompat
             if (drawExtras == null || drawCarriedWeapon == null)
             {
                 initializationState = InitializationState.Failed;
-                Log.Error("[SYS Gun Spinning] RimWorld 1.6 weapon render methods were not found; compatibility patch was not applied.");
+                Log.Error("[SYS Gun Spinning] RimWorld weapon render methods were not found; compatibility patch was not applied.");
                 return;
             }
 

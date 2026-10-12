@@ -10,6 +10,9 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using Verse.Steam;
+#if RIMWORLD_1_7
+using Brutal.GlfwApi;
+#endif
 
 namespace ExtraMouseKeybinds
 {
@@ -112,6 +115,8 @@ namespace ExtraMouseKeybinds
 
         public KeyCode dollyKeyA = KeyCode.None;
         public KeyCode dollyKeyB = KeyCode.None;
+        public ExtraModifier dollyModifierA = ExtraModifier.Default;
+        public ExtraModifier dollyModifierB = ExtraModifier.Default;
 
         public bool closeTabMouse3 = false;
         public bool closeTabMouse4 = false;
@@ -144,6 +149,8 @@ namespace ExtraMouseKeybinds
 
             Scribe_Values.Look(ref dollyKeyA, "dollyKeyA", KeyCode.None);
             Scribe_Values.Look(ref dollyKeyB, "dollyKeyB", KeyCode.None);
+            Scribe_Values.Look(ref dollyModifierA, "dollyModifierA", ExtraModifier.Default);
+            Scribe_Values.Look(ref dollyModifierB, "dollyModifierB", ExtraModifier.Default);
 
             Scribe_Values.Look(ref closeTabMouse3, "closeTabMouse3", false);
             Scribe_Values.Look(ref closeTabMouse4, "closeTabMouse4", false);
@@ -193,6 +200,12 @@ namespace ExtraMouseKeybinds
             }
 
             int missingButtons = mouseButtonMask & ~sampledButtons & 0x7f;
+#if RIMWORLD_1_7
+            if ((missingButtons & 0x60) != 0)
+            {
+                ExtraMouseButtons17.EnsureConnected();
+            }
+#endif
 
             for (int button = 0; missingButtons != 0; button++)
             {
@@ -204,12 +217,20 @@ namespace ExtraMouseKeybinds
                 }
 
                 // Keep direct mouse sampling as a fallback for extra buttons and short clicks.
-                if (Input.GetMouseButtonDown(button))
+                if (Input.GetMouseButtonDown(button)
+#if RIMWORLD_1_7
+                    || (ExtraMouseButtons17.DownButtons & bit) != 0
+#endif
+                    )
                 {
                     DownButtons |= bit;
                 }
 
-                if (Input.GetMouseButton(button))
+                if (Input.GetMouseButton(button)
+#if RIMWORLD_1_7
+                    || (ExtraMouseButtons17.HeldButtons & bit) != 0
+#endif
+                    )
                 {
                     HeldButtons |= bit;
                 }
@@ -221,6 +242,95 @@ namespace ExtraMouseKeybinds
             return frame;
         }
     }
+
+#if RIMWORLD_1_7
+    // UnityStubs exposes only Mouse0-4. Observe the remaining buttons without consuming input.
+    internal static class ExtraMouseButtons17
+    {
+        private static Waylith.EngineApplication application;
+        private static GlfwWindow window;
+        internal static int DownButtons { get; private set; }
+        internal static int HeldButtons { get; private set; }
+
+        internal static void EnsureConnected()
+        {
+            Waylith.EngineApplication currentApplication = Waylith.EngineApplication.Instance;
+            GlfwWindow currentWindow = currentApplication?.Window;
+            if (ReferenceEquals(application, currentApplication) && ReferenceEquals(window, currentWindow))
+            {
+                return;
+            }
+
+            if (application != null)
+            {
+                application.PrePollEvents -= BeginFrame;
+            }
+            if (window != null)
+            {
+                window.OnMouseButton -= OnMouseButton;
+                window.OnFocus -= OnFocus;
+            }
+
+            application = currentApplication;
+            window = currentWindow;
+            DownButtons = HeldButtons = 0;
+            if (application == null || window == null)
+            {
+                return;
+            }
+
+            application.PrePollEvents += BeginFrame;
+            window.OnMouseButton += OnMouseButton;
+            window.OnFocus += OnFocus;
+            if (window.IsFocused)
+            {
+                for (int button = 5; button <= 6; button++)
+                {
+                    if (window.GetMouseButton((GlfwMouseButton)button) == GlfwButtonAction.Press)
+                    {
+                        HeldButtons |= 1 << button;
+                    }
+                }
+            }
+        }
+
+        private static void BeginFrame(Waylith.EngineApplication app)
+        {
+            // Polling precedes Unity's frame counter update; clear edges at the engine boundary.
+            DownButtons = 0;
+            EnsureConnected();
+        }
+
+        private static void OnMouseButton(GlfwWindow source, GlfwMouseButton button,
+            GlfwButtonAction action, GlfwModifier modifiers)
+        {
+            int index = (int)button;
+            if (index < 5 || index > 6 || !ReferenceEquals(source, window) || !source.IsFocused)
+            {
+                return;
+            }
+
+            int bit = 1 << index;
+            if (action == GlfwButtonAction.Press)
+            {
+                DownButtons |= bit;
+                HeldButtons |= bit;
+            }
+            else
+            {
+                HeldButtons &= ~bit;
+            }
+        }
+
+        private static void OnFocus(GlfwWindow source, GlfwFocusEvent focus)
+        {
+            if (ReferenceEquals(source, window) && focus == GlfwFocusEvent.LostFocus)
+            {
+                DownButtons = HeldButtons = 0;
+            }
+        }
+    }
+#endif
 
     public class ExtraMouseKeybindsMod : Mod
     {
@@ -480,7 +590,7 @@ namespace ExtraMouseKeybinds
             listing.Label("KRWF_EMK_CameraDollyKeys".Translate());
             Rect keyRow = listing.GetRect(ExtraMouseSettingsLayout.BindingRowHeight);
             float keyWidth = Mathf.Min(
-                ExtraMouseSettingsLayout.BindingWidth,
+                ExtraMouseSettingsLayout.GetBindingWidth(),
                 Mathf.Max(1f, (keyRow.width - ExtraMouseSettingsLayout.BindingGap) / 2f));
             Rect keyA = new Rect(keyRow.x, keyRow.y + 3f, keyWidth, ExtraMouseSettingsLayout.BindingHeight);
             Rect keyB = new Rect(keyA.xMax + ExtraMouseSettingsLayout.BindingGap, keyA.y, keyWidth, keyA.height);
@@ -494,7 +604,10 @@ namespace ExtraMouseKeybinds
             {
                 Settings.dollyKeyA = KeyCode.None;
                 Settings.dollyKeyB = KeyCode.None;
+                Settings.dollyModifierA = ExtraModifier.Default;
+                Settings.dollyModifierB = ExtraModifier.Default;
                 Settings.Write();
+                ExtraMouseSettingsLayout.ResizeOpenWindow(this);
             }
 
             DrawDivider(listing);
@@ -578,8 +691,10 @@ namespace ExtraMouseKeybinds
         private void DrawDollyKeyButton(Rect rect, bool primary)
         {
             KeyCode key = primary ? Settings.dollyKeyA : Settings.dollyKeyB;
+            ExtraModifier modifier = primary ? Settings.dollyModifierA : Settings.dollyModifierB;
             TooltipHandler.TipRegionByKey(rect, "BindingButtonToolTip");
-            if (!Widgets.ButtonText(rect, key.ToStringReadable()))
+            string label = Patch_Dialog_KeyBindings_DrawKeyEntry_Label.FormatWithModifier(key.ToStringReadable(), modifier);
+            if (!Widgets.ButtonText(rect, label))
             {
                 return;
             }
@@ -594,22 +709,29 @@ namespace ExtraMouseKeybinds
             }
             else
             {
-                Find.WindowStack.Add(new Dialog_CameraDollyKey(keyCode => SetDollyKey(primary, keyCode)));
+                Find.WindowStack.Add(new Dialog_CameraDollyKey(
+                    (keyCode, selectedModifier) => SetDollyKey(primary, keyCode, selectedModifier), modifier));
             }
         }
 
-        private void SetDollyKey(bool primary, KeyCode key)
+        private void SetDollyKey(bool primary, KeyCode key, ExtraModifier modifier = ExtraModifier.Default)
         {
+            modifier = key == KeyCode.None ? ExtraModifier.Default :
+                modifier & (ExtraModifier.Ctrl | ExtraModifier.Alt | ExtraModifier.Shift) &
+                ~ExtraCameraKeyboardInput.KeyModifier(key);
             if (primary)
             {
                 Settings.dollyKeyA = key;
+                Settings.dollyModifierA = modifier;
             }
             else
             {
                 Settings.dollyKeyB = key;
+                Settings.dollyModifierB = modifier;
             }
 
             Settings.Write();
+            ExtraMouseSettingsLayout.ResizeOpenWindow(this);
         }
     }
 
@@ -754,32 +876,32 @@ namespace ExtraMouseKeybinds
 
         public static void Postfix(Rect inRect)
         {
-            DrawModifierSelector(inRect);
+            DrawModifierSelector(inRect, ref selectedModifier);
         }
 
-        private static Rect GetModifierRect(Rect inRect)
+        internal static Rect GetModifierRect(Rect inRect)
         {
             return new Rect(inRect.x + 18f, inRect.yMax - 42f, inRect.width - 36f, 34f);
         }
 
-        private static void DrawModifierSelector(Rect inRect)
+        internal static void DrawModifierSelector(Rect inRect, ref ExtraModifier selection)
         {
             Rect row = GetModifierRect(inRect);
 
             float gap = 6f;
             float width = (row.width - gap * 3f) / 4f;
 
-            DrawModifierButton(new Rect(row.x, row.y, width, row.height), ExtraModifier.Default, "Default");
-            DrawModifierButton(new Rect(row.x + (width + gap), row.y, width, row.height), ExtraModifier.Ctrl, "Ctrl");
-            DrawModifierButton(new Rect(row.x + (width + gap) * 2f, row.y, width, row.height), ExtraModifier.Alt, "Alt");
-            DrawModifierButton(new Rect(row.x + (width + gap) * 3f, row.y, width, row.height), ExtraModifier.Shift, "Shift");
+            DrawModifierButton(new Rect(row.x, row.y, width, row.height), ExtraModifier.Default, "Default", ref selection);
+            DrawModifierButton(new Rect(row.x + (width + gap), row.y, width, row.height), ExtraModifier.Ctrl, "Ctrl", ref selection);
+            DrawModifierButton(new Rect(row.x + (width + gap) * 2f, row.y, width, row.height), ExtraModifier.Alt, "Alt", ref selection);
+            DrawModifierButton(new Rect(row.x + (width + gap) * 3f, row.y, width, row.height), ExtraModifier.Shift, "Shift", ref selection);
         }
 
-        private static void DrawModifierButton(Rect rect, ExtraModifier modifier, string label)
+        private static void DrawModifierButton(Rect rect, ExtraModifier modifier, string label, ref ExtraModifier selection)
         {
             bool selected = modifier == ExtraModifier.Default
-                ? selectedModifier == ExtraModifier.Default
-                : (selectedModifier & modifier) != 0;
+                ? selection == ExtraModifier.Default
+                : (selection & modifier) != 0;
 
             string text = selected ? "> " + label + " <" : label;
 
@@ -787,11 +909,11 @@ namespace ExtraMouseKeybinds
             {
                 if (modifier == ExtraModifier.Default)
                 {
-                    selectedModifier = ExtraModifier.Default;
+                    selection = ExtraModifier.Default;
                 }
                 else
                 {
-                    selectedModifier ^= modifier;
+                    selection ^= modifier;
                 }
 
                 if (Event.current != null)
@@ -841,9 +963,16 @@ namespace ExtraMouseKeybinds
 
         private static KeyCode DetectMouseKeyGlobal()
         {
+#if RIMWORLD_1_7
+            ExtraMouseButtons17.EnsureConnected();
+#endif
             for (int i = 1; i <= 6; i++)
             {
-                if (Input.GetMouseButtonDown(i))
+                if (Input.GetMouseButtonDown(i)
+#if RIMWORLD_1_7
+                    || (ExtraMouseButtons17.DownButtons & (1 << i)) != 0
+#endif
+                    )
                 {
                     return MouseButtonToKeyCode(i);
                 }
@@ -1305,7 +1434,7 @@ namespace ExtraMouseKeybinds
             return ExtraModifier.Default;
         }
 
-        private static ExtraModifier GetHeldModifiers()
+        internal static ExtraModifier GetHeldModifiers()
         {
             ExtraModifier result = ExtraModifier.Default;
 
@@ -1420,7 +1549,7 @@ namespace ExtraMouseKeybinds
 
             ExtraMouseInputState.Refresh(dollyButtons);
             bool held = (ExtraMouseInputState.HeldButtons & dollyButtons) != 0 ||
-                        ExtraCameraKeyboardInput.IsHeld(s.dollyKeyA, s.dollyKeyB);
+                        ExtraCameraKeyboardInput.IsHeld(s.dollyKeyA, s.dollyKeyB, s.dollyModifierA, s.dollyModifierB);
 
             if (held && Find.WindowStack.WindowOfType<Dialog_DefineBinding>() != null)
             {
@@ -1478,7 +1607,11 @@ namespace ExtraMouseKeybinds
 
         public static string FormatBindingLabel(string baseText, KeyBindingDef keyDef, KeyPrefs.BindingSlot slot)
         {
-            ExtraModifier modifier = GetSavedModifier(keyDef, slot);
+            return FormatWithModifier(baseText, GetSavedModifier(keyDef, slot));
+        }
+
+        internal static string FormatWithModifier(string baseText, ExtraModifier modifier)
+        {
             string prefix = string.Empty;
 
             if ((modifier & ExtraModifier.Ctrl) != 0)
@@ -1675,13 +1808,22 @@ namespace ExtraMouseKeybinds
 
     internal static class ExtraCameraKeyboardInput
     {
+#if RIMWORLD_1_7
+        // Waylith's public GetKey filters focused text fields; dolly only observes the held key.
+        private static readonly Func<KeyCode, bool> ReadHeldKey =
+            AccessTools.MethodDelegate<Func<KeyCode, bool>>(
+                AccessTools.Method(typeof(Input), "GetKeyRaw", new[] { typeof(KeyCode) }));
+#endif
         private static int sampledFrame = -1;
         private static KeyCode sampledKeyA;
         private static KeyCode sampledKeyB;
+        private static ExtraModifier sampledModifierA;
+        private static ExtraModifier sampledModifierB;
         private static bool sampledHeld;
 
         // The caller refreshes ExtraMouseInputState before checking keyboard input.
-        internal static bool IsHeld(KeyCode keyA, KeyCode keyB)
+        internal static bool IsHeld(KeyCode keyA, KeyCode keyB,
+            ExtraModifier modifierA = ExtraModifier.Default, ExtraModifier modifierB = ExtraModifier.Default)
         {
             if (keyA == KeyCode.None && keyB == KeyCode.None)
             {
@@ -1690,7 +1832,8 @@ namespace ExtraMouseKeybinds
 
             int frame = Time.frameCount;
 
-            if (sampledFrame == frame && sampledKeyA == keyA && sampledKeyB == keyB)
+            if (sampledFrame == frame && sampledKeyA == keyA && sampledKeyB == keyB &&
+                sampledModifierA == modifierA && sampledModifierB == modifierB)
             {
                 return sampledHeld;
             }
@@ -1698,26 +1841,79 @@ namespace ExtraMouseKeybinds
             sampledFrame = frame;
             sampledKeyA = keyA;
             sampledKeyB = keyB;
-            sampledHeld = ExtraMouseInputState.AnyInput &&
-                ((keyA != KeyCode.None && Input.GetKey(keyA)) ||
-                 (keyB != KeyCode.None && keyB != keyA && Input.GetKey(keyB)));
+            sampledModifierA = modifierA;
+            sampledModifierB = modifierB;
+            sampledHeld = false;
+            if (!ExtraMouseInputState.AnyInput)
+            {
+                return false;
+            }
+
+            bool heldA = keyA != KeyCode.None && KeyHeld(keyA);
+            // Default preserves the old single-key behavior, including standalone Shift/Ctrl/Alt.
+            if (heldA && modifierA == ExtraModifier.Default)
+            {
+                return sampledHeld = true;
+            }
+
+            // Share the physical sample, but still evaluate B when it has a different modifier.
+            bool heldB = keyB != KeyCode.None && (keyB == keyA ? heldA : KeyHeld(keyB));
+            if (heldB && modifierB == ExtraModifier.Default)
+            {
+                return sampledHeld = true;
+            }
+
+            if (heldA || heldB)
+            {
+                ExtraModifier heldModifiers = Patch_KeyBindingDef_KeyDownEvent.GetHeldModifiers();
+                ExtraModifier baseA = KeyModifier(keyA);
+                ExtraModifier baseB = KeyModifier(keyB);
+                sampledHeld =
+                    (heldA && (heldModifiers & ~baseA) == (modifierA & ~baseA)) ||
+                    (heldB && (heldModifiers & ~baseB) == (modifierB & ~baseB));
+            }
 
             return sampledHeld;
+        }
+
+        private static bool KeyHeld(KeyCode key)
+        {
+#if RIMWORLD_1_7
+            return ReadHeldKey(key);
+#else
+            return Input.GetKey(key);
+#endif
+        }
+
+        internal static ExtraModifier KeyModifier(KeyCode key)
+        {
+            switch (key)
+            {
+                case KeyCode.LeftControl:
+                case KeyCode.RightControl: return ExtraModifier.Ctrl;
+                case KeyCode.LeftAlt:
+                case KeyCode.RightAlt: return ExtraModifier.Alt;
+                case KeyCode.LeftShift:
+                case KeyCode.RightShift: return ExtraModifier.Shift;
+                default: return ExtraModifier.Default;
+            }
         }
     }
 
     internal sealed class Dialog_CameraDollyKey : Window
     {
-        private readonly Action<KeyCode> onKeyChosen;
+        private readonly Action<KeyCode, ExtraModifier> onKeyChosen;
+        private ExtraModifier selectedModifier;
         private bool finished;
 
         public override Vector2 InitialSize => new Vector2(
             Mathf.Min(420f, UI.screenWidth),
-            Mathf.Min(180f, UI.screenHeight));
+            Mathf.Min(200f, UI.screenHeight));
 
-        internal Dialog_CameraDollyKey(Action<KeyCode> onKeyChosen)
+        internal Dialog_CameraDollyKey(Action<KeyCode, ExtraModifier> onKeyChosen, ExtraModifier modifier)
         {
             this.onKeyChosen = onKeyChosen ?? throw new ArgumentNullException(nameof(onKeyChosen));
+            selectedModifier = modifier;
             doCloseX = true;
             forcePause = true;
             absorbInputAroundWindow = true;
@@ -1746,7 +1942,7 @@ namespace ExtraMouseKeybinds
                 {
                     finished = true;
                     ev.Use();
-                    onKeyChosen(key);
+                    onKeyChosen(key, selectedModifier);
                     Close();
                     return;
                 }
@@ -1761,7 +1957,10 @@ namespace ExtraMouseKeybinds
                 Text.Font = GameFont.Small;
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Text.WordWrap = true;
-                Widgets.Label(inRect, "PressAnyKeyOrEsc".Translate());
+                Rect modifierRect = Patch_DialogDefineBinding_DoWindowContents.GetModifierRect(inRect);
+                Widgets.Label(new Rect(inRect.x, inRect.y, inRect.width,
+                    Mathf.Max(0f, modifierRect.y - inRect.y - 6f)), "PressAnyKeyOrEsc".Translate());
+                Patch_DialogDefineBinding_DoWindowContents.DrawModifierSelector(inRect, ref selectedModifier);
             }
             finally
             {
@@ -1820,6 +2019,47 @@ namespace ExtraMouseKeybinds
             return ModRef(window) as ExtraMouseKeybindsMod;
         }
 
+        internal static float GetBindingWidth()
+        {
+            ExtraMouseKeybindsSettings settings = ExtraMouseKeybindsMod.Settings;
+            if (settings == null)
+            {
+                return BindingWidth;
+            }
+
+            string labelA = Patch_Dialog_KeyBindings_DrawKeyEntry_Label.FormatWithModifier(
+                settings.dollyKeyA.ToStringReadable(), settings.dollyModifierA);
+            string labelB = Patch_Dialog_KeyBindings_DrawKeyEntry_Label.FormatWithModifier(
+                settings.dollyKeyB.ToStringReadable(), settings.dollyModifierB);
+            GameFont previousFont = Text.Font;
+            try
+            {
+                Text.Font = GameFont.Small;
+                return Mathf.Max(BindingWidth, Mathf.Ceil(Mathf.Max(
+                    Text.CalcSize(labelA).x, Text.CalcSize(labelB).x)) + 20f);
+            }
+            finally
+            {
+                Text.Font = previousFont;
+            }
+        }
+
+        internal static void ResizeOpenWindow(ExtraMouseKeybindsMod mod)
+        {
+            Dialog_ModSettings window = Find.WindowStack.WindowOfType<Dialog_ModSettings>();
+            if (window == null || GetMod(window) != mod)
+            {
+                return;
+            }
+
+            Vector2 size = GetPreferredWindowSize();
+            Rect rect = window.windowRect;
+            rect.x = Mathf.Clamp(rect.center.x - size.x / 2f, 0f, Mathf.Max(0f, UI.screenWidth - size.x));
+            rect.y = Mathf.Clamp(rect.center.y - size.y / 2f, 0f, Mathf.Max(0f, UI.screenHeight - size.y));
+            rect.size = size;
+            window.windowRect = rect;
+        }
+
         internal static float GetResetWidth()
         {
             GameFont previousFont = Text.Font;
@@ -1876,7 +2116,7 @@ namespace ExtraMouseKeybinds
             try
             {
                 Text.Font = GameFont.Small;
-                float contentWidth = Mathf.Max(BindingWidth * 2f + BindingGap, GetResetWidth());
+                float contentWidth = Mathf.Max(GetBindingWidth() * 2f + BindingGap, GetResetWidth());
                 foreach (string key in SectionLabelKeys)
                 {
                     contentWidth = Mathf.Max(contentWidth, Text.CalcSize(key.Translate()).x);

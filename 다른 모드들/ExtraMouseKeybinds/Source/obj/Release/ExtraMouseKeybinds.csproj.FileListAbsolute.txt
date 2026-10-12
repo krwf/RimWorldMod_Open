@@ -1,0 +1,9 @@
+C:\Users\user\Documents\Codex\2026-08-15\extramousekeybinds\work\verify-build\ExtraMouseKeybinds.dll
+C:\Users\user\Documents\Codex\2026-08-15\extramousekeybinds\work\verify-build\ExtraMouseKeybinds.pdb
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.csproj.AssemblyReference.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.AssemblyInfoInputs.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.AssemblyInfo.cs
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.csproj.CoreCompileInputs.cache
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.dll
+C:\Users\user\Desktop\봉인\dc\림월드모드\마우스추가버튼\ExtraMouseKeybinds\Source\obj\Release\ExtraMouseKeybinds.pdb

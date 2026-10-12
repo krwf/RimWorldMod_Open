@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LanguageData>
+  <!-- EN: Extra Mouse Keybinds -->
+  <KRWF_EMK_SettingsCategory>Extra Mouse Keybinds</KRWF_EMK_SettingsCategory>
+  <!-- EN: Camera dolly buttons -->
+  <KRWF_EMK_CameraDollyButtons>화면 이동 버튼 설정</KRWF_EMK_CameraDollyButtons>
+  <!-- EN: Camera dolly keyboard keys -->
+  <KRWF_EMK_CameraDollyKeys>화면 이동 키보드 설정</KRWF_EMK_CameraDollyKeys>
+  <!-- EN: [m0] - Left click -->
+  <KRWF_EMK_m0Click>[m0] - 좌 클릭</KRWF_EMK_m0Click>
+  <!-- EN: [m1] - Right click -->
+  <KRWF_EMK_m1Click>[m1] - 우 클릭</KRWF_EMK_m1Click>
+  <!-- EN: [m2] - Middle click -->
+  <KRWF_EMK_m2Click>[m2] - 휠 클릭</KRWF_EMK_m2Click>
+  <!-- EN: [m3] - Extra 1 -->
+  <KRWF_EMK_m3Click>[m3] - 추가 1</KRWF_EMK_m3Click>
+  <!-- EN: [m4] - Extra 2 -->
+  <KRWF_EMK_m4Click>[m4] - 추가 2</KRWF_EMK_m4Click>
+  <!-- EN: [m5] - Extra 3 -->
+  <KRWF_EMK_m5Click>[m5] - 추가 3</KRWF_EMK_m5Click>
+  <!-- EN: [m6] - Extra 4 -->
+  <KRWF_EMK_m6Click>[m6] - 추가 4</KRWF_EMK_m6Click>
+  <!-- EN: Disable tab closing -->
+  <KRWF_EMK_DisableTabClosing>탭 닫기 무효 설정</KRWF_EMK_DisableTabClosing>
+  <!-- EN: Hold input mode -->
+  <KRWF_EMK_HoldInputMode>계속 누르는 판정 설정</KRWF_EMK_HoldInputMode>
+</LanguageData>

@@ -164,6 +164,11 @@ namespace KRWF.RenameHomeAndUnrestrictedAreas
     internal static class Patch_DialogManageAreas_DoWindowContents
     {
         private const float RenameButtonHorizontalPadding = 20f;
+#if RIMWORLD_1_7
+        private const int MinimumRowsBeforeCreateButton = 9;
+#else
+        private const int MinimumRowsBeforeCreateButton = 8;
+#endif
         private static readonly FieldInfo MapField = AccessTools.Field(typeof(Dialog_ManageAreas), "map");
         private static readonly MethodInfo DoAreaRowMethod = AccessTools.Method(typeof(Dialog_ManageAreas), "DoAreaRow");
 
@@ -209,7 +214,7 @@ namespace KRWF.RenameHomeAndUnrestrictedAreas
 
             if (map.areaManager.CanMakeNewAllowed())
             {
-                for (; visibleRows < 8; visibleRows++)
+                for (; visibleRows < MinimumRowsBeforeCreateButton; visibleRows++)
                 {
                     listing.Gap(30f);
                 }

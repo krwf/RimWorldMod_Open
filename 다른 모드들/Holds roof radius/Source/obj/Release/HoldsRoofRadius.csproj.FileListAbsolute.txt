@@ -1,0 +1,9 @@
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\1.7\Assemblies\HoldsRoofRadius.dll
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.csproj.AssemblyReference.cache
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.AssemblyInfoInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.AssemblyInfo.cs
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\HoldsRoofRadius.dll
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\refint\HoldsRoofRadius.dll
+C:\Users\user\Documents\RimworldModsFolder\Holds roof radius\Source\obj\Release\ref\HoldsRoofRadius.dll
