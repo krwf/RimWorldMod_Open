@@ -1,0 +1,296 @@
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using HarmonyLib;
+using UnityEngine;
+using Verse;
+
+namespace KRWF.RimKata
+{
+    internal static class RimKataCombatExtendedFire
+    {
+        private static Type launchType;
+        private static Type shootType;
+        private static Func<Verb, int> shotsPerBurst;
+        private static Func<Verb, int> fireMode;
+        private sealed class BurstSelection
+        {
+            internal VerbProperties properties;
+            internal int mode;
+            internal int count;
+        }
+        private static readonly ConditionalWeakTable<Verb, BurstSelection> BurstSelections =
+            new ConditionalWeakTable<Verb, BurstSelection>();
+        private static Func<Verb, bool> shouldAim;
+        private static Func<Verb, bool> isAiming;
+        private static Action<Verb, bool> setAiming;
+        private static FloatField aimingAccuracy;
+        private static FloatField accuracyFactor;
+        private static FloatField sway;
+        private static FloatField spread;
+        private static FloatField circularMiss;
+        private static FloatField indirectShift;
+        private static FloatField visibilityShift;
+        private static FloatField leadDistance;
+
+        internal static void Apply(Harmony harmony)
+        {
+            Type launcher = RimKataActiveModTypes.Find("CombatExtended.Verb_LaunchProjectileCE");
+            Type shooter = RimKataActiveModTypes.Find("CombatExtended.Verb_ShootCE");
+            if (launcher == null || shooter == null) return;
+            MethodInfo shots = AccessTools.PropertyGetter(launcher, "ShotsPerBurst");
+            MethodInfo shootShots = AccessTools.PropertyGetter(shooter, "ShotsPerBurst");
+            MethodInfo aim = AccessTools.PropertyGetter(shooter, "ShouldAim");
+            FieldInfo aiming = AccessTools.Field(shooter, "_isAiming");
+            MethodInfo report = AccessTools.Method(launcher, "ShiftVecReportFor",
+                new[] { typeof(LocalTargetInfo), typeof(IntVec3) });
+            MethodInfo swayVector = AccessTools.Method(launcher, "GetSwayVec",
+                new[] { typeof(float).MakeByRefType(), typeof(float).MakeByRefType() });
+            MethodInfo shootLine = AccessTools.DeclaredMethod(launcher, "TryFindCEShootLineFromTo",
+                new[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(ShootLine).MakeByRefType(),
+                    typeof(Vector3).MakeByRefType() });
+            Type reportType = RimKataActiveModTypes.Find("CombatExtended.ShiftVecReport");
+            if (shots == null || shootShots == null || aim == null || aiming?.FieldType != typeof(bool)
+                || report?.ReturnType != reportType || reportType == null || swayVector == null
+                || shootLine?.ReturnType != typeof(bool))
+                throw new InvalidOperationException("CE firing API does not match the supported shape.");
+
+            shotsPerBurst = Getter<int>(shots);
+            MethodInfo modes = AccessTools.PropertyGetter(launcher, "CompFireModes");
+            MethodInfo mode = AccessTools.PropertyGetter(modes.ReturnType, "CurrentFireMode");
+            MethodInfo setMode = AccessTools.PropertySetter(modes.ReturnType, "CurrentFireMode");
+            MethodInfo toggleMode = AccessTools.Method(modes.ReturnType, "ToggleFireMode", Type.EmptyTypes);
+            if (setMode == null || toggleMode == null)
+                throw new InvalidOperationException("CE fire-mode API does not match.");
+            ParameterExpression modeVerb = Expression.Parameter(typeof(Verb), "verb");
+            ParameterExpression comp = Expression.Variable(modes.ReturnType, "modes");
+            fireMode = Expression.Lambda<Func<Verb, int>>(Expression.Block(new[] { comp },
+                Expression.Assign(comp, Expression.Call(Expression.Convert(modeVerb, launcher), modes)),
+                Expression.Condition(Expression.Equal(comp, Expression.Constant(null, modes.ReturnType)),
+                    Expression.Constant(-1), Expression.Convert(Expression.Call(comp, mode), typeof(int)))), modeVerb).Compile();
+            shouldAim = Getter<bool>(aim);
+            ParameterExpression verb = Expression.Parameter(typeof(Verb), "verb");
+            ParameterExpression value = Expression.Parameter(typeof(bool), "value");
+            MemberExpression field = Expression.Field(Expression.Convert(verb, shooter), aiming);
+            isAiming = Expression.Lambda<Func<Verb, bool>>(field, verb).Compile();
+            setAiming = Expression.Lambda<Action<Verb, bool>>(
+                Expression.Assign(field, value), verb, value).Compile();
+            aimingAccuracy = new FloatField(reportType, "aimingAccuracy");
+            accuracyFactor = new FloatField(reportType, "accuracyFactorInt");
+            sway = new FloatField(reportType, "swayDegrees");
+            spread = new FloatField(reportType, "spreadDegrees");
+            circularMiss = new FloatField(reportType, "circularMissRadius");
+            indirectShift = new FloatField(reportType, "indirectFireShift");
+            visibilityShift = new FloatField(reportType, "visibilityShiftInt");
+            leadDistance = new FloatField(reportType, "leadDistInt");
+            launchType = launcher;
+            shootType = shooter;
+
+            HarmonyMethod countPatch = new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(ShotsPostfix));
+            RimKataStartupPatches.Patch(harmony, shots, postfix: countPatch);
+            if (shootShots != shots) RimKataStartupPatches.Patch(harmony, shootShots, postfix: countPatch);
+            RimKataStartupPatches.Patch(harmony, report, postfix: new HarmonyMethod(
+                typeof(RimKataCombatExtendedFire), nameof(ReportPostfix)));
+            RimKataStartupPatches.Patch(harmony, swayVector,
+                prefix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPrefix)),
+                postfix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPostfix)));
+            var modePatch = new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(ModeChangedPostfix));
+            RimKataStartupPatches.Patch(harmony, setMode, postfix: modePatch);
+            RimKataStartupPatches.Patch(harmony, toggleMode, postfix: modePatch);
+            RimKataStartupPatches.Patch(harmony, shootLine, transpiler: new HarmonyMethod(
+                typeof(RimKataCombatExtendedFire), nameof(CloseRangeTranspiler)));
+            ApplyPublicShotPatches(harmony, launcher);
+            RimKataCombatExtendedPrepared.Apply(harmony);
+            RimKataCombatExtendedNativeAttack.Apply(harmony, launcher);
+            RimKataCombatExtendedCrawlFire.Apply(harmony, shooter);
+        }
+
+        private static void ApplyPublicShotPatches(Harmony harmony, Type launcher)
+        {
+            Type patch = typeof(Patch_Verb_TryCastShot_RimKata);
+            var prefix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Prefix));
+            var postfix = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Postfix));
+            var finalizer = new HarmonyMethod(patch, nameof(Patch_Verb_TryCastShot_RimKata.Finalizer));
+            foreach (Type type in RimKataPatchTargetCatalog.TypesDerivedFrom(typeof(Verb)))
+            {
+                if (type == null || !launcher.IsAssignableFrom(type)) continue;
+                // Common TryCastShot discovery covers only non-public overrides.
+                MethodInfo method = type.GetMethod("TryCastShot",
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly,
+                    null, Type.EmptyTypes, null);
+                if (method != null && !method.IsAbstract && !method.ContainsGenericParameters
+                    && method.ReturnType == typeof(bool))
+                    RimKataStartupPatches.Patch(harmony, method, prefix: prefix, postfix: postfix, finalizer: finalizer);
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> CloseRangeTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            MethodInfo original = AccessTools.Method(typeof(Verb), nameof(Verb.OutOfRange));
+            MethodInfo replacement = AccessTools.Method(typeof(RimKataCombatExtendedFire), nameof(CloseOutOfRange));
+            int count = 0;
+            foreach (CodeInstruction code in codes)
+            {
+                if (!code.Calls(original)) continue;
+                code.opcode = OpCodes.Call;
+                code.operand = replacement;
+                count++;
+            }
+            if (count != 1)
+                throw new InvalidOperationException("CE shoot-line range check does not match the supported shape.");
+            return codes;
+        }
+
+        private static bool CloseOutOfRange(Verb verb, IntVec3 root, LocalTargetInfo target, CellRect occupiedRect)
+        {
+            if (RimKataFireContext.ActiveVerb != verb || !RimKataFireContext.CloseShot)
+                return verb.OutOfRange(root, target, occupiedRect);
+            float minRange = verb.verbProps.EffectiveMinRange(true);
+            float distanceSquared = occupiedRect.ClosestDistSquaredTo(root);
+            return distanceSquared > verb.EffectiveRange * verb.EffectiveRange
+                || distanceSquared < minRange * minRange;
+        }
+
+        private static Func<Verb, T> Getter<T>(MethodInfo method)
+        {
+            ParameterExpression verb = Expression.Parameter(typeof(Verb), "verb");
+            return Expression.Lambda<Func<Verb, T>>(
+                Expression.Call(Expression.Convert(verb, method.DeclaringType), method), verb).Compile();
+        }
+
+        internal static bool IsVerb(Verb verb) => launchType != null && launchType.IsInstanceOfType(verb);
+
+        internal static int OriginalBurstCount(Verb verb)
+        {
+            if (!IsVerb(verb)) return Math.Max(1, verb?.BurstShotCount ?? 1);
+            VerbProperties previous = verb.verbProps;
+            if (RimKataPreparedWeaponData.TryGetPrepared(verb, out RimKataPreparedWeaponValues prepared))
+                verb.verbProps = prepared.OriginalProperties;
+            try
+            {
+                int mode = fireMode(verb);
+                BurstSelection selection = BurstSelections.GetOrCreateValue(verb);
+                if (selection.properties != verb.verbProps || selection.mode != mode)
+                {
+                    // CE can roll weapon traits in this getter, so its result is sampled only when preparing a mode.
+                    selection.count = Math.Max(1, shotsPerBurst(verb));
+                    selection.properties = verb.verbProps;
+                    selection.mode = mode;
+                }
+                return selection.count;
+            }
+            finally { verb.verbProps = previous; }
+        }
+
+        internal static float OriginalWarmup(Verb verb, RimKataPreparedWeaponValues prepared)
+        {
+            if (!IsVerb(verb)) return prepared.OriginalWarmupSeconds;
+            VerbProperties previous = verb.verbProps;
+            verb.verbProps = prepared.OriginalProperties;
+            try { return Mathf.Max(0f, verb.WarmupTime); }
+            finally { verb.verbProps = previous; }
+        }
+
+        internal static bool PreparedModeIsCurrent(Verb verb, RimKataPreparedWeaponValues prepared)
+            => !IsVerb(verb) || (BurstSelections.TryGetValue(verb, out BurstSelection selection)
+                && selection.properties == prepared.OriginalProperties && selection.mode == fireMode(verb));
+
+        private static void ShotsPostfix(Verb __instance, ref int __result)
+        {
+            if (RimKataPreparedWeaponData.TryGetPrepared(__instance, out _)
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(__instance.CasterPawn))
+                __result = 1;
+        }
+
+        private static void ModeChangedPostfix(ThingComp __instance)
+        {
+            if (__instance.parent?.ParentHolder is Pawn_EquipmentTracker equipment
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(equipment.pawn))
+                RimKataDualWeaponController.InvalidateWeaponBindings(equipment.pawn);
+        }
+
+        internal static bool SuspendExtraAim(Verb verb, out int ticks)
+        {
+            ticks = 0;
+            if (shootType == null || !shootType.IsInstanceOfType(verb) || !isAiming(verb)
+                || !(verb.CasterPawn?.stances?.curStance is Stance_Warmup warmup)
+                || warmup.verb != verb) return false;
+            ticks = Math.Max(1, warmup.ticksLeft);
+            // CE otherwise cancels aiming on RimKata's shared body stance; the weapon request owns this delay.
+            setAiming(verb, false);
+            return true;
+        }
+
+        internal static bool BeginsExtraAim(Verb verb)
+            => shootType != null && shootType.IsInstanceOfType(verb) && !isAiming(verb) && shouldAim(verb);
+
+        internal static bool ContinueExtraAim(Verb verb) => shouldAim(verb);
+        internal static void ResumeExtraAim(Verb verb) => setAiming(verb, true);
+        internal static void ClearExtraAim(Verb verb)
+        {
+            if (shootType != null && shootType.IsInstanceOfType(verb)) setAiming(verb, false);
+        }
+
+        private static void ReportPostfix(Verb __instance, object __result)
+        {
+            if (__result == null || RimKataFireContext.ActiveVerb != __instance) return;
+            if (RimKataFireContext.CloseMeleeResolution)
+            {
+                // Close attacks already rolled melee accuracy before entering the CE shot.
+                aimingAccuracy.Set(__result, 1.5f);
+                accuracyFactor.Set(__result, 0f);
+                sway.Set(__result, 0f);
+                spread.Set(__result, 0f);
+                circularMiss.Set(__result, 0f);
+                indirectShift.Set(__result, 0f);
+                visibilityShift.Set(__result, 0f);
+                leadDistance.Set(__result, 0f);
+                return;
+            }
+            float multiplier = Mathf.Max(0f, RimKataFireContext.MovingAccuracyMultiplier
+                * RimKataFireContext.InterceptionAccuracyBonusMultiplier
+                * RimKataFireContext.SerumInterceptionMultiplier);
+            if (Mathf.Approximately(multiplier, 1f)) return;
+            // CE uses dispersion rather than vanilla hit-percentage rolls.
+            aimingAccuracy.Set(__result, Mathf.Clamp(aimingAccuracy.Get(__result) * multiplier, 0f, 1.5f));
+            accuracyFactor.Set(__result, -1f);
+            sway.Set(__result, Mathf.Min(180f, sway.Get(__result) / Mathf.Max(0.01f, multiplier)));
+        }
+
+        private static void SwayPrefix(float __0, float __1, out Vector2 __state)
+            => __state = new Vector2(__0, __1);
+
+        private static void SwayPostfix(Verb __instance, ref float __0, ref float __1, Vector2 __state)
+        {
+            if (RimKataFireContext.ActiveVerb != __instance) return;
+            float multiplier = RimKataFireContext.MovingAccuracyMultiplier
+                * RimKataFireContext.InterceptionAccuracyBonusMultiplier
+                * RimKataFireContext.SerumInterceptionMultiplier;
+            float scale = RimKataFireContext.CloseMeleeResolution ? 0f : 1f / Mathf.Max(0.01f, multiplier);
+            __0 = __state.x + (__0 - __state.x) * scale;
+            __1 = __state.y + (__1 - __state.y) * scale;
+        }
+
+        private sealed class FloatField
+        {
+            internal readonly Func<object, float> Get;
+            internal readonly Action<object, float> Set;
+            internal FloatField(Type type, string name)
+            {
+                FieldInfo info = AccessTools.Field(type, name);
+                if (info?.FieldType != typeof(float))
+                    throw new InvalidOperationException("CE aiming field changed: " + name);
+                ParameterExpression instance = Expression.Parameter(typeof(object), "instance");
+                ParameterExpression value = Expression.Parameter(typeof(float), "value");
+                MemberExpression field = Expression.Field(Expression.Convert(instance, type), info);
+                Get = Expression.Lambda<Func<object, float>>(field, instance).Compile();
+                Set = Expression.Lambda<Action<object, float>>(
+                    Expression.Assign(field, value), instance, value).Compile();
+            }
+        }
+    }
+}

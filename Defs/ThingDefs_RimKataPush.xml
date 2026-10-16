@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <ThingDef ParentName="EtherealThingBase">
+    <defName>RimKata_PushMotion</defName>
+    <label>push motion</label>
+    <thingClass>KRWF.RimKata.RimKataPushMotion</thingClass>
+    <useHitPoints>false</useHitPoints>
+    <selectable>false</selectable>
+    <tickerType>Normal</tickerType>
+    <drawerType>None</drawerType>
+  </ThingDef>
+</Defs>

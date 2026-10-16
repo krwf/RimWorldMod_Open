@@ -1,0 +1,859 @@
+using HarmonyLib;
+using RimWorld;
+using System.Collections.Generic;
+using System.Reflection.Emit;
+using System.Runtime.CompilerServices;
+using Verse;
+using Verse.AI;
+
+namespace KRWF.RimKata
+{
+    public static class RimKataDraftedFireController
+    {
+        public static void Tick(Pawn pawn)
+        {
+            RimKataDualWeaponController.TickCombat(pawn, true);
+        }
+
+        public static void ProcessJobTrackerTick(Pawn pawn)
+        {
+            RimKataDualWeaponController.TickCombat(pawn, true);
+        }
+
+        public static bool TryApplyResponseCooldown(
+            Pawn pawn,
+            ThingWithComps weapon,
+            Verb selectedVerb,
+            LocalTargetInfo focus)
+        {
+            if (pawn?.IsBurning() == true)
+            {
+                CancelForFire(pawn);
+                return true;
+            }
+
+            if (!CanControllerPrerequisites(pawn))
+            {
+                return false;
+            }
+
+            return RimKataDualWeaponController.TryApplyResponseCooldown(pawn, weapon, selectedVerb, focus);
+        }
+
+        public static void CancelForFire(Pawn pawn)
+        {
+            RimKataDualWeaponController.CancelOffenseForFire(pawn, StateFor(pawn, false));
+        }
+
+        public static bool ShouldReplacePhysicalMeleeAttack(
+            Pawn pawn,
+            Thing target)
+        {
+            return TryQueuePhysicalMeleeAttack(pawn, target);
+        }
+
+        public static bool TryQueuePhysicalMeleeAttack(Pawn pawn, Thing target)
+        {
+            if (RimKataSubdueCombat.TryHandleMeleeAttempt(pawn, target)) return true;
+            if (pawn?.Map == null
+                || pawn.InMentalState
+                || target == null
+                || target.Destroyed
+                || !target.Spawned
+                || target.Map != pawn.Map
+                || RimKataDualWeaponController.UsesVanillaAutomaticTarget(pawn, target))
+            {
+                return false;
+            }
+
+            bool dedicatedJob = pawn.CurJobDef == RimKataDefOf.RimKata_Attack;
+            bool controllerDriven = dedicatedJob
+                || CanControllerPrerequisites(pawn);
+            if (!controllerDriven
+                || !pawn.CanReachImmediate(target, PathEndMode.Touch)
+                || !RimKataDualWeaponController.HasUsableWeapon(
+                    pawn,
+                    true,
+                    !dedicatedJob))
+            {
+                return false;
+            }
+
+            RimKataPawnCombatState state = StateFor(pawn, true);
+            if (state == null)
+            {
+                return false;
+            }
+
+            bool playerForced = false;
+            bool killIncappedTarget = false;
+            state.TryGetForcedAttackRequestContext(
+                target,
+                out playerForced,
+                out killIncappedTarget);
+            if ((!RimKataTargeting.IsAutomaticEnemy(pawn, target)
+                    && !playerForced)
+                || (target is Pawn targetPawn
+                    && !RimKataTargeting.IsPawnTargetStateValid(
+                        targetPawn,
+                        playerForced && killIncappedTarget))
+                || RimKataDualWeaponController.ResolveImmediateCloseTarget(
+                    pawn,
+                    null,
+                    target,
+                    playerForced,
+                    killIncappedTarget) != target)
+            {
+                return false;
+            }
+
+            state.RequestCloseAttack(target);
+
+            return state.CloseAttackRequestActive;
+        }
+
+        public static void NotifyTargetedByHostile(Pawn target, Pawn attacker)
+        {
+            if (target == null
+                || attacker == null
+                || target == attacker
+                || !target.Spawned
+                || !attacker.Spawned
+                || target.Map != attacker.Map
+                || target.Drafted != true
+                || !RimKataTargeting.IsAutomaticEnemy(target, attacker)
+                || !RimKataTargeting.IsPawnTargetStateValid(attacker)
+                || !CanControllerPrerequisites(target))
+            {
+                return;
+            }
+
+            RimKataPawnCombatState state = StateFor(target, true);
+            if (state != null)
+            {
+                state.NotifyIncomingThreat(attacker);
+            }
+        }
+
+        private static bool CanControllerPrerequisites(Pawn pawn)
+        {
+            return pawn?.Drafted == true
+                && IsAutomaticFireJob(pawn.CurJobDef)
+                && RimKataEligibility.CanBeginGunKataAttack(pawn);
+        }
+
+        public static string DebugCombatDemandReasons(Pawn pawn)
+        {
+            if (pawn == null)
+            {
+                return "-";
+            }
+
+            RimKataPawnCombatState state = StateFor(pawn, false);
+            if (state == null)
+            {
+                return "-";
+            }
+
+            string reasons = "";
+
+            if (state.DodgeMovementActive)
+                reasons += "D";
+
+            if (state.DebugIncomingThreatStored)
+                reasons += "I";
+
+            if (state.DebugCloseAttackRequestStored)
+                reasons += "C";
+
+            if (state.primaryWeaponCycle?.CombatActive == true)
+                reasons += "1";
+
+            if (state.secondaryWeaponCycle?.CombatActive == true)
+                reasons += "2";
+
+            if (state.MovementFireContinuityActive)
+                reasons += "M";
+
+            if (state.DraftedMovementSearchTriggerPending)
+                reasons += "Q";
+
+            Thing enemyTarget = pawn.mindState?.enemyTarget;
+            if (enemyTarget != null
+                && enemyTarget.Spawned
+                && enemyTarget.Map == pawn.Map
+                && RimKataTargeting.IsAutomaticEnemy(pawn, enemyTarget))
+            {
+                reasons += "E";
+            }
+
+            return reasons.Length > 0 ? reasons : "-";
+        }
+
+        internal static bool IsAutomaticFireJob(JobDef jobDef)
+        {
+            return jobDef == null
+                || jobDef == JobDefOf.Goto
+                || jobDef == JobDefOf.Wait
+                || jobDef == JobDefOf.Wait_Combat
+                || jobDef == JobDefOf.Wait_MaintainPosture
+                || jobDef == JobDefOf.AttackMelee;
+        }
+
+        private static RimKataPawnCombatState StateFor(Pawn pawn, bool create)
+        {
+            return pawn?.Map?.GetComponent<RimKataMapComponent>()?.GetState(pawn, create);
+        }
+
+    }
+
+    [HarmonyPatch(typeof(Pawn_JobTracker), nameof(Pawn_JobTracker.JobTrackerTick))]
+    public static class Patch_PawnJobTracker_DraftedRimKataFire
+    {
+        private static IEnumerable<CodeInstruction> Transpiler(
+            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            Label completed = generator.DefineLabel();
+            Label absent = generator.DefineLabel();
+            bool hasReturn = false;
+            foreach (CodeInstruction code in codes)
+            {
+                if (code.opcode != OpCodes.Ret) continue;
+                code.opcode = OpCodes.Br;
+                code.operand = completed;
+                hasReturn = true;
+            }
+            if (!hasReturn)
+                throw new System.InvalidOperationException("[RimKata] JobTrackerTick has no normal return.");
+
+            var entryPoint = new CodeInstruction(OpCodes.Nop);
+            entryPoint.labels.Add(completed);
+            codes.Add(entryPoint);
+            var pawnField = AccessTools.Field(typeof(Pawn_JobTracker), "pawn");
+            codes.AddRange(RimKataRegisteredPawnGate.Branch(generator, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, pawnField)
+            }, absent, true, out _));
+            codes.Add(new CodeInstruction(OpCodes.Ldarg_0));
+            codes.Add(new CodeInstruction(OpCodes.Ldfld, pawnField));
+            codes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                typeof(RimKataDraftedFireController),
+                nameof(RimKataDraftedFireController.ProcessJobTrackerTick))));
+            var returnInstruction = new CodeInstruction(OpCodes.Ret);
+            returnInstruction.labels.Add(absent);
+            codes.Add(returnInstruction);
+            return codes;
+        }
+    }
+
+    [HarmonyPatch(typeof(JobDriver_Wait), "CheckForAutoAttack")]
+    internal static class Patch_WaitAutoAttack_RimKataTargetSearch
+    {
+        private static void Prefix(out RimKataSubdueState __state)
+            => __state = RimKataSubdueAutomaticFire.Begin();
+
+        private static void Finalizer(RimKataSubdueState __state)
+            => RimKataSubdueAutomaticFire.End(__state);
+
+        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+            var field = AccessTools.Field(typeof(Job), nameof(Job.canUseRangedWeapon));
+            int index = codes.FindIndex(code => code.LoadsField(field));
+            if (index < 0 || codes.FindIndex(index + 1, code => code.LoadsField(field)) >= 0)
+            {
+                Log.Error("[RimKata] Could not locate the Wait ranged-search gate; native targeting was left unchanged.");
+                return codes;
+            }
+            var carry = AccessTools.Method(typeof(PawnUtility), nameof(PawnUtility.IsCarryingPawn));
+            var fireAtWill = AccessTools.PropertyGetter(typeof(Pawn_DraftController), nameof(Pawn_DraftController.FireAtWill));
+            var start = AccessTools.Method(typeof(Pawn), nameof(Pawn.TryStartAttack));
+            if (codes.FindAll(code => code.Calls(carry)).Count != 1
+                || codes.FindAll(code => code.Calls(fireAtWill)).Count != 1
+                || codes.FindAll(code => code.Calls(start)).Count != 1)
+            {
+                Log.Error("[RimKata] Could not locate the Wait subdue acquisition gates; native targeting was left unchanged.");
+                return codes;
+            }
+            foreach (CodeInstruction code in codes)
+            {
+                string replacement = code.Calls(carry) ? nameof(RimKataSubdueAutomaticFire.IsCarryingPawn)
+                    : code.Calls(fireAtWill) ? nameof(RimKataSubdueAutomaticFire.FireAtWill)
+                    : code.Calls(start) ? nameof(RimKataSubdueAutomaticFire.TryStartAttack) : null;
+                if (replacement == null) continue;
+                code.opcode = OpCodes.Call;
+                code.operand = AccessTools.Method(typeof(RimKataSubdueAutomaticFire), replacement);
+            }
+            codes.InsertRange(index + 1, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(
+                    typeof(Patch_WaitAutoAttack_RimKataTargetSearch), nameof(AllowsRangedSearch)))
+            });
+            return codes;
+        }
+
+        private static bool AllowsRangedSearch(bool allowed, JobDriver_Wait driver)
+            => RimKataSubdueAutomaticFire.AllowsRangedSearch(allowed, driver.pawn);
+    }
+
+    [HarmonyPatch(typeof(Verb_BeatFire), "TryCastShot")]
+    internal static class Patch_VerbBeatFire_RimKataFirePause
+    {
+        private static void Postfix(Verb_BeatFire __instance, bool __result)
+        {
+            if (__result) RimKataDualWeaponController.NotifyFireBeating(__instance.CasterPawn);
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_MeleeVerbs), nameof(Pawn_MeleeVerbs.TryMeleeAttack))]
+    public static class Patch_PawnMeleeVerbs_WaitCombatRimKata
+    {
+        public static bool Prefix(Pawn ___pawn, Thing target, ref bool __result)
+        {
+            RimKataDraftedFireController.NotifyTargetedByHostile(target as Pawn, ___pawn);
+            if (!RimKataDraftedFireController.TryQueuePhysicalMeleeAttack(___pawn, target))
+            {
+                return true;
+            }
+
+            __result = false;
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_StanceTracker), nameof(Pawn_StanceTracker.SetStance))]
+    public static class Patch_PawnStanceTracker_RimKataHostileAim
+    {
+        public static void Postfix(
+            Pawn ___pawn,
+            Stance newStance)
+        {
+            if (!(newStance is Stance_Warmup)
+                && !(newStance is Stance_RimKataAim))
+            {
+                return;
+            }
+
+            Stance_Busy busy = newStance as Stance_Busy;
+            Verb verb = busy?.verb;
+            Pawn target = busy?.focusTarg.Pawn;
+            RimKataDraftedFireController.NotifyTargetedByHostile(target, ___pawn);
+        }
+    }
+
+    internal static class RimKataDormantHostileMovementRegistry
+    {
+        private sealed class MapEntry
+        {
+            internal bool forcedNormalSpeedWasActive;
+            internal bool actualCombatWasActive;
+            internal bool awaitingCombatEnd;
+            internal bool restoreHostileWatchPending;
+            internal bool suspendedHostileWatch;
+            internal HashSet<IAttackTarget> hostileTargets;
+            internal readonly HashSet<Pawn> receivers =
+                new HashSet<Pawn>();
+            internal readonly HashSet<Pawn> pendingHostiles =
+                new HashSet<Pawn>();
+            internal readonly List<Pawn> hostileSnapshot =
+                new List<Pawn>();
+            internal readonly List<Pawn> receiverSnapshot =
+                new List<Pawn>();
+        }
+
+        private static readonly ConditionalWeakTable<Map, MapEntry> ByMap =
+            new ConditionalWeakTable<Map, MapEntry>();
+        private static readonly ConditionalWeakTable<Map, MapEntry>
+            .CreateValueCallback CreateEntry = delegate { return new MapEntry(); };
+
+        internal static void ExposeData(Map map)
+        {
+            if (map == null)
+            {
+                return;
+            }
+
+            ByMap.TryGetValue(map, out MapEntry entry);
+            bool forcedNormalSpeedWasActive = entry?.forcedNormalSpeedWasActive == true;
+            bool actualCombatWasActive = entry?.actualCombatWasActive == true;
+            bool awaitingCombatEnd = entry?.awaitingCombatEnd == true;
+            bool watchingHostiles = entry?.hostileTargets != null
+                || entry?.restoreHostileWatchPending == true
+                || entry?.suspendedHostileWatch == true;
+            Scribe_Values.Look(ref forcedNormalSpeedWasActive,
+                "rimKataHostileWatchForcedSpeedWasActive", false);
+            Scribe_Values.Look(ref actualCombatWasActive,
+                "rimKataHostileWatchActualCombatWasActive", false);
+            Scribe_Values.Look(ref awaitingCombatEnd,
+                "rimKataHostileWatchAwaitingCombatEnd", false);
+            Scribe_Values.Look(ref watchingHostiles,
+                "rimKataHostileWatchActive", false);
+            if (Scribe.mode != LoadSaveMode.LoadingVars)
+            {
+                return;
+            }
+
+            if (entry == null && !forcedNormalSpeedWasActive
+                && !actualCombatWasActive && !awaitingCombatEnd && !watchingHostiles)
+            {
+                return;
+            }
+            entry ??= ByMap.GetValue(map, CreateEntry);
+            ClearHostileCache(entry);
+            entry.forcedNormalSpeedWasActive = forcedNormalSpeedWasActive;
+            entry.actualCombatWasActive = actualCombatWasActive;
+            entry.awaitingCombatEnd = awaitingCombatEnd;
+            entry.restoreHostileWatchPending = watchingHostiles;
+        }
+
+        internal static void NotifyAccessChanged(Pawn pawn, bool hasAccess)
+        {
+            Map map = pawn?.Map;
+            if (map == null)
+            {
+                return;
+            }
+
+            if (hasAccess && IsLiveReceiverMember(pawn, map))
+            {
+                ByMap.GetValue(map, CreateEntry).receivers.Add(pawn);
+            }
+            else if (ByMap.TryGetValue(map, out MapEntry entry))
+            {
+                RemoveReceiver(entry, pawn);
+            }
+        }
+
+        internal static void NotifyDraftStatusChanged(Pawn pawn)
+        {
+            Map map = pawn?.Map;
+            if (map == null)
+            {
+                return;
+            }
+
+            if (IsLiveReceiverMember(pawn, map))
+            {
+                ByMap.GetValue(map, CreateEntry).receivers.Add(pawn);
+            }
+            else if (ByMap.TryGetValue(map, out MapEntry entry))
+            {
+                RemoveReceiver(entry, pawn);
+            }
+        }
+
+        internal static void NotifyPathStarted(Pawn pawn)
+        {
+            NotifyPathMovement(pawn);
+        }
+
+        internal static void NotifyPathCellEntered(Pawn pawn)
+        {
+            NotifyPathMovement(pawn);
+        }
+
+        internal static void NotifyPathStopped(Pawn pawn)
+        {
+            Map map = pawn?.Map;
+            if (map != null
+                && ByMap.TryGetValue(map, out MapEntry entry))
+            {
+                RemoveReceiver(entry, pawn);
+                entry.pendingHostiles.Remove(pawn);
+            }
+        }
+
+        internal static void NotifyMapRemoved(Map map)
+        {
+            if (map != null)
+            {
+                ByMap.Remove(map);
+            }
+        }
+
+        internal static void ProcessPending(Map map, bool actualCombatActive)
+        {
+            if (map == null)
+            {
+                return;
+            }
+
+            bool? forcedNormalSpeed = Find.TickManager?.slower?.ForcedNormalSpeed;
+            if (!forcedNormalSpeed.HasValue)
+            {
+                return;
+            }
+
+            bool forcedNormalSpeedActive = forcedNormalSpeed.Value;
+            if (!ByMap.TryGetValue(map, out MapEntry entry))
+            {
+                if (!forcedNormalSpeedActive && !actualCombatActive)
+                {
+                    return;
+                }
+                entry = ByMap.GetValue(map, CreateEntry);
+            }
+
+            bool forcedSpeedStarted = forcedNormalSpeedActive
+                && !entry.forcedNormalSpeedWasActive;
+            bool forcedSpeedEnded = !forcedNormalSpeedActive
+                && entry.forcedNormalSpeedWasActive;
+            bool actualCombatStarted = actualCombatActive
+                && !entry.actualCombatWasActive;
+            bool actualCombatEnded = !actualCombatActive
+                && entry.actualCombatWasActive;
+            entry.forcedNormalSpeedWasActive = forcedNormalSpeedActive;
+            entry.actualCombatWasActive = actualCombatActive;
+            if (forcedSpeedEnded) RimKataCrawlFireUtility.NotifyCombatEnded(map);
+
+            if (forcedSpeedStarted
+                || (actualCombatStarted
+                    && !entry.awaitingCombatEnd
+                    && !forcedSpeedEnded))
+            {
+                ClearHostileCache(entry);
+                entry.awaitingCombatEnd = true;
+            }
+
+            if (entry.awaitingCombatEnd)
+            {
+                if (!forcedSpeedEnded
+                    && (forcedNormalSpeedActive || !actualCombatEnded))
+                {
+                    entry.pendingHostiles.Clear();
+                    return;
+                }
+
+                entry.awaitingCombatEnd = false;
+                AcquireHostileCacheAfterCombat(map, entry);
+            }
+
+            if (entry.restoreHostileWatchPending
+                || (entry.suspendedHostileWatch && entry.receivers.Count > 0))
+            {
+                AcquireHostileCacheAfterCombat(map, entry);
+            }
+
+            if (entry.suspendedHostileWatch)
+            {
+                return;
+            }
+
+            if (entry.receivers.Count == 0)
+            {
+                if (entry.hostileTargets != null)
+                {
+                    SuspendHostileWatch(entry);
+                }
+                return;
+            }
+
+            if (entry.hostileTargets == null)
+            {
+                return;
+            }
+            if (entry.hostileTargets.Count == 0)
+            {
+                ClearHostileCache(entry);
+                return;
+            }
+
+            if (entry.pendingHostiles.Count == 0)
+            {
+                return;
+            }
+
+            BuildLiveReceiverSnapshot(map, entry);
+            if (entry.receiverSnapshot.Count == 0)
+            {
+                SuspendHostileWatch(entry);
+                return;
+            }
+            BuildPendingHostileSnapshot(map, entry);
+            for (int i = 0;
+                i < entry.receiverSnapshot.Count
+                    && entry.hostileSnapshot.Count > 0;
+                i++)
+            {
+                RimKataDualWeaponController.TryReceiveDormantMovingHostiles(
+                    entry.receiverSnapshot[i],
+                    entry.hostileSnapshot);
+            }
+
+            entry.pendingHostiles.Clear();
+            entry.hostileSnapshot.Clear();
+            entry.receiverSnapshot.Clear();
+        }
+
+        private static void NotifyPathMovement(Pawn pawn)
+        {
+            Map map = pawn?.Map;
+            if (map == null
+                || !pawn.Spawned)
+            {
+                return;
+            }
+
+            ByMap.TryGetValue(map, out MapEntry existing);
+            if (IsLiveReceiverMember(pawn, map))
+            {
+                existing ??= ByMap.GetValue(map, CreateEntry);
+                existing.receivers.Add(pawn);
+                return;
+            }
+
+            if (existing == null)
+            {
+                return;
+            }
+
+            RemoveReceiver(existing, pawn);
+            if (existing.receivers.Count == 0
+                || existing.suspendedHostileWatch
+                || existing.awaitingCombatEnd
+                || existing.hostileTargets == null
+                || Find.TickManager?.slower?.ForcedNormalSpeed != false)
+            {
+                return;
+            }
+
+            if (IsLiveMovingHostile(pawn, map, existing.hostileTargets))
+            {
+                existing.pendingHostiles.Add(pawn);
+            }
+            else
+            {
+                existing.pendingHostiles.Remove(pawn);
+            }
+        }
+
+        private static void AcquireHostileCacheAfterCombat(
+            Map map,
+            MapEntry entry)
+        {
+            BuildLiveReceiverSnapshot(map, entry);
+            if (entry.receiverSnapshot.Count == 0)
+            {
+                SuspendHostileWatch(entry);
+                return;
+            }
+            entry.receiverSnapshot.Clear();
+            entry.restoreHostileWatchPending = false;
+            entry.suspendedHostileWatch = false;
+            entry.hostileTargets = Faction.OfPlayer != null
+                ? map.attackTargetsCache?.TargetsHostileToColony
+                : null;
+            if (entry.hostileTargets == null || entry.hostileTargets.Count == 0)
+            {
+                ClearHostileCache(entry);
+            }
+        }
+
+        private static void ClearHostileCache(MapEntry entry)
+        {
+            entry.restoreHostileWatchPending = false;
+            entry.suspendedHostileWatch = false;
+            entry.hostileTargets = null;
+            entry.pendingHostiles.Clear();
+            entry.hostileSnapshot.Clear();
+            entry.receiverSnapshot.Clear();
+        }
+
+        private static void SuspendHostileWatch(MapEntry entry)
+        {
+            ClearHostileCache(entry);
+            entry.suspendedHostileWatch = true;
+        }
+
+        private static void RemoveReceiver(MapEntry entry, Pawn pawn)
+        {
+            if (!entry.receivers.Remove(pawn) || entry.receivers.Count > 0)
+            {
+                return;
+            }
+
+            if (entry.hostileTargets != null
+                || entry.restoreHostileWatchPending
+                || entry.suspendedHostileWatch)
+            {
+                SuspendHostileWatch(entry);
+            }
+            else
+            {
+                entry.pendingHostiles.Clear();
+            }
+        }
+
+        private static void BuildLiveReceiverSnapshot(
+            Map map,
+            MapEntry entry)
+        {
+            entry.receiverSnapshot.Clear();
+            foreach (Pawn receiver in entry.receivers)
+            {
+                entry.receiverSnapshot.Add(receiver);
+            }
+
+            for (int i = entry.receiverSnapshot.Count - 1; i >= 0; i--)
+            {
+                Pawn receiver = entry.receiverSnapshot[i];
+                if (IsLiveReceiverMember(receiver, map))
+                {
+                    continue;
+                }
+
+                entry.receiverSnapshot.RemoveAt(i);
+                entry.receivers.Remove(receiver);
+            }
+        }
+
+        private static void BuildPendingHostileSnapshot(
+            Map map,
+            MapEntry entry)
+        {
+            entry.hostileSnapshot.Clear();
+            foreach (Pawn hostile in entry.pendingHostiles)
+            {
+                if (IsLiveMovingHostile(hostile, map, entry.hostileTargets))
+                {
+                    entry.hostileSnapshot.Add(hostile);
+                }
+            }
+        }
+
+        private static bool IsLiveReceiverMember(Pawn pawn, Map map)
+        {
+            return RimKataDualWeaponController.CanReceiveDormantMovingHostiles(pawn)
+                && pawn.Map == map;
+        }
+
+        private static bool IsLiveMovingHostile(
+            Pawn pawn,
+            Map map,
+            HashSet<IAttackTarget> hostileTargets)
+        {
+            return pawn != null
+                && !pawn.Destroyed
+                && pawn.Spawned
+                && !pawn.Dead
+                && pawn.Map == map
+                && pawn.pather?.Moving == true
+                && hostileTargets?.Contains(pawn) == true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_DraftController), nameof(Pawn_DraftController.FireAtWill),
+        MethodType.Setter)]
+    public static class Patch_PawnDraftController_RimKataDormantFirePermission
+    {
+        public static void Prefix(Pawn_DraftController __instance, out bool __state)
+        {
+            __state = __instance?.FireAtWill == true;
+        }
+
+        public static void Postfix(Pawn_DraftController __instance, bool __state)
+        {
+            RimKataDormantHostileMovementRegistry.NotifyDraftStatusChanged(
+                __instance?.pawn);
+            if (__instance != null && __state != __instance.FireAtWill)
+            {
+                RimKataDualWeaponController.NotifyFireAtWillChanged(__instance.pawn);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StartPath))]
+    public static class Patch_PawnPathFollower_RimKataDormantPathStarted
+    {
+        public static void Postfix(Pawn ___pawn)
+        {
+            if (___pawn?.pather?.Moving == true)
+            {
+                RimKataDormantHostileMovementRegistry.NotifyPathStarted(
+                    ___pawn);
+                RimKataCrawlFireUtility.NotifyPathStarted(___pawn);
+            }
+        }
+
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions,
+            ILGenerator generator)
+        {
+            Label finished = generator.DefineLabel(), done = generator.DefineLabel();
+            Label attackJob = generator.DefineLabel();
+            LocalBuilder job = generator.DeclareLocal(typeof(Job));
+            foreach (CodeInstruction code in instructions)
+            {
+                if (code.opcode == OpCodes.Ret) { code.opcode = OpCodes.Br; code.operand = finished; }
+                yield return code;
+            }
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(finished);
+            yield return new CodeInstruction(OpCodes.Ldarg_0);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"));
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.PropertyGetter(typeof(Pawn), nameof(Pawn.CurJob)));
+            yield return new CodeInstruction(OpCodes.Stloc, job);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Brfalse, done);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Job), nameof(Job.def)));
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(JobDefOf), nameof(JobDefOf.AttackMelee)));
+            yield return new CodeInstruction(OpCodes.Beq, attackJob);
+            yield return new CodeInstruction(OpCodes.Ldloc, job);
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Job), nameof(Job.def)));
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(RimKataDefOf), nameof(RimKataDefOf.RimKata_Attack)));
+            yield return new CodeInstruction(OpCodes.Bne_Un, done);
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(attackJob);
+            var gate = RimKataRegisteredPawnGate.Branch(generator, new[]
+            {
+                new CodeInstruction(OpCodes.Ldarg_0),
+                new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn_PathFollower), "pawn"))
+            }, done, true, out LocalBuilder entry);
+            foreach (CodeInstruction code in gate) yield return code;
+            yield return new CodeInstruction(OpCodes.Ldloc, entry);
+            yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataFlyingKickApproach),
+                nameof(RimKataFlyingKickApproach.RegisterPath)));
+            yield return new CodeInstruction(OpCodes.Ret).WithLabels(done);
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_PathFollower), "TryEnterNextPathCell")]
+    public static class Patch_PawnPathFollower_RimKataDormantPathCell
+    {
+        public static void Prefix(Pawn ___pawn, out IntVec3 __state)
+        {
+            __state = ___pawn?.Position ?? IntVec3.Invalid;
+        }
+
+        public static void Postfix(Pawn ___pawn, IntVec3 __state)
+        {
+            if (___pawn?.Spawned == true
+                && __state.IsValid
+                && ___pawn.Position != __state)
+            {
+                RimKataDormantHostileMovementRegistry.NotifyPathCellEntered(
+                    ___pawn);
+                RimKataGroundPoseUtility.NotifyTargetMoved(___pawn);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Pawn_PathFollower), nameof(Pawn_PathFollower.StopDead))]
+    public static class Patch_PawnPathFollower_RimKataDormantPathStopped
+    {
+        public static void Postfix(Pawn ___pawn)
+        {
+            RimKataDormantHostileMovementRegistry.NotifyPathStopped(___pawn);
+            RimKataCrawlFireUtility.NotifyPathStopped(___pawn);
+            int id = ___pawn?.thingIDNumber ?? 0;
+            int page = id >> RimKataFlyingKickApproach.PageShift;
+            if (id > 0 && page < RimKataFlyingKickApproach.pages.Length)
+            {
+                var slot = RimKataFlyingKickApproach.pages[page]?[id & RimKataFlyingKickApproach.PageMask];
+                if (slot?.pawn == ___pawn && slot.approach != null)
+                    RimKataFlyingKickApproach.Remove(___pawn);
+            }
+        }
+    }
+}

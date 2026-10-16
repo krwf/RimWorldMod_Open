@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <JobDef>
+    <defName>RimKata_Pushed</defName>
+    <driverClass>KRWF.RimKata.JobDriver_RimKataPushed</driverClass>
+    <reportString>being pushed back.</reportString>
+    <playerInterruptible>false</playerInterruptible>
+    <forceCompleteBeforeNextJob>true</forceCompleteBeforeNextJob>
+    <suspendable>false</suspendable>
+    <checkOverrideOnDamage>Never</checkOverrideOnDamage>
+    <casualInterruptible>false</casualInterruptible>
+    <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+    <carryThingAfterJob>true</carryThingAfterJob>
+    <dropThingBeforeJob>false</dropThingBeforeJob>
+  </JobDef>
+  <JobDef>
     <defName>RimKata_Breach</defName>
     <allowOpportunisticPrefix>false</allowOpportunisticPrefix>
     <driverClass>KRWF.RimKata.JobDriver_RimKataBreach</driverClass>

@@ -1,0 +1,62 @@
+{
+  "rimWorldVersion": "1.6",
+  "purpose": "Local build references only; excluded from Git and distribution.",
+  "files": [
+    {
+      "file": "Assembly-CSharp.dll",
+      "fileVersion": "1.6.9676.17735",
+      "assemblyVersion": "1.6.9676.17735",
+      "sha256": "5CF1B5BE399D5B1C9C56CA72C9D35B4ECF307FEACF5859D04AC5A1AA5926356A",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\Assembly-CSharp.dll"
+    },
+    {
+      "file": "UnityEngine.CoreModule.dll",
+      "fileVersion": "0.0.0.0",
+      "assemblyVersion": "0.0.0.0",
+      "sha256": "C5C58EA254834291780A1D6C388C241443D07167B4A4B890A23C9494F626DDBA",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\UnityEngine.CoreModule.dll"
+    },
+    {
+      "file": "UnityEngine.IMGUIModule.dll",
+      "fileVersion": "0.0.0.0",
+      "assemblyVersion": "0.0.0.0",
+      "sha256": "C6C39327211BE8299E2E9FFDEE7A979F228736C99B84FD54BC73F563456865D9",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\UnityEngine.IMGUIModule.dll"
+    },
+    {
+      "file": "UnityEngine.TextRenderingModule.dll",
+      "fileVersion": "0.0.0.0",
+      "assemblyVersion": "0.0.0.0",
+      "sha256": "B63769AD71C7FC79034CF6C3A1EBFCF79D4591F0B1F5CD4A9823E6ED7B5816F8",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\UnityEngine.TextRenderingModule.dll"
+    },
+    {
+      "file": "UnityEngine.InputLegacyModule.dll",
+      "fileVersion": "0.0.0.0",
+      "assemblyVersion": "0.0.0.0",
+      "sha256": "BE3F8C860D15E1B00611E454871B1E1E0041EFA843E9BAE4F77C227A59D10AC8",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\UnityEngine.InputLegacyModule.dll"
+    },
+    {
+      "file": "Unity.Mathematics.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "E29EEF5D2C9D8356F97EEE214A7D6E1BFA9B1074BF66B53653E8B934222F86C3",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\Unity.Mathematics.dll"
+    },
+    {
+      "file": "netstandard.dll",
+      "fileVersion": "2.1.0.0",
+      "assemblyVersion": "2.1.0.0",
+      "sha256": "6AE62E082DC494A2433984177F60CA4DB5FAE69B1F360A8B33754172B310B8C5",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\RimWorldWin64_Data\\Managed\\netstandard.dll"
+    },
+    {
+      "file": "0Harmony.dll",
+      "fileVersion": "2.4.3.0",
+      "assemblyVersion": "2.4.3.0",
+      "sha256": "8AC54FDF0FAB257148D68BC744D67609B74554EE72A4F3452E32030EAAD009C6",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\294100\\2009463077\\1.6\\Assemblies\\0Harmony.dll"
+    }
+  ]
+}

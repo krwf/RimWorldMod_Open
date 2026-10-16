@@ -1,0 +1,528 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using HarmonyLib;
+using RimWorld;
+using UnityEngine;
+using Verse;
+
+namespace KRWF.RimKata
+{
+    [StaticConstructorOnStartup]
+    public static class RimKataBootstrap
+    {
+        static RimKataBootstrap()
+        {
+            try { Initialize(); }
+            finally { LongEventHandler.ExecuteWhenFinished(RimKataStartupDiagnostics.Complete); }
+        }
+
+        private static void Initialize()
+        {
+            RimKataActiveModTypes.Initialize();
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                using (RimKataStartupDiagnostics.Measure("preparation", "profiles_and_weapons"))
+                {
+                    if (!RimKataMod.EnsureProfilesInitialized())
+                    {
+                        RimKataPreparedWeaponData.RefreshDefinitions();
+                    }
+                }
+            });
+            LongEventHandler.ExecuteWhenFinished(() => Run("preparation", "activation", () => RimKataActivationSettings.Apply()));
+            Harmony harmony;
+            try
+            {
+                harmony = new Harmony("krwf.rimkata");
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Could not create the Harmony instance.\n" + exception);
+                return;
+            }
+
+            try
+            {
+                RimKataStartupPatches.Apply(harmony, Assembly.GetExecutingAssembly());
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Core Harmony patching failed; initialization will continue.\n" + exception);
+            }
+
+            try
+            {
+                Run("discovery", "projectile_targets", () => Patch_Projectile_Impact_Context.Apply(harmony));
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Projectile.Impact patch discovery failed; initialization will continue.\n" + exception);
+            }
+
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                Run("preparation", "weapon_render_setup", () => RimKataWeaponRenderProbe.Initialize(harmony));
+                RimKataEquipmentMemory.Flush();
+            });
+            LongEventHandler.ExecuteWhenFinished(() => Run("preparation", "strength", RimKataStrengthUtility.Initialize));
+            try
+            {
+                RunCompatibility("compat_ce_equipment", "CombatExtended.CompAmmoUser", () => RimKataCombatExtendedCompat.Apply(harmony));
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] CE secondary ammo integration failed.\n" + exception);
+            }
+
+            try
+            {
+                RunCompatibility("compat_ratkin", "NewRatkin.HediffComp_RatHolicGun", () => RimKataRatkinCompat.Apply(harmony));
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Ratkin firing-state integration failed.\n" + exception);
+            }
+
+            ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
+            ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedDirectionalFire.Apply, "directional firing");
+            ApplyCombatExtended(harmony, RimKataCombatExtendedGroundPose.Apply, "ground-pose firing");
+            RunCompatibility("compat_dynamic_anime", "DynamicAnimeCombat.Core.CombatMechanics", RimKataDynamicAnimeCombatCompat.Apply);
+            RunCompatibility("compat_ink", "NinjaCombat.DamageReactions", RimKataInkCombatCompat.Apply);
+            RunCompatibility("compat_rebound", "ProjectileInversion.API", RimKataReboundCompat.Apply);
+            RunCompatibility("compat_pocketsand", "PocketSand.JobDriver_Equip", RimKataPocketSandCompat.Apply);
+            RunCompatibility("compat_simple_sidearms", "SimpleSidearms.rimworld.CompSidearmMemory", RimKataSimpleSidearmsCompat.Apply);
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try { RunCompatibility("compat_muzzle_flash", "MuzzleFlash.MuzzleFlashUtility", () => RimKataMuzzleFlashCompat.Apply(harmony)); }
+                catch (Exception exception)
+                { Log.Error("[RimKata] Muzzle Flash ground-pose integration failed.\n" + exception); }
+            });
+            try
+            {
+                RunCompatibility("compat_melee_animation", "AM.AnimRenderer", () => RimKataMeleeAnimationCompat.Apply(harmony));
+            }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] Melee Animation rendering integration failed.\n" + exception);
+            }
+        }
+
+        private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)
+        {
+            try { RunCompatibility("compat_ce_" + component, "CombatExtended.Verb_LaunchProjectileCE", () => apply(harmony)); }
+            catch (Exception exception)
+            {
+                Log.Error("[RimKata] CE " + component + " integration failed.\n" + exception);
+            }
+        }
+
+        private static void Run(string category, string stage, Action action)
+        {
+            using (RimKataStartupDiagnostics.Measure(category, stage)) action();
+        }
+
+        private static void RunCompatibility(string stage, string requiredType, Action action)
+        {
+            bool available;
+            using (RimKataStartupDiagnostics.Measure("discovery", "active_mod_detection"))
+                available = RimKataActiveModTypes.Find(requiredType) != null;
+            RimKataStartupDiagnostics.Detail(stage, available ? "active" : "skipped (required type not in active mods)");
+            RimKataStartupDiagnostics.Count(available ? "compatibility_entered" : "compatibility_skipped");
+            if (available) Run("discovery", stage, action);
+        }
+    }
+
+    public sealed class RimKataMod : Mod
+    {
+        private sealed class RuntimeSettingsSnapshot
+        {
+            private readonly RimKataSettingsProfile scalarSettings;
+            private readonly bool enableFriendlyPawnEffects;
+            private readonly bool enableHostilePawnEffects;
+            private readonly bool enableRimKataA;
+            private readonly bool enableRimKataP;
+            private readonly bool enableRimKataI;
+            private readonly bool enableRimKataG;
+            private readonly bool enableSerumDependency;
+            private readonly bool enableShootingLevel, enableMeleeLevel;
+            private readonly int shootingLevelRequirement, meleeLevelRequirement;
+            private readonly float aiSecondaryWeaponChancePercent;
+            private readonly string activeProfileId;
+            private readonly string[] enabledWeaponDefNames;
+            private readonly string[] enabledArmorDefNames;
+            private readonly string[] twoHandWeaponDefNames;
+            private readonly string[] oneHandWeaponOverrideDefNames;
+
+            private RuntimeSettingsSnapshot(RimKataSettings settings)
+            {
+                scalarSettings = RimKataSettingsProfile.Capture(settings);
+                enableFriendlyPawnEffects = settings?.enableFriendlyPawnEffects ?? true;
+                enableHostilePawnEffects = settings?.enableHostilePawnEffects ?? true;
+                enableRimKataA = settings?.enableRimKataA ?? true;
+                enableRimKataP = settings?.enableRimKataP ?? true;
+                enableRimKataI = settings?.enableRimKataI ?? true;
+                enableRimKataG = settings?.enableRimKataG ?? true;
+                enableSerumDependency = settings?.enableSerumDependency ?? true;
+                enableShootingLevel = settings?.enableShootingLevel == true;
+                enableMeleeLevel = settings?.enableMeleeLevel == true;
+                shootingLevelRequirement = settings?.shootingLevelRequirement ?? 0;
+                meleeLevelRequirement = settings?.meleeLevelRequirement ?? 0;
+                aiSecondaryWeaponChancePercent = settings?.aiSecondaryWeaponChancePercent ?? 0f;
+                activeProfileId = settings?.ActiveProfileId;
+                enabledWeaponDefNames = CaptureList(settings?.enabledWeaponDefNames);
+                enabledArmorDefNames = CaptureList(settings?.enabledArmorDefNames);
+                twoHandWeaponDefNames = CaptureList(settings?.twoHandWeaponDefNames);
+                oneHandWeaponOverrideDefNames = CaptureList(settings?.oneHandWeaponOverrideDefNames);
+            }
+
+            public static RuntimeSettingsSnapshot Capture(RimKataSettings settings)
+            {
+                return new RuntimeSettingsSnapshot(settings);
+            }
+
+            public bool Matches(RimKataSettings settings)
+            {
+                return settings != null
+                    && scalarSettings.Matches(settings)
+                    && enableFriendlyPawnEffects == settings.enableFriendlyPawnEffects
+                    && enableHostilePawnEffects == settings.enableHostilePawnEffects
+                    && enableRimKataA == settings.enableRimKataA
+                    && enableRimKataP == settings.enableRimKataP
+                    && enableRimKataI == settings.enableRimKataI
+                    && enableRimKataG == settings.enableRimKataG
+                    && enableSerumDependency == settings.enableSerumDependency
+                    && enableShootingLevel == settings.enableShootingLevel
+                    && enableMeleeLevel == settings.enableMeleeLevel
+                    && shootingLevelRequirement == settings.shootingLevelRequirement
+                    && meleeLevelRequirement == settings.meleeLevelRequirement
+                    && aiSecondaryWeaponChancePercent == settings.aiSecondaryWeaponChancePercent
+                    && string.Equals(activeProfileId, settings.ActiveProfileId, StringComparison.Ordinal)
+                    && ListMatches(enabledWeaponDefNames, settings.enabledWeaponDefNames)
+                    && ListMatches(enabledArmorDefNames, settings.enabledArmorDefNames)
+                    && ListMatches(twoHandWeaponDefNames, settings.twoHandWeaponDefNames)
+                    && ListMatches(oneHandWeaponOverrideDefNames, settings.oneHandWeaponOverrideDefNames);
+            }
+
+            public void RestoreValues(RimKataSettings settings)
+            {
+                scalarSettings.ApplyTo(settings);
+                settings.enableFriendlyPawnEffects = enableFriendlyPawnEffects;
+                settings.enableHostilePawnEffects = enableHostilePawnEffects;
+                settings.aiSecondaryWeaponChancePercent = aiSecondaryWeaponChancePercent;
+            }
+
+            private static string[] CaptureList(List<string> values)
+            {
+                return values == null
+                    ? null
+                    : values.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            }
+
+            private static bool ListMatches(string[] snapshot, List<string> current)
+            {
+                if (snapshot == null || current == null)
+                {
+                    return snapshot == null && current == null;
+                }
+
+                if (snapshot.Length != current.Count)
+                {
+                    return false;
+                }
+
+                string[] currentValues = CaptureList(current);
+                for (int i = 0; i < snapshot.Length; i++)
+                {
+                    if (!string.Equals(snapshot[i], currentValues[i], StringComparison.Ordinal))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+        private static RimKataMod instance;
+        private readonly RimKataSettingsUiBuffers uiBuffers = new RimKataSettingsUiBuffers();
+        private Vector2 scrollPosition;
+        private RuntimeSettingsSnapshot settingsBeforeEdit;
+        private bool confirmSettingsOnClose;
+        private bool profilesInitializationAttempted;
+
+        public static RimKataSettings Settings { get; private set; }
+        internal static RimKataProfileStore Profiles { get; private set; }
+
+        public RimKataMod(ModContentPack content) : base(content)
+        {
+            RimKataStartupDiagnostics.Begin();
+            using (RimKataStartupDiagnostics.Measure("preparation", "mod_setup"))
+            {
+                instance = this;
+                Settings = GetSettings<RimKataSettings>();
+                RimKataEquipmentMemory.ConfigureRoot(content.RootDir);
+                RimKataAllowedWeaponStore.ConfigureRoot(content.RootDir);
+                RimKataAllowedWeaponStore.InstallCaptureHook();
+                RimKataDoorCache.ConfigureRoot(content.RootDir);
+                Profiles = new RimKataProfileStore(content.RootDir);
+                Profiles.Prepare(Settings);
+                uiBuffers.SyncFrom(Settings);
+            }
+        }
+
+        public override string SettingsCategory()
+        {
+            return "KRWF_RimKata_SettingsCategory".Translate();
+        }
+
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            if (!profilesInitializationAttempted)
+            {
+                EnsureProfilesInitialized();
+            }
+
+            if (settingsBeforeEdit == null)
+            {
+                settingsBeforeEdit = RuntimeSettingsSnapshot.Capture(Settings);
+                RimKataSettingsWindowSafety.ShowPending();
+            }
+            RimKataSettingsDrawer.Draw(inRect, Settings, uiBuffers, ref scrollPosition);
+        }
+
+        internal void BeginSettingsWindow()
+        {
+            confirmSettingsOnClose = false;
+            settingsBeforeEdit = null;
+            uiBuffers.SyncFrom(Settings);
+        }
+
+        internal void PrepareSettingsWindowClose()
+        {
+            if (!confirmSettingsOnClose && settingsBeforeEdit != null)
+            {
+                bool friendlyBefore = Settings.enableFriendlyPawnEffects;
+                bool hostileBefore = Settings.enableHostilePawnEffects;
+                RuntimeSettingsSnapshot discardedValues = RuntimeSettingsSnapshot.Capture(Settings);
+                settingsBeforeEdit.RestoreValues(Settings);
+                settingsBeforeEdit = discardedValues;
+                uiBuffers.SyncFrom(Settings);
+                if (friendlyBefore != Settings.enableFriendlyPawnEffects
+                    || hostileBefore != Settings.enableHostilePawnEffects)
+                {
+                    RimKataEligibilityCache.RefreshPermissions();
+                    RimKataColonistBarWeaponCache.RefreshAll();
+                }
+            }
+
+            confirmSettingsOnClose = false;
+        }
+
+        internal void DrawSettingsWindowButtons(Rect inRect, Window window)
+        {
+            const float buttonHeight = 30f;
+            const float buttonGap = 8f;
+            string closeLabel = "Close".Translate();
+            string confirmLabel = "Confirm".Translate();
+            float closeWidth = Mathf.Max(90f, Text.CalcSize(closeLabel).x + 28f);
+            float confirmWidth = Mathf.Max(90f, Text.CalcSize(confirmLabel).x + 28f);
+            float scale = Mathf.Min(1f, Mathf.Max(0f, inRect.width - buttonGap) / (closeWidth + confirmWidth));
+            closeWidth *= scale;
+            confirmWidth *= scale;
+            float x = inRect.x + (inRect.width - closeWidth - buttonGap - confirmWidth) * 0.5f;
+            Rect closeRect = new Rect(x, inRect.yMax - buttonHeight, closeWidth, buttonHeight);
+            if (Widgets.ButtonText(closeRect, closeLabel))
+            {
+                window.Close();
+            }
+            else if (Widgets.ButtonText(new Rect(closeRect.xMax + buttonGap, closeRect.y, confirmWidth, buttonHeight), confirmLabel))
+            {
+                confirmSettingsOnClose = true;
+                window.Close();
+            }
+        }
+
+        internal void EndSettingsWindow()
+        {
+            confirmSettingsOnClose = false;
+            settingsBeforeEdit = null;
+        }
+
+        private void PersistSettings()
+        {
+            Settings.SanitizeGeneProbabilityRules();
+            Settings.SanitizeStrengthRules();
+            Settings.SanitizePersonalActivation();
+            if (Profiles?.IsInitialized == true)
+            {
+                try
+                {
+                    Profiles.SaveCurrent(Settings);
+                }
+                catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
+                {
+                    ShowProfileError(exception);
+                }
+            }
+
+            base.WriteSettings();
+        }
+
+        public override void WriteSettings()
+        {
+            PersistSettings();
+            bool settingsChanged = settingsBeforeEdit != null
+                && !settingsBeforeEdit.Matches(Settings);
+            RimKataTargetAccess.Rebuild();
+            RimKataEquipmentUtility.InvalidateCaches();
+            if (settingsChanged)
+            {
+                RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
+            }
+
+            settingsBeforeEdit = null;
+            RimKataEquipmentMemory.Flush();
+        }
+
+        internal static bool EnsureProfilesInitialized()
+        {
+            if (Profiles?.IsInitialized == true)
+            {
+                return true;
+            }
+
+            if (instance == null || Profiles == null)
+            {
+                return false;
+            }
+
+            instance.profilesInitializationAttempted = true;
+            try
+            {
+                Profiles.Initialize(Settings);
+                instance.uiBuffers.SyncFrom(Settings);
+                ApplyCombatFeatureSettingsChange();
+                return true;
+            }
+            catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
+            {
+                ShowProfileError(exception);
+                return false;
+            }
+        }
+
+        private static void ShowProfileError(Exception exception)
+        {
+            RimKataSettingsWindowSafety.Report("profile initialization or save", exception);
+        }
+
+        internal static void ApplyCombatFeatureSettingsChange()
+        {
+            RimKataTargetAccess.Rebuild();
+            RimKataEquipmentUtility.InvalidateCaches();
+            RimKataStrengthUtility.NotifySettingsChanged(false);
+            RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
+            RimKataCrawlFireUtility.NotifySettingsChanged();
+            RefreshSettingsSnapshot();
+        }
+
+        internal static void CommitListSettings()
+        {
+            ApplyCombatFeatureSettingsChange();
+            instance?.PersistSettings();
+            RimKataEquipmentMemory.Flush();
+        }
+
+        internal static void CommitGeneProbabilitySettings()
+        {
+            instance?.PersistSettings();
+            RefreshSettingsSnapshot();
+        }
+
+        internal static void ApplyEligibilitySettingsChange()
+        {
+            RimKataTargetAccess.Rebuild();
+            RimKataEquipmentUtility.InvalidateCaches();
+            RimKataEligibilityCache.RefreshSettings();
+            RimKataStrengthUtility.NotifySettingsChanged(false);
+            RimKataWeaponSlotUtility.NormalizeAllSpawnedLoadouts();
+            RefreshSettingsSnapshot();
+        }
+
+        internal static void RefreshSettingsSnapshot()
+        {
+            if (instance?.settingsBeforeEdit != null)
+            {
+                instance.settingsBeforeEdit = RuntimeSettingsSnapshot.Capture(Settings);
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Dialog_ModSettings), MethodType.Constructor, typeof(Mod))]
+    public static class Patch_DialogModSettings_RimKataWindowBehavior
+    {
+        public static void Postfix(Dialog_ModSettings __instance, Mod mod)
+        {
+            if (mod is RimKataMod rimKataMod)
+            {
+                __instance.resizeable = true;
+                __instance.draggable = false;
+                __instance.doCloseX = false;
+                __instance.doCloseButton = false;
+                __instance.closeOnAccept = false;
+                rimKataMod.BeginSettingsWindow();
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Dialog_ModSettings), nameof(Dialog_ModSettings.DoWindowContents))]
+    public static class Patch_DialogModSettings_RimKataButtons
+    {
+        public static void Postfix(Dialog_ModSettings __instance, Mod ___mod, Rect inRect)
+        {
+            if (___mod is RimKataMod rimKataMod)
+            {
+                rimKataMod.DrawSettingsWindowButtons(inRect, __instance);
+                GUI.DragWindow(new Rect(0f, 0f, __instance.windowRect.width, 35f));
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Dialog_ModSettings), nameof(Dialog_ModSettings.PreClose))]
+    public static class Patch_DialogModSettings_RimKataConfirm
+    {
+        public static void Prefix(Mod ___mod)
+        {
+            if (___mod is RimKataMod rimKataMod)
+                rimKataMod.PrepareSettingsWindowClose();
+        }
+
+        public static Exception Finalizer(Mod ___mod, Exception __exception)
+        {
+            if (!(___mod is RimKataMod rimKataMod) || RimKataSettingsWindowSafety.IsGuiExit(__exception))
+                return __exception;
+
+            rimKataMod.EndSettingsWindow();
+            if (__exception != null)
+                RimKataSettingsWindowSafety.Report("main settings close", __exception);
+            // PreClose runs before WindowStack removes the window, including on Cancel/ESC.
+            return null;
+        }
+    }
+
+    [HarmonyPatch(typeof(Dialog_ModSettings), nameof(Dialog_ModSettings.InitialSize), MethodType.Getter)]
+    public static class Patch_DialogModSettings_RimKataInitialSize
+    {
+        public static void Postfix(Mod ___mod, ref Vector2 __result)
+        {
+            if (___mod is RimKataMod)
+            {
+                __result = RimKataSettingsDrawer.RecommendedWindowSize();
+            }
+        }
+    }
+}

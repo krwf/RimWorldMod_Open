@@ -1,0 +1,41 @@
+{
+  "rimWorldVersion": "1.7",
+  "purpose": "Local build references only; excluded from Git and distribution.",
+  "files": [
+    {
+      "file": "Assembly-CSharp.dll",
+      "fileVersion": "1.7.9781.31297",
+      "assemblyVersion": "1.7.9781.31297",
+      "sha256": "A75352BE43FF6FE20A45F014DD0969E90842EE6468C60655D02B9F5138EB69E7",
+      "source": "C:\\Users\\user\\Documents\\RimworldModsFolder\\Ancot independence\\Tools\\KoreanNativeTraversalTests\\bin\\1.7\\Release\\net10.0\\Assembly-CSharp.dll"
+    },
+    {
+      "file": "UnityStubs.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "B0B997C300670D5A42EA70F468FF9FEDABA03CBD65EABF5D522675B3F16CDB22",
+      "source": "C:\\Users\\user\\Documents\\RimworldModsFolder\\Ancot independence\\Tools\\KoreanNativeTraversalTests\\bin\\1.7\\Release\\net10.0\\UnityStubs.dll"
+    },
+    {
+      "file": "Waylith.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "B3A0910C2763407DD3934842BED84BA717F37C865E7CF63D68AFA6AE173AC956",
+      "source": "C:\\Users\\user\\Documents\\RimworldModsFolder\\Ancot independence\\Tools\\KoreanNativeTraversalTests\\bin\\1.7\\Release\\net10.0\\Waylith.dll"
+    },
+    {
+      "file": "Waylith.UnityCompat.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "F558057E05755B39754B95FDD801D47A89B635199F8C7693EF0BE02DE6026559",
+      "source": "C:\\Users\\user\\Documents\\RimworldModsFolder\\Ancot independence\\Tools\\KoreanNativeTraversalTests\\bin\\1.7\\Release\\net10.0\\Waylith.UnityCompat.dll"
+    },
+    {
+      "file": "0Harmony.dll",
+      "fileVersion": "3.0.0.0",
+      "assemblyVersion": "3.0.0.0",
+      "sha256": "C8EF7856B2BE3CF24B345C9B5C2F197F68FCF92649635064FCE7B3CCC8F77CB0",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\294100\\2009463077\\1.7\\Assemblies\\0Harmony.dll"
+    }
+  ]
+}

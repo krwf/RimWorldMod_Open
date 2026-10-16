@@ -5,8 +5,9 @@
   <packageId>krwf.rimkata</packageId>
   <supportedVersions>
     <li>1.6</li>
+    <li>1.7</li>
   </supportedVersions>
-  <modVersion>1.0.0</modVersion>
+  <modVersion>1.0.7</modVersion>
   <description>GUN-KATA</description>
   <modIconPath>RimKata_Icon</modIconPath>
   <modDependencies>

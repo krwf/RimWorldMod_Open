@@ -1,0 +1,33 @@
+using RimWorld;
+using Verse;
+
+namespace KRWF.RimKata
+{
+    [DefOf]
+    public static class RimKataDefOf
+    {
+        [MayRequireBiotech]
+        public static GeneDef RimKata_G;
+        public static HediffDef RimKata_A_Effect;
+        [MayRequireRoyalty]
+        public static AbilityDef RimKata_P;
+        [MayRequireIdeology]
+        public static PreceptDef RimKata_I;
+        public static JobDef RimKata_Attack;
+        public static JobDef RimKata_Breach;
+        public static JobDef RimKata_Subdue;
+        public static JobDef RimKata_SubdueCombat;
+        public static ThingDef RimKata_ThrownPawn;
+        public static JobDef RimKata_EquipSecondary;
+        public static JobDef RimKata_Pushed;
+        public static ThingDef RimKata_PushMotion;
+        public static RulePackDef RimKata_ParryBattleLog;
+        public static ThingCategoryDef Grenades;
+        public static SoundDef BulletImpact_Metal;
+
+        static RimKataDefOf()
+        {
+            DefOfHelper.EnsureInitializedInCtor(typeof(RimKataDefOf));
+        }
+    }
+}
