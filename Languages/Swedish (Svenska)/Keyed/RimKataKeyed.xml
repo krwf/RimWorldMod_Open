@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Använd högst {0} tecken.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Det finns redan en profil med det här namnet.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Profilåtgärden kunde inte slutföras.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata kunde inte slutföra en inställningsåtgärd. Vissa ändringar kan redan ha tillämpats. Du kan stänga det här meddelandet och lämna inställningsfönstret. Kontrollera loggen.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Bekräfta</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Avbryt</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Återställ vapeninställningarna?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Uppdatera</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Tack XD\nTryck på ”{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Det gick inte att uppdatera utrustningsdata.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Vill du spara de delar som behandlades utan fel?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Delvis sparning slutförd.\nSparade: {0}, misslyckade: {1}.\nSe loggen för detaljer.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Återställ ”{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Återställ ”{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Ta bort ”{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Chans för spark</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Knuffspark</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Massgräns för knuffspark</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Vapen med ett särskilt sätt att skjuta har hittats. Vill du registrera dem?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Bekräfta kopierar attackrutinerna till cachen. Avbryt, Esc eller Stäng behåller den ursprungliga eldgivningen utan omvandling till enkelskott. Stängning under registrering behåller redan registrerade poster.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registrerar… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registrering klar: {0} registrerade, {1} misslyckade.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registrerad</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registreringen misslyckades. Den ursprungliga eldgivningen behålls; omvandling till enkelskott är avstängd.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

@@ -103,7 +103,6 @@ namespace KRWF.RimKata
             RimKataStartupPatches.Patch(harmony, shootLine, transpiler: new HarmonyMethod(
                 typeof(RimKataCombatExtendedFire), nameof(CloseRangeTranspiler)));
             ApplyPublicShotPatches(harmony, launcher);
-            RimKataCombatExtendedPrepared.Apply(harmony);
             RimKataCombatExtendedNativeAttack.Apply(harmony, launcher);
             RimKataCombatExtendedCrawlFire.Apply(harmony, shooter);
         }
@@ -163,6 +162,7 @@ namespace KRWF.RimKata
         }
 
         internal static bool IsVerb(Verb verb) => launchType != null && launchType.IsInstanceOfType(verb);
+        internal static bool IsVerbType(Type type) => launchType != null && launchType.IsAssignableFrom(type);
 
         internal static int OriginalBurstCount(Verb verb)
         {

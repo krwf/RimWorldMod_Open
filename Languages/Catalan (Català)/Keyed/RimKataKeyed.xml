@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Utilitzeu {0} caràcters com a màxim.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Ja existeix un perfil amb aquest nom.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>No s’ha pogut completar l’operació del perfil.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata no ha pogut completar una operació de configuració. És possible que alguns canvis ja s&apos;hagin aplicat. Podeu tancar aquest missatge i sortir de la finestra de configuració. Consulteu el registre.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Confirma</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Cancel·la</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Voleu restablir la configuració de les armes?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Actualitza</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Moltes gràcies XD\nPremeu «{0}», si us plau.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>No s'han pogut actualitzar les dades de l'equipament.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Voleu desar les parts que s’han processat correctament?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>S’ha completat el desament parcial.\nElements desats: {0}, errors: {1}.\nConsulteu el registre per obtenir més informació.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Voleu restablir «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Voleu restablir «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Voleu eliminar «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Probabilitat de puntada</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Puntada d'empenta</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Límit de massa de la puntada d'empenta</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>S'han trobat armes amb un comportament de tret especial. Les voleu registrar?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Confirma copia les rutines d'atac a la memòria cau. Cancel·la, Esc o Tanca conserva els trets originals sense convertir-los en trets únics. Tancar durant el registre conserva les entrades ja registrades.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registrant… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registre complet: {0} registrades, {1} fallides.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Ha fallat el registre. Es conserven els trets originals; la conversió a tret únic està desactivada.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

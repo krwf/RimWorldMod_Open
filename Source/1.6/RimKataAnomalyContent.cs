@@ -148,11 +148,11 @@ namespace KRWF.RimKata
 
     public sealed class ThoughtWorker_MindNumbSerumWithdrawal : ThoughtWorker
     {
-        protected override ThoughtState CurrentStateInternal(Pawn pawn)
+        protected override ThoughtState CurrentStateInternal(Pawn p)
         {
-            return RimKataAnomalyUtility.HasActiveDependencyGene(pawn)
-                && !RimKataSerumUtility.IsMindNumbed(pawn)
-                && !RimKataAnomalyUtility.DependencyOvercomeByBond(pawn);
+            return RimKataAnomalyUtility.HasActiveDependencyGene(p)
+                && !RimKataSerumUtility.IsMindNumbed(p)
+                && !RimKataAnomalyUtility.DependencyOvercomeByBond(p);
         }
     }
 
@@ -170,9 +170,9 @@ namespace KRWF.RimKata
 
     public sealed class ThoughtWorker_MindNumbSerumEmotionRemoval : ThoughtWorker
     {
-        protected override ThoughtState CurrentStateInternal(Pawn pawn)
+        protected override ThoughtState CurrentStateInternal(Pawn p)
         {
-            return RimKataAnomalyUtility.HasActiveDependencyGene(pawn) && RimKataSerumUtility.IsMindNumbed(pawn);
+            return RimKataAnomalyUtility.HasActiveDependencyGene(p) && RimKataSerumUtility.IsMindNumbed(p);
         }
     }
 
@@ -195,11 +195,11 @@ namespace KRWF.RimKata
 
     public sealed class ThoughtWorker_MindNumbSerumDependencyOvercome : ThoughtWorker
     {
-        protected override ThoughtState CurrentStateInternal(Pawn pawn)
+        protected override ThoughtState CurrentStateInternal(Pawn p)
         {
-            return RimKataAnomalyUtility.HasActiveDependencyGene(pawn)
-                && !RimKataSerumUtility.IsMindNumbed(pawn)
-                && RimKataAnomalyUtility.DependencyOvercomeByBond(pawn);
+            return RimKataAnomalyUtility.HasActiveDependencyGene(p)
+                && !RimKataSerumUtility.IsMindNumbed(p)
+                && RimKataAnomalyUtility.DependencyOvercomeByBond(p);
         }
     }
 

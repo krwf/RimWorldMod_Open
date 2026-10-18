@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Use no máximo {0} caracteres.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Já existe um perfil com esse nome.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Não foi possível concluir a operação do perfil.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>O RimKata não conseguiu concluir uma operação de configuração. Algumas alterações podem já ter sido aplicadas. Você pode fechar esta mensagem e sair da janela de configurações. Consulte o registro.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Confirmar</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Cancelar</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Redefinir as configurações das armas?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Atualizar</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Obrigado XD\nPor favor, clique em “{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Não foi possível atualizar os dados do equipamento.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Deseja salvar as partes que foram processadas com sucesso?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Salvamento parcial concluído.\nSalvos: {0}, falhas: {1}.\nConsulte o registro para mais detalhes.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Redefinir '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Excluir '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Chance de chute</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Chute de empurrão</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Limite de massa do chute de empurrão</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Foram encontradas armas com um modo de disparo especial. Deseja registrá-las?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Confirmar copia as rotinas de ataque para o cache. Cancelar, Esc ou Fechar mantém o disparo original sem conversão para tiro único. Fechar durante o registro mantém as entradas já registradas.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registrando… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registro concluído: {0} registradas, {1} falhas.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Falha no registro. O disparo original é mantido; a conversão para tiro único está desativada.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

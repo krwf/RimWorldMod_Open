@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Kasuta kuni {0} märki.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Selle nimega profiil on juba olemas.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Profiilitoimingut ei õnnestunud lõpule viia.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata ei saanud seadistustoimingut lõpule viia. Mõned muudatused võivad olla juba rakendatud. Võid selle teate sulgeda ja seadete aknast väljuda. Palun kontrolli logi.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Kinnita</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Tühista</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Kas lähtestada relvasätted?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Värskenda</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Aitäh XD\nPalun vajutage „{0}“.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Varustuse andmeid ei õnnestunud värskendada.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Kas soovite salvestada edukalt töödeldud osad?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Osaline salvestamine on lõpetatud.\nSalvestatud: {0}, ebaõnnestunud: {1}.\nÜksikasju vaadake logist.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Kas lähtestada „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Kas lähtestada „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Kas kustutada „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Jalalöögi tõenäosus</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Tõukelöök jalaga</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Tõukelöögi massipiir</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Leiti erilise tulistamisviisiga relvi. Kas soovite need registreerida?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Kinnitamine kopeerib rünnakuprotseduurid vahemällu. Tühistamine, Esc või sulgemine säilitab algse tulistamisviisi ilma üksiklaskudeks teisendamiseta. Registreerimise ajal sulgemisel jäävad juba registreeritud kirjed alles.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registreerimine… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registreerimine lõpetatud: {0} õnnestus, {1} ebaõnnestus.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registreeritud</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registreerimine ebaõnnestus. Algne tulistamisviis säilib; üksiklaskudeks teisendamine on keelatud.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

@@ -1,0 +1,62 @@
+{
+  "rimWorldVersion": "1.7",
+  "snapshotDate": "2026-10-16",
+  "capturedAtUtc": "2026-10-16T12:37:47.7301432Z",
+  "capturedAtKst": "2026-10-16 21:37:47",
+  "purpose": "Read-only comparison snapshot of the installed October 16 engine and current Harmony. Not selected by the default build; excluded from Git and distribution.",
+  "gameVersionFromPlayerLog": "1.7.4980.60",
+  "gameLogSource": "C:/Users/user/AppData/LocalLow/Ludeon Studios/RimWorld by Ludeon Studios/Logs/Player.log",
+  "previousReference": ".. (existing October 13 engine references; preserved unchanged)",
+  "files": [
+    {
+      "file": "Assembly-CSharp.dll",
+      "fileVersion": "1.7.9785.1822",
+      "assemblyVersion": "1.7.9785.1822",
+      "sha256": "EFF7D97949F919FB2B151EBFB906E9BE749B63410B7DBDA78EEEBB7972B245C3",
+      "length": 15632384,
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Assembly-CSharp.dll",
+      "sourceLastWriteUtc": "2026-10-15T23:27:10.9054586Z",
+      "sourceLastWriteKst": "2026-10-16 08:27:10"
+    },
+    {
+      "file": "UnityStubs.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "CD95A2D1A2E0E52745F1B4562FC0CBF66B526CD942015A75DA63D2CF8770D535",
+      "length": 960512,
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\UnityStubs.dll",
+      "sourceLastWriteUtc": "2026-10-15T23:27:10.9074599Z",
+      "sourceLastWriteKst": "2026-10-16 08:27:10"
+    },
+    {
+      "file": "Waylith.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "15633912DA7C890E8798AAC86121DDBCF28B4138786D926921DAFA7CA908929F",
+      "length": 1537536,
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Waylith.dll",
+      "sourceLastWriteUtc": "2026-10-15T23:27:10.9074599Z",
+      "sourceLastWriteKst": "2026-10-16 08:27:10"
+    },
+    {
+      "file": "Waylith.UnityCompat.dll",
+      "fileVersion": "1.0.0.0",
+      "assemblyVersion": "1.0.0.0",
+      "sha256": "E4362E5F45EC39533C721B4B4E04C996CF59DE8FCDA2547EB648C3D68FBB5710",
+      "length": 51712,
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Waylith.UnityCompat.dll",
+      "sourceLastWriteUtc": "2026-10-15T23:27:10.9364862Z",
+      "sourceLastWriteKst": "2026-10-16 08:27:10"
+    },
+    {
+      "file": "0Harmony.dll",
+      "fileVersion": "3.0.0.0",
+      "assemblyVersion": "3.0.0.0",
+      "sha256": "C8EF7856B2BE3CF24B345C9B5C2F197F68FCF92649635064FCE7B3CCC8F77CB0",
+      "length": 2532864,
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\294100\\2009463077\\1.7\\Assemblies\\0Harmony.dll",
+      "sourceLastWriteUtc": "2026-10-15T13:27:09.0697033Z",
+      "sourceLastWriteKst": "2026-10-15 22:27:09"
+    }
+  ]
+}

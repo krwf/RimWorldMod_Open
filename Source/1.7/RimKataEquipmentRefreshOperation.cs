@@ -131,7 +131,7 @@ namespace KRWF.RimKata
             if (preparationAttempted) return;
             preparationAttempted = true;
             RimKataCloseFireMeleeStore.InvalidatePreparedCache();
-            RimKataEquipmentUtility.RefreshPreparedWeapons();
+            RimKataEquipmentUtility.RefreshPreparedWeapons(true);
             RimKataEquipmentMemory.Flush();
         }
 

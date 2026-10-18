@@ -325,11 +325,11 @@ namespace KRWF.RimKata
 
         private static int NativeCooldown(Pawn pawn, Verb verb)
         {
-            float cooldown = verb.verbProps.AdjustedCooldownTicks(verb, pawn);
+            float cooldown = RimKataWeaponEffectStats.AdjustedCooldownTicks(verb, pawn);
             if (!RimKataPreparedWeaponData.TryGetPrepared(verb, out var prepared))
                 return Mathf.Max(1, Mathf.RoundToInt(cooldown));
             float warmup = (ResolveOriginalWarmup?.Invoke(verb, prepared) ?? prepared.OriginalWarmupSeconds)
-                * pawn.GetStatValue(StatDefOf.AimingDelayFactor) * 60f;
+                * RimKataWeaponEffectStats.GetStatValue(verb, pawn, StatDefOf.AimingDelayFactor) * 60f;
             return ConvertedCooldown(cooldown, warmup, prepared.TotalBurstSpacingTicks,
                 prepared.TimingBurstCount);
         }

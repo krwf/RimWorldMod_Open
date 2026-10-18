@@ -376,6 +376,8 @@ namespace KRWF.RimKata
                     state.attackVerb = verb = selected;
                 }
                 state.warming = true;
+                if (!verb.IsMeleeAttack && RimKataWeaponExecutionRuntime.NeedsTimingRefresh(verb))
+                    RimKataPreparedWeaponData.Bind(verb);
                 state.attackTicks = verb.IsMeleeAttack ? 0 : RimKataCombatMath.WarmupTicksForSingleShot(verb);
                 if (state.attackTicks > 0) return;
             }

@@ -1335,6 +1335,8 @@ namespace KRWF.RimKata
             ThingWithComps changedEquipment,
             bool removed)
         {
+            if (removed && changedEquipment != null)
+                RimKataWeaponEffects.ReleaseWeapon(changedEquipment);
             RimKataDownedWeaponUtility.NotifyEquipmentChanged(pawn, changedEquipment, removed);
             RimKataSubdueUtility.NotifyEquipmentChanged(pawn);
             if (pawn?.Spawned != true
@@ -1924,6 +1926,7 @@ namespace KRWF.RimKata
 
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(___pawn))
             {
+                __result = RimKataSecondaryEquipmentGizmos.RestoreLabels(__result);
                 if (___pawn?.Drafted == true
                     && ___pawn.Spawned
                     && ___pawn.IsPlayerControlled
@@ -1937,7 +1940,38 @@ namespace KRWF.RimKata
                 return;
             }
 
-            __result = MarkSecondaryWeaponGizmos(___pawn, __result);
+            ThingWithComps secondary =
+                RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(___pawn);
+            if (RimKataTargetAccess.SettingsFor(___pawn)?.secondaryWeaponEnabled == false)
+                secondary = null;
+            __result = AppendSecondaryEquipmentGizmos(___pawn, secondary,
+                MarkSecondaryWeaponGizmos(___pawn, secondary, __result));
+        }
+
+        private static IEnumerable<Gizmo> AppendSecondaryEquipmentGizmos(
+            Pawn pawn, ThingWithComps secondary, IEnumerable<Gizmo> original)
+        {
+            if (secondary?.Destroyed == true || secondary == pawn.equipment?.Primary
+                || secondary?.ParentHolder != pawn.equipment) secondary = null;
+            CompEquippable equippable = secondary?.TryGetComp<CompEquippable>();
+            HashSet<Gizmo> seen = equippable == null ? null
+                : new HashSet<Gizmo>(RimKataSecondaryEquipmentGizmos.Identity);
+            foreach (Gizmo gizmo in original)
+            {
+                RimKataSecondaryEquipmentGizmos.RestoreIfChanged(gizmo, secondary);
+                seen?.Add(gizmo);
+                yield return gizmo;
+            }
+            if (equippable == null) yield break;
+            // Vanilla only enumerates PrimaryEq's extras. Use the secondary's own
+            // original provider once, including derived implementations and external patches.
+            IEnumerable<Gizmo> extras = equippable.CompGetEquippedGizmosExtra();
+            if (extras == null) yield break;
+            foreach (Gizmo gizmo in extras)
+            {
+                if (gizmo == null || !seen.Add(gizmo)) continue;
+                yield return RimKataSecondaryEquipmentGizmos.Mark(gizmo, secondary);
+            }
         }
 
         private static IEnumerable<Gizmo> HidePrimaryWeaponAttackGizmos(
@@ -1956,7 +1990,8 @@ namespace KRWF.RimKata
             }
         }
 
-        private static IEnumerable<Gizmo> MarkSecondaryWeaponGizmos(Pawn pawn, IEnumerable<Gizmo> gizmos)
+        private static IEnumerable<Gizmo> MarkSecondaryWeaponGizmos(
+            Pawn pawn, ThingWithComps secondary, IEnumerable<Gizmo> gizmos)
         {
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || !RimKataEligibility.CanBeginGunKataAttack(pawn))
@@ -1970,9 +2005,6 @@ namespace KRWF.RimKata
             }
 
             ThingWithComps primary = RimKataWeaponSlotUtility.PrimaryWeapon(pawn);
-
-            ThingWithComps secondary =
-                RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn);
 
             if (RimKataMultiSelectAttackGizmoUtility
                 .ShouldUseUnifiedAttackGizmo())
@@ -2126,6 +2158,7 @@ namespace KRWF.RimKata
             Pawn pawn = verb?.CasterPawn;
             return pawn != null
                 && command.defaultLabel == "RimKata"
+                && !RimKataSecondaryEquipmentGizmos.IsEquipmentExtra(command)
                 && verb.EquipmentSource != null
                 && RimKataWeaponSlotUtility.IsSecondaryWeapon(
                     pawn,

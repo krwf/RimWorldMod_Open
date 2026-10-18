@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Folosiți cel mult {0} caractere.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Există deja un profil cu acest nume.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Operațiunea asupra profilului nu a putut fi finalizată.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata nu a putut finaliza o operațiune asupra setărilor. Este posibil ca unele modificări să fi fost deja aplicate. Puteți închide acest mesaj și părăsi fereastra de setări. Consultați jurnalul.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Confirmă</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Anulează</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Resetați setările armelor?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Actualizează</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Mulțumesc XD\nApăsați „{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Nu s-au putut actualiza datele echipamentului.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Doriți să salvați părțile care au fost procesate cu succes?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Salvarea parțială s-a încheiat.\nSalvate: {0}, eșuate: {1}.\nConsultați jurnalul pentru detalii.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Resetați „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Ștergeți „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Șansă de lovitură de picior</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Lovitură de împingere cu piciorul</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Limita de masă pentru lovitura de împingere</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Au fost găsite arme cu un mod special de tragere. Doriți să le înregistrați?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Confirmarea copiază rutinele de atac în memoria cache. Anulare, Esc sau Închidere păstrează tragerea originală fără conversie la foc cu foc. Închiderea în timpul înregistrării păstrează intrările deja înregistrate.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Se înregistrează… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Înregistrare finalizată: {0} reușite, {1} eșuate.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Înregistrat</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Înregistrarea a eșuat. Tragerea originală este păstrată; conversia la foc cu foc este dezactivată.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

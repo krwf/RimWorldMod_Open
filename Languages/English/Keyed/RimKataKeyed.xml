@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Use no more than {0} characters.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>A profile with this name already exists.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Could not complete the profile operation.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata could not finish a settings operation. Some changes may already have been applied. You can close this message and leave the settings window. Please check the log.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Confirm</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Cancel</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Reset weapon settings?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Refresh</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Thank you XD\nPlease press &quot;{0}&quot;.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Could not refresh equipment data.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Would you like to save the parts that were processed successfully?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Partial save finished.\nSaved: {0}, failed: {1}.\nPlease check the log for details.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Reset '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Reset '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Delete '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Kick chance</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Push kick</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Push kick mass limit</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Weapons with unusual firing behavior were found. Would you like to register them?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Confirm copies their attack execution routines into the cache. Cancel, Esc or Close keeps the original firing behavior without single-shot conversion. Closing during registration keeps entries already registered.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registering… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registration complete: {0} registered, {1} failed.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registered</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registration failed. Original firing behavior retained; single-shot conversion is disabled.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

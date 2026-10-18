@@ -76,15 +76,6 @@ namespace KRWF.RimKata
                 Log.Error("[RimKata] CE secondary ammo integration failed.\n" + exception);
             }
 
-            try
-            {
-                RunCompatibility("compat_ratkin", "NewRatkin.HediffComp_RatHolicGun", () => RimKataRatkinCompat.Apply(harmony));
-            }
-            catch (Exception exception)
-            {
-                Log.Error("[RimKata] Ratkin firing-state integration failed.\n" + exception);
-            }
-
             ApplyCombatExtended(harmony, RimKataCombatExtendedFire.Apply, "firing");
             ApplyCombatExtended(harmony, h => RimKataCombatExtendedMelee.Apply(h), "melee defense");
             ApplyCombatExtended(harmony, RimKataCombatExtendedProjectiles.Apply, "projectiles");
@@ -109,6 +100,12 @@ namespace KRWF.RimKata
             {
                 Log.Error("[RimKata] Melee Animation rendering integration failed.\n" + exception);
             }
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                try { Run("preparation", "weapon_execution", () => RimKataWeaponExecutionRuntime.Initialize(harmony)); }
+                catch (Exception exception)
+                { Log.Warning("[RimKata] Automatic weapon execution preparation failed. " + exception); }
+            });
         }
 
         private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)

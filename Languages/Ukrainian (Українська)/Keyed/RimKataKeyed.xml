@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Використовуйте не більше {0} символів.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Профіль із такою назвою вже існує.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Не вдалося виконати операцію з профілем.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata не вдалося завершити операцію з налаштуваннями. Деякі зміни, можливо, уже застосовано. Ви можете закрити це повідомлення та вийти з вікна налаштувань. Перевірте журнал.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Підтвердити</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Скасувати</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Скинути налаштування зброї?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Оновити</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Дякую XD\nНатисніть «{0}».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Не вдалося оновити дані спорядження.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Зберегти успішно оброблені частини?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Часткове збереження завершено.\nЗбережено: {0}, помилок: {1}.\nДокладніше дивіться в журналі.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Скинути «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Видалити «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Шанс удару ногою</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Відштовхувальний удар ногою</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Межа маси для відштовхувального удару</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Виявлено зброю з особливим способом стрільби. Зареєструвати її?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Підтвердження копіює процедури атаки в кеш. Скасування, Esc або закриття зберігає початкову стрільбу без переведення на одиночні постріли. Закриття під час реєстрації зберігає вже зареєстровані записи.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Реєстрація… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Реєстрацію завершено: успішно — {0}, помилок — {1}.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Зареєстровано</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Реєстрація не вдалася. Початкову стрільбу збережено; переведення на одиночні постріли вимкнено.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

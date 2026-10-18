@@ -4,4 +4,5 @@
   <RimKata_Breach.reportString>Breekt door de deur.</RimKata_Breach.reportString>
   <RimKata_Subdue.reportString>TargetA overmeesteren.</RimKata_Subdue.reportString>
   <RimKata_SubdueCombat.reportString>valt TargetA aan terwijl de greep behouden blijft.</RimKata_SubdueCombat.reportString>
+  <RimKata_Pushed.reportString>wordt achteruitgeduwd.</RimKata_Pushed.reportString>
 </LanguageData>

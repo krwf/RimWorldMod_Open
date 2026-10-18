@@ -4,4 +4,5 @@
   <RimKata_Breach.reportString>Проламывает дверь.</RimKata_Breach.reportString>
   <RimKata_Subdue.reportString>Захватывает TargetA.</RimKata_Subdue.reportString>
   <RimKata_SubdueCombat.reportString>атакует TargetA, продолжая удерживать персонажа.</RimKata_SubdueCombat.reportString>
+  <RimKata_Pushed.reportString>отбрасывается назад.</RimKata_Pushed.reportString>
 </LanguageData>

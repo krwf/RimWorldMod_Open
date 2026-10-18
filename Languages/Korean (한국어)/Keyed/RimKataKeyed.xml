@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>{0}자 이내로 입력해 주세요.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>같은 이름의 프로필이 이미 있습니다.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>프로필 작업을 완료하지 못했습니다.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>림카타 설정 작업을 완료하지 못했습니다. 일부 변경은 이미 적용되었을 수 있습니다. 이 알림을 닫고 설정창을 나갈 수 있습니다. 자세한 내용은 로그를 확인해 주세요.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>확인</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>취소</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>무기 설정을 초기화 하시겠습니까?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>새로 고침</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>고마워요 XD\n{0}을 눌러주세요.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>장비 정보를 새로고침하지 못했습니다.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>정상 처리된 부분은 저장하시겠습니까?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>일부 저장을 마쳤습니다.\n저장 성공: {0}, 실패: {1}.\n자세한 내용은 로그를 확인해 주세요.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>'{0}'을 초기화 하시겠습니까?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>'{0}'을 초기화 하시겠습니까?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>'{0}'을 삭제하시겠습니까?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>발차기 확률</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>밀어 차기</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>밀어 차기 가능한 무게</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>특수한 방식으로 공격하는 무기를 확인했습니다. 등록하시겠습니까?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>확인하면 공격 실행 묶음을 복사하여 캐시에 저장합니다. 취소·ESC·닫기는 원래 공격 방식을 유지하며 단발 전환을 적용하지 않습니다. 도중에 닫아도 이미 등록한 항목은 유지됩니다.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>등록 중… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>등록 완료: 성공 {0}개, 실패 {1}개.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>등록 성공</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>등록 실패. 원래 공격 방식을 유지하며 단발 전환은 적용하지 않습니다.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

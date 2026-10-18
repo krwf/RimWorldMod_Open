@@ -118,10 +118,7 @@ namespace KRWF.RimKata
         {
             Mesh cached = flipped ? secondaryFlippedPlane : secondaryPlane;
             if (cached != null) return cached;
-            cached = UnityEngine.Object.Instantiate(flipped ? MeshPool.plane10Flip : MeshPool.plane10);
-            Vector2[] uv = cached.uv;
-            for (int i = 0; i < uv.Length; i++) uv[i].y = 1f - uv[i].y;
-            cached.uv = uv;
+            cached = RimKataDualWeaponRenderUtility.CreateVFlippedMesh(flipped);
             if (flipped) secondaryFlippedPlane = cached;
             else secondaryPlane = cached;
             return cached;

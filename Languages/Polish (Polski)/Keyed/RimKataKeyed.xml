@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Użyj maksymalnie {0} znaków.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Profil o tej nazwie już istnieje.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Nie udało się ukończyć operacji na profilu.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata nie zdołała ukończyć operacji na ustawieniach. Niektóre zmiany mogły już zostać zastosowane. Możesz zamknąć ten komunikat i opuścić okno ustawień. Sprawdź dziennik.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Potwierdź</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Anuluj</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Zresetować ustawienia broni?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Odśwież</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Dziękuję XD\nProszę nacisnąć „{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Nie udało się odświeżyć danych wyposażenia.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Czy zapisać części, które zostały pomyślnie przetworzone?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Zakończono częściowy zapis.\nZapisano: {0}, niepowodzenia: {1}.\nSzczegóły znajdują się w dzienniku.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Zresetować „{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Zresetować „{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Usunąć „{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Szansa na kopnięcie</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Kopnięcie odpychające</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Limit masy kopnięcia odpychającego</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Znaleziono broń o nietypowym sposobie strzelania. Czy chcesz ją zarejestrować?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Potwierdzenie kopiuje procedury ataku do pamięci podręcznej. Anulowanie, Esc lub zamknięcie zachowuje oryginalny ostrzał bez zamiany na pojedyncze strzały. Zamknięcie podczas rejestracji zachowuje już zarejestrowane wpisy.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Rejestrowanie… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Rejestracja zakończona: {0} udanych, {1} nieudanych.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Zarejestrowano</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Rejestracja nie powiodła się. Oryginalny ostrzał zostaje zachowany; zamiana na pojedyncze strzały jest wyłączona.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

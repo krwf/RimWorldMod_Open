@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>最多使用 {0} 个字符。</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>已存在同名配置。</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>无法完成配置操作。\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata 无法完成设置操作。部分更改可能已经生效。您可以关闭此消息并退出设置窗口。请查看日志。\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>确定</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>取消</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>重置武器设置？</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>刷新</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>谢谢您 XD\n请点击“{0}”。</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>无法刷新装备数据。\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>是否保存已成功处理的部分？</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>部分保存已完成。\n保存成功：{0}，失败：{1}。\n详情请查看日志。</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>重置“{0}”？</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>重置“{0}”？</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>删除“{0}”？</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>踢击概率</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>推踢</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>推踢重量上限</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>发现使用特殊攻击方式的武器。是否注册？</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>确认后会复制攻击执行程序并保存到缓存。取消、Esc 或关闭将保留原有射击方式，不进行单发转换。注册过程中关闭窗口，已注册的项目仍会保留。</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>正在注册… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>注册完成：成功 {0} 项，失败 {1} 项。</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>注册成功</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>注册失败。保留原有射击方式，禁用单发转换。</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

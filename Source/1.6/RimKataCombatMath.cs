@@ -285,7 +285,7 @@ namespace KRWF.RimKata
             originalBurstCount = BurstCountForSingleShotTiming(
                 verb,
                 originalBurstCount);
-            float cooldownTicks = verb.verbProps.AdjustedCooldownTicks(verb, pawn);
+            float cooldownTicks = RimKataWeaponEffectStats.AdjustedCooldownTicks(verb, pawn);
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
             if (settings != null && RimKataEquipmentUtility.HasEnabledArmor(pawn))
             {
@@ -322,17 +322,14 @@ namespace KRWF.RimKata
 
         private static float AdjustedWarmupTicks(Verb verb)
         {
-            float aimingFactor = verb.CasterPawn?.GetStatValue(StatDefOf.AimingDelayFactor) ?? 1f;
+            float aimingFactor = RimKataWeaponEffectStats.GetStatValue(verb, verb.CasterPawn, StatDefOf.AimingDelayFactor);
             return AdjustedWarmupTicks(verb, aimingFactor);
         }
 
         private static float AdjustedWarmupTicks(Verb verb, float aimingFactor)
         {
             // The Verb already has converted warmup; rounding needs the original value.
-            float warmupSeconds = RimKataPreparedWeaponData.TryGetPrepared(
-                    verb, out RimKataPreparedWeaponValues prepared)
-                ? prepared.OriginalWarmupSeconds
-                : Mathf.Max(0f, verb.WarmupTime);
+            float warmupSeconds = RimKataPreparedWeaponData.GetOriginalWarmup(verb);
             return Mathf.Max(0f, warmupSeconds * aimingFactor * 60f);
         }
 

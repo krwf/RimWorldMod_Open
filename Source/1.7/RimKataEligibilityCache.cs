@@ -162,6 +162,7 @@ namespace KRWF.RimKata
             {
                 if (TryGetEntry(pawn, out Entry entry) && entry.publishedMap == map)
                 {
+                    if (entry.qualified) RimKataWeaponEffects.ReleasePawn(pawn);
                     entry.publishedMap = null;
                     entry.qualified = false;
                     RimKataStrengthUtility.NotifyQualificationChanged(pawn, false);
@@ -173,6 +174,7 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
+            RimKataWeaponEffects.ResetGame();
             RimKataStrengthUtility.ResetGame();
             RimKataMotionJobGate.ResetGame();
             RimKataFlyingKick.ResetGame();
@@ -279,6 +281,7 @@ namespace KRWF.RimKata
             }
             if (!qualified)
             {
+                RimKataWeaponEffects.ReleasePawn(pawn);
                 RimKataBreachUtility.NotifyEligibilityLost(pawn);
                 RimKataFlyingKick.QualificationLost(pawn);
                 RimKataKick.QualificationLost(pawn);

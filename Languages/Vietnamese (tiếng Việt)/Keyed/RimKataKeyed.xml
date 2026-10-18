@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Chỉ dùng tối đa {0} ký tự.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Đã có hồ sơ mang tên này.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Không thể hoàn tất thao tác hồ sơ.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata không thể hoàn tất một thao tác cài đặt. Một số thay đổi có thể đã được áp dụng. Bạn có thể đóng thông báo này và thoát khỏi cửa sổ cài đặt. Vui lòng kiểm tra nhật ký.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Xác nhận</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Hủy</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Đặt lại cài đặt vũ khí?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Làm mới</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Cảm ơn bạn XD\nVui lòng nhấn “{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Không thể làm mới dữ liệu trang bị.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Bạn có muốn lưu những phần đã được xử lý thành công không?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Đã hoàn tất lưu một phần.\nĐã lưu: {0}, thất bại: {1}.\nVui lòng xem nhật ký để biết chi tiết.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Đặt lại “{0}”?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Xóa “{0}”?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Xác suất đá</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Đá đẩy lùi</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Giới hạn khối lượng đá đẩy lùi</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Đã tìm thấy vũ khí có cách bắn đặc biệt. Bạn có muốn đăng ký chúng không?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Xác nhận sẽ sao chép các quy trình tấn công vào bộ nhớ đệm. Hủy, Esc hoặc Đóng giữ cách bắn gốc mà không chuyển sang từng phát. Đóng trong khi đăng ký vẫn giữ các mục đã đăng ký.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Đang đăng ký… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Đăng ký hoàn tất: {0} thành công, {1} thất bại.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Đã đăng ký</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Đăng ký thất bại. Giữ cách bắn gốc; chuyển sang từng phát bị tắt.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

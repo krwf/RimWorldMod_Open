@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Použijte nejvýše {0} znaků.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Profil s tímto názvem již existuje.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Operaci s profilem se nepodařilo dokončit.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata nemohla dokončit operaci s nastavením. Některé změny již mohly být použity. Tuto zprávu můžete zavřít a opustit okno nastavení. Podrobnosti najdete v protokolu.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Potvrdit</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Zrušit</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Obnovit nastavení zbraní?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Obnovit</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Děkuji XD\nStiskněte „{0}“.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Nepodařilo se obnovit údaje o vybavení.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Chcete uložit části, které byly úspěšně zpracovány?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Částečné uložení dokončeno.\nUloženo: {0}, selhalo: {1}.\nPodrobnosti najdete v protokolu.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Obnovit „{0}“?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Obnovit „{0}“?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Odstranit „{0}“?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Šance na kop</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Odkopnutí</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Hmotnostní limit odkopnutí</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Byly nalezeny zbraně se zvláštním způsobem střelby. Chcete je zaregistrovat?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Potvrzení zkopíruje postupy útoku do mezipaměti. Zrušení, Esc nebo zavření zachová původní střelbu bez převodu na jednotlivé výstřely. Zavření během registrace ponechá již zaregistrované položky.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registrace… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registrace dokončena: {0} úspěšných, {1} neúspěšných.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Zaregistrováno</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registrace selhala. Původní střelba zůstává zachována; převod na jednotlivé výstřely je vypnutý.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

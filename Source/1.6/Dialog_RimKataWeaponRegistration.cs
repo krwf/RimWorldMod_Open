@@ -1,0 +1,153 @@
+using System.Linq;
+using System.Text;
+using UnityEngine;
+using Verse;
+
+namespace KRWF.RimKata
+{
+    internal sealed class Dialog_RimKataWeaponRegistration : Window
+    {
+        private static bool queued;
+        private readonly RimKataWeaponExecutionPlan[] plans;
+        private readonly string[] labels;
+        private readonly bool[] succeeded;
+        private Vector2 scroll;
+        private string message;
+        private int completed;
+        private int registered;
+        private bool running;
+        private bool closed;
+
+        internal static void ShowPending()
+        {
+            if (queued || RimKataWeaponExecutionPlans.PendingRegistration.Count == 0) return;
+            queued = true;
+            LongEventHandler.ExecuteWhenFinished(() =>
+            {
+                queued = false;
+                if (Find.WindowStack == null || Find.WindowStack.IsOpen<Dialog_RimKataWeaponRegistration>()) return;
+                var snapshot = RimKataWeaponExecutionPlans.PendingRegistration
+                    .Where(plan => plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration).ToArray();
+                if (snapshot.Length != 0)
+                    Find.WindowStack.Add(new Dialog_RimKataWeaponRegistration(snapshot));
+            });
+        }
+
+        private Dialog_RimKataWeaponRegistration(RimKataWeaponExecutionPlan[] plans)
+        {
+            this.plans = plans;
+            labels = plans.Select(plan => (plan.Def.LabelCap + " [" + plan.Def.defName + "]"
+                + "\n" + (plan.Def.modContentPack?.Name ?? "RimWorld")).ToString()).ToArray();
+            succeeded = new bool[plans.Length];
+            forcePause = true;
+            doCloseX = true;
+            closeOnCancel = true;
+            closeOnAccept = false;
+            closeOnClickedOutside = true;
+            absorbInputAroundWindow = true;
+            UpdateMessage();
+        }
+
+        public override Vector2 InitialSize => new Vector2(700f, 570f);
+
+        public override void WindowUpdate()
+        {
+            base.WindowUpdate();
+            if (closed || !running) return;
+            // Run one registration per update, outside OnGUI and its layout/repaint passes.
+            succeeded[completed] = RimKataWeaponExecutionRuntime.Register(plans[completed]);
+            if (succeeded[completed]) registered++;
+            completed++;
+            if (completed == plans.Length) running = false;
+            UpdateMessage();
+        }
+
+        private void UpdateMessage()
+        {
+            var text = new StringBuilder();
+            if (completed == plans.Length)
+                text.Append("KRWF_RimKata_WeaponRegistrationComplete".Translate(registered, completed - registered));
+            else
+            {
+                text.Append(running
+                    ? "KRWF_RimKata_WeaponRegistrationProgress".Translate(completed, plans.Length)
+                    : "KRWF_RimKata_WeaponRegistrationPrompt".Translate());
+                text.Append("\n\n").Append("KRWF_RimKata_WeaponRegistrationExplanation".Translate());
+            }
+            for (int i = 0; i < plans.Length; i++)
+            {
+                text.Append("\n\n").Append(labels[i]);
+                if (i < completed)
+                    text.Append("\n").Append((succeeded[i]
+                        ? "KRWF_RimKata_WeaponRegistrationSuccess"
+                        : "KRWF_RimKata_WeaponRegistrationFailure").Translate());
+            }
+            message = text.ToString();
+        }
+
+        public override void OnAcceptKeyPressed()
+        {
+            if (closed || running) return;
+            Event.current?.Use();
+            if (completed == plans.Length)
+                Close();
+            else
+            {
+                running = true;
+                UpdateMessage();
+            }
+        }
+
+        public override void DoWindowContents(Rect inRect)
+        {
+            const float buttonHeight = 35f;
+            const float gap = 20f;
+            GameFont previousFont = Text.Font;
+            TextAnchor previousAnchor = Text.Anchor;
+            bool previousEnabled = GUI.enabled;
+            try
+            {
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.UpperLeft;
+                var area = new Rect(inRect.x, inRect.y, inRect.width, inRect.height - buttonHeight - gap);
+                float width = Mathf.Max(1f, area.width - 16f);
+                var content = new Rect(0f, 0f, width, Text.CalcHeight(message, width));
+                Widgets.BeginScrollView(area, ref scroll, content);
+                Widgets.Label(content, message);
+                Widgets.EndScrollView();
+
+                float buttonWidth = (inRect.width - gap) * 0.5f;
+                var closeRect = new Rect(inRect.x, inRect.yMax - buttonHeight, buttonWidth, buttonHeight);
+                if (Widgets.ButtonText(closeRect, "Close".Translate()))
+                {
+                    Close();
+                    return;
+                }
+                GUI.enabled = previousEnabled && !running;
+                if (Widgets.ButtonText(new Rect(closeRect.xMax + gap, closeRect.y, buttonWidth, buttonHeight),
+                    "Confirm".Translate()))
+                    OnAcceptKeyPressed();
+            }
+            finally
+            {
+                GUI.enabled = previousEnabled;
+                Text.Font = previousFont;
+                Text.Anchor = previousAnchor;
+            }
+        }
+
+        public override void PostClose()
+        {
+            if (!closed)
+            {
+                closed = true;
+                running = false;
+                // Completed registrations remain accepted; only the untouched remainder is declined.
+                for (int i = completed; i < plans.Length; i++)
+                    RimKataWeaponExecutionRuntime.Decline(plans[i]);
+            }
+            base.PostClose();
+        }
+    }
+}
+

@@ -1032,6 +1032,7 @@ namespace KRWF.RimKata
             }
 
             state.dualLastDrivenTick = currentTick;
+            RimKataWeaponEffects.Tick(pawn, state);
 
             ImportLegacyDraftedState(state);
 
@@ -3403,12 +3404,13 @@ namespace KRWF.RimKata
         private static void RefreshDualEngagementState(
             Pawn pawn,
             RimKataPawnCombatState state,
-            bool? randomAttackEnabled = null)
+            bool? randomAttackEnabled = null,
+            bool synchronizeEffects = true)
         {
             CycleVerbAvailability primaryAvailability = default;
             CycleVerbAvailability secondaryAvailability = default;
             RefreshDualEngagementState(pawn, state, randomAttackEnabled,
-                ref primaryAvailability, ref secondaryAvailability);
+                ref primaryAvailability, ref secondaryAvailability, synchronizeEffects);
         }
 
         private static void RefreshDualEngagementState(
@@ -3416,7 +3418,8 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state,
             bool? randomAttackEnabled,
             ref CycleVerbAvailability primaryAvailability,
-            ref CycleVerbAvailability secondaryAvailability)
+            ref CycleVerbAvailability secondaryAvailability,
+            bool synchronizeEffects = true)
         {
             if (state == null)
             {
@@ -3433,6 +3436,11 @@ namespace KRWF.RimKata
             if (wasActive && !state.dualEngagementActive)
             {
                 state.ResetCandidateSaturationExpansion(true);
+                RimKataWeaponEffects.ReleasePawn(pawn);
+            }
+            else if (synchronizeEffects && !wasActive && state.dualEngagementActive)
+            {
+                RimKataWeaponEffects.Sync(pawn, state);
             }
         }
 
@@ -3571,21 +3579,30 @@ namespace KRWF.RimKata
             if (state.kick != null) RimKataKick.ClearOpportunity(state);
             state.CancelDraftedFire(false);
             state.ClearDraftedMovementSearchTracking();
-            CancelUnfiredWarmupForDraftChange(state.primaryWeaponCycle);
-            CancelUnfiredWarmupForDraftChange(state.secondaryWeaponCycle);
+            CancelNativeForDraftChange(pawn, state.primaryWeaponCycle);
+            CancelNativeForDraftChange(pawn, state.secondaryWeaponCycle);
             state.ClearDedicatedFollowupJobRequest();
             RearmOpeningOwnerIfBothWaiting(state);
-            RefreshDualEngagementState(pawn, state);
+            RefreshDualEngagementState(pawn, state, synchronizeEffects: false);
             state.dualLastDrivenTick = -1;
+            RimKataWeaponEffects.ReleasePawn(pawn);
+            state.weaponBindingsDirty = true;
+        }
+
+        private static void CancelNativeForDraftChange(Pawn pawn, RimKataWeaponCycleState cycle)
+        {
+            if (cycle == null) return;
+            cycle.focusedTarget = null;
+            cycle.focusedTargetFromAttackGizmo = false;
+            ApplyInterruptedBurstCooldown(pawn, cycle, cycle.boundVerb);
+            cycle.nativeAttack?.Cancel();
+            CancelUnfiredWarmupForDraftChange(cycle);
         }
 
         private static void CancelUnfiredWarmupForDraftChange(
             RimKataWeaponCycleState cycle)
         {
-            if (cycle == null || cycle.NativeAttackPending)
-            {
-                return;
-            }
+            if (cycle == null || cycle.NativeAttackPending) return;
 
             cycle.plannedTarget = null;
             cycle.plannedDirectionalFireCell = IntVec3.Invalid;
@@ -4727,6 +4744,7 @@ namespace KRWF.RimKata
             if (state.dualLastDrivenTick == tick) return;
             state.dualLastDrivenTick = tick;
             BindCurrentWeapons(pawn, state, true);
+            RimKataWeaponEffects.Tick(pawn, state);
             state.primaryWeaponCycle.TickTimers();
             state.secondaryWeaponCycle.TickTimers();
             if (!pawn.CanReachImmediate(target, PathEndMode.Touch))
@@ -5564,6 +5582,7 @@ namespace KRWF.RimKata
 
             state.weaponBindingsDirty = true;
             state.dualEngagementActive = false;
+            RimKataWeaponEffects.ReleasePawn(pawn);
             state.dualLastDrivenTick = -1;
             state.dualCloseCombatActive = false;
 
@@ -6089,6 +6108,7 @@ namespace KRWF.RimKata
                 | state.secondaryWeaponCycle.Bind(secondary);
             ResolveWeaponBinding(pawn, state.primaryWeaponCycle);
             ResolveWeaponBinding(pawn, state.secondaryWeaponCycle);
+            RimKataWeaponEffects.Sync(pawn, state);
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
             if (settings?.directionalFireEnabled == false)
                 RimKataDirectionalFire.Clear(state);
@@ -6710,6 +6730,9 @@ namespace KRWF.RimKata
                     return;
                 }
 
+                if (!cycle.plannedActionVerb.IsMeleeAttack
+                    && RimKataWeaponExecutionRuntime.NeedsTimingRefresh(cycle.plannedActionVerb))
+                    RimKataPreparedWeaponData.Bind(cycle.plannedActionVerb);
                 int normalWarmup = RimKataCombatMath.WarmupTicksForSingleShot(
                     cycle.plannedActionVerb);
                 int openingBonus = ResolveOpeningSupportBonus(
@@ -8117,10 +8140,15 @@ namespace KRWF.RimKata
             if (pawn?.Map == null || !(pawn.stances?.curStance is Stance_Mobile)) return;
             state ??= StateFor(pawn, false);
             RimKataKick.ClearIdleOpportunity(state);
-            if (state == null
-                || (!state.primaryWeaponCycle.HasAutomaticCandidates
-                    && !state.secondaryWeaponCycle.HasAutomaticCandidates)
-                || state.primaryWeaponCycle.NativeAttackPending
+            if (state == null) return;
+            if (!state.primaryWeaponCycle.HasAutomaticCandidates
+                && !state.secondaryWeaponCycle.HasAutomaticCandidates)
+            {
+                if (state.dualEngagementActive)
+                    RefreshDualEngagementState(pawn, state);
+                return;
+            }
+            if (state.primaryWeaponCycle.NativeAttackPending
                 || state.secondaryWeaponCycle.NativeAttackPending
                 || TryGetNextAim(pawn, state, out _, out _)
                 || HasShootableOrdinaryCandidate(pawn, state, state.primaryWeaponCycle)
@@ -8230,7 +8258,9 @@ namespace KRWF.RimKata
             Verb secondaryPendingVerb = secondary.warmupTicksRemaining < 0
                 ? CombatVerbForAim(pawn, state, secondary) : null;
             bool shareAimingFactor = primaryPendingVerb?.CasterPawn == pawn
-                && secondaryPendingVerb?.CasterPawn == pawn;
+                && secondaryPendingVerb?.CasterPawn == pawn
+                && !RimKataWeaponEffects.HasEffects(primaryPendingVerb)
+                && !RimKataWeaponEffects.HasEffects(secondaryPendingVerb);
             float aimingFactor = shareAimingFactor
                 ? pawn.GetStatValue(StatDefOf.AimingDelayFactor) : 1f;
             if (primary.warmupTicksRemaining < 0)

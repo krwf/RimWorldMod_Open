@@ -313,7 +313,9 @@ namespace KRWF.RimKata
             mirrored = null;
             try
             {
-                mirrored = UnityEngine.Object.Instantiate(source);
+                // 1.7 Instantiate(Mesh) may alias the original. Never mutate or destroy it.
+                mirrored = new Mesh();
+                mirrored.EngineMesh.ReplaceCpuStorage(source.EngineMesh.CpuStorage.Clone());
                 mirrored.name = source.name + " (RimKata mirrored)";
                 Vector3[] vertices = source.vertices;
                 for (int i = 0; i < vertices.Length; i++) vertices[i].x = -vertices[i].x;

@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Χρησιμοποιήστε έως {0} χαρακτήρες.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Υπάρχει ήδη προφίλ με αυτό το όνομα.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Δεν ήταν δυνατή η ολοκλήρωση της ενέργειας προφίλ.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>Το RimKata δεν μπόρεσε να ολοκληρώσει μια ενέργεια ρυθμίσεων. Ορισμένες αλλαγές ενδέχεται να έχουν ήδη εφαρμοστεί. Μπορείτε να κλείσετε αυτό το μήνυμα και να βγείτε από το παράθυρο ρυθμίσεων. Ελέγξτε το αρχείο καταγραφής.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Επιβεβαίωση</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Ακύρωση</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Επαναφορά ρυθμίσεων όπλων;</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Ανανέωση</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Ευχαριστώ XD\nΠατήστε «{0}».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Δεν ήταν δυνατή η ανανέωση των δεδομένων εξοπλισμού.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Θέλετε να αποθηκεύσετε τα τμήματα που υποβλήθηκαν σε επεξεργασία με επιτυχία;</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Η μερική αποθήκευση ολοκληρώθηκε.\nΑποθηκεύτηκαν: {0}, απέτυχαν: {1}.\nΔείτε το αρχείο καταγραφής για λεπτομέρειες.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Επαναφορά «{0}»;</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Διαγραφή «{0}»;</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Πιθανότητα κλωτσιάς</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Σπρωχτή κλωτσιά</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Όριο μάζας σπρωχτής κλωτσιάς</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Βρέθηκαν όπλα με ιδιαίτερο τρόπο πυροδότησης. Θέλετε να τα καταχωρίσετε;</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Η επιβεβαίωση αντιγράφει τις διαδικασίες επίθεσης στην κρυφή μνήμη. Ακύρωση, Esc ή Κλείσιμο διατηρεί την αρχική πυροδότηση χωρίς μετατροπή σε μονή βολή. Το κλείσιμο κατά την καταχώριση διατηρεί τις ήδη καταχωρισμένες εγγραφές.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Καταχώριση… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Η καταχώριση ολοκληρώθηκε: {0} επιτυχίες, {1} αποτυχίες.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Καταχωρίστηκε</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Η καταχώριση απέτυχε. Διατηρείται η αρχική πυροδότηση· η μετατροπή σε μονή βολή απενεργοποιείται.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

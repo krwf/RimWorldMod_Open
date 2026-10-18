@@ -4,4 +4,5 @@
   <RimKata_Breach.reportString>Enfonce la porte.</RimKata_Breach.reportString>
   <RimKata_Subdue.reportString>Maîtrise TargetA.</RimKata_Subdue.reportString>
   <RimKata_SubdueCombat.reportString>attaque TargetA tout en maintenant la prise.</RimKata_SubdueCombat.reportString>
+  <RimKata_Pushed.reportString>est repoussé en arrière.</RimKata_Pushed.reportString>
 </LanguageData>

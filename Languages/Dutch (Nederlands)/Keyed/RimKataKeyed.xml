@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Gebruik niet meer dan {0} tekens.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Er bestaat al een profiel met deze naam.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>De profielbewerking kon niet worden voltooid.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata kon een bewerking van de instellingen niet voltooien. Sommige wijzigingen zijn mogelijk al toegepast. Je kunt dit bericht sluiten en het instellingenvenster verlaten. Raadpleeg het logboek.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Bevestigen</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Annuleren</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Wapeninstellingen herstellen?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Vernieuwen</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Bedankt XD\nKlik op ‘{0}’.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>De uitrustingsgegevens konden niet worden vernieuwd.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Wilt u de onderdelen opslaan die succesvol zijn verwerkt?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Gedeeltelijk opslaan voltooid.\nOpgeslagen: {0}, mislukt: {1}.\nRaadpleeg het logboek voor details.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>'{0}' herstellen?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>'{0}' verwijderen?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Kans op trap</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Duwtrap</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Massalimiet voor duwtrap</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Er zijn wapens met een bijzondere schietwijze gevonden. Wilt u ze registreren?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Bevestigen kopieert de aanvalsroutines naar de cache. Annuleren, Esc of Sluiten behoudt de oorspronkelijke schietwijze zonder omzetting naar enkelschots. Sluiten tijdens registratie behoudt reeds geregistreerde items.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registreren… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registratie voltooid: {0} geregistreerd, {1} mislukt.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Geregistreerd</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registratie mislukt. De oorspronkelijke schietwijze blijft behouden; omzetting naar enkelschots is uitgeschakeld.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

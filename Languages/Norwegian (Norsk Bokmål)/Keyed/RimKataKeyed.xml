@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Bruk maksimalt {0} tegn.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Det finnes allerede en profil med dette navnet.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Kunne ikke fullføre profilhandlingen.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata kunne ikke fullføre en innstillingshandling. Noen endringer kan allerede ha blitt tatt i bruk. Du kan lukke denne meldingen og forlate innstillingsvinduet. Se loggen for mer informasjon.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Bekreft</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Avbryt</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Tilbakestille våpeninnstillingene?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Oppdater</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Takk XD\nTrykk på «{0}».</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Kunne ikke oppdatere utstyrsdata.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Vil du lagre delene som ble behandlet uten feil?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Delvis lagring fullført.\nLagret: {0}, mislykket: {1}.\nSe loggen for detaljer.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Tilbakestille «{0}»?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Tilbakestille «{0}»?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Slette «{0}»?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Sjanse for spark</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Skyvespark</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Massegrense for skyvespark</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Det ble funnet våpen med en spesiell avfyringsmåte. Vil du registrere dem?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Bekreft kopierer angrepsrutinene til hurtigbufferen. Avbryt, Esc eller Lukk beholder den opprinnelige avfyringen uten omgjøring til enkeltskudd. Lukking under registreringen beholder allerede registrerte oppføringer.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Registrerer… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Registrering fullført: {0} registrert, {1} mislykket.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Registrert</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Registrering mislyktes. Den opprinnelige avfyringen beholdes; omgjøring til enkeltskudd er deaktivert.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

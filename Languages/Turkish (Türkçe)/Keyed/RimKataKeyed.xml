@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>En fazla {0} karakter kullanın.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Bu adda bir profil zaten var.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Profil işlemi tamamlanamadı.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata bir ayar işlemini tamamlayamadı. Bazı değişiklikler zaten uygulanmış olabilir. Bu mesajı kapatıp ayarlar penceresinden çıkabilirsiniz. Lütfen günlüğü kontrol edin.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Onayla</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>İptal</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Silah ayarları sıfırlansın mı?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Yenile</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Teşekkürler XD\nLütfen &quot;{0}&quot; düğmesine basın.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Donanım verileri yenilenemedi.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Başarıyla işlenen kısımları kaydetmek ister misiniz?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Kısmi kayıt tamamlandı.\nKaydedilen: {0}, başarısız: {1}.\nAyrıntılar için günlüğü kontrol edin.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>'{0}' sıfırlansın mı?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>'{0}' silinsin mi?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Tekme olasılığı</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>İtme tekmesi</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>İtme tekmesi kütle sınırı</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Özel ateş etme biçimine sahip silahlar bulundu. Bunları kaydetmek ister misiniz?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Onaylama, saldırı yordamlarını önbelleğe kopyalar. İptal, Esc veya Kapat, tek atışa dönüştürmeden özgün ateş etme biçimini korur. Kayıt sırasında kapatırsanız önceden kaydedilen girdiler korunur.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Kaydediliyor… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Kayıt tamamlandı: {0} başarılı, {1} başarısız.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Kaydedildi</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Kayıt başarısız. Özgün ateş etme biçimi korunur; tek atışa dönüştürme devre dışıdır.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

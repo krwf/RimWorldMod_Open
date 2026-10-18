@@ -38,6 +38,8 @@ namespace KRWF.RimKata
             AccessTools.FieldRefAccess<Verb, int?>("cachedBurstShotCount");
         private static readonly AccessTools.FieldRef<Verb, int> burstShotsLeft =
             AccessTools.FieldRefAccess<Verb, int>("burstShotsLeft");
+        private static readonly AccessTools.FieldRef<Verb, Action> castCompleteCallback =
+            AccessTools.FieldRefAccess<Verb, Action>("castCompleteCallback");
 
         internal Pawn pawn;
         internal RimKataPawnCombatState state;
@@ -92,6 +94,16 @@ namespace KRWF.RimKata
         private int? previousBurstShotCount;
         private bool singleShotOverride;
         private bool kickOpportunityNotified;
+        internal RimKataWeaponExecutionPlan executionPlan;
+        internal bool observedShotAttempted;
+        private bool nativeCompleted;
+        private Action previousCompletion;
+        private Action completionCallback;
+
+        internal static RimKataNativeAttack PendingRequest(Verb verb)
+            => verb != null && bindings.TryGetValue(verb, out VerbBinding binding)
+                && binding.request?.Pending == true ? binding.request : null;
+        internal static bool HasPendingRequest(Verb verb) => PendingRequest(verb) != null;
 
         internal static void Bind(Verb verb)
         {
@@ -131,6 +143,10 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            executionPlan = RimKataWeaponExecutionRuntime.GetPlan(verb);
+            bool observeCompletion = executionPlan != null && !executionPlan.HandledByCompatibility
+                && executionPlan.Mode != RimKataWeaponExecutionMode.Vanilla;
+            Action nativeCallback = observeCompletion ? castCompleteCallback(verb) : null;
             verb.Reset();
             currentTarget(verb) = target;
             currentDestination(verb) = LocalTargetInfo.Invalid;
@@ -144,6 +160,13 @@ namespace KRWF.RimKata
             kickOpportunityNotified = false;
             Pending = true;
             nativeBinding.request = this;
+            observedShotAttempted = nativeCompleted = false;
+            if (observeCompletion)
+            {
+                previousCompletion = nativeCallback;
+                if (completionCallback == null) completionCallback = NativeCompleted;
+                castCompleteCallback(verb) = completionCallback;
+            }
             if (reactiveMotion != null || subdueState != null) LimitToSingleShot();
             return true;
         }
@@ -180,7 +203,14 @@ namespace KRWF.RimKata
         {
             if (!bindings.TryGetValue(verb, out VerbBinding binding)
                 || binding.request is not RimKataNativeAttack request
-                || !request.Pending || request.Executing || request.Started) return false;
+                || !request.Pending || request.Executing) return false;
+            if (request.Started)
+            {
+                // Reuse the existing registered-request lookup; ordinary Verb ticks gain no new scan.
+                if (request.executionPlan != null && !request.executionPlan.HandledByCompatibility)
+                    request.ReconcileNativeTick(null);
+                return false;
+            }
             if (request.reactiveMotion != null && Find.TickManager.TicksGame < request.notBeforeTick)
                 return false;
             if (!request.CanContinue() || verb.state != VerbState.Idle)
@@ -366,6 +396,12 @@ namespace KRWF.RimKata
         }
 
         internal void FinishNativeCast(Exception exception)
+            => FinishNativeCastCore(exception, false);
+
+        internal void FinishObservedShot(Exception exception)
+            => FinishNativeCastCore(exception, true);
+
+        private void FinishNativeCastCore(Exception exception, bool deferCompletion)
         {
             bool rangedShot = exception == null && !verb.IsMeleeAttack && RimKataFireContext.ShotFired;
             RimKataDirectionalFire.EndNativeExecution(previousDirectionalExecution);
@@ -383,7 +419,12 @@ namespace KRWF.RimKata
             if (subdueState != null)
                 RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution);
             previousSubdueExecution = default;
-            CompleteNativeCast(exception, rangedShot);
+            if (deferCompletion && exception == null && !cancelled)
+            {
+                RestoreAimAfterShot();
+                if (rangedShot) NotifyKickAttackStarting();
+            }
+            else CompleteNativeCast(exception, rangedShot);
         }
 
         internal void CompleteNativeCast(Exception exception, bool rangedShot)
@@ -394,10 +435,29 @@ namespace KRWF.RimKata
             {
                 cancelled = true;
             }
-            if (cancelled || verb.state != VerbState.Bursting)
+            // An unknown custom warmup may schedule the actual shot on a Comp callback.
+            // Keep its real instance and wait for an observed attempt or native completion.
+            bool deferred = executionPlan != null && !executionPlan.HandledByCompatibility
+                && !executionPlan.AnalysisComplete && !HasFired
+                && !observedShotAttempted && !nativeCompleted;
+            if (cancelled || nativeCompleted || (verb.state != VerbState.Bursting && !deferred))
             {
                 CompleteRequest(cancelled);
             }
+        }
+
+        private void NativeCompleted()
+        {
+            nativeCompleted = true;
+            previousCompletion?.Invoke();
+        }
+
+        internal void ReconcileNativeTick(Exception exception)
+        {
+            if (!Pending || Executing || (!Started && exception == null)) return;
+            if (exception != null || nativeCompleted
+                || (verb.state != VerbState.Bursting && (HasFired || observedShotAttempted)))
+                CompleteNativeCast(exception, false);
         }
 
         internal void RestoreAimAfterShot()
@@ -540,6 +600,9 @@ namespace KRWF.RimKata
 
         private void Detach()
         {
+            if (verb != null && completionCallback != null && castCompleteCallback(verb) == completionCallback)
+                castCompleteCallback(verb) = previousCompletion;
+            previousCompletion = null;
             if (verb != null && bindings.TryGetValue(verb, out VerbBinding binding)
                 && binding.request == this) binding.request = null;
             Pending = false;
@@ -594,7 +657,7 @@ namespace KRWF.RimKata
         internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            MethodInfo warmup = AccessTools.Method(typeof(Verb), nameof(Verb.WarmupComplete));
+            MethodInfo warmup = AccessTools.Method(typeof(RimKataWeaponExecutionRuntime), nameof(RimKataWeaponExecutionRuntime.WarmupComplete));
             MethodInfo ready = AccessTools.Method(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.CanBeginNativeTick));
             Label regular = generator.DefineLabel();
             FieldInfo stateField = AccessTools.Field(typeof(Verb), nameof(Verb.state));
@@ -623,7 +686,7 @@ namespace KRWF.RimKata
             yield return new CodeInstruction(OpCodes.Call, ready);
             yield return new CodeInstruction(OpCodes.Brfalse, regular);
             yield return new CodeInstruction(OpCodes.Ldarg_0);
-            yield return new CodeInstruction(OpCodes.Callvirt, warmup);
+            yield return new CodeInstruction(OpCodes.Call, warmup);
             yield return new CodeInstruction(OpCodes.Br, afterBurst.Value);
             CodeInstruction originalEntry = new CodeInstruction(OpCodes.Nop);
             originalEntry.labels.Add(regular);

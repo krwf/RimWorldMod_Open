@@ -858,14 +858,14 @@ namespace KRWF.RimKata
         public static Mesh Plane10ForContext()
         {
             return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
-                ? plane10VFlip ??= CreateVFlippedMesh(MeshPool.plane10)
+                ? plane10VFlip ??= CreateVFlippedMesh(false)
                 : MeshPool.plane10;
         }
 
         public static Mesh Plane10FlipForContext()
         {
             return drawingSecondary && (!mirroringSecondaryDepth || mirroringRangedCombatWeapon)
-                ? plane10UvFlip ??= CreateVFlippedMesh(MeshPool.plane10Flip)
+                ? plane10UvFlip ??= CreateVFlippedMesh(true)
                 : MeshPool.plane10Flip;
         }
 
@@ -1781,9 +1781,11 @@ namespace KRWF.RimKata
             return resolved ? aim.AngleFlat() : fallback;
         }
 
-        private static Mesh CreateVFlippedMesh(Mesh source)
+        internal static Mesh CreateVFlippedMesh(bool flipped)
         {
-            Mesh mesh = UnityEngine.Object.Instantiate(source);
+            // In 1.7, Instantiate(Mesh) can return the shared source itself.
+            // Build a private plane once; callers keep their existing mesh caches.
+            Mesh mesh = MeshMakerPlanes.NewPlaneMesh(1f, flipped);
             Vector2[] uv = mesh.uv;
             for (int i = 0; i < uv.Length; i++)
             {

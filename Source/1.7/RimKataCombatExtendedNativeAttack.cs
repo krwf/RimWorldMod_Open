@@ -35,7 +35,7 @@ namespace KRWF.RimKata
                 transpiler: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(OpeningTranspiler)));
             Patch(harmony, nameof(RimKataNativeAttack.Queue), nameof(QueueTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.CanBeginNativeTick), nameof(BeginTranspiler));
-            Patch(harmony, nameof(RimKataNativeAttack.FinishNativeCast), nameof(FinishTranspiler));
+            Patch(harmony, "FinishNativeCastCore", nameof(FinishTranspiler));
             Patch(harmony, nameof(RimKataNativeAttack.Cancel), nameof(CancelTranspiler));
             RimKataStartupPatches.Patch(harmony, AccessTools.Method(typeof(RimKataNativeAttack), "CompleteRequest"),
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedNativeAttack), nameof(CompletePrefix)));

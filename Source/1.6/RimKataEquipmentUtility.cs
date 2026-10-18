@@ -118,10 +118,11 @@ namespace KRWF.RimKata
             RimKataWeaponRenderProbe.RefreshDefinitions();
         }
 
-        internal static void RefreshPreparedWeapons()
+        internal static void RefreshPreparedWeapons(bool forceExecution = false)
         {
             unchecked { WeaponConfigurationRevision++; }
             RimKataPreparedWeaponData.RefreshDefinitions();
+            RimKataWeaponExecutionRuntime.Refresh(forceExecution);
         }
 
         private static void EnsureCaches()

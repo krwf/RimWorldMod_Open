@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>{0} 文字以内で入力してください。</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>同じ名前のプロファイルがすでに存在します。</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>プロファイル操作を完了できませんでした。\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata の設定操作を完了できませんでした。一部の変更はすでに適用されている可能性があります。このメッセージを閉じて設定ウィンドウを終了できます。ログを確認してください。\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>確認</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>キャンセル</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>武器設定をリセットしますか？</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>更新</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>ありがとうございます XD\n「{0}」を押してください。</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>装備データを更新できませんでした。\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>正常に処理できた部分を保存しますか？</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>一部の保存が完了しました。\n保存成功：{0}、失敗：{1}。\n詳細はログを確認してください。</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>「{0}」をリセットしますか？</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>「{0}」を削除しますか？</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>蹴りの確率</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>押し蹴り</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>押し蹴り可能重量</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>特殊な攻撃方式を使用する武器が見つかりました。登録しますか？</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>確認すると攻撃の実行処理をコピーしてキャッシュに保存します。キャンセル・Esc・閉じるでは元の射撃方式を維持し、単発への変換は行いません。登録中に閉じても、登録済みの項目は保持されます。</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>登録中… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>登録完了：成功 {0} 件、失敗 {1} 件。</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>登録成功</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>登録に失敗しました。元の射撃方式を維持し、単発への変換は無効になります。</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

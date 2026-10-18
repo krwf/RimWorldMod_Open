@@ -1,5 +1,67 @@
 # RimKata 소스 메서드 색인
 
+## 2026-10-19 부 슬롯 장비 extra 기즈모
+
+- `Patch_PawnEquipmentTracker_RimKataSecondaryGizmo.Postfix/AppendSecondaryEquipmentGizmos/MarkSecondaryWeaponGizmos`: 등록 부 무기 참조를 한 번 얻어 공유하고, 바닐라에서 주 무기에만 호출하는 `CompEquippable.CompGetEquippedGizmosExtra`를 부 무기에 한 번 호출합니다. 원본 객체 참조 중복만 제외하며 기존 공격 기즈모/CE 경로는 유지합니다.
+- `RimKataSecondaryEquipmentGizmos.Mark/RestoreIfChanged/RestoreLabels/RestoreAll`: 원본 버튼의 Action과 타입을 보존하면서 접미 표시/weak 소유자 정보/슬롯 또는 자격 변경 시 복원. `GroupsWith/Draw/GridPatch.Transpiler`는 주·부 그룹 분리와 비Command 배지만 담당합니다. 일반 폰 탐색·추가 전투 tick은 없습니다.
+
+## 2026-10-19 관리자 자동 표적 정리 분리
+
+- `RimKataWeaponEffectLifecycle.Rewrite/Match/CleanupArguments/PureCleanup/PropertyReader/ScopeHooksOnly`: 기존 Target reader와 실제 비교·순수 제거·과거 표적 갱신의 닫힌 분기만 준비 시 구분. 원본 관리자의 다른 분기와 실제 표적은 유지합니다. 외부 훅/EH/미지원 형태는 원본 유지이며 효과 등록 거절 조건이 아닙니다.
+- `RimKataWeaponEffects.BeginTargetChange/TryContinueAutomaticAttack`: 기존 주 사이클 또는 부 슬롯 사본에서 허용 무기의 연속 자동 공격을 확인합니다. `TargetChangeScope/Scope/ExitScope`가 중첩·예외 문맥을 복원하고 `RemoveHediff`만 확인된 대상 변경 정리 사유를 소비합니다. 관리자 전체/공용 제거 helper 전체를 막지 않습니다.
+- `RewriteAccess`: 기존 건강·장비·스탯 치환 전에 위 분기 구분을 적용합니다. 일반 폰 순회나 새 Tick은 추가하지 않으며, 주 무기에 건강 사본을 만들지 않습니다.
+
+## 2026-10-19 부 슬롯 건강·스탯 사본
+
+- `RimKataWeaponExecutionRuntime.PrepareConnections/RegisterCore/CanPrepareEffects`: 발사 실행 확보 뒤 효과 준비. `RimKataWeaponEffects.Prepare/PrepareWeapon`은 gate 통과 계획만 분석하고 실패/거절 시 해당 무기의 참가자를 해제합니다.
+- `RimKataWeaponEffects.Sync/Bind/Connect`: 실제 전투에 참여하는 부 무기만 등록. 주 무기는 원본 건강·스탯 경로를 사용합니다. `SuspendNativeSecondary`는 확인된 부 무기용 native 상태만 옮기며 미분석 주 무기의 공유 상태를 삭제하지 않습니다.
+- `EnsureManagers/ManagerRemoved/EnterScope/ExitScope`: detached 관리자 최초 생성과 실제 인스턴스 소속을 관리합니다. 과거 `TrackManager`는 삭제됐으며 같은 Def만으로 native 주 무기를 부 무기 문맥에 귀속하지 않습니다.
+- `Tick/TickLocalHealth`: 기존 참가자 처리에서 지역 manager/effect만 원본 Tick·interval·제거 순서로 갱신합니다. 원본 virtual interval getter는 일회 delegate 준비, 순회 목록은 재사용, lastTick 중복 방지. 일반 폰·기초 건강 사본은 tick하지 않습니다.
+- `RimKataWeaponEffectStats.Capture/Snapshot.Refresh/ReadCached`: 전투 진입 시 기초 건강 기여를 동결하고 효과 변경 시에만 숫자 캐시 무효화. 원본 StatWorker 복사본을 사용합니다. `TryGetStatContext`는 등록된 부 무기만 성공합니다.
+- `RimKataDualWeaponController.RefreshDualEngagementState/NotifyDraftStatusChanged/NotifyBodyAimEnded/Reset`: 기존 전투 진입/종료·소집 사건에서 생성/폐기. `RimKataWeaponEffectState.ExposeData/RestoreLoadedRecords/Release`는 detached Deep 저장과 구형 참조 형식 전환을 구분합니다. 아래 10-18의 두 슬롯 등록 및 native manager 설명은 과거 구조입니다.
+
+## 2026-10-18 실제 무기 타입과 무관한 Prefix 분석 제외
+
+- `RimKataWeaponExecutionDiscovery.ExcludesType/LocalIndex`: 발사·효과 분석 공용. 실제 `__instance` 타입 불일치에서 무작업 true 반환이 증명되는 Prefix만 분석에서 제외합니다. 동일 local의 저장/로드만 허용하고 추가 Harmony 훅이나 예외 블록은 제외 판정을 중단합니다.
+- `RimKataWeaponEffectDiscovery.Graph.ExcludesWeapon/Add`: 현재 무기의 Verb 타입과 해당 원본 메서드를 사용하여 Prefix/InnerPrefix만 판별합니다. 다른 무기 전용 분기의 효과를 합치지 않으며 Postfix/Finalizer와 실제 Harmony 실행은 유지합니다. 준비 단계에만 수행하며 일반 폰/전투 tick 호출은 추가하지 않습니다.
+
+## 2026-10-18 scoped 건강 진입점의 검증 책임 보완
+
+- `RimKataWeaponEffectDiscovery.Graph.Add`: 이미 scoped 원본 복사본으로 연결하는 `Pawn_HealthTracker.AddHediff/RemoveHediff`에서 추적을 끝냅니다. `RimKataWeaponEffectHealth.Initialize/Rewrite`가 외부 패치와 콜백을 보존한 실제 건강 변경 지점을 검증합니다. 이 건강 API의 그래픽 콜백까지 무기 효과 분석으로 다시 확장하지 않으며, 다른 일반 helper의 기존 분석과 건강 엔트리 외부 패치 fingerprint는 유지합니다.
+
+## 2026-10-18 정보 표시 진입점 후속 갱신
+
+- `RimKataWeaponEffectDiscovery.Graph.AddOwner`: `ThingComp.SpecialDisplayStats`의 실제 기본 가상 슬롯을 비교하여 정보 표시를 독립 효과 분석 시작점에서 제외합니다. 효과 메서드에서 호출된 경우는 `Add/Inspect`가 계속 추적합니다. 표시 iterator가 있다는 이유로 무기 효과 전체를 거절하던 원인만 수정했습니다. 양 버전 공통이며 추가 근접 공격 준비 경로는 변경하지 않았습니다.
+
+## 2026-10-18 원본 부가 효과 실행 연결 후속 갱신
+
+- 양 버전 공통. 바로 아래 최초 부가 효과 항목의 `Match.Verify/BindIncrement/BeforeAim/AccumulatePrefix/TargetTickPrefix/StopTickPrefix`는 삭제된 과거 구현입니다. 원본 누적/초기화 공식을 재구성하지 않습니다.
+- `RimKataWeaponEffectDiscovery.TryAnalyze/IsScopedAccess/AccessFingerprint`: 원본 메서드와 외부 훅 추적, 무기별 문맥으로 연결할 실제 API 판별. 분석 실패 이유를 원본 유지 상태와 함께 보고합니다.
+- `RimKataWeaponEffects.Prepare/Sync/Bind/Connect`: 준비와 기존 무기 바인딩. `EnterScope/ExitScope/RewriteAccess`는 원본 실행의 장비·건강·스탯 조회를 해당 무기 문맥에 연결합니다. `EnsureManagers/TrackManager/ManagerRemoved`는 원본 관리자 인스턴스의 소유권을 관리하며 매 Sync 재생성은 하지 않습니다. `ReleaseWeapon/ReleasePawn/ResetGame`는 등록 참가자만 정리합니다.
+- `RimKataWeaponEffectHealth.Initialize/Add/CreateAndAdd/Remove`: 원본 건강 처리와 Harmony 콜백을 보존하는 실행 복사본. 관리자 병합과 스탯 효과 변경 목록만 분리하며 실제 건강 목록을 교체하지 않습니다.
+- `RimKataWeaponEffectStats.IsSupported`: 파생형 이름 대신 실제 계산 메서드 구현을 준비 단계에서 확인. 전투 중 reflection은 없습니다. `RimKataWeaponStateObservers`는 원본 긍정 결과를 보존하고 현재 무기 문맥의 상태를 보완합니다.
+- `RimKataWeaponEffectCache` schema 2는 성공한 원본 메서드/정의 메타데이터만 저장합니다. `RimKataWeaponExecutionPlans.EffectStatus/EffectReason`은 발사 등록과 별개이며 공통 `TypeIdentity/MemberIdentity/ResolveMember/RouteFingerprint`를 사용합니다.
+- `RimKataWeaponExecutionRuntime.TickTranspiler/TryRunCopiedTick`: 외부 Prefix가 허용한 원본 본문 위치에서 복사 본문만 실행. wrapper의 외부 훅을 다시 호출하지 않습니다.
+
+## 2026-10-18 무기별 부가 효과 부분 갱신
+
+- 양 버전 공통, 전체 집계는 재산출하지 않았습니다. **소유권은 실제 무기 객체 기준입니다. 슬롯 번호·폰 공용 Hediff를 무기별 상태로 혼동하지 않습니다. 발사 추적 단계와 효과 소유권은 별개입니다.**
+- [RimKataWeaponEffectDiscovery.cs](Source/1.6/RimKataWeaponEffectDiscovery.cs): `TryAnalyze/Match.Verify` 누적·대상/정지 초기화·장비 관리자 전체 형태 증명, `BindIncrement` 원본 나눗셈 순서 보존. 실패는 원본 유지.
+- [RimKataWeaponEffectCache.cs](Source/1.6/RimKataWeaponEffectCache.cs): `TryGet/TryRestore/Store/Snapshot` 성공한 계획의 코드·정의·패치 동일성 확인과 캐시. 준비 단계 전용.
+- [RimKataWeaponEffects.cs](Source/1.6/RimKataWeaponEffects.cs): `Prepare/Sync/Bind` 준비·기존 바인딩 등록, `BeforeAim/AccumulatePrefix/TargetTickPrefix/StopTickPrefix` 등록 무기 누적/초기화, `ReleaseWeapon/ReleasePawn/ResetGame` 해제. `RimKataWeaponEffectRegistry.ExposeData` 무기별 저장·복원. 일반 폰 tick 추가 금지.
+- [RimKataWeaponEffectStats.cs](Source/1.6/RimKataWeaponEffectStats.cs): `Initialize` 스탯 실행 경로 준비, `GetStatValue/AdjustedCooldownTicks/TryApplyAccuracy` 해당 무기 전용 스탯 소비. 실제 건강 목록 수정·전역 스탯 패치를 하지 않습니다.
+
+## 2026-10-18 특수 원거리 무기 경로 부분 갱신
+
+- 아래 과거 전체 집계는 재산출하지 않았습니다. `RimKataRatkinCompat.cs`는 공통 상태 관찰 모듈로, `RimKataCombatExtendedPrepared.cs`는 직접 helper 호출로 대체되어 삭제됐습니다. 두 파일의 뒤쪽 항목은 과거 색인입니다.
+- [RimKataWeaponExecutionPlans.cs](Source/1.6/RimKataWeaponExecutionPlans.cs): `Initialize/Refresh(force)` 허용 무기 계획 준비·캐시 검증, `Get` 준비된 계획 조회, `Register/Decline/FailRegistration` 승인·거절·실패 저장 경계.
+- [RimKataWeaponExecutionDiscovery.cs](Source/1.6/RimKataWeaponExecutionDiscovery.cs): `Analyze/Visit/VisitPatches` 실제 가상 슬롯과 수정된 IL·대체 Prefix를 추적하고 발수·간격 출처 및 완료 구조를 판정합니다. 파일·reflection은 준비 단계 전용입니다.
+- [RimKataWeaponExecutionBundle.cs](Source/1.6/RimKataWeaponExecutionBundle.cs): `TryCreate/TryGetInvoker` 승인된 실행 코드 묶음을 만들고 고정 호출을 연결합니다. 동적 객체·가상 호출·delegate의 원본 연결은 유지합니다.
+- [RimKataWeaponExecutionRuntime.cs](Source/1.6/RimKataWeaponExecutionRuntime.cs): `Initialize/Refresh/PrepareConnections` 준비 경계, `Bind/GetPlan` 이미 확보한 무기 Verb 연결, `TickPrefix/TickFinalizer/BurstPrefix/ShotPrefix/ShotFinalizer` 등록 요청의 실제 실행·종료 문맥. 일반 폰 순회·전투 중 IL 분석·파일 접근을 추가하지 않습니다.
+- [RimKataWeaponStateObservers.cs](Source/1.6/RimKataWeaponStateObservers.cs): `Prepare/Classify` 허용 무기 Comp 및 연결된 HediffComp의 순수 상태 조회만 분석, `FiringPostfix/CooldownPostfix/TargetPostfix` 기존 긍정 결과를 유지하며 RimKata 상태를 보완합니다.
+- [Dialog_RimKataWeaponRegistration.cs](Source/1.6/Dialog_RimKataWeaponRegistration.cs): `ShowPending/WindowUpdate/PostClose` 로딩 후 질문·순차 등록·미처리 항목 거절. 등록 실패는 Live 사용으로 전환하며 성공으로 기록하지 않습니다.
+- `RimKataNativeAttack`: `Queue`에서 Reset 전 원본 완료 콜백 보관, `FinishNativeCastCore/FinishObservedShot/ReconcileNativeTick/Detach`에서 중첩 문맥·비동기 완료·취소를 정리합니다. CE 종료 transpiler의 대상도 `FinishNativeCastCore`입니다. `RimKataPreparedWeaponData.Bind`는 다음 공격 준비 때 동적 수치를 읽고 진행 중 요청에는 같은 스냅샷을 유지합니다. 공통 변경은 Source/1.7에도 적용했습니다.
+
 작성 기준: **2026-10-05**의 현재 작업 소스 · **144개 파일 / 일반 메서드 2,990개**.
 
 부분 갱신: **2026-10-06** 자체 장비 렌더의 직접 호출 전환, 전용 발차기·소화 Verb의 불필요한 패치 제외, 모드 요소의 기면서 쏴 기본값 통합·중복 날아 차기 허용 삭제, 장비 렌더의 사건 게시 자료 직접 소비, 자동 제압의 사건 예약·인계·수동 전환과 설정 항목을 수정했습니다. 위 전체 파일·메서드 수와 이번 범위 밖 호출 수는 2026-10-05 집계이며 다시 산출하지 않았습니다.
@@ -60,14 +122,25 @@
 - 배포 폴더에는 **Source와 References를 포함하지 않습니다.** 두 버전의 `Assemblies` 산출물과 `LoadFolders.xml`, `About/About.xml`, 공용 Defs/Textures/Languages를 반영합니다. 게임·Unity·Waylith·Harmony DLL을 제품에 복사하지 않습니다.
 - `UnityStubs.Graphics.DrawMesh`는 실제로 Waylith의 MeshDrawSubmission에 제출하며 구형 Unity 엔진을 실행하지 않습니다. 직접 Enqueue로 단순 치환하면 게임/외부 모드 재질의 추가 패스가 누락될 수 있어 공식 호환 API를 유지합니다. 림카타 자체 커스텀 셰이더 자산은 없습니다.
 
+### 2026-10-16 1.7 전용 메시 복제 보완
+
+- 아래 기존 메서드 목록은 1.6 기준이며 1.6 소스·DLL은 이번 변경 대상이 아닙니다.
+- 1.7 [CreateVFlippedMesh(bool flipped)](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.7/RimKataVisualPatches.cs:1784)는 `MeshMakerPlanes.NewPlaneMesh(1f, flipped)`로 독립 평면을 만들고 UV를 반전합니다. `Plane10ForContext`·`Plane10FlipForContext`는 기존 정적 캐시 두 개를 유지합니다. 1.7 [돌파 SecondaryMesh](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.7/RimKataBreachWeaponRender.cs:117)에서도 이 internal 생성 함수를 호출하며 기존 돌파 캐시 두 개를 유지합니다.
+- 1.7 [TryGetMirroredMesh](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.7/RimKataWeaponDrawCapture.cs:304)는 `new Mesh()`와 `EngineMesh.CpuStorage.Clone()`·`ReplaceCpuStorage`로 독립 자료를 만든 뒤 기존 반전을 적용합니다. 원본 메시별 성공/실패 캐시와 출력 호출·정리는 유지합니다.
+- 1.7 `Object.Instantiate(Mesh)`는 복제 팩토리가 없으면 원본을 반환하므로 위 세 경로에서 사용하지 않습니다. 공용 MeshPool을 수정하지 않으며 새 폰/무기 탐색·렌더별 복제·Harmony 패치를 추가하지 않습니다. 기존 전체 계수는 재산출하지 않았습니다.
+
 ## 검토 시 주의사항
 
 **이 색인은 관련 소스를 빠르게 따라가기 위한 안내입니다. 메서드 하나를 읽고 연결된 링크 하나만 추가로 확인한 뒤, 전체 동작·원인·수정 방향을 확정하지 마십시오. 검토 범위는 확인한 링크 수가 아니라 해당 증상을 설명하는 실제 처리 흐름으로 정합니다.**
 
+- **바닐라의 분류와 원본 함수 선언을 먼저 확인하고 따릅니다.** 해당 버전의 게임 소스 또는 참조 DLL에서 공격·기능의 분류, 상속 관계와 실제 실행 경로를 확인합니다. 특수 연출·발동 조건을 가진다는 이유로 근접 공격을 다른 공격 분류로 취급하거나, 기존 바닐라 연결을 임의의 별도 경로로 바꾸지 않습니다.
+- **바닐라 메서드를 재정의할 때는 원본 매개변수 이름까지 유지합니다.** 메서드명·반환형·매개변수형과 순서뿐 아니라 이름도 원본 선언과 대조합니다. C#에서 이름을 바꿔도 컴파일된다는 사실은 호환성 근거가 아닙니다. Harmony 패치가 원본 매개변수 이름으로 인자를 연결할 수 있으므로 `target`을 임의로 `victim` 등으로 바꾸지 않습니다. 메서드 이름만 보고 추측하거나 자체 작명으로 원본 확인을 대신하지 않습니다.
+- **2026-10-18 사례:** 발차기·날아 차기는 모두 `Verb_MeleeAttackDamage`를 상속하고 바닐라 피해 메서드를 호출했지만, 재정의 선언이 `ApplyMeleeDamageToTarget(LocalTargetInfo victim)`이어서 Zombieland 1.6 오염 패치의 `target` 인자 연결이 실패하고 오염 패치 그룹 설치가 취소됐습니다. 두 버전 소스에서 매개변수와 내부 참조를 `target`으로 통일했습니다. 원인은 확인된 이름 불일치이며, 별도 공격 분류로 구현됐다는 뜻은 아닙니다. 빌드 성공과 수정 후 인게임 호환 확인은 구분합니다.
 - 문제 동작의 진입점과 호출자부터 조건 분기, 상태·캐시 변경, 실제 실행, 완료·취소·정리, 원래 사이클로 돌아가는 경로까지 관련 소스를 연결해서 확인합니다. 특수 기능은 정상 작동하는 본체 경로와 비교하여 어디서 흐름이 달라지는지 확인합니다.
 - 메서드가 존재하거나 호출 목록에 있다는 사실만으로 해당 상황에서 실행된다고 판단하지 않습니다. 앞선 조건이 호출을 막는지, 작업·경로·대상 변경이 다음 처리에 전달되는지, 뒤의 정리 처리가 결과를 덮어쓰는지까지 확인합니다.
 - 색인에 없는 호출자·콜백·Harmony 패치·엔진 진입과 최신 변경은 실제 소스 검색으로 보완합니다. 색인의 링크와 역할 설명만으로 검토를 끝내지 않습니다.
 - 확인하지 못한 연결은 미확인으로 남기고, 소스로 확인한 사실과 추정·인게임 검증 결과를 구분합니다. 흐름 확인이 끝나기 전에 일부 메서드만 근거로 전체 동작을 단정하거나 수정 범위를 넓히지 않습니다.
+- **1.7 베타의 회귀 조사에서는 현재 엔진 DLL과 보관 참조본의 날짜·버전·해시부터 구분합니다.** 같은 메서드가 존재하고 빌드가 성공해도 구현 동작은 바뀔 수 있습니다. 기존 날짜의 참조본을 덮어쓰거나, 예전 참조본을 직전 정상 실행본으로 간주하지 않습니다. [1.7 베타 대응 기록·조사 순서](RimKata_development_memory.md#rimworld17-beta-policy-20261016)를 먼저 확인하고, 1.7 전용 대응을 1.6에 자동 이식하지 않습니다.
 - **렌더 조건 확인에서 죽은 폰·시체는 림카타의 자격·상태·연출 참가자·캐시 조회 대상에 넣지 않습니다.** 조회 함수에 넣은 뒤 `Pawn.Dead`로 건너뛰거나, 시체 전용 문맥·목록·등록 해제로 대체하지 않습니다. 바닐라가 이미 만든 `PawnDrawParms.dead` 값으로 림카타 렌더 함수 호출 자체를 제외합니다. 이 원칙은 렌더 조회에 관한 것이며 기존 전투·사망 처리 전체를 지우라는 뜻이 아닙니다.
 - 살아 있는 다운 폰·제압 대상·활동 중인 휘청이는 자는 위 시체 제외 대상이 아닙니다. `IsShambler`는 죽은 휘청이의 `ShamblerCorpse` 표식에도 참일 수 있으므로 생존 여부와 혼동하지 않습니다. 휘청이 지원을 이유로 시체 렌더 조회를 다시 연결하지 않습니다. 사용자 보고의 회귀 비교 기준은 눕는 자세 추가 전 정식 출시 구현입니다.
 
@@ -3472,7 +3545,7 @@
 
 ### 010. ThoughtWorker_MindNumbSerumWithdrawal.CurrentStateInternal
 
-`protected override ThoughtState CurrentStateInternal(Pawn pawn)` · [L150](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:150)
+`protected override ThoughtState CurrentStateInternal(Pawn p)` · [L151](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:151)
 
 - **역할:** 의존성이 활성이고 혈청 효과·결속 극복이 없을 때 금단 생각을 활성화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -3494,7 +3567,7 @@
 
 ### 012. ThoughtWorker_MindNumbSerumEmotionRemoval.CurrentStateInternal
 
-`protected override ThoughtState CurrentStateInternal(Pawn pawn)` · [L172](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:172)
+`protected override ThoughtState CurrentStateInternal(Pawn p)` · [L173](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:173)
 
 - **역할:** 의존성 폰에게 혈청 효과가 있을 때 감정 제거 생각을 활성화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -3516,7 +3589,7 @@
 
 ### 014. ThoughtWorker_MindNumbSerumDependencyOvercome.CurrentStateInternal
 
-`protected override ThoughtState CurrentStateInternal(Pawn pawn)` · [L197](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:197)
+`protected override ThoughtState CurrentStateInternal(Pawn p)` · [L198](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataAnomalyContent.cs:198)
 
 - **역할:** 혈청 효과 없이 결속으로 의존성을 극복한 경우의 생각을 활성화합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -19681,7 +19754,7 @@
 
 ### 006. Verb_RimKataFlyingKick.ApplyMeleeDamageToTarget
 
-`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo victim)` · [L132](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKickCombat.cs:132)
+`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo target)` · [L132](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKickCombat.cs:132)
 
 - **역할:** 실제 피해 단계 진입을 기록하고 바닐라 근접 피해 계산·적용을 실행합니다. 이번 결과가 만든 상처만 날아 차기 피해 정의의 출처 이름으로 정리하고 도구·신체 부위 출처 표기는 제거합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
@@ -22499,7 +22572,7 @@
 
 ### 009. Verb_RimKataKick.ApplyMeleeDamageToTarget
 
-`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo victim)` · [L168](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataKickCombat.cs:168)
+`protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo target)` · [L180](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataKickCombat.cs:180)
 
 - **역할:** 피해 단계 진입을 기록하고 바닐라 근접 피해 계산·적용을 실행합니다. 이번 타격이 만든 상처만 발차기 피해 정의의 출처 이름으로 정리하며 도구·신체 부위 출처 표기는 제거합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.

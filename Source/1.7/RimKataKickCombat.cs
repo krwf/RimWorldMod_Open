@@ -177,10 +177,10 @@ namespace KRWF.RimKata
             return Hit;
         }
 
-        protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo victim)
+        protected override DamageWorker.DamageResult ApplyMeleeDamageToTarget(LocalTargetInfo target)
         {
             damageEntered = true;
-            DamageWorker.DamageResult result = base.ApplyMeleeDamageToTarget(victim);
+            DamageWorker.DamageResult result = base.ApplyMeleeDamageToTarget(target);
             if (result?.hediffs != null)
             {
                 for (int i = 0; i < result.hediffs.Count; i++)

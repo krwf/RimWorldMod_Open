@@ -60,6 +60,7 @@
   <KRWF_RimKata_ProfileNameTooLong>Käytä enintään {0} merkkiä.</KRWF_RimKata_ProfileNameTooLong>
   <KRWF_RimKata_ProfileNameDuplicate>Tämänniminen profiili on jo olemassa.</KRWF_RimKata_ProfileNameDuplicate>
   <KRWF_RimKata_ProfileOperationFailed>Profiilitoimintoa ei voitu suorittaa.\n\n{0}</KRWF_RimKata_ProfileOperationFailed>
+  <KRWF_RimKata_SettingsOperationFailed>RimKata ei voinut suorittaa asetustoimintoa loppuun. Osa muutoksista on saatettu jo ottaa käyttöön. Voit sulkea tämän viestin ja poistua asetusikkunasta. Tarkista loki.\n\n{0}</KRWF_RimKata_SettingsOperationFailed>
   <KRWF_RimKata_ProfileConfirm>Vahvista</KRWF_RimKata_ProfileConfirm>
   <KRWF_RimKata_ProfileCancel>Peruuta</KRWF_RimKata_ProfileCancel>
   <KRWF_RimKata_ResetWeaponConfirmation>Palautetaanko aseasetukset?</KRWF_RimKata_ResetWeaponConfirmation>
@@ -67,6 +68,8 @@
   <KRWF_RimKata_EquipmentRefresh>Päivitä</KRWF_RimKata_EquipmentRefresh>
   <KRWF_RimKata_EquipmentRefreshReady>Kiitos XD\nPaina ”{0}”.</KRWF_RimKata_EquipmentRefreshReady>
   <KRWF_RimKata_EquipmentRefreshFailed>Varustetietojen päivittäminen epäonnistui.\n\n{0}</KRWF_RimKata_EquipmentRefreshFailed>
+  <KRWF_RimKata_EquipmentRefreshSavePartial>Haluatko tallentaa onnistuneesti käsitellyt osat?</KRWF_RimKata_EquipmentRefreshSavePartial>
+  <KRWF_RimKata_EquipmentRefreshPartialResult>Osittainen tallennus valmis.\nTallennettu: {0}, epäonnistui: {1}.\nKatso lisätiedot lokista.</KRWF_RimKata_EquipmentRefreshPartialResult>
   <KRWF_RimKata_ResetSectionConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetSectionConfirmation>
   <KRWF_RimKata_ResetProfileConfirmation>Palautetaanko '{0}'?</KRWF_RimKata_ResetProfileConfirmation>
   <KRWF_RimKata_DeleteProfileConfirmation>Poistetaanko '{0}'?</KRWF_RimKata_DeleteProfileConfirmation>
@@ -268,4 +271,10 @@
   <KRWF_RimKata_KickChance>Potkun todennäköisyys</KRWF_RimKata_KickChance>
   <KRWF_RimKata_FeaturePushKick>Työntöpotku</KRWF_RimKata_FeaturePushKick>
   <KRWF_RimKata_PushKickMassLimit>Työntöpotkun massaraja</KRWF_RimKata_PushKickMassLimit>
+  <KRWF_RimKata_WeaponRegistrationPrompt>Löytyi aseita, joilla on erityinen ampumistapa. Haluatko rekisteröidä ne?</KRWF_RimKata_WeaponRegistrationPrompt>
+  <KRWF_RimKata_WeaponRegistrationExplanation>Vahvistaminen kopioi hyökkäysrutiinit välimuistiin. Peruuta, Esc tai Sulje säilyttää alkuperäisen ampumistavan ilman kertatulimuunnosta. Sulkeminen rekisteröinnin aikana säilyttää jo rekisteröidyt kohteet.</KRWF_RimKata_WeaponRegistrationExplanation>
+  <KRWF_RimKata_WeaponRegistrationProgress>Rekisteröidään… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
+  <KRWF_RimKata_WeaponRegistrationComplete>Rekisteröinti valmis: {0} onnistui, {1} epäonnistui.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Rekisteröity</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationFailure>Rekisteröinti epäonnistui. Alkuperäinen ampumistapa säilytetään; kertatulimuunnos on pois käytöstä.</KRWF_RimKata_WeaponRegistrationFailure>
 </LanguageData>

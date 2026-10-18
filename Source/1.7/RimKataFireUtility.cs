@@ -748,6 +748,20 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(ShotReport), nameof(ShotReport.AimOnTargetChance_IgnoringPosture), MethodType.Getter)]
     public static class Patch_ShotReport_MovingAccuracy_RimKata
     {
+        public static void Prefix(ref ShotReport __instance, out float? __state)
+        {
+            __state = null;
+            if (RimKataFireContext.ActiveVerb != null && !RimKataFireContext.CloseMeleeResolution
+                && RimKataWeaponEffectStats.TryApplyAccuracy(RimKataFireContext.ActiveVerb, ref __instance, out float previous))
+                __state = previous;
+        }
+
+        public static Exception Finalizer(Exception __exception, ref ShotReport __instance, float? __state)
+        {
+            if (__state.HasValue) RimKataWeaponEffectStats.RestoreAccuracy(ref __instance, __state.Value);
+            return __exception;
+        }
+
         public static void Postfix(ref float __result)
         {
             if (RimKataFireContext.ActiveVerb != null && RimKataFireContext.CloseMeleeResolution)
