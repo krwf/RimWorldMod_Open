@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Regisztráció kész: {0} sikeres, {1} sikertelen.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Regisztrálva</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>A regisztráció sikertelen. Az eredeti tüzelés megmarad; az egyes lövésre alakítás ki van kapcsolva.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Statisztikák kiválasztása</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Hibakereső gomb megjelenítése</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statisztikák</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Bármelyik feltétel teljesítése lehetővé teszi a RimKata használatát.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Alapérték</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Nagyobb mint</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Legalább</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Egyenlő</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Legfeljebb</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Kisebb mint</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Nem egyenlő</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Összehasonlítás</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Érték</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Harci feljegyzések</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

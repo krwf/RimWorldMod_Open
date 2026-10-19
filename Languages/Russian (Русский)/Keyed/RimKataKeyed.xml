@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Регистрация завершена: успешно — {0}, ошибок — {1}.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Зарегистрировано</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Регистрация не удалась. Исходная стрельба сохранена; перевод на одиночные выстрелы отключён.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Выбрать показатели</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Показывать кнопку отладки</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Показатели</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Выполнение любого из условий даёт доступ к RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>По умолчанию</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Больше</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Не меньше</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Равно</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Не больше</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Меньше</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Не равно</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Сравнение</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Значение</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Боевые записи</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

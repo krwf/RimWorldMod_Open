@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Η καταχώριση ολοκληρώθηκε: {0} επιτυχίες, {1} αποτυχίες.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Καταχωρίστηκε</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Η καταχώριση απέτυχε. Διατηρείται η αρχική πυροδότηση· η μετατροπή σε μονή βολή απενεργοποιείται.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Επιλογή στατιστικών</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Εμφάνιση κουμπιού αποσφαλμάτωσης</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Στατιστικά</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Η εκπλήρωση οποιασδήποτε προϋπόθεσης επιτρέπει τη χρήση του RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Προεπιλεγμένη τιμή</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Μεγαλύτερο από</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Τουλάχιστον</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Ίσο με</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Το πολύ</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Μικρότερο από</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Διαφορετικό από</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Σύγκριση</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Τιμή</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Καταγραφές μάχης</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

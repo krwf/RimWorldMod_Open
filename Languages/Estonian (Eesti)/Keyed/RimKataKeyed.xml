@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registreerimine lõpetatud: {0} õnnestus, {1} ebaõnnestus.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registreeritud</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registreerimine ebaõnnestus. Algne tulistamisviis säilib; üksiklaskudeks teisendamine on keelatud.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Vali näitajad</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Näita silumisnuppu</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Näitajad</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Ükskõik millise tingimuse täitmine võimaldab RimKatat kasutada.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Vaikeväärtus</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Suurem kui</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Vähemalt</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Võrdne</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Kõige rohkem</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Väiksem kui</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Ei võrdu</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Võrdlus</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Väärtus</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Võitlusandmed</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

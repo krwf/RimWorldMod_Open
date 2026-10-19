@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -14,7 +18,6 @@ namespace KRWF.RimKata
         private const float CheckboxSize = 24f;
         private const float CheckboxLabelGap = 6f;
         private const float LevelFieldWidth = 104f;
-        private const float VerticalPadding = 18f;
         private const float MinimumWindowWidth = 220f;
         private const float WindowScreenMargin = 80f;
         private readonly RimKataSettings settings;
@@ -25,12 +28,21 @@ namespace KRWF.RimKata
         private bool enableRimKataI;
         private bool enableRimKataG;
         private bool enableSerumDependency;
-        private bool enableShootingLevel;
-        private bool enableMeleeLevel;
-        private int shootingLevelRequirement;
-        private int meleeLevelRequirement;
-        private string shootingLevelBuffer;
-        private string meleeLevelBuffer;
+        private bool showDebugGizmo;
+        private Vector2 scrollPosition;
+        private readonly List<SkillRow> skillRows = new List<SkillRow>();
+        private readonly Dictionary<string, RimKataSkillActivationRule> skillRules =
+            new Dictionary<string, RimKataSkillActivationRule>(StringComparer.Ordinal);
+
+        private sealed class SkillRow
+        {
+            internal string label;
+            internal string buffer;
+            internal RimKataSkillActivationRule rule;
+        }
+
+        private float ContentHeight => RestrictionButtonHeight + BottomButtonGap + RowHeight + 10f
+            + (LabelKeys.Length + skillRows.Count + 3) * RowHeight;
 
         private static readonly string[] LabelKeys =
         {
@@ -52,13 +64,21 @@ namespace KRWF.RimKata
                 enableRimKataI = settings.enableRimKataI;
                 enableRimKataG = settings.enableRimKataG;
                 enableSerumDependency = settings.enableSerumDependency;
-                enableShootingLevel = settings.enableShootingLevel;
-                enableMeleeLevel = settings.enableMeleeLevel;
-                shootingLevelRequirement = settings.shootingLevelRequirement;
-                meleeLevelRequirement = settings.meleeLevelRequirement;
+                showDebugGizmo = settings.showDebugGizmo;
+                settings.SanitizePersonalActivation();
+                foreach (RimKataSkillActivationRule rule in settings.skillActivationRules)
+                    skillRules[rule.defName] = rule.Copy();
+                foreach (SkillDef skill in DefDatabase<SkillDef>.AllDefsListForReading)
+                {
+                    if (!skillRules.TryGetValue(skill.defName, out RimKataSkillActivationRule rule))
+                    {
+                        rule = new RimKataSkillActivationRule { defName = skill.defName };
+                        skillRules.Add(skill.defName, rule);
+                    }
+                    skillRows.Add(new SkillRow
+                    { label = skill.LabelCap, rule = rule, buffer = rule.requiredLevel.ToString() });
+                }
             }
-            shootingLevelBuffer = shootingLevelRequirement.ToString();
-            meleeLevelBuffer = meleeLevelRequirement.ToString();
 
             doCloseX = false;
             doCloseButton = false;
@@ -102,20 +122,17 @@ namespace KRWF.RimKata
                         buttonRowWidth));
                 contentWidth = Mathf.Max(contentWidth, NonHumanEquipmentRowWidth());
                 contentWidth = Mathf.Max(contentWidth,
-                    EquipmentButtonWidth("KRWF_RimKata_TraitSelection"));
-                contentWidth = Mathf.Max(contentWidth, LevelFieldWidth + BottomButtonGap
-                    + Mathf.Max(Text.CalcSize("KRWF_RimKata_ShootingLevelRequirement".Translate()).x,
-                        Text.CalcSize("KRWF_RimKata_MeleeLevelRequirement".Translate()).x)
-                    + CheckboxSize + CheckboxLabelGap);
-                float width = contentWidth + Margin * 2f;
-                float height = VerticalPadding * 2f
-                    + RestrictionButtonHeight
-                    + BottomButtonGap + RowHeight
-                    + 10f
-                    + LabelKeys.Length * RowHeight
-                    + RowHeight * 3f
-                    + 10f
-                    + CloseButtonHeight;
+                    EquipmentButtonWidth("KRWF_RimKata_TraitSelection") + BottomButtonGap
+                    + EquipmentButtonWidth("KRWF_RimKata_StatSelection"));
+                foreach (SkillRow row in skillRows)
+                    contentWidth = Mathf.Max(contentWidth, LevelFieldWidth + BottomButtonGap
+                        + Text.CalcSize(row.label).x + CheckboxSize + CheckboxLabelGap);
+                contentWidth = Mathf.Max(contentWidth,
+                    Text.CalcSize("KRWF_RimKata_ShowDebugGizmo".Translate()).x + CheckboxSize + CheckboxLabelGap);
+                float maximumHeight = Mathf.Max(180f, UI.screenHeight - WindowScreenMargin);
+                float naturalHeight = ContentHeight + 10f + CloseButtonHeight + Margin * 2f;
+                float height = Mathf.Min(naturalHeight, maximumHeight);
+                float width = contentWidth + Margin * 2f + (height < naturalHeight ? 18f : 0f);
                 float maximumWindowWidth = Mathf.Max(
                     MinimumWindowWidth,
                     UI.screenWidth - WindowScreenMargin);
@@ -136,23 +153,37 @@ namespace KRWF.RimKata
                 return;
             }
 
-            float y = inRect.y;
-            DrawRestrictionButton(inRect, ref y);
+            Rect outRect = new Rect(inRect.x, inRect.y, inRect.width,
+                Mathf.Max(1f, inRect.height - CloseButtonHeight - 10f));
+            bool scrolls = ContentHeight > outRect.height;
+            Rect viewRect = new Rect(0f, 0f, Mathf.Max(1f, outRect.width - (scrolls ? 18f : 0f)), ContentHeight);
+            Widgets.BeginScrollView(outRect, ref scrollPosition, viewRect);
+            float y = 0f;
+            DrawRestrictionButton(viewRect, ref y);
             y += BottomButtonGap;
-            DrawNonHumanEquipmentButtons(inRect, ref y);
+            DrawNonHumanEquipmentButtons(viewRect, ref y);
             y += 10f;
-            DrawCheckbox(inRect, ref y, LabelKeys[0], ref enableRimKataA);
-            DrawCheckbox(inRect, ref y, LabelKeys[1], ref enableRimKataP);
-            DrawCheckbox(inRect, ref y, LabelKeys[2], ref enableRimKataI);
-            DrawCheckbox(inRect, ref y, LabelKeys[3], ref enableRimKataG);
-            DrawCheckbox(inRect, ref y, LabelKeys[4], ref enableSerumDependency);
-            DrawTraitButton(inRect, ref y);
-            DrawLevelRow(inRect, ref y, "KRWF_RimKata_ShootingLevelRequirement",
-                ref shootingLevelRequirement, ref shootingLevelBuffer, ref enableShootingLevel);
-            DrawLevelRow(inRect, ref y, "KRWF_RimKata_MeleeLevelRequirement",
-                ref meleeLevelRequirement, ref meleeLevelBuffer, ref enableMeleeLevel);
+            DrawCheckbox(viewRect, ref y, LabelKeys[0], ref enableRimKataA);
+            DrawCheckbox(viewRect, ref y, LabelKeys[1], ref enableRimKataP);
+            DrawCheckbox(viewRect, ref y, LabelKeys[2], ref enableRimKataI);
+            DrawCheckbox(viewRect, ref y, LabelKeys[3], ref enableRimKataG);
+            DrawCheckbox(viewRect, ref y, LabelKeys[4], ref enableSerumDependency);
+            DrawSelectionButtons(viewRect, ref y);
+            TextAnchor previousAnchor = Text.Anchor;
+            Text.Anchor = TextAnchor.MiddleLeft;
+            Widgets.Label(new Rect(viewRect.x, y, viewRect.width, RowHeight), "SkillLevel".Translate().CapitalizeFirst());
+            Text.Anchor = previousAnchor;
+            y += RowHeight;
+            foreach (SkillRow row in skillRows)
+            {
+                if (y + RowHeight >= scrollPosition.y && y < scrollPosition.y + outRect.height)
+                    DrawLevelRow(viewRect, y, row);
+                y += RowHeight;
+            }
+            DrawCheckbox(viewRect, ref y, "KRWF_RimKata_ShowDebugGizmo", ref showDebugGizmo);
+            Widgets.EndScrollView();
 
-            y += 10f;
+            y = inRect.yMax - CloseButtonHeight;
             string closeLabel = "Close".Translate();
             string confirmLabel = "Confirm".Translate();
             float closeWidth = Mathf.Max(
@@ -213,24 +244,28 @@ namespace KRWF.RimKata
                 || settings.enableRimKataP != enableRimKataP
                 || settings.enableRimKataI != enableRimKataI
                 || settings.enableRimKataG != enableRimKataG
-                || settings.enableSerumDependency != enableSerumDependency
-                || settings.enableShootingLevel != enableShootingLevel
-                || settings.enableMeleeLevel != enableMeleeLevel
-                || settings.shootingLevelRequirement != shootingLevelRequirement
-                || settings.meleeLevelRequirement != meleeLevelRequirement;
+                || settings.enableSerumDependency != enableSerumDependency;
+            bool skillsChanged = settings.skillActivationRules.Count != skillRules.Count
+                || settings.skillActivationRules.Any(rule => !skillRules.TryGetValue(rule.defName, out RimKataSkillActivationRule edited)
+                    || rule.enabled != edited.enabled || rule.requiredLevel != edited.requiredLevel);
+            bool debugChanged = settings.showDebugGizmo != showDebugGizmo;
 
             settings.enableRimKataA = enableRimKataA;
             settings.enableRimKataP = enableRimKataP;
             settings.enableRimKataI = enableRimKataI;
             settings.enableRimKataG = enableRimKataG;
             settings.enableSerumDependency = enableSerumDependency;
-            settings.enableShootingLevel = enableShootingLevel;
-            settings.enableMeleeLevel = enableMeleeLevel;
-            settings.shootingLevelRequirement = shootingLevelRequirement;
-            settings.meleeLevelRequirement = meleeLevelRequirement;
-            if (changed)
+            settings.showDebugGizmo = showDebugGizmo;
+            if (skillsChanged)
             {
+                settings.skillActivationRules = skillRules.Values.Select(rule => rule.Copy())
+                    .OrderBy(rule => rule.defName, StringComparer.Ordinal).ToList();
+                settings.SanitizePersonalActivation();
+            }
+            if (changed || skillsChanged)
                 RimKataActivationSettings.Apply(true);
+            if (changed || skillsChanged || debugChanged)
+            {
                 mainBuffers?.SyncFrom(settings);
                 RimKataMod.CommitListSettings();
             }
@@ -242,23 +277,28 @@ namespace KRWF.RimKata
             y += RowHeight;
         }
 
-        private void DrawTraitButton(Rect inRect, ref float y)
+        private void DrawSelectionButtons(Rect inRect, ref float y)
         {
-            string label = "KRWF_RimKata_TraitSelection".Translate();
-            float width = Mathf.Min(inRect.width, EquipmentButtonWidth("KRWF_RimKata_TraitSelection"));
-            if (Widgets.ButtonText(new Rect(inRect.center.x - width * 0.5f, y, width, RowHeight), label))
+            float traitWidth = EquipmentButtonWidth("KRWF_RimKata_TraitSelection");
+            float statWidth = EquipmentButtonWidth("KRWF_RimKata_StatSelection");
+            float scale = Mathf.Min(1f, Mathf.Max(0f, inRect.width - BottomButtonGap) / (traitWidth + statWidth));
+            traitWidth *= scale;
+            statWidth *= scale;
+            float x = inRect.center.x - (traitWidth + BottomButtonGap + statWidth) * 0.5f;
+            if (Widgets.ButtonText(new Rect(x, y, traitWidth, RowHeight), "KRWF_RimKata_TraitSelection".Translate()))
                 Find.WindowStack.Add(new Dialog_RimKataTraitSelector(settings));
+            if (Widgets.ButtonText(new Rect(x + traitWidth + BottomButtonGap, y, statWidth, RowHeight),
+                "KRWF_RimKata_StatSelection".Translate()))
+                Find.WindowStack.Add(new Dialog_RimKataStatSelector(settings));
             y += RowHeight;
         }
 
-        private static void DrawLevelRow(Rect inRect, ref float y, string key,
-            ref int level, ref string buffer, ref bool enabled)
+        private static void DrawLevelRow(Rect inRect, float y, SkillRow row)
         {
             RimKataSettingsDrawer.DrawIntField(new Rect(inRect.x, y + 2f, LevelFieldWidth, RowHeight - 4f),
-                ref level, ref buffer, 0, int.MaxValue, string.Empty);
+                ref row.rule.requiredLevel, ref row.buffer, 0, int.MaxValue, string.Empty);
             RimKataFeatureWindowUtility.DrawCheckbox(new Rect(inRect.x + LevelFieldWidth + BottomButtonGap,
-                y, inRect.width - LevelFieldWidth - BottomButtonGap, RowHeight), key.Translate(), ref enabled);
-            y += RowHeight;
+                y, inRect.width - LevelFieldWidth - BottomButtonGap, RowHeight), row.label, ref row.rule.enabled);
         }
 
         private static float EquipmentButtonWidth(string key)

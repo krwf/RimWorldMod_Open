@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Kayıt tamamlandı: {0} başarılı, {1} başarısız.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Kaydedildi</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Kayıt başarısız. Özgün ateş etme biçimi korunur; tek atışa dönüştürme devre dışıdır.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>İstatistik seç</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Hata ayıklama düğmesini göster</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>İstatistikler</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Koşullardan herhangi birinin sağlanması RimKata kullanımına izin verir.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Varsayılan değer</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Büyüktür</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>En az</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Eşittir</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>En fazla</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Küçüktür</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Eşit değildir</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Karşılaştırma</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Değer</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Çatışma kayıtları</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

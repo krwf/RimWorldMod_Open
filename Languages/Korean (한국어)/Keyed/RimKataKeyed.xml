@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>등록 완료: 성공 {0}개, 실패 {1}개.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>등록 성공</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>등록 실패. 원래 공격 방식을 유지하며 단발 전환은 적용하지 않습니다.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>스탯 선택</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>디버그 기즈모 표시</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>스탯</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>하나라도 충족하면 자격이 부여됩니다.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>기본값</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>초과</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>이상</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>일치</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>이하</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>미만</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>불일치</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>비교</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>수치</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>처치</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

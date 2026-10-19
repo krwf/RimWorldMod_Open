@@ -1,5 +1,13 @@
 # RimKata 소스 메서드 색인
 
+## 2026-10-19 기술·스탯 자격 확장
+
+- `RimKataPersonalActivation.Rebuild/ReadSkills/EnabledFor`: 기존 기술 변경 사건을 모든 허용 SkillDef에 적용합니다. `RimKataSettings.SanitizePersonalActivation/MigrateSkillActivation`은 이전 사격/격투 설정을 보존합니다.
+- `RimKataActivationStatCatalog.All/Find/CategoryLabel`, `RimKataActivationStatItem.TryRead/Compare/ToDisplay/FromDisplay`: 로드된 정의로 항목/기본값을 준비하고 실제 원본 수치와 표시 단위의 경계를 담당합니다. 정보창 텍스트를 런타임 수치로 파싱하지 않습니다.
+- `Dialog_RimKataStatSelector`: 표시행만 렌더, 필터 결과 일괄 허용/수치 적용, 범위 초기화, 편집 사본 확인/취소. `Dialog_RimKataActivationFeatures`는 기술 전체 목록과 공통 debug 표시 플래그를 편집합니다.
+- `RimKataStatActivation.Rebuild/ReadQualified/Evaluate/NotifyHealth/NotifyRecord/Schedule/Tick/Forget/ForgetMap/ResetGame`: 허용된 규칙과 필요한 후보만 유지합니다. 기존 MapComponentTick의 활성 gate 뒤에서 해당 틱 예약만 처리하며 전체 폰 순회를 추가하지 않습니다. 건강 dirty 및 기록 Increment/AddTo의 원본 파라미터를 유지합니다.
+- `RimKataEligibilityCache.ResolveAccess/ResolveOtherSources/RefreshStatSource/GetQualificationTooltip`: 다른 자격이면 감시 해제, 스탯 판정 변화면 기존 획득/상실 경로로 연결. 스폰/설정/세력/제약 변경에서 재등록하며 사유는 기술 등급/스탯 각 한 줄입니다. `RimKataMod.RuntimeSettingsSnapshot`은 새 목록의 사본과 debug 공통값을 포함합니다.
+
 ## 2026-10-19 부 슬롯 장비 extra 기즈모
 
 - `Patch_PawnEquipmentTracker_RimKataSecondaryGizmo.Postfix/AppendSecondaryEquipmentGizmos/MarkSecondaryWeaponGizmos`: 등록 부 무기 참조를 한 번 얻어 공유하고, 바닐라에서 주 무기에만 호출하는 `CompEquippable.CompGetEquippedGizmosExtra`를 부 무기에 한 번 호출합니다. 원본 객체 참조 중복만 제외하며 기존 공격 기즈모/CE 경로는 유지합니다.

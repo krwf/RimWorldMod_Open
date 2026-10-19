@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Đăng ký hoàn tất: {0} thành công, {1} thất bại.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Đã đăng ký</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Đăng ký thất bại. Giữ cách bắn gốc; chuyển sang từng phát bị tắt.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Chọn chỉ số</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Hiện nút gỡ lỗi</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Chỉ số</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Đáp ứng bất kỳ điều kiện nào đều cho phép sử dụng RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Giá trị mặc định</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Lớn hơn</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Ít nhất</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Bằng</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Nhiều nhất</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Nhỏ hơn</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Khác</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>So sánh</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Giá trị</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Nhật ký chiến đấu</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

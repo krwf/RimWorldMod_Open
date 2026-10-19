@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registrace dokončena: {0} úspěšných, {1} neúspěšných.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Zaregistrováno</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrace selhala. Původní střelba zůstává zachována; převod na jednotlivé výstřely je vypnutý.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Vybrat statistiky</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Zobrazit ladicí tlačítko</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statistiky</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Splnění kterékoliv podmínky umožňuje používat RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Výchozí hodnota</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Větší než</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Alespoň</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Rovno</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Nejvýše</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Menší než</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Nerovno</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Porovnání</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Hodnota</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Bojové záznamy</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

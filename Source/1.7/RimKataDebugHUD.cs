@@ -778,7 +778,7 @@ namespace KRWF.RimKata
             IEnumerable<Gizmo> __result,
             Pawn __instance)
         {
-            return Prefs.DevMode
+            return Prefs.DevMode && RimKataMod.Settings?.showDebugGizmo == true
                 ? AddDebugGizmo(__result, __instance)
                 : __result;
         }
@@ -793,6 +793,7 @@ namespace KRWF.RimKata
             }
 
             if (!Prefs.DevMode
+                || RimKataMod.Settings?.showDebugGizmo != true
                 || pawn == null
                 || !pawn.Spawned
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))

@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registratie voltooid: {0} geregistreerd, {1} mislukt.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Geregistreerd</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registratie mislukt. De oorspronkelijke schietwijze blijft behouden; omzetting naar enkelschots is uitgeschakeld.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Statistieken kiezen</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Debugknop tonen</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statistieken</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Voldoen aan één van de voorwaarden geeft toegang tot RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Standaardwaarde</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Groter dan</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Minstens</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Gelijk aan</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Hoogstens</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Kleiner dan</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Niet gelijk aan</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Vergelijking</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Waarde</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Gevechtsgegevens</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

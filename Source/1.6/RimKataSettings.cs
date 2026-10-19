@@ -242,6 +242,7 @@ namespace KRWF.RimKata
                 || name == nameof(RimKataSettings.enableMeleeLevel)
                 || name == nameof(RimKataSettings.shootingLevelRequirement)
                 || name == nameof(RimKataSettings.meleeLevelRequirement)
+                || name == nameof(RimKataSettings.showDebugGizmo)
                 || name == nameof(RimKataSettings.aiSecondaryWeaponChancePercent);
         }
 
@@ -670,6 +671,9 @@ namespace KRWF.RimKata
         public bool enableMeleeLevel;
         public int shootingLevelRequirement;
         public int meleeLevelRequirement;
+        public bool showDebugGizmo;
+        public List<RimKataSkillActivationRule> skillActivationRules = new List<RimKataSkillActivationRule>();
+        public List<RimKataStatActivationRule> statActivationRules = new List<RimKataStatActivationRule>();
         public List<RimKataTraitActivationRule> traitActivationRules = new List<RimKataTraitActivationRule>();
         public float aiSecondaryWeaponChancePercent = DefaultAiSecondaryWeaponChancePercent;
 
@@ -980,6 +984,9 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref enableMeleeLevel, "enableMeleeLevel", false);
             Scribe_Values.Look(ref shootingLevelRequirement, "shootingLevelRequirement", 0);
             Scribe_Values.Look(ref meleeLevelRequirement, "meleeLevelRequirement", 0);
+            Scribe_Values.Look(ref showDebugGizmo, "showDebugGizmo", false);
+            Scribe_Collections.Look(ref skillActivationRules, "skillActivationRules", LookMode.Deep);
+            Scribe_Collections.Look(ref statActivationRules, "statActivationRules", LookMode.Deep);
             Scribe_Collections.Look(ref traitActivationRules, "traitActivationRules", LookMode.Deep);
             Scribe_Values.Look(ref aiSecondaryWeaponChancePercent, "aiSecondaryWeaponChancePercent", DefaultAiSecondaryWeaponChancePercent);
             Scribe_Values.Look(ref responseDisarmChancePercent, "responseDisarmChancePercent", DefaultResponseDisarmChancePercent);
@@ -1097,6 +1104,7 @@ namespace KRWF.RimKata
                 SanitizeGeneProbabilityRules();
                 SanitizeStrengthRules();
                 SanitizePersonalActivation();
+                SanitizeStatActivationRules();
                 aiSecondaryWeaponChancePercent = SanitizePercent(
                     aiSecondaryWeaponChancePercent,
                     DefaultAiSecondaryWeaponChancePercent);
@@ -1197,9 +1205,40 @@ namespace KRWF.RimKata
         {
             shootingLevelRequirement = Math.Max(0, shootingLevelRequirement);
             meleeLevelRequirement = Math.Max(0, meleeLevelRequirement);
+            skillActivationRules ??= new List<RimKataSkillActivationRule>();
+            var skillNames = new HashSet<string>(StringComparer.Ordinal);
+            skillActivationRules.RemoveAll(rule => rule == null || string.IsNullOrEmpty(rule.defName)
+                || !skillNames.Add(rule.defName));
+            // Old installations store only these two thresholds. Keep their settings when
+            // the new list has no entry; from then on the list is the authoritative value.
+            MigrateSkillActivation("Shooting", enableShootingLevel, shootingLevelRequirement, skillNames);
+            MigrateSkillActivation("Melee", enableMeleeLevel, meleeLevelRequirement, skillNames);
+            foreach (RimKataSkillActivationRule rule in skillActivationRules)
+            {
+                rule.requiredLevel = Math.Max(0, rule.requiredLevel);
+                if (rule.defName == "Shooting")
+                { enableShootingLevel = rule.enabled; shootingLevelRequirement = rule.requiredLevel; }
+                else if (rule.defName == "Melee")
+                { enableMeleeLevel = rule.enabled; meleeLevelRequirement = rule.requiredLevel; }
+            }
             traitActivationRules ??= new List<RimKataTraitActivationRule>();
             traitActivationRules.RemoveAll(rule => rule == null || string.IsNullOrEmpty(rule.defName)
                 || (!rule.friendly && !rule.hostile));
+        }
+
+        private void MigrateSkillActivation(string defName, bool enabled, int requiredLevel, HashSet<string> names)
+        {
+            if (names.Add(defName))
+                skillActivationRules.Add(new RimKataSkillActivationRule
+                { defName = defName, enabled = enabled, requiredLevel = requiredLevel });
+        }
+
+        internal void SanitizeStatActivationRules()
+        {
+            statActivationRules ??= new List<RimKataStatActivationRule>();
+            var keys = new HashSet<string>(StringComparer.Ordinal);
+            statActivationRules.RemoveAll(rule => rule == null || string.IsNullOrEmpty(rule.key)
+                || !keys.Add(rule.key) || float.IsNaN(rule.value) || float.IsInfinity(rule.value));
         }
 
         internal void SanitizeStrengthRules()

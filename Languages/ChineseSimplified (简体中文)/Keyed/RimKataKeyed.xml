@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>注册完成：成功 {0} 项，失败 {1} 项。</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>注册成功</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>注册失败。保留原有射击方式，禁用单发转换。</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>选择属性</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>显示调试按钮</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>属性</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>满足任意一项条件即可使用 RimKata。</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>默认值</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>大于</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>大于或等于</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>等于</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>小于或等于</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>小于</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>不等于</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>比较</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>数值</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>战斗记录</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

@@ -21,8 +21,7 @@ namespace KRWF.RimKata
         [ThreadStatic] private static bool traitsChanged, skillsChanged;
 
         internal static bool SkillSourcesEnabled
-            => RimKataPersonalActivation.EnabledFor(SkillDefOf.Shooting)
-                || RimKataPersonalActivation.EnabledFor(SkillDefOf.Melee);
+            => RimKataPersonalActivation.SkillsEnabled;
 
         internal static ChangeScope Begin(Pawn pawn, bool traits, bool skills)
         {

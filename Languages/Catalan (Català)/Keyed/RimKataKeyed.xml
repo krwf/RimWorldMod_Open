@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registre complet: {0} registrades, {1} fallides.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Ha fallat el registre. Es conserven els trets originals; la conversió a tret únic està desactivada.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Seleccionar estadístiques</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Mostrar el botó de depuració</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Estadístiques</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Complir qualsevol dels requisits permet utilitzar RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Valor per defecte</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Superior a</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Com a mínim</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Igual a</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Com a màxim</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Inferior a</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Diferent de</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Comparació</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Valor</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Registres de combat</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

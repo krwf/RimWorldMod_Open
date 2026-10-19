@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Enregistrement terminé : {0} réussites, {1} échecs.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Enregistré</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Échec de l'enregistrement. Le tir d'origine est conservé ; la conversion en tir unique est désactivée.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Choisir les statistiques</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Afficher le bouton de débogage</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statistiques</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Remplir une seule des conditions permet d&apos;utiliser RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Valeur par défaut</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Supérieur à</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Au moins</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Égal à</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Au plus</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Inférieur à</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Différent de</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Comparaison</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Valeur</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Historique de combat</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

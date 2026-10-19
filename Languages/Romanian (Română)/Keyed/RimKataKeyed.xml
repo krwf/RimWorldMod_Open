@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Înregistrare finalizată: {0} reușite, {1} eșuate.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Înregistrat</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Înregistrarea a eșuat. Tragerea originală este păstrată; conversia la foc cu foc este dezactivată.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Selectează statisticile</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Afișează butonul de depanare</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statistici</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Îndeplinirea oricărei condiții permite utilizarea RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Valoare implicită</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Mai mare decât</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Cel puțin</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Egal cu</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Cel mult</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Mai mic decât</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Diferit de</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Comparație</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Valoare</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Înregistrări de luptă</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

@@ -2288,6 +2288,7 @@ namespace KRWF.RimKata
 
         public override void MapComponentTick()
         {
+            if (RimKataStatActivation.Enabled) RimKataStatActivation.Tick(map);
             TickProjectileScheduler();
             bool actualCombatActive = false;
             lock (statesLock)

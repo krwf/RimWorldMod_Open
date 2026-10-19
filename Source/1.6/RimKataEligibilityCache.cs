@@ -38,8 +38,9 @@ namespace KRWF.RimKata
             public bool traitsKnown;
             public Trait[] qualifyingTraits = Array.Empty<Trait>();
             public bool skillsKnown;
-            public bool shootingQualified;
-            public bool meleeQualified;
+            public bool skillsQualified;
+            public bool statsQualified;
+            public int statsTooltipTick = -1;
             public string qualificationTooltip;
         }
 
@@ -117,6 +118,7 @@ namespace KRWF.RimKata
         internal static void NotifyPawnSpawned(Pawn pawn, bool refreshPersonal = false)
         {
             if (pawn?.Spawned != true || pawn.Dead) return;
+            if (refreshPersonal) RimKataStatActivation.Forget(pawn);
             bool wasQualified = IsCachedQualifiedPawn(pawn);
             if (refreshPersonal && TryGetEntry(pawn, out Entry entry))
             {
@@ -126,6 +128,7 @@ namespace KRWF.RimKata
                     entry.skillsKnown = false;
                     entry.accessState = AccessUnknown;
                     entry.qualificationTooltip = null;
+                    entry.statsTooltipTick = -1;
                 }
                 RemoveRegisteredUser(pawn);
             }
@@ -137,6 +140,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyPawnDespawned(Pawn pawn)
         {
+            RimKataStatActivation.Forget(pawn);
             int id = pawn?.thingIDNumber ?? 0;
             int page = id >> RimKataFlyingKickApproach.PageShift;
             if (id > 0 && page < RimKataFlyingKickApproach.pages.Length
@@ -148,6 +152,9 @@ namespace KRWF.RimKata
         internal static void NotifyTargetChanged(Pawn pawn)
         {
             if (pawn == null) return;
+            RimKataStatActivation.Forget(pawn);
+            if (TryGetEntry(pawn, out Entry changedEntry)) changedEntry.accessState = AccessUnknown;
+            RemoveRegisteredUser(pawn);
             RefreshPersonalSources(pawn, traits: true, skills: false);
             if (TryGetEntry(pawn, out Entry entry)) entry.qualificationTooltip = null;
             if (!pawn.Spawned) return;
@@ -157,6 +164,7 @@ namespace KRWF.RimKata
 
         internal static void ForgetMap(Map map)
         {
+            RimKataStatActivation.ForgetMap(map);
             if (map == null || !mapUsers.TryGetValue(map, out MapUsers users)) return;
             foreach (Pawn pawn in users.permittedSources)
             {
@@ -174,6 +182,7 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
+            RimKataStatActivation.ResetGame();
             RimKataWeaponEffects.ResetGame();
             RimKataStrengthUtility.ResetGame();
             RimKataMotionJobGate.ResetGame();
@@ -205,6 +214,17 @@ namespace KRWF.RimKata
         {
             if (Current.Game == null) return;
             List<Map> maps = Find.Maps;
+            // A side previously disabled may contain stat candidates that were never
+            // qualified. Rebuild registration once at this settings boundary, not in tick.
+            if (RimKataStatActivation.Enabled)
+            {
+                foreach (Map map in maps)
+                {
+                    IReadOnlyList<Pawn> pawns = map.mapPawns.AllPawnsSpawned;
+                    for (int i = 0; i < pawns.Count; i++) NotifyPawnSpawned(pawns[i], refreshPersonal: true);
+                }
+                return;
+            }
             for (int i = 0; i < maps.Count; i++)
             {
                 if (!mapUsers.TryGetValue(maps[i], out MapUsers users)) continue;
@@ -235,7 +255,7 @@ namespace KRWF.RimKata
                 IReadOnlyList<Pawn> pawns = maps[i].mapPawns.AllPawnsSpawned;
                 for (int j = 0; j < pawns.Count; j++)
                 {
-                    NotifyPawnSpawned(pawns[j]);
+                    NotifyPawnSpawned(pawns[j], refreshPersonal: RimKataStatActivation.Enabled);
                 }
             }
         }
@@ -512,6 +532,7 @@ namespace KRWF.RimKata
 
         internal static void InvalidateActivationSources(Pawn pawn)
         {
+            RimKataStatActivation.Forget(pawn);
             ThingWithComps secondary = BeginAccessInvalidation(pawn);
             if (TryGetEntry(pawn, out Entry entry))
             {
@@ -526,6 +547,7 @@ namespace KRWF.RimKata
                     entry.dependencyGene = null;
                     entry.traitsKnown = false;
                     entry.skillsKnown = false;
+                    entry.statsTooltipTick = -1;
                 }
             }
             FinishAccessInvalidation(pawn, secondary);
@@ -657,8 +679,19 @@ namespace KRWF.RimKata
 
         private static bool ResolveAccess(Pawn pawn, Entry entry)
         {
+            if (ResolveOtherSources(pawn, entry))
+            {
+                // Another source keeps access valid; stat-only monitoring is unnecessary.
+                RimKataStatActivation.Forget(pawn);
+                return true;
+            }
+            return entry.statsQualified = RimKataStatActivation.ReadQualified(pawn);
+        }
+
+        private static bool ResolveOtherSources(Pawn pawn, Entry entry)
+        {
             ResolvePersonalSources(pawn, entry);
-            if (entry.shootingQualified || entry.meleeQualified || entry.qualifyingTraits.Length != 0)
+            if (entry.skillsQualified || entry.qualifyingTraits.Length != 0)
                 return true;
             ResolveRimKataGene(pawn, entry);
             if (entry.hasRimKataGene)
@@ -697,7 +730,7 @@ namespace KRWF.RimKata
             }
             if (!entry.skillsKnown)
             {
-                RimKataPersonalActivation.ReadSkills(pawn, out entry.shootingQualified, out entry.meleeQualified);
+                entry.skillsQualified = RimKataPersonalActivation.ReadSkills(pawn);
                 entry.skillsKnown = true;
             }
         }
@@ -730,6 +763,24 @@ namespace KRWF.RimKata
             FinishAccessInvalidation(pawn, secondary);
         }
 
+        internal static void RefreshStatSource(Pawn pawn)
+        {
+            if (pawn == null || pawn.Dead || !TryGetEntry(pawn, out Entry entry)) return;
+            bool changed;
+            lock (entry)
+            {
+                bool hasAccess = ResolveAccess(pawn, entry);
+                int next = hasAccess ? AccessGranted : AccessDenied;
+                changed = entry.accessState != next;
+                entry.accessState = next;
+                entry.statsTooltipTick = -1;
+                entry.qualificationTooltip = null;
+            }
+            if (!changed) return;
+            ThingWithComps secondary = BeginAccessInvalidation(pawn);
+            FinishAccessInvalidation(pawn, secondary);
+        }
+
         internal static bool TryGetQualificationDisplay(Pawn pawn, out bool unrestricted)
         {
             unrestricted = false;
@@ -755,6 +806,17 @@ namespace KRWF.RimKata
             {
                 if (entry.unrestricted != unrestricted) entry.qualificationTooltip = null;
                 entry.unrestricted = unrestricted;
+                // A pawn kept qualified by another source needs no continuous stat reads.
+                // Refresh this display-only reason lazily on hover, at most once per interval.
+                int tick = Find.TickManager?.TicksGame ?? 0;
+                if (RimKataStatActivation.Enabled && (entry.statsTooltipTick < 0
+                    || tick < entry.statsTooltipTick || tick - entry.statsTooltipTick >= 250))
+                {
+                    bool stats = RimKataStatActivation.ReadQualified(pawn, monitor: false);
+                    if (stats != entry.statsQualified) entry.qualificationTooltip = null;
+                    entry.statsQualified = stats;
+                    entry.statsTooltipTick = tick;
+                }
                 if (entry.qualificationTooltip != null) return entry.qualificationTooltip;
                 // Access checks short-circuit. Complete the other cached reasons only on hover.
                 ResolveRimKataGene(pawn, entry);
@@ -773,8 +835,9 @@ namespace KRWF.RimKata
                 if (entry.hasRole) text.Append("\n- RimKata-I");
                 if (entry.hasRimKataGene) text.Append("\n- RimKata-G");
                 if (entry.hasDependencyGene) text.Append("\n- ").Append("KRWF_RimKata_EnableSerumDependency".Translate());
-                if (entry.shootingQualified) text.Append("\n- ").Append("KRWF_RimKata_QualificationShooting".Translate());
-                if (entry.meleeQualified) text.Append("\n- ").Append("KRWF_RimKata_QualificationMelee".Translate());
+                if (entry.skillsQualified) text.Append("\n- ").Append("SkillLevel".Translate().CapitalizeFirst());
+                if (RimKataStatActivation.Enabled && entry.statsQualified)
+                    text.Append("\n- ").Append("KRWF_RimKata_StatQualification".Translate());
                 if (entry.qualifyingTraits.Length != 0)
                 {
                     var labels = new string[entry.qualifyingTraits.Length];

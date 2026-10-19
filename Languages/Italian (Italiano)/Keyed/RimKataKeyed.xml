@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registrazione completata: {0} riuscite, {1} fallite.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registrata</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrazione fallita. Il fuoco originale viene mantenuto; la conversione a colpo singolo è disattivata.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Seleziona statistiche</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Mostra il pulsante di debug</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Statistiche</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Soddisfare uno qualsiasi dei requisiti permette di usare RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Valore predefinito</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Maggiore di</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Almeno</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Uguale a</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Al massimo</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Minore di</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Diverso da</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Confronto</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Valore</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Registri di combattimento</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

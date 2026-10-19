@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registrering klar: {0} registrerade, {1} misslyckade.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registrerad</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registreringen misslyckades. Den ursprungliga eldgivningen behålls; omvandling till enkelskott är avstängd.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Välj egenskapsvärden</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Visa felsökningsknapp</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Egenskapsvärden</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Om något av kraven uppfylls ges tillgång till RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Standardvärde</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Större än</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Minst</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Lika med</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Högst</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Mindre än</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Inte lika med</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Jämförelse</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Värde</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Stridsstatistik</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

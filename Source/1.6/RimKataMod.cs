@@ -147,6 +147,9 @@ namespace KRWF.RimKata
             private readonly bool enableSerumDependency;
             private readonly bool enableShootingLevel, enableMeleeLevel;
             private readonly int shootingLevelRequirement, meleeLevelRequirement;
+            private readonly RimKataSkillActivationRule[] skillActivationRules;
+            private readonly RimKataStatActivationRule[] statActivationRules;
+            private readonly bool showDebugGizmo;
             private readonly float aiSecondaryWeaponChancePercent;
             private readonly string activeProfileId;
             private readonly string[] enabledWeaponDefNames;
@@ -168,6 +171,11 @@ namespace KRWF.RimKata
                 enableMeleeLevel = settings?.enableMeleeLevel == true;
                 shootingLevelRequirement = settings?.shootingLevelRequirement ?? 0;
                 meleeLevelRequirement = settings?.meleeLevelRequirement ?? 0;
+                skillActivationRules = settings?.skillActivationRules?.OrderBy(rule => rule?.defName, StringComparer.Ordinal)
+                    .Select(rule => rule?.Copy()).ToArray();
+                statActivationRules = settings?.statActivationRules?.OrderBy(rule => rule?.key, StringComparer.Ordinal)
+                    .Select(rule => rule?.Copy()).ToArray();
+                showDebugGizmo = settings?.showDebugGizmo == true;
                 aiSecondaryWeaponChancePercent = settings?.aiSecondaryWeaponChancePercent ?? 0f;
                 activeProfileId = settings?.ActiveProfileId;
                 enabledWeaponDefNames = CaptureList(settings?.enabledWeaponDefNames);
@@ -196,6 +204,9 @@ namespace KRWF.RimKata
                     && enableMeleeLevel == settings.enableMeleeLevel
                     && shootingLevelRequirement == settings.shootingLevelRequirement
                     && meleeLevelRequirement == settings.meleeLevelRequirement
+                    && SkillRulesMatch(skillActivationRules, settings.skillActivationRules)
+                    && StatRulesMatch(statActivationRules, settings.statActivationRules)
+                    && showDebugGizmo == settings.showDebugGizmo
                     && aiSecondaryWeaponChancePercent == settings.aiSecondaryWeaponChancePercent
                     && string.Equals(activeProfileId, settings.ActiveProfileId, StringComparison.Ordinal)
                     && ListMatches(enabledWeaponDefNames, settings.enabledWeaponDefNames)
@@ -217,6 +228,43 @@ namespace KRWF.RimKata
                 return values == null
                     ? null
                     : values.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            }
+
+            private static bool SkillRulesMatch(RimKataSkillActivationRule[] snapshot, List<RimKataSkillActivationRule> current)
+            {
+                if (snapshot == null || current == null) return snapshot == null && current == null;
+                if (snapshot.Length != current.Count) return false;
+                RimKataSkillActivationRule[] values = current.OrderBy(rule => rule?.defName, StringComparer.Ordinal).ToArray();
+                for (int i = 0; i < snapshot.Length; i++)
+                {
+                    RimKataSkillActivationRule before = snapshot[i], after = values[i];
+                    if (before == null || after == null)
+                    {
+                        if (before != after) return false;
+                    }
+                    else if (!string.Equals(before.defName, after.defName, StringComparison.Ordinal)
+                        || before.enabled != after.enabled || before.requiredLevel != after.requiredLevel) return false;
+                }
+                return true;
+            }
+
+            private static bool StatRulesMatch(RimKataStatActivationRule[] snapshot, List<RimKataStatActivationRule> current)
+            {
+                if (snapshot == null || current == null) return snapshot == null && current == null;
+                if (snapshot.Length != current.Count) return false;
+                RimKataStatActivationRule[] values = current.OrderBy(rule => rule?.key, StringComparer.Ordinal).ToArray();
+                for (int i = 0; i < snapshot.Length; i++)
+                {
+                    RimKataStatActivationRule before = snapshot[i], after = values[i];
+                    if (before == null || after == null)
+                    {
+                        if (before != after) return false;
+                    }
+                    else if (!string.Equals(before.key, after.key, StringComparison.Ordinal)
+                        || before.enabled != after.enabled || before.comparison != after.comparison
+                        || before.value != after.value) return false;
+                }
+                return true;
             }
 
             private static bool ListMatches(string[] snapshot, List<string> current)
@@ -354,6 +402,7 @@ namespace KRWF.RimKata
             Settings.SanitizeGeneProbabilityRules();
             Settings.SanitizeStrengthRules();
             Settings.SanitizePersonalActivation();
+            Settings.SanitizeStatActivationRules();
             if (Profiles?.IsInitialized == true)
             {
                 try

@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Rekisteröinti valmis: {0} onnistui, {1} epäonnistui.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Rekisteröity</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Rekisteröinti epäonnistui. Alkuperäinen ampumistapa säilytetään; kertatulimuunnos on pois käytöstä.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Valitse ominaisuusarvot</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Näytä virheenkorjauspainike</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Ominaisuusarvot</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Minkä tahansa ehdon täyttyminen mahdollistaa RimKatan käytön.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Oletusarvo</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Suurempi kuin</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Vähintään</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Yhtä suuri kuin</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Enintään</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Pienempi kuin</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Eri suuri kuin</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Vertailu</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Arvo</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Taistelutilastot</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

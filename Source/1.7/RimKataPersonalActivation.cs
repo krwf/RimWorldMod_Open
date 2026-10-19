@@ -5,6 +5,23 @@ using Verse;
 
 namespace KRWF.RimKata
 {
+    public sealed class RimKataSkillActivationRule : IExposable
+    {
+        public string defName;
+        public bool enabled;
+        public int requiredLevel;
+
+        public RimKataSkillActivationRule Copy() => new RimKataSkillActivationRule
+        { defName = defName, enabled = enabled, requiredLevel = requiredLevel };
+
+        public void ExposeData()
+        {
+            Scribe_Values.Look(ref defName, "defName");
+            Scribe_Values.Look(ref enabled, "enabled", false);
+            Scribe_Values.Look(ref requiredLevel, "requiredLevel", 0);
+        }
+    }
+
     public sealed class RimKataTraitActivationRule : IExposable
     {
         public string defName;
@@ -28,20 +45,24 @@ namespace KRWF.RimKata
             new Dictionary<TraitDef, Dictionary<int, byte>>();
         private static readonly List<RimKataTraitActivationRule> appliedRules = new List<RimKataTraitActivationRule>();
         private static bool initialized;
-        private static bool shootingEnabled, meleeEnabled;
-        private static int shootingRequirement, meleeRequirement;
+        private static readonly Dictionary<SkillDef, int> skills = new Dictionary<SkillDef, int>();
+        private static readonly List<RimKataSkillActivationRule> appliedSkillRules = new List<RimKataSkillActivationRule>();
         internal static bool TraitsEnabled => traits.Count != 0;
-        internal static bool SkillsEnabled => shootingEnabled || meleeEnabled;
+        internal static bool SkillsEnabled => skills.Count != 0;
 
         internal static bool Rebuild(RimKataSettings settings)
         {
             if (settings == null) return false;
             settings.SanitizePersonalActivation();
-            bool changed = !initialized || shootingEnabled != settings.enableShootingLevel
-                || meleeEnabled != settings.enableMeleeLevel
-                || shootingRequirement != settings.shootingLevelRequirement
-                || meleeRequirement != settings.meleeLevelRequirement
+            bool changed = !initialized || appliedSkillRules.Count != settings.skillActivationRules.Count
                 || appliedRules.Count != settings.traitActivationRules.Count;
+            if (!changed)
+                for (int i = 0; i < appliedSkillRules.Count; i++)
+                {
+                    RimKataSkillActivationRule old = appliedSkillRules[i], next = settings.skillActivationRules[i];
+                    if (old.defName != next.defName || old.enabled != next.enabled || old.requiredLevel != next.requiredLevel)
+                    { changed = true; break; }
+                }
             if (!changed)
                 for (int i = 0; i < appliedRules.Count; i++)
                 {
@@ -52,10 +73,15 @@ namespace KRWF.RimKata
                 }
             if (!changed) return false;
             initialized = true;
-            shootingEnabled = settings.enableShootingLevel;
-            meleeEnabled = settings.enableMeleeLevel;
-            shootingRequirement = settings.shootingLevelRequirement;
-            meleeRequirement = settings.meleeLevelRequirement;
+            skills.Clear();
+            appliedSkillRules.Clear();
+            foreach (RimKataSkillActivationRule rule in settings.skillActivationRules)
+            {
+                appliedSkillRules.Add(rule.Copy());
+                if (!rule.enabled) continue;
+                SkillDef def = DefDatabase<SkillDef>.GetNamedSilentFail(rule.defName);
+                if (def != null) skills[def] = rule.requiredLevel;
+            }
             traits.Clear();
             appliedRules.Clear();
             foreach (RimKataTraitActivationRule rule in settings.traitActivationRules)
@@ -72,15 +98,15 @@ namespace KRWF.RimKata
             return true;
         }
 
-        internal static bool EnabledFor(SkillDef skill) =>
-            (shootingEnabled && skill == SkillDefOf.Shooting) || (meleeEnabled && skill == SkillDefOf.Melee);
+        internal static bool EnabledFor(SkillDef skill) => skill != null && skills.ContainsKey(skill);
 
-        internal static void ReadSkills(Pawn pawn, out bool shooting, out bool melee)
+        internal static bool ReadSkills(Pawn pawn)
         {
-            shooting = shootingEnabled && pawn.skills?.GetSkill(SkillDefOf.Shooting) is SkillRecord shot
-                && shot.Level >= shootingRequirement;
-            melee = meleeEnabled && pawn.skills?.GetSkill(SkillDefOf.Melee) is SkillRecord close
-                && close.Level >= meleeRequirement;
+            if (!SkillsEnabled || pawn?.skills == null) return false;
+            foreach (KeyValuePair<SkillDef, int> requirement in skills)
+                if (pawn.skills.GetSkill(requirement.Key) is SkillRecord record
+                    && record.Level >= requirement.Value) return true;
+            return false;
         }
 
         internal static Trait[] ReadTraits(Pawn pawn)

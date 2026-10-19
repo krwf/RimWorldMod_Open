@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Реєстрацію завершено: успішно — {0}, помилок — {1}.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Зареєстровано</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Реєстрація не вдалася. Початкову стрільбу збережено; переведення на одиночні постріли вимкнено.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Вибрати показники</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Показувати кнопку налагодження</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Показники</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Виконання будь-якої з умов надає доступ до RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>За замовчуванням</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Більше</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Не менше</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Дорівнює</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Не більше</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Менше</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Не дорівнює</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Порівняння</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Значення</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Бойові записи</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

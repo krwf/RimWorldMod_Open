@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>登録完了：成功 {0} 件、失敗 {1} 件。</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>登録成功</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>登録に失敗しました。元の射撃方式を維持し、単発への変換は無効になります。</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>能力値を選択</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>デバッグギズモを表示</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>能力値</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>いずれか1つの条件を満たすと、RimKataを使用できます。</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>初期値</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>より大きい</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>以上</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>等しい</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>以下</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>より小さい</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>等しくない</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>比較</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>数値</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>戦闘記録</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

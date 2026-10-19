@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registrering fullført: {0} registrert, {1} mislykket.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registrert</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrering mislyktes. Den opprinnelige avfyringen beholdes; omgjøring til enkeltskudd er deaktivert.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Velg egenskapsverdier</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Vis feilsøkingsknapp</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Egenskapsverdier</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Oppfyllelse av ett av kravene gir tilgang til RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Standardverdi</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Større enn</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Minst</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Lik</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>Høyst</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Mindre enn</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Ikke lik</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Sammenligning</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Verdi</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Kampregistreringer</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

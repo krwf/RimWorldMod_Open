@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registration complete: {0} registered, {1} failed.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registered</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registration failed. Original firing behavior retained; single-shot conversion is disabled.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Select stats</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Show debug gizmo</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Stats</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Meeting any one requirement grants RimKata access.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Default</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Greater than</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>At least</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Equal to</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>At most</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Less than</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Not equal to</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Comparison</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Value</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Combat records</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>

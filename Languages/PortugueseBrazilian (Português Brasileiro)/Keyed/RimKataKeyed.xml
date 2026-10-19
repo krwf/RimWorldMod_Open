@@ -277,4 +277,18 @@
   <KRWF_RimKata_WeaponRegistrationComplete>Registro concluído: {0} registradas, {1} falhas.</KRWF_RimKata_WeaponRegistrationComplete>
   <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Falha no registro. O disparo original é mantido; a conversão para tiro único está desativada.</KRWF_RimKata_WeaponRegistrationFailure>
+  <KRWF_RimKata_StatSelection>Selecionar atributos</KRWF_RimKata_StatSelection>
+  <KRWF_RimKata_ShowDebugGizmo>Mostrar botão de depuração</KRWF_RimKata_ShowDebugGizmo>
+  <KRWF_RimKata_StatQualification>Atributos</KRWF_RimKata_StatQualification>
+  <KRWF_RimKata_AnyRequirement>Cumprir qualquer um dos requisitos permite usar o RimKata.</KRWF_RimKata_AnyRequirement>
+  <KRWF_RimKata_StatDefault>Valor padrão</KRWF_RimKata_StatDefault>
+  <KRWF_RimKata_ComparisonGreater>Maior que</KRWF_RimKata_ComparisonGreater>
+  <KRWF_RimKata_ComparisonGreaterOrEqual>Pelo menos</KRWF_RimKata_ComparisonGreaterOrEqual>
+  <KRWF_RimKata_ComparisonEqual>Igual a</KRWF_RimKata_ComparisonEqual>
+  <KRWF_RimKata_ComparisonLessOrEqual>No máximo</KRWF_RimKata_ComparisonLessOrEqual>
+  <KRWF_RimKata_ComparisonLess>Menor que</KRWF_RimKata_ComparisonLess>
+  <KRWF_RimKata_ComparisonNotEqual>Diferente de</KRWF_RimKata_ComparisonNotEqual>
+  <KRWF_RimKata_StatComparison>Comparação</KRWF_RimKata_StatComparison>
+  <KRWF_RimKata_StatValue>Valor</KRWF_RimKata_StatValue>
+  <KRWF_RimKata_StatCategoryRecords>Registros de combate</KRWF_RimKata_StatCategoryRecords>
 </LanguageData>
