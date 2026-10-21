@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>比較</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>數值</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>戰鬥紀錄</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>遠程閃避使用原版機率</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>滑鏟使用原版機率</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>揮退使用原版機率</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>踢擊使用原版機率</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>遠程閃避機率加成</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>踢擊機率加成</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>滑鏟機率加成</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>揮退機率加成</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>格擋使用原版機率</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>近戰閃避使用原版機率</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>爆炸投射物攔截使用原版機率</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>格擋機率</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>近戰閃避機率</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>爆炸投射物攔截機率</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

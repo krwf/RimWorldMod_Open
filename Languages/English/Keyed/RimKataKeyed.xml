@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Comparison</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Value</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Combat records</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Use vanilla chance for ranged dodge</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Use vanilla chance for sliding</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Use vanilla chance for shake-off</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Use vanilla chance for kick</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Ranged dodge chance bonus</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Kick chance bonus</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Sliding chance bonus</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Shake-off chance bonus</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Use vanilla chance for parrying</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Use vanilla chance for melee dodge</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Use vanilla chance for explosive interception</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Parry chance</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Melee dodge chance</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Explosive interception chance</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

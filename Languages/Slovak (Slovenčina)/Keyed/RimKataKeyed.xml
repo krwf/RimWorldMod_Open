@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Porovnanie</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Hodnota</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Bojové záznamy</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Použiť šancu zo základnej hry pre úhyb pred útokom na diaľku</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Použiť šancu zo základnej hry pre sklz</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Použiť šancu zo základnej hry pre strasenie</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Použiť šancu zo základnej hry pre kop</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus k šanci na úhyb pred útokom na diaľku</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus k šanci na kop</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus k šanci na sklz</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus k šanci na strasenie</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Použiť šancu zo základnej hry pre odvrátenie</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Použiť šancu zo základnej hry pre úhyb v boji na blízko</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Použiť šancu zo základnej hry pre zachytenie výbušných projektilov</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Šanca na odvrátenie</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Šanca na úhyb v boji na blízko</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Šanca na zachytenie výbušných projektilov</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

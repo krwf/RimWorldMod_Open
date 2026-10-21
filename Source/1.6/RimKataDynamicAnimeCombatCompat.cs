@@ -252,10 +252,11 @@ namespace KRWF.RimKata
 
         private static void ValidateDamageCalls(List<CodeInstruction> codes, int damageCount)
         {
-            // DAC versions differ in counterblow notifications, while the direct-damage count is fixed.
+            // Some DAC versions omit direct spirit notifications; only replace those present.
+            // The direct-damage count and notification upper bound must still match.
             int spiritCount = codes.FindAll(code => code.Calls(notifyDamageTaken)).Count;
             if (codes.FindAll(code => code.Calls(TakeDamage)).Count != damageCount
-                || spiritCount < 1 || spiritCount > damageCount)
+                || spiritCount > damageCount)
                 throw new InvalidOperationException("DAC direct-damage instructions changed.");
         }
 

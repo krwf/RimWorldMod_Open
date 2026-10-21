@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Vergleich</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Wert</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Kampfstatistik</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Basisspiel-Chance für Fernkampfausweichen verwenden</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Basisspiel-Chance für Rutschen verwenden</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Basisspiel-Chance für Abschütteln verwenden</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Basisspiel-Chance für Tritte verwenden</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus auf Fernkampfausweichchance</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus auf Trittchance</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus auf Rutschwahrscheinlichkeit</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus auf Abschüttelwahrscheinlichkeit</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Basisspiel-Chance für Parieren verwenden</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Basisspiel-Chance für Nahkampfausweichen verwenden</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Basisspiel-Chance für das Abfangen von Sprengkörpern verwenden</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Parierchance</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Nahkampfausweichchance</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Chance zum Abfangen von Sprengkörpern</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

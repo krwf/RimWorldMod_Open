@@ -1,5 +1,55 @@
 # RimKata 소스 메서드 색인
 
+## 2026-10-22 발사 경계와 허용 해제 캐시 정리
+
+- `WeaponExecutionDiscovery.Analyze/Visit`: 실제 발사 진입점 집합을 먼저 준비하고, 본문을 읽지 않는 바닐라 공용 함수에서는 패치 내부만 확장하지 않습니다. 해당 함수의 식별자는 보존하며 실제 발사 함수·외부 구현·Comp/Hediff 연결은 기존 경로를 유지합니다.
+- `WeaponExecutionPlans.Refresh → EquipmentMemory.View.Remove / WeaponEffectCache.Invalidate / CloseFireMeleeStore.RemoveDefinition`: 이전 허용 계획과 적용된 목록의 차이만 정리합니다. `AllowedWeaponStore.RemoveDisallowedWeapons`도 기존 준비 Def 제거와 함께 근접 공격 XML을 정리합니다. UI 초안의 체크 변경이나 취소에서 호출하지 않습니다.
+- `EquipmentMemory.View.StorePayload/Remove/CompletePayloadCommit`: 파일명은 기본 16자리, 본문 검증은 전체 SHA256입니다. 기존 이름은 읽기 호환하고 재저장 때 이전합니다. 제거·교체된 payload는 색인 저장 성공 후 공유 참조가 없을 때만 삭제합니다. 수동 새로 고침 취소는 기존 파일을 보존합니다.
+
+## 2026-10-21 CE 공통 상태 연결과 강제 효과 갱신
+
+- `WeaponExecutionRuntime.AcquireDefinition → Connect`: CE도 공통 StateObservers 준비를 통과합니다. `HandledByCompatibility`는 일반 발사 훅/실행 묶음/효과 사본 준비를 제외하는 경계이며 공통 상태 관찰까지 제외하지 않습니다. 기존 설치 실패 계획의 반복 재시도 방지는 유지합니다.
+- `WeaponExecutionPlans.Refresh(true) → WeaponEffectCache.Invalidate(key)`: 기존 카탈로그 및 새 선택의 실행 키를 무효화할 때 효과 캐시도 함께 제거합니다. 수동 새로 고침 Commit 뒤 Current는 ForceRefresh=false이므로 이 키 경계를 생략하면 미장착 무기의 다음 사용에서 이전 효과 자료가 복원될 수 있습니다. 상세 자료를 미리 불러오지 않습니다.
+
+## 2026-10-21 무기 분석 디스크 보관과 장착 수명
+
+- `RimKataEquipmentMemory.View.StorePayload/TryRead/PublishPayloads`: 실행·효과 분석 XML만 디스크로 분리합니다. 색인은 XML 그래프를 보유하지 않으며 개별 파일 실패가 다른 항목을 무효화하지 않습니다. 새로 고침은 기존 임시 View/확인/취소 경계입니다.
+- `RimKataWeaponExecutionPlans.Refresh/Load/Unload`: 전체 허용 목록에는 가벼운 계획만 유지합니다. 상세 자료 Load는 준비 경계에서만, Unload는 마지막 장착 해제에서 수행합니다. `LoadOriginalEntries`는 실패 폴백에 필요한 두 진입점만 확보하며 심층 분석을 재시도하지 않습니다.
+- `RimKataEquippedWeaponPlans.Sync/Forget/Suspend/Resume`: 기존 자격 및 장비 변경 이벤트만 사용합니다. Def별 참조 수가 0→1일 때 Runtime.AcquireDefinition, 1→0일 때 ReleaseDefinition이 실제 자료를 준비/해제합니다. 쌍수 같은 Def·여러 폰 공유 및 건강 콜백 재진입을 고려합니다. 일반 폰 순회나 발사/렌더 중 디스크 조회를 넣지 않습니다.
+- `RimKataWeaponExecutionRuntime.AcquireDefinition/Register/Fail/ConnectTick`: 무기별 설치 실패를 격리하고 원본 발사 경로를 유지합니다. 승인한 미장착 무기를 검사하기 위해 임시로 만든 실행 묶음도 등록 완료 후 해제합니다. `RimKataWeaponRegistrationFailures`에는 알림용 문자열만 보관합니다.
+- `RimKataWeaponEffects.ForgetDefinition/Release`: 마지막 장착 해제 때 효과 계획과 인스턴스 상태를 정리합니다. 외부 건강 콜백이 실패해도 record를 남겨 반복 해제하지 않습니다.
+- `RimKataAllowedWeaponStore.CaptureDefinition/NormalizeStoredLabel`: 원본 라벨을 sourceLabel로 보관하고 생성 Def의 기술 라벨을 분리합니다. 원본 문자를 지우거나 바닐라 라벨 검사를 무시하지 않습니다.
+- 한도: 발사·효과 500메서드/72,000 IL, 발사 깊이 10. 발사 필수 진입점 보충을 포함한 복원·묶음은 최대 502. 구체적 검사 범위는 개발 작업 기억의 같은 날짜 항목을 참조합니다.
+
+## 2026-10-21 실행 분석 상한과 필수 진입점
+
+- `RimKataWeaponExecutionDiscovery.Analyze`: 외부 발사 후처리 탐색이 상한에 걸려도 Warmup/Tick 진입점은 최종 Methods에 보존합니다. 이 보충은 Complete나 CanControlBurst를 성공으로 바꾸지 않습니다.
+- `ExecutionRuntime.CreateExecution` → `ExecutionBundle.TryCreate`: wrappedEntry인 Tick이 목록에 없으면 본문이 복사 가능해도 등록에 실패합니다. 개별 snapshot 생성과 전체 실행 묶음 등록을 구분해야 합니다. 실제 실패 캐시의 Tick 보충 후 전체 등록 통과는 `.codex-build/weapon-refresh-audit/result.txt`에 남겼으며 인게임 검증과는 별개입니다.
+
+## 2026-10-21 DAC 알림 생략과 Harmony 3 내부 훅
+
+- RimKataDynamicAnimeCombatCompat.ValidateDamageCalls/ReplaceDamageCalls: 원본에 Notify_DamageTaken 호출이 없어도 허용합니다. TakeDamage 개수와 알림 상한 검증을 유지하며 실제 존재하는 호출만 치환합니다. 스침 하나의 알림 생략으로 DAC 통합 전체가 취소되지 않도록 했습니다.
+- RimKataWeaponStateObservers.Classify: 기존 ExtraPatches를 사용해 InnerPrefixes/InnerPostfixes/InnerFinalizers가 있으면 None을 반환합니다. 준비 단계만 변경했으며 순수 조회와 자체 Postfix는 계속 허용합니다. GetCurrentInstructions의 결과에는 Harmony 3 내부 훅이 포함되지 않으므로 별도 메타데이터 검사가 필요합니다.
+
+## 2026-10-21 CE Queue의 명시적 준비 호출 경계
+
+- RimKataNativeAttack.Queue/ResetNativeVerb: 원본 완료 콜백 보관 뒤 bool 반환 준비 함수를 호출하며 실패 반환은 소스에서 컴파일합니다. Pending·바인딩·완료 관찰 등록은 성공 뒤에만 진행합니다.
+- RimKataCombatExtendedNativeAttack.QueueTranspiler/PrepareAmmoAndReset: 기존 ReplaceCall로 준비 호출 하나만 동일 인자/반환형의 CE 함수로 치환합니다. PrepareAmmo 실패 시 ResetNativeVerb를 호출하지 않습니다. 기존 IL 중간의 조기 ret 삽입과 InsertBefore는 삭제했습니다.
+- 검토 주의: Release IL은 C# 문장 경계를 넘어 값을 스택에 유지할 수 있습니다. Queue의 observeCompletion이나 이전 FinishNativeCast 사례처럼 중간 ret 삽입은 스택이 깨집니다. 같은 입출력 호출 경계로 연결하고 해당 외부 패치의 실제 wrapper 생성/JIT까지 확인해야 하며, C# 빌드만으로 패치 성공을 판단하지 않습니다.
+
+## 2026-10-20 기존 보너스 세 항목의 출력단 전환
+
+- RimKataCombatMath.ApplyConfiguredMeleeDodgeBonus/MeleeParryChance: 원본 확률 계산 후 새 플래그에 따라 기존 배율 보너스 또는 설정 확률을 출력합니다. 근접 회피의 조기 반환과 Ink에서 연결한 메서드 선언은 유지합니다.
+- RimKataFireContext.Begin/ScopeState.Capture/Restore: 요격 발사만 InterceptionChanceOverride를 준비하고 기존 중첩 문맥에 보관합니다. Patch_ShotReport_MovingAccuracy_RimKata.Postfix가 출력 확률을 대체하고 기존 이동·혈청 보정을 적용합니다.
+- RimKataCombatExtendedFire.ReportPostfix/SwayPostfix: 요격 보너스·혈청을 무기 산포에만 적용합니다. 설정 확률 모드의 CE 값은 산포 감소율이며 명중 보장이 아닙니다. 기존 이동 정확도와 근접 사격의 선행 명중 처리 분기는 유지합니다.
+- RimKataSettings.GetInterceptionChance 및 세 UseVanillaChance 필드: 기본 true/프로필 보충/저장/초기화. Dialog_RimKataModFeatures와 RimKataSettingsDrawer의 세 라벨 helper가 플래그 편집과 보너스/일반 확률 라벨·상한을 담당합니다.
+
+## 2026-10-20 네 연출의 바닐라 근접 회피율 선택
+
+- `RimKataSettings.GetRangedDodgeChance/GetKickChance/GetSlidingChance/GetShakeOffChance/ActivationChance`: 개별 플래그가 꺼져 있으면 기존 확률을 즉시 반환합니다. 켰을 때만 원래 발동 사건에서 `MeleeDodgeChance`를 읽고 기존 숫자를 배율 보너스로 적용합니다. 공격 전용 `GetDodgeChance` 및 림카타 근접 회피 보너스를 중복 적용하지 않습니다.
+- `SanitizeActivationPercent/SanitizeModFeatures/ResetNumericDefaults/ExposeData`: 플래그 기본 false, 활성 항목의 100% 초과 수치 허용, 기존 프로필 자동 포함/누락 기본값 보충을 유지합니다.
+- `Dialog_RimKataModFeatures`는 네 플래그 편집 사본의 확인/취소를 담당합니다. `Dialog_RimKataVisualFeatures.NumericLabelKey`와 `RimKataSettingsDrawer.RangedDodgeLabelKey`는 해당 플래그에 따라 라벨/입력 상한만 바꿉니다. 두 버전 동일하며 새 실행 훅은 없습니다.
+
 ## 2026-10-19 기술·스탯 자격 확장
 
 - `RimKataPersonalActivation.Rebuild/ReadSkills/EnabledFor`: 기존 기술 변경 사건을 모든 허용 SkillDef에 적용합니다. `RimKataSettings.SanitizePersonalActivation/MigrateSkillActivation`은 이전 사격/격투 설정을 보존합니다.

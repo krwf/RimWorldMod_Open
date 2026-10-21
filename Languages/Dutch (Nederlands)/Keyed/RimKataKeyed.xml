@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Vergelijking</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Waarde</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Gevechtsgegevens</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Gebruik de kans uit het basisspel voor ontwijken van afstandsaanvallen</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Gebruik de kans uit het basisspel voor glijden</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Gebruik de kans uit het basisspel voor afschudden</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Gebruik de kans uit het basisspel voor trappen</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus op ontwijkkans tegen afstandsaanvallen</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus op kans op trap</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus op kans op glijden</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus op kans op afschudden</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Gebruik de kans uit het basisspel voor pareren</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Gebruik de kans uit het basisspel voor ontwijken in man-tegen-mangevechten</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Gebruik de kans uit het basisspel voor het onderscheppen van explosieve projectielen</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Pareerkans</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Ontwijkkans in man-tegen-mangevechten</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Kans op onderschepping van explosieve projectielen</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

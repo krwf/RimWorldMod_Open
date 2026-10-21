@@ -110,7 +110,10 @@ namespace KRWF.RimKata
             Pawn target,
             float vanillaChance)
         {
-            float bonusMultiplier = RimKataTargetAccess.SettingsFor(target)?.GetMeleeDodgeBonusMultiplier(target) ?? 1f;
+            RimKataSettings settings = RimKataTargetAccess.SettingsFor(target);
+            if (settings?.meleeDodgeUseVanillaChance == false)
+                return settings.GetMeleeDodgeChance(target);
+            float bonusMultiplier = settings?.GetMeleeDodgeBonusMultiplier(target) ?? 1f;
             return Mathf.Clamp01(vanillaChance * bonusMultiplier);
         }
 
@@ -137,7 +140,9 @@ namespace KRWF.RimKata
                 NativeMeleeHitChance);
 
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(defender);
-            chance *= settings?.GetMeleeResponseBonusMultiplier(defender) ?? 1f;
+            chance = settings?.meleeResponseUseVanillaChance == false
+                ? settings.GetMeleeResponseChance(defender)
+                : chance * (settings?.GetMeleeResponseBonusMultiplier(defender) ?? 1f);
             if (settings != null && RimKataSerumUtility.IsMindNumbed(defender))
             {
                 chance *= settings.GetSerumResponseMultiplier(defender);

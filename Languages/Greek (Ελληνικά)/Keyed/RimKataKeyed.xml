@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Σύγκριση</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Τιμή</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Καταγραφές μάχης</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για αποφυγή επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για ολίσθηση</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για απώθηση</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για κλωτσιά</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Μπόνους πιθανότητας αποφυγής επιθέσεων εξ αποστάσεως</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Μπόνους πιθανότητας κλωτσιάς</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Μπόνους πιθανότητας ολίσθησης</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Μπόνους πιθανότητας απώθησης</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για απόκρουση</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για αποφυγή σε μάχη σώμα με σώμα</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Χρήση της πιθανότητας του βασικού παιχνιδιού για αναχαίτιση εκρηκτικών βλημάτων</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Πιθανότητα απόκρουσης</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Πιθανότητα αποφυγής σε μάχη σώμα με σώμα</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Πιθανότητα αναχαίτισης εκρηκτικών βλημάτων</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

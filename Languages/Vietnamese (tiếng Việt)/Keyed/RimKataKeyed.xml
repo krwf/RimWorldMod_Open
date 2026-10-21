@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>So sánh</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Giá trị</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Nhật ký chiến đấu</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho né đòn tầm xa</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho trượt</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho rũ bỏ</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho đá</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Thưởng tỷ lệ né đòn tầm xa</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Thưởng xác suất đá</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Thưởng xác suất trượt</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Thưởng xác suất rũ bỏ</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho đỡ đòn</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho né cận chiến</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Dùng tỷ lệ của trò chơi gốc cho đánh chặn đạn nổ</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Tỷ lệ đỡ đòn</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Tỷ lệ né cận chiến</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Tỷ lệ đánh chặn đạn nổ</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

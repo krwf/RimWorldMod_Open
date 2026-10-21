@@ -12,7 +12,7 @@ namespace KRWF.RimKata
     // Creation is restricted to startup or explicit registration; invokers contain no reflection.
     internal sealed class RimKataWeaponExecutionBundle
     {
-        private const int MaximumMethods = 256;
+        private const int MaximumMethods = RimKataWeaponExecutionDiscovery.MaximumStoredMethods;
         private static readonly object BuildLock = new object();
         private static readonly MethodInfo Rewriter = AccessTools.Method(
             typeof(RimKataWeaponExecutionBundle), nameof(RewriteCalls));

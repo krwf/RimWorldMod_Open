@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Порівняння</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Значення</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Бойові записи</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Використовувати шанс із базової гри для ухилення від дальніх атак</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Використовувати шанс із базової гри для підкату</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Використовувати шанс із базової гри для струшування</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Використовувати шанс із базової гри для удару ногою</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Бонус до шансу ухилення від дальніх атак</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Бонус до шансу удару ногою</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Бонус до шансу підкату</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Бонус до шансу струшування</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Використовувати шанс із базової гри для парирування</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Використовувати шанс із базової гри для ухилення в ближньому бою</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Використовувати шанс із базової гри для перехоплення вибухових снарядів</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Шанс парирування</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Шанс ухилення в ближньому бою</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Шанс перехоплення вибухових снарядів</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

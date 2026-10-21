@@ -147,7 +147,7 @@ namespace KRWF.RimKata
             bool observeCompletion = executionPlan != null && !executionPlan.HandledByCompatibility
                 && executionPlan.Mode != RimKataWeaponExecutionMode.Vanilla;
             Action nativeCallback = observeCompletion ? castCompleteCallback(verb) : null;
-            verb.Reset();
+            if (!ResetNativeVerb()) return false;
             currentTarget(verb) = target;
             currentDestination(verb) = LocalTargetInfo.Invalid;
             surpriseAttack(verb) = false;
@@ -168,6 +168,14 @@ namespace KRWF.RimKata
                 castCompleteCallback(verb) = completionCallback;
             }
             if (reactiveMotion != null || subdueState != null) LimitToSingleShot();
+            return true;
+        }
+
+        // Compatibility can reject preparation at this call boundary. Keep the
+        // false return in compiled C#: Queue may retain other values on its IL stack.
+        internal bool ResetNativeVerb()
+        {
+            verb.Reset();
             return true;
         }
 

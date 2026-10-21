@@ -152,27 +152,13 @@ namespace KRWF.RimKata
         }
 
         private static IEnumerable<CodeInstruction> QueueTranspiler(
-            IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-        {
-            var codes = new List<CodeInstruction>(instructions);
-            MethodInfo reset = AccessTools.Method(typeof(Verb), nameof(Verb.Reset));
-            FieldInfo verb = AccessTools.Field(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.verb));
-            int call = codes.FindIndex(c => c.Calls(reset));
-            if (call < 2 || codes[call - 2].opcode != OpCodes.Ldarg_0
-                || codes[call - 1].opcode != OpCodes.Ldfld || !Equals(codes[call - 1].operand, verb))
-                throw new InvalidOperationException("RimKata CE ammo request insertion point was not found.");
-            Label ready = generator.DefineLabel();
-            var inserted = new List<CodeInstruction>
-            {
-                new CodeInstruction(OpCodes.Ldarg_0),
-                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataCombatExtendedNativeAttack), nameof(PrepareAmmo))),
-                new CodeInstruction(OpCodes.Brtrue, ready),
-                new CodeInstruction(OpCodes.Ldc_I4_0),
-                new CodeInstruction(OpCodes.Ret)
-            };
-            InsertBefore(codes, call - 2, inserted, ready);
-            return codes;
-        }
+            IEnumerable<CodeInstruction> instructions)
+            => ReplaceCall(instructions,
+                AccessTools.Method(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.ResetNativeVerb)),
+                nameof(PrepareAmmoAndReset));
+
+        private static bool PrepareAmmoAndReset(RimKataNativeAttack request)
+            => PrepareAmmo(request) && request.ResetNativeVerb();
 
         private static IEnumerable<CodeInstruction> BeginTranspiler(IEnumerable<CodeInstruction> instructions)
             => ReplaceCall(instructions,
@@ -206,13 +192,5 @@ namespace KRWF.RimKata
                 AccessTools.Method(typeof(RimKataNativeAttack), nameof(RimKataNativeAttack.CompleteNativeCast)),
                 nameof(CompleteOrDeferCast));
 
-        private static void InsertBefore(List<CodeInstruction> codes, int index,
-            List<CodeInstruction> inserted, Label proceed)
-        {
-            inserted[0].labels.AddRange(codes[index].labels);
-            codes[index].labels.Clear();
-            codes[index].labels.Add(proceed);
-            codes.InsertRange(index, inserted);
-        }
     }
 }

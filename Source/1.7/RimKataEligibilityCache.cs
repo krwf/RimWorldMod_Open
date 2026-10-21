@@ -170,7 +170,11 @@ namespace KRWF.RimKata
             {
                 if (TryGetEntry(pawn, out Entry entry) && entry.publishedMap == map)
                 {
-                    if (entry.qualified) RimKataWeaponEffects.ReleasePawn(pawn);
+                    if (entry.qualified)
+                    {
+                        RimKataWeaponEffects.ReleasePawn(pawn);
+                        RimKataEquippedWeaponPlans.Forget(pawn);
+                    }
                     entry.publishedMap = null;
                     entry.qualified = false;
                     RimKataStrengthUtility.NotifyQualificationChanged(pawn, false);
@@ -182,8 +186,10 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
+            RimKataEquippedWeaponPlans.Clear();
             RimKataStatActivation.ResetGame();
             RimKataWeaponEffects.ResetGame();
+            RimKataWeaponExecutionRuntime.ResetGame();
             RimKataStrengthUtility.ResetGame();
             RimKataMotionJobGate.ResetGame();
             RimKataFlyingKick.ResetGame();
@@ -288,6 +294,7 @@ namespace KRWF.RimKata
             {
                 users.qualifiedIndices.Add(pawn, users.qualified.Count);
                 users.qualified.Add(pawn);
+                RimKataEquippedWeaponPlans.Sync(pawn);
                 RimKataFlyingKickApproach.NotifyQualifiedPath(pawn);
             }
             else if (users.qualifiedIndices.TryGetValue(pawn, out int index))
@@ -310,6 +317,7 @@ namespace KRWF.RimKata
                 RimKataMotionJobGate.Clear(pawn);
             }
             RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
+            if (!qualified) RimKataEquippedWeaponPlans.Forget(pawn);
             RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, qualified);
         }
 
@@ -320,6 +328,7 @@ namespace KRWF.RimKata
                 SetQualified(pawn, entry, users, false);
                 users.permittedSources.Remove(pawn);
             }
+            if (entry.qualified) RimKataEquippedWeaponPlans.Forget(pawn);
             entry.qualified = false;
             entry.publishedMap = null;
             RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);

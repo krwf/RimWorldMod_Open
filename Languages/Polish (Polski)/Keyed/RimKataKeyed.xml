@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Porównanie</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Wartość</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Statystyki walki</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Używaj szansy z podstawowej gry dla uniku ataku dystansowego</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Używaj szansy z podstawowej gry dla ślizgu</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Używaj szansy z podstawowej gry dla otrząśnięcia</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Używaj szansy z podstawowej gry dla kopnięcia</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Premia do szansy na unik ataku dystansowego</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Premia do szansy na kopnięcie</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Premia do szansy na ślizg</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Premia do szansy na otrząśnięcie</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Używaj szansy z podstawowej gry dla parowania</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Używaj szansy z podstawowej gry dla uniku w walce wręcz</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Używaj szansy z podstawowej gry dla przechwytywania pocisków wybuchowych</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Szansa na parowanie</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Szansa na unik w walce wręcz</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Szansa na przechwycenie pocisków wybuchowych</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

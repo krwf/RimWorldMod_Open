@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -55,7 +56,19 @@ namespace KRWF.RimKata
             base.WindowUpdate();
             if (closed || !running) return;
             // Run one registration per update, outside OnGUI and its layout/repaint passes.
-            succeeded[completed] = RimKataWeaponExecutionRuntime.Register(plans[completed]);
+            RimKataWeaponExecutionPlan plan = plans[completed];
+            try { succeeded[completed] = RimKataWeaponExecutionRuntime.Register(plan); }
+            catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
+            {
+                // Cleanup failure must not keep the dialog retrying the same weapon forever.
+                try { RimKataWeaponExecutionPlans.FailRegistration(plan, exception.Message); }
+                catch (Exception cleanup) when (!RimKataSettingsWindowSafety.IsGuiExit(cleanup))
+                { Log.Warning("[RimKata] Could not finish weapon registration cleanup: " + cleanup); }
+                RimKataWeaponRegistrationFailures.Record(plan.Def, exception.Message);
+                Log.Warning("[RimKata] Could not register firing execution for " + plan.Def.defName
+                    + ". Original weapon behavior will be used. " + exception);
+            }
+            if (!succeeded[completed]) RimKataWeaponRegistrationFailures.MarkDisplayed(plan.Def);
             if (succeeded[completed]) registered++;
             completed++;
             if (completed == plans.Length) running = false;
@@ -76,6 +89,7 @@ namespace KRWF.RimKata
             }
             for (int i = 0; i < plans.Length; i++)
             {
+                if (completed == plans.Length && succeeded[i]) continue;
                 text.Append("\n\n").Append(labels[i]);
                 if (i < completed)
                     text.Append("\n").Append((succeeded[i]
@@ -147,6 +161,7 @@ namespace KRWF.RimKata
                     RimKataWeaponExecutionRuntime.Decline(plans[i]);
             }
             base.PostClose();
+            RimKataWeaponRegistrationFailures.ShowPending();
         }
     }
 }

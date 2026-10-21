@@ -16,7 +16,7 @@ namespace KRWF.RimKata
         private const float ButtonGap = 8f;
         private const float BottomGap = 10f;
         private const float ScrollbarWidth = 18f;
-        private const float ContentHeight = RowHeight * 11f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
+        private const float ContentHeight = RowHeight * 18f + HeaderHeight * 3f + (SectionGap + HeaderLineGap) * 2f;
         private readonly RimKataSettings settings;
         private readonly RimKataSettingsUiBuffers mainBuffers;
         private bool commitChangesOnClose;
@@ -30,6 +30,13 @@ namespace KRWF.RimKata
         private bool showMeleeWeaponAimTime;
         private bool showFocusedAttackLine;
         private bool smoothAimTransition;
+        private bool meleeResponseUseVanillaChance;
+        private bool meleeDodgeUseVanillaChance;
+        private bool interceptionUseVanillaChance;
+        private bool rangedDodgeUseVanillaChance;
+        private bool slidingUseVanillaChance;
+        private bool shakeOffUseVanillaChance;
+        private bool kickUseVanillaChance;
         private bool crawlFireDefaultAllowed;
         private bool autoSubdueReleaseDowned;
         private string touchCandidateBuffer;
@@ -53,6 +60,13 @@ namespace KRWF.RimKata
             "KRWF_RimKata_ShowMeleeWeaponAimTime",
             "KRWF_RimKata_ShowFocusedAttackLine",
             "KRWF_RimKata_SmoothAimTransition",
+            "KRWF_RimKata_MeleeResponseUseVanillaChance",
+            "KRWF_RimKata_MeleeDodgeUseVanillaChance",
+            "KRWF_RimKata_InterceptionUseVanillaChance",
+            "KRWF_RimKata_RangedDodgeUseVanillaChance",
+            "KRWF_RimKata_SlidingUseVanillaChance",
+            "KRWF_RimKata_ShakeOffUseVanillaChance",
+            "KRWF_RimKata_KickUseVanillaChance",
             "KRWF_RimKata_CrawlFireDefaultAllowed",
             "KRWF_RimKata_AutoSubdueReleaseDowned"
         };
@@ -79,6 +93,13 @@ namespace KRWF.RimKata
                 showMeleeWeaponAimTime = settings.showMeleeWeaponAimTime;
                 showFocusedAttackLine = settings.showFocusedAttackLine;
                 smoothAimTransition = settings.smoothAimTransition;
+                meleeResponseUseVanillaChance = settings.meleeResponseUseVanillaChance;
+                meleeDodgeUseVanillaChance = settings.meleeDodgeUseVanillaChance;
+                interceptionUseVanillaChance = settings.interceptionUseVanillaChance;
+                rangedDodgeUseVanillaChance = settings.rangedDodgeUseVanillaChance;
+                slidingUseVanillaChance = settings.slidingUseVanillaChance;
+                shakeOffUseVanillaChance = settings.shakeOffUseVanillaChance;
+                kickUseVanillaChance = settings.kickUseVanillaChance;
                 crawlFireDefaultAllowed = settings.crawlFireDefaultAllowed;
                 autoSubdueReleaseDowned = settings.autoSubdueReleaseDowned;
             }
@@ -155,8 +176,15 @@ namespace KRWF.RimKata
             Widgets.DrawLineHorizontal(0f, y, viewRect.width);
             y += HeaderLineGap;
             DrawHeader(viewRect.width, ref y, HeaderKeys[2]);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref crawlFireDefaultAllowed);
-            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[5], ref autoSubdueReleaseDowned);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[4], ref meleeResponseUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[5], ref meleeDodgeUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[6], ref interceptionUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[7], ref rangedDodgeUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[8], ref slidingUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[9], ref shakeOffUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[10], ref kickUseVanillaChance);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[11], ref crawlFireDefaultAllowed);
+            DrawCheckbox(viewRect.width, ref y, CheckboxLabelKeys[12], ref autoSubdueReleaseDowned);
             Widgets.EndScrollView();
             DrawButtons(new Rect(inRect.x, inRect.yMax - ButtonHeight, inRect.width, ButtonHeight));
             Text.Font = previousFont;
@@ -177,6 +205,13 @@ namespace KRWF.RimKata
                 || settings.showMeleeWeaponAimTime != showMeleeWeaponAimTime
                 || settings.showFocusedAttackLine != showFocusedAttackLine
                 || settings.smoothAimTransition != smoothAimTransition
+                || settings.meleeResponseUseVanillaChance != meleeResponseUseVanillaChance
+                || settings.meleeDodgeUseVanillaChance != meleeDodgeUseVanillaChance
+                || settings.interceptionUseVanillaChance != interceptionUseVanillaChance
+                || settings.rangedDodgeUseVanillaChance != rangedDodgeUseVanillaChance
+                || settings.slidingUseVanillaChance != slidingUseVanillaChance
+                || settings.shakeOffUseVanillaChance != shakeOffUseVanillaChance
+                || settings.kickUseVanillaChance != kickUseVanillaChance
                 || settings.crawlFireDefaultAllowed != crawlFireDefaultAllowed
                 || settings.autoSubdueReleaseDowned != autoSubdueReleaseDowned;
             settings.touchCandidateLimit = touchCandidateLimit;
@@ -188,6 +223,13 @@ namespace KRWF.RimKata
             settings.showMeleeWeaponAimTime = showMeleeWeaponAimTime;
             settings.showFocusedAttackLine = showFocusedAttackLine;
             settings.smoothAimTransition = smoothAimTransition;
+            settings.meleeResponseUseVanillaChance = meleeResponseUseVanillaChance;
+            settings.meleeDodgeUseVanillaChance = meleeDodgeUseVanillaChance;
+            settings.interceptionUseVanillaChance = interceptionUseVanillaChance;
+            settings.rangedDodgeUseVanillaChance = rangedDodgeUseVanillaChance;
+            settings.slidingUseVanillaChance = slidingUseVanillaChance;
+            settings.shakeOffUseVanillaChance = shakeOffUseVanillaChance;
+            settings.kickUseVanillaChance = kickUseVanillaChance;
             settings.crawlFireDefaultAllowed = crawlFireDefaultAllowed;
             settings.autoSubdueReleaseDowned = autoSubdueReleaseDowned;
             mainBuffers?.SyncFrom(settings);

@@ -187,7 +187,7 @@ namespace KRWF.RimKata
             Rot4 strikeFacing = facing == Rot4.South ? Rand.Bool ? Rot4.East : Rot4.West : facing;
             if (!RimKataKickRender.TryInitialize(pawn, target, facing, strikeFacing, kick.frame, out float angle)) return;
             kick.opportunity = false;
-            if (!Rand.Chance(settings.KickChance)) return;
+            if (!Rand.Chance(settings.GetKickChance(pawn))) return;
             kick.target = target;
             kick.jobId = pawn.CurJob?.loadID ?? -1;
             kick.age = 0;

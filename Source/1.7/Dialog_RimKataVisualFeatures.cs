@@ -150,7 +150,7 @@ namespace KRWF.RimKata
                 Text.Font = GameFont.Small;
                 float width = ButtonWidth("Close") + ButtonGap + ButtonWidth("Confirm");
                 for (int i = 0; i < NumericLabelKeys.Length; i++)
-                    width = Mathf.Max(width, Text.CalcSize(NumericLabelKeys[i].Translate()).x + FieldWidth + ColumnGap + 24f);
+                    width = Mathf.Max(width, Text.CalcSize(NumericLabelKey(i).Translate()).x + FieldWidth + ColumnGap + 24f);
                 Text.Font = GameFont.Medium;
                 for (int i = 0; i < HeaderKeys.Length; i++)
                     width = Mathf.Max(width, Text.CalcSize(HeaderKeys[i].Translate()).x);
@@ -193,9 +193,12 @@ namespace KRWF.RimKata
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[10], ref breachSlideDurationTicks, ref breachSlideDurationBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[11], ref breachWaitDurationTicks, ref breachWaitDurationBuffer);
             DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[12], ref flyingKickDamageMultiplierPercent, ref flyingKickDamageBuffer, float.MaxValue);
-            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[13], ref kickChancePercent, ref kickChanceBuffer);
-            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[14], ref slidingChancePercent, ref slidingChanceBuffer);
-            DrawPercentRow(viewRect.width, ref y, NumericLabelKeys[15], ref shakeOffChancePercent, ref shakeOffChanceBuffer);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKey(13), ref kickChancePercent, ref kickChanceBuffer,
+                settings.kickUseVanillaChance ? float.MaxValue : 100f);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKey(14), ref slidingChancePercent, ref slidingChanceBuffer,
+                settings.slidingUseVanillaChance ? float.MaxValue : 100f);
+            DrawPercentRow(viewRect.width, ref y, NumericLabelKey(15), ref shakeOffChancePercent, ref shakeOffChanceBuffer,
+                settings.shakeOffUseVanillaChance ? float.MaxValue : 100f);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[16], ref subdueImpactStunTicks, ref subdueImpactStunBuffer);
             DrawTickRow(viewRect.width, ref y, NumericLabelKeys[17], ref autoSubdueHoldTicks, ref autoSubdueHoldBuffer);
             RimKataSettingsDrawer.DrawFloatField(new Rect(0f, y + 2f, FieldWidth, RowHeight - 4f),
@@ -256,6 +259,17 @@ namespace KRWF.RimKata
             mainBuffers?.SyncFrom(settings);
             if (changed)
                 RimKataMod.ApplyCombatFeatureSettingsChange();
+        }
+
+        private string NumericLabelKey(int index)
+        {
+            if (index == 13 && settings?.kickUseVanillaChance == true)
+                return "KRWF_RimKata_KickChanceBonus";
+            if (index == 14 && settings?.slidingUseVanillaChance == true)
+                return "KRWF_RimKata_SlidingChanceBonus";
+            if (index == 15 && settings?.shakeOffUseVanillaChance == true)
+                return "KRWF_RimKata_ShakeOffChanceBonus";
+            return NumericLabelKeys[index];
         }
 
         private static void DrawHeader(float width, ref float y, string key)

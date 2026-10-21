@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Võrdlus</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Väärtus</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Võitlusandmed</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Kasuta kaugrünnakust põiklemiseks põhimängu tõenäosust</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Kasuta libisemiseks põhimängu tõenäosust</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Kasuta maharaputamiseks põhimängu tõenäosust</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Kasuta jalalöögiks põhimängu tõenäosust</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Kaugrünnakust põiklemise tõenäosuse boonus</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Jalalöögi tõenäosuse boonus</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Libisemise tõenäosuse boonus</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Maharaputamise tõenäosuse boonus</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Kasuta tõrjumiseks põhimängu tõenäosust</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Kasuta lähivõitluses põiklemiseks põhimängu tõenäosust</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Kasuta lõhkekehade tõrjumiseks põhimängu tõenäosust</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Tõrjumise tõenäosus</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Lähivõitluses põiklemise tõenäosus</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Lõhkekehade tõrjumise tõenäosus</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

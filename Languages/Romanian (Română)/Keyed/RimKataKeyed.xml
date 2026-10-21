@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Comparație</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Valoare</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Înregistrări de luptă</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Folosește șansa din jocul de bază pentru eschiva la distanță</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Folosește șansa din jocul de bază pentru alunecare</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Folosește șansa din jocul de bază pentru scuturare</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Folosește șansa din jocul de bază pentru lovitura de picior</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus la șansa de eschivă la distanță</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus la șansa de lovitură de picior</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus la șansa de alunecare</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus la șansa de scuturare</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Folosește șansa din jocul de bază pentru parare</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Folosește șansa din jocul de bază pentru eschiva în lupta corp la corp</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Folosește șansa din jocul de bază pentru interceptarea proiectilelor explozive</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Șansă de parare</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Șansă de eschivă în lupta corp la corp</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Șansă de interceptare a proiectilelor explozive</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

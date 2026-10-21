@@ -478,6 +478,13 @@ namespace KRWF.RimKata
         public const bool DefaultShakeOffEnabled = true;
         public const bool DefaultDirectionalFireEnabled = true;
         public const bool DefaultCrawlFireDefaultAllowed = true;
+        public const bool DefaultMeleeResponseUseVanillaChance = true;
+        public const bool DefaultMeleeDodgeUseVanillaChance = true;
+        public const bool DefaultInterceptionUseVanillaChance = true;
+        public const bool DefaultRangedDodgeUseVanillaChance = false;
+        public const bool DefaultSlidingUseVanillaChance = false;
+        public const bool DefaultShakeOffUseVanillaChance = false;
+        public const bool DefaultKickUseVanillaChance = false;
         public const bool DefaultSmoothAimTransition = true;
         public const bool DefaultAccessRestrictionsDisabled = false;
 
@@ -728,6 +735,13 @@ namespace KRWF.RimKata
         public bool shakeOffEnabled = DefaultShakeOffEnabled;
         public bool directionalFireEnabled = DefaultDirectionalFireEnabled;
         public bool crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+        public bool meleeResponseUseVanillaChance = DefaultMeleeResponseUseVanillaChance;
+        public bool meleeDodgeUseVanillaChance = DefaultMeleeDodgeUseVanillaChance;
+        public bool interceptionUseVanillaChance = DefaultInterceptionUseVanillaChance;
+        public bool rangedDodgeUseVanillaChance = DefaultRangedDodgeUseVanillaChance;
+        public bool slidingUseVanillaChance = DefaultSlidingUseVanillaChance;
+        public bool shakeOffUseVanillaChance = DefaultShakeOffUseVanillaChance;
+        public bool kickUseVanillaChance = DefaultKickUseVanillaChance;
         public bool smoothAimTransition = DefaultSmoothAimTransition;
         // Legacy blanket override is only read to migrate into the shared target list.
         internal bool accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
@@ -792,8 +806,9 @@ namespace KRWF.RimKata
             pushKickMassMultiplierMinimumPercent, pushKickMassMultiplierGrowthPerLevelPercent, SkillDefOf.Melee));
 
         public float KickChance => ChanceFromPercent(kickChancePercent);
+        public float GetKickChance(Pawn pawn) => ActivationChance(pawn, kickUseVanillaChance, kickChancePercent);
 
-        public float GetRangedDodgeChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
+        public float GetRangedDodgeChance(Pawn pawn) => ActivationChance(pawn, rangedDodgeUseVanillaChance, ResolvePercent(
             pawn, rangedDodgeChanceFixed, rangedDodgeChancePercent,
             rangedDodgeChanceMinimumPercent, rangedDodgeChanceGrowthPerLevelPercent, SkillDefOf.Melee));
         public float GetMeleeResponseChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
@@ -811,6 +826,9 @@ namespace KRWF.RimKata
         public float GetMeleeDodgeBonusMultiplier(Pawn pawn) => BonusMultiplierFromPercent(ResolvePercent(
             pawn, meleeDodgeChanceFixed, meleeDodgeChancePercent,
             meleeDodgeChanceMinimumPercent, meleeDodgeChanceGrowthPerLevelPercent, SkillDefOf.Melee));
+        public float GetInterceptionChance(Pawn pawn) => ChanceFromPercent(ResolvePercent(
+            pawn, interceptionChanceFixed, interceptionChancePercent,
+            interceptionChanceMinimumPercent, interceptionChanceGrowthPerLevelPercent, SkillDefOf.Shooting));
         public float GetInterceptionAccuracyBonusMultiplier(Pawn pawn) => BonusMultiplierFromPercent(ResolvePercent(
             pawn, interceptionChanceFixed, interceptionChancePercent,
             interceptionChanceMinimumPercent, interceptionChanceGrowthPerLevelPercent, SkillDefOf.Shooting));
@@ -849,6 +867,8 @@ namespace KRWF.RimKata
         public float FallenFriendlyFireAvoidChance => ChanceFromPercent(fallenFriendlyFireAvoidChancePercent);
         public float SlidingChance => ChanceFromPercent(slidingChancePercent);
         public float ShakeOffChance => ChanceFromPercent(shakeOffChancePercent);
+        public float GetSlidingChance(Pawn pawn) => ActivationChance(pawn, slidingUseVanillaChance, slidingChancePercent);
+        public float GetShakeOffChance(Pawn pawn) => ActivationChance(pawn, shakeOffUseVanillaChance, shakeOffChancePercent);
         public float AiSecondaryWeaponChance => ChanceFromPercent(aiSecondaryWeaponChancePercent);
         internal string ActiveProfileId
         {
@@ -1042,6 +1062,13 @@ namespace KRWF.RimKata
                 Scribe_Values.Look(ref legacyCrawlDefault, "crawlFireDefaultAllowedFriendly", DefaultCrawlFireDefaultAllowed);
             }
             Scribe_Values.Look(ref crawlFireDefaultAllowed, "crawlFireDefaultAllowed", legacyCrawlDefault);
+            Scribe_Values.Look(ref meleeResponseUseVanillaChance, "meleeResponseUseVanillaChance", DefaultMeleeResponseUseVanillaChance);
+            Scribe_Values.Look(ref meleeDodgeUseVanillaChance, "meleeDodgeUseVanillaChance", DefaultMeleeDodgeUseVanillaChance);
+            Scribe_Values.Look(ref interceptionUseVanillaChance, "interceptionUseVanillaChance", DefaultInterceptionUseVanillaChance);
+            Scribe_Values.Look(ref rangedDodgeUseVanillaChance, "rangedDodgeUseVanillaChance", DefaultRangedDodgeUseVanillaChance);
+            Scribe_Values.Look(ref slidingUseVanillaChance, "slidingUseVanillaChance", DefaultSlidingUseVanillaChance);
+            Scribe_Values.Look(ref shakeOffUseVanillaChance, "shakeOffUseVanillaChance", DefaultShakeOffUseVanillaChance);
+            Scribe_Values.Look(ref kickUseVanillaChance, "kickUseVanillaChance", DefaultKickUseVanillaChance);
             Scribe_Values.Look(ref smoothAimTransition, "smoothAimTransition", DefaultSmoothAimTransition);
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
@@ -1155,6 +1182,30 @@ namespace KRWF.RimKata
 
         internal void SanitizeModFeatures()
         {
+            meleeResponseChancePercent = SanitizeActivationPercent(meleeResponseChancePercent,
+                DefaultMeleeResponseChancePercent, meleeResponseUseVanillaChance);
+            meleeResponseChanceGrowthPerLevelPercent = SanitizeActivationPercent(meleeResponseChanceGrowthPerLevelPercent,
+                DefaultMeleeResponseChanceGrowthPerLevelPercent, meleeResponseUseVanillaChance);
+            meleeResponseChanceMinimumPercent = SanitizeActivationPercent(meleeResponseChanceMinimumPercent,
+                DefaultMeleeResponseChanceMinimumPercent, meleeResponseUseVanillaChance);
+            meleeDodgeChancePercent = SanitizeActivationPercent(meleeDodgeChancePercent,
+                DefaultMeleeDodgeChancePercent, meleeDodgeUseVanillaChance);
+            meleeDodgeChanceGrowthPerLevelPercent = SanitizeActivationPercent(meleeDodgeChanceGrowthPerLevelPercent,
+                DefaultMeleeDodgeChanceGrowthPerLevelPercent, meleeDodgeUseVanillaChance);
+            meleeDodgeChanceMinimumPercent = SanitizeActivationPercent(meleeDodgeChanceMinimumPercent,
+                DefaultMeleeDodgeChanceMinimumPercent, meleeDodgeUseVanillaChance);
+            interceptionChancePercent = SanitizeActivationPercent(interceptionChancePercent,
+                DefaultInterceptionChancePercent, interceptionUseVanillaChance);
+            interceptionChanceGrowthPerLevelPercent = SanitizeActivationPercent(interceptionChanceGrowthPerLevelPercent,
+                DefaultInterceptionChanceGrowthPerLevelPercent, interceptionUseVanillaChance);
+            interceptionChanceMinimumPercent = SanitizeActivationPercent(interceptionChanceMinimumPercent,
+                DefaultInterceptionChanceMinimumPercent, interceptionUseVanillaChance);
+            rangedDodgeChancePercent = SanitizeActivationPercent(rangedDodgeChancePercent,
+                DefaultRangedDodgeChancePercent, rangedDodgeUseVanillaChance);
+            rangedDodgeChanceGrowthPerLevelPercent = SanitizeActivationPercent(rangedDodgeChanceGrowthPerLevelPercent,
+                DefaultRangedDodgeChanceGrowthPerLevelPercent, rangedDodgeUseVanillaChance);
+            rangedDodgeChanceMinimumPercent = SanitizeActivationPercent(rangedDodgeChanceMinimumPercent,
+                DefaultRangedDodgeChanceMinimumPercent, rangedDodgeUseVanillaChance);
             touchCandidateLimit = Mathf.Clamp(touchCandidateLimit, MinimumCandidateLimit, MaximumCandidateLimit);
             shortCandidateLimit = Mathf.Clamp(shortCandidateLimit, MinimumCandidateLimit, MaximumCandidateLimit);
             mediumCandidateLimit = Mathf.Clamp(mediumCandidateLimit, MinimumCandidateLimit, MaximumCandidateLimit);
@@ -1175,7 +1226,7 @@ namespace KRWF.RimKata
             fallenFriendlyFireAvoidChancePercent = SanitizePercent(fallenFriendlyFireAvoidChancePercent, DefaultFallenFriendlyFireAvoidChancePercent);
             breachSlideDurationTicks = Mathf.Clamp(breachSlideDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             breachWaitDurationTicks = Mathf.Clamp(breachWaitDurationTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
-            slidingChancePercent = SanitizePercent(slidingChancePercent, DefaultSlidingChancePercent);
+            slidingChancePercent = SanitizeActivationPercent(slidingChancePercent, DefaultSlidingChancePercent, slidingUseVanillaChance);
             flyingKickDamageMultiplierPercent = SanitizeNonNegative(flyingKickDamageMultiplierPercent, DefaultFlyingKickDamageMultiplierPercent);
             flyingKickStunChancePercent = SanitizePercent(flyingKickStunChancePercent, DefaultFlyingKickStunChancePercent);
             flyingKickStunChanceGrowthPerLevelPercent = SanitizePercent(flyingKickStunChanceGrowthPerLevelPercent, DefaultFlyingKickStunChanceGrowthPerLevelPercent);
@@ -1189,8 +1240,8 @@ namespace KRWF.RimKata
             pushKickMassMultiplierPercent = SanitizeNonNegative(pushKickMassMultiplierPercent, DefaultPushKickMassMultiplierPercent);
             pushKickMassMultiplierGrowthPerLevelPercent = SanitizeNonNegative(pushKickMassMultiplierGrowthPerLevelPercent, DefaultPushKickMassMultiplierGrowthPerLevelPercent);
             pushKickMassMultiplierMinimumPercent = SanitizeNonNegative(pushKickMassMultiplierMinimumPercent, DefaultPushKickMassMultiplierMinimumPercent);
-            kickChancePercent = SanitizePercent(kickChancePercent, DefaultKickChancePercent);
-            shakeOffChancePercent = SanitizePercent(shakeOffChancePercent, DefaultShakeOffChancePercent);
+            kickChancePercent = SanitizeActivationPercent(kickChancePercent, DefaultKickChancePercent, kickUseVanillaChance);
+            shakeOffChancePercent = SanitizeActivationPercent(shakeOffChancePercent, DefaultShakeOffChancePercent, shakeOffUseVanillaChance);
             subdueImpactStunTicks = Mathf.Clamp(subdueImpactStunTicks, MinimumGroundPoseDurationTicks, MaximumGroundPoseDurationTicks);
             autoSubdueHoldTicks = Mathf.Max(0, autoSubdueHoldTicks);
             strengthIncreasePercent = RimKataStrengthRule.SanitizePercent(strengthIncreasePercent);
@@ -1426,6 +1477,13 @@ namespace KRWF.RimKata
             shakeOffEnabled = DefaultShakeOffEnabled;
             directionalFireEnabled = DefaultDirectionalFireEnabled;
             crawlFireDefaultAllowed = DefaultCrawlFireDefaultAllowed;
+            meleeResponseUseVanillaChance = DefaultMeleeResponseUseVanillaChance;
+            meleeDodgeUseVanillaChance = DefaultMeleeDodgeUseVanillaChance;
+            interceptionUseVanillaChance = DefaultInterceptionUseVanillaChance;
+            rangedDodgeUseVanillaChance = DefaultRangedDodgeUseVanillaChance;
+            slidingUseVanillaChance = DefaultSlidingUseVanillaChance;
+            shakeOffUseVanillaChance = DefaultShakeOffUseVanillaChance;
+            kickUseVanillaChance = DefaultKickUseVanillaChance;
             smoothAimTransition = DefaultSmoothAimTransition;
             accessRestrictionsDisabled = DefaultAccessRestrictionsDisabled;
         }
@@ -1547,6 +1605,19 @@ namespace KRWF.RimKata
         }
 
         private static float ChanceFromPercent(float percent) => Mathf.Clamp01(percent / 100f);
+        private static float ActivationChance(Pawn pawn, bool useVanillaChance, float percent)
+        {
+            if (!useVanillaChance) return ChanceFromPercent(percent);
+            if (pawn == null) return 0f;
+            // Read the stat, not GetDodgeChance: that attack-specific path includes
+            // posture restrictions and RimKata's separate melee dodge bonus.
+            float chance = pawn.GetStatValue(StatDefOf.MeleeDodgeChance);
+            return chance > 0f ? Mathf.Clamp01(chance * BonusMultiplierFromPercent(percent)) : 0f;
+        }
+
+        private static float SanitizeActivationPercent(float value, float defaultValue, bool useVanillaChance)
+            => useVanillaChance ? SanitizeNonNegative(value, defaultValue) : SanitizePercent(value, defaultValue);
+
         private static float MultiplierFromPercent(float percent) => Mathf.Max(0f, percent / 100f);
         private static float BonusMultiplierFromPercent(float percent) => 1f + Mathf.Max(0f, percent) / 100f;
 

@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Összehasonlítás</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Érték</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Harci feljegyzések</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Az alapjáték esélyének használata távolsági kitéréshez</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Az alapjáték esélyének használata csúszáshoz</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Az alapjáték esélyének használata lerázáshoz</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Az alapjáték esélyének használata rúgáshoz</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Távolsági kitérési esély bónusza</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Rúgás esélyének bónusza</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Csúszás esélyének bónusza</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Lerázás esélyének bónusza</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Az alapjáték esélyének használata hárításhoz</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Az alapjáték esélyének használata közelharci kitéréshez</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Az alapjáték esélyének használata robbanó lövedékek elfogásához</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Hárítási esély</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Közelharci kitérési esély</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Robbanó lövedék elfogásának esélye</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

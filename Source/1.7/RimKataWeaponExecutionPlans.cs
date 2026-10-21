@@ -40,6 +40,9 @@ namespace KRWF.RimKata
         // Firing registration never implies that weapon-owned effects were connected.
         internal RimKataWeaponEffectStatus EffectStatus;
         internal string EffectReason;
+        internal bool Loaded;
+        internal bool Failed;
+        internal int Residents;
     }
 
     // Only startup/settings preparation mutates plans. Combat consumers perform a lookup
@@ -55,6 +58,7 @@ namespace KRWF.RimKata
         private static readonly Dictionary<string, Module> Modules = new Dictionary<string, Module>(StringComparer.Ordinal);
         private static readonly Dictionary<MethodInfo, string> MethodFingerprints = new Dictionary<MethodInfo, string>();
         private static readonly Dictionary<MethodInfo, Func<Verb, int>> Readers = new Dictionary<MethodInfo, Func<Verb, int>>();
+        private static readonly Dictionary<string, string> Failures = new Dictionary<string, string>(StringComparer.Ordinal);
         private static Func<Type, bool> compatibilityHandler;
         private static bool initialized;
 
@@ -77,12 +81,32 @@ namespace KRWF.RimKata
             return types.TryGetValue(verbType, out var plan) ? plan : null;
         }
 
+        internal static IEnumerable<RimKataWeaponExecutionPlan> ForDefinition(ThingDef def)
+            => def != null && ByDefinition.TryGetValue(def, out var types)
+                ? (IEnumerable<RimKataWeaponExecutionPlan>)types.Values : Array.Empty<RimKataWeaponExecutionPlan>();
+
         internal static void Refresh(bool force = false)
         {
             Revision++;
-            if (force)
-                foreach (RimKataWeaponExecutionPlan previous in All)
+            var selected = RimKataMod.Settings?.enabledWeaponDefNames;
+            var allowed = selected == null ? null : new HashSet<string>(selected, StringComparer.Ordinal);
+            HashSet<string> removed = null;
+            if (force) Failures.Clear();
+            foreach (RimKataWeaponExecutionPlan previous in All)
+            {
+                bool disabled = allowed != null && !allowed.Contains(previous.Def.defName);
+                if (force || disabled)
+                {
                     RimKataEquipmentMemory.Current?.Remove(Category, previous.Key);
+                    RimKataWeaponEffectCache.Invalidate(previous.Key);
+                }
+                if (disabled)
+                {
+                    Failures.Remove(previous.Key);
+                    if ((removed ??= new HashSet<string>(StringComparer.Ordinal)).Add(previous.Def.defName))
+                        RimKataCloseFireMeleeStore.RemoveDefinition(previous.Def.defName);
+                }
+            }
             ByDefinition.Clear();
             All.Clear();
             Pending.Clear();
@@ -93,7 +117,6 @@ namespace KRWF.RimKata
                 if (!assembly.IsDynamic)
                     foreach (Module module in assembly.GetModules())
                         Modules[assembly.FullName + "|" + module.ModuleVersionId.ToString("D")] = module;
-            var selected = RimKataMod.Settings?.enabledWeaponDefNames;
             if (selected == null) return;
             var scanned = new Dictionary<Type, RimKataWeaponExecutionDiscovery.Result>();
             using (RimKataStartupDiagnostics.Measure("discovery", "weapon_execution"))
@@ -116,35 +139,109 @@ namespace KRWF.RimKata
                     };
                     try
                     {
-                        if (force) RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
-                        if (!TryRestore(plan))
+                        if (Failures.TryGetValue(plan.Key, out string failure))
                         {
-                            if (!scanned.TryGetValue(type, out var result))
-                            {
-                                result = RimKataWeaponExecutionDiscovery.Analyze(type, plan.HandledByCompatibility);
-                                scanned.Add(type, result);
-                            }
-                            Apply(plan, result);
-                            Store(plan);
+                            plan.Failed = true;
+                            plan.Mode = RimKataWeaponExecutionMode.Live;
+                            plan.Reason = failure;
                         }
-                        BindReaders(plan);
+                        else
+                        {
+                            if (force)
+                            {
+                                RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
+                                RimKataWeaponEffectCache.Invalidate(plan.Key);
+                            }
+                            if (!TryRestore(plan))
+                            {
+                                if (!scanned.TryGetValue(type, out var result))
+                                {
+                                    result = RimKataWeaponExecutionDiscovery.Analyze(type, plan.HandledByCompatibility);
+                                    scanned.Add(type, result);
+                                }
+                                Apply(plan, result);
+                                Store(plan);
+                            }
+                        }
                     }
                     catch (Exception exception)
                     {
-                        plan.Mode = RimKataWeaponExecutionMode.Live;
-                        plan.AllowConversion = false;
-                        plan.AnalysisComplete = false;
-                        plan.Reason = exception.GetType().Name + ": " + exception.Message;
-                        // A failed scan is not a successful cache record, and is retried later.
-                        RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
-                        Log.Warning("[RimKata] Could not prepare the firing path for " + def.defName
-                            + ". Original live weapon data will be used. " + plan.Reason);
+                        FailRegistration(plan, exception.GetType().Name + ": " + exception.Message);
                     }
                     types.Add(type, plan);
                     All.Add(plan);
                     if (plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration) Pending.Add(plan);
+                    Unload(plan);
                 }
             }
+            MethodFingerprints.Clear();
+            Readers.Clear();
+        }
+
+        // Called only by equipment/registration preparation, never by a firing or render getter.
+        internal static bool Load(RimKataWeaponExecutionPlan plan)
+        {
+            if (plan == null || plan.Failed) return false;
+            if (plan.Loaded) return true;
+            try
+            {
+                bool accepted = plan.RegistrationAccepted, declined = plan.RegistrationDeclined;
+                string fingerprint = plan.Fingerprint;
+                if (!TryRestore(plan))
+                {
+                    Apply(plan, RimKataWeaponExecutionDiscovery.Analyze(plan.VerbType, plan.HandledByCompatibility));
+                    if (plan.Fingerprint == fingerprint)
+                    {
+                        plan.RegistrationAccepted = accepted;
+                        plan.RegistrationDeclined = declined;
+                        if (declined) plan.Mode = RimKataWeaponExecutionMode.Live;
+                        else if (accepted) plan.Mode = RimKataWeaponExecutionMode.Copied;
+                    }
+                    Store(plan);
+                }
+                BindReaders(plan);
+                if (plan.RegistrationDeclined) plan.AllowConversion = false;
+                plan.Loaded = true;
+                if (plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration && !Pending.Contains(plan)) Pending.Add(plan);
+                return true;
+            }
+            catch (Exception exception)
+            {
+                FailRegistration(plan, exception.GetType().Name + ": " + exception.Message);
+                Unload(plan);
+                return false;
+            }
+            finally
+            {
+                MethodFingerprints.Clear();
+                Readers.Clear();
+            }
+        }
+
+        internal static void LoadOriginalEntries(RimKataWeaponExecutionPlan plan)
+        {
+            // Failed analysis does not disable the weapon's original lifecycle.
+            plan.WarmupMethod = RimKataWeaponExecutionDiscovery.ResolveSlot(plan.VerbType,
+                AccessTools.Method(typeof(Verb), nameof(Verb.WarmupComplete)));
+            plan.TickMethod = RimKataWeaponExecutionDiscovery.ResolveSlot(plan.VerbType,
+                AccessTools.Method(typeof(Verb), nameof(Verb.VerbTick)));
+        }
+
+        internal static void Unload(RimKataWeaponExecutionPlan plan)
+        {
+            plan.Loaded = false;
+            plan.FiringReady = false;
+            plan.AllowConversion = false;
+            plan.Methods = plan.BurstMethods = Array.Empty<MethodInfo>();
+            if (plan.Residents == 0) plan.WarmupMethod = plan.TickMethod = null;
+            plan.BurstCountMethod = plan.BurstSpacingMethod = null;
+            plan.BurstCountReader = plan.BurstSpacingReader = null;
+        }
+
+        internal static void ClearPreparationScratch()
+        {
+            MethodFingerprints.Clear();
+            Readers.Clear();
         }
 
         private static void Apply(RimKataWeaponExecutionPlan plan, RimKataWeaponExecutionDiscovery.Result result)
@@ -202,8 +299,17 @@ namespace KRWF.RimKata
             plan.Mode = RimKataWeaponExecutionMode.Live;
             plan.AllowConversion = false;
             plan.Reason = reason;
+            plan.Failed = true;
+            if (!string.IsNullOrEmpty(plan.Key))
+            {
+                if (!Failures.ContainsKey(plan.Key))
+                    Log.Warning("[RimKata] Could not prepare firing execution for " + plan.Def.defName
+                        + ". Original weapon behavior will be used. " + reason);
+                Failures[plan.Key] = reason;
+            }
             Pending.Remove(plan);
             RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
+            RimKataWeaponRegistrationFailures.Record(plan.Def, reason);
         }
 
         private static void BindReaders(RimKataWeaponExecutionPlan plan)
@@ -308,7 +414,7 @@ namespace KRWF.RimKata
                 methods.Add(method);
                 if (item.GetAttribute("burst") == "1") bursts.Add(method);
             }
-            if (methods.Count == 0 || methods.Count > 160) return false;
+            if (methods.Count == 0 || methods.Count > RimKataWeaponExecutionDiscovery.MaximumStoredMethods) return false;
             string fingerprint = RouteFingerprint(methods.ToArray());
             if (fingerprint != data.GetAttribute("route")) return false;
             plan.Methods = methods.ToArray();
@@ -351,7 +457,17 @@ namespace KRWF.RimKata
 
         private static void Store(RimKataWeaponExecutionPlan plan)
         {
-            if (plan.Methods.Length == 0 || plan.WarmupMethod == null || plan.TickMethod == null) return;
+            if (plan.Methods.Length == 0 || plan.WarmupMethod == null || plan.TickMethod == null)
+            {
+                // Registration decisions do not require keeping an unequipped execution graph alive.
+                if (RimKataEquipmentMemory.Current?.TryRead(Category, plan.Key, BaseFingerprint(plan), out XmlElement saved) == true)
+                {
+                    var changed = (XmlElement)saved.CloneNode(true);
+                    changed.SetAttribute("decision", plan.RegistrationAccepted ? "accepted" : plan.RegistrationDeclined ? "declined" : "");
+                    RimKataEquipmentMemory.Current.Store(Category, plan.Key, BaseFingerprint(plan), changed);
+                }
+                return;
+            }
             var document = new XmlDocument();
             XmlElement data = document.CreateElement("execution");
             data.SetAttribute("schema", Schema);

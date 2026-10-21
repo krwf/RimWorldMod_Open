@@ -224,11 +224,13 @@ namespace KRWF.RimKata
             {
                 while (failure == null && pending.Count != 0)
                 {
-                    if (seen.Count > 256) { failure = "The connected effect method graph exceeded 256 methods."; break; }
+                    if (seen.Count > RimKataWeaponExecutionDiscovery.MaximumMethods)
+                    { failure = "The connected effect method graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumMethods + " methods."; break; }
                     MethodBase current = pending.Dequeue();
                     List<CodeInstruction> codes = PatchProcessor.GetCurrentInstructions(current);
                     instructions += codes.Count;
-                    if (instructions > 30000) { failure = "The connected effect method graph exceeded 30000 instructions."; break; }
+                    if (instructions > RimKataWeaponExecutionDiscovery.MaximumInstructions)
+                    { failure = "The connected effect method graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumInstructions + " instructions."; break; }
                     foreach (CodeInstruction code in codes)
                     {
                         if (code.opcode == OpCodes.Calli || code.opcode == OpCodes.Ldvirtftn)

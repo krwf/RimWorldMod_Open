@@ -195,7 +195,7 @@ namespace KRWF.RimKata
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
             if (settings == null || !settings.slidingEnabled && !settings.shakeOffEnabled) return;
             Thing target = CurrentTarget(combat);
-            bool sliding = settings.slidingEnabled && Rand.Chance(settings.SlidingChance);
+            bool sliding = settings.slidingEnabled && Rand.Chance(settings.GetSlidingChance(pawn));
             if (sliding)
             {
                 IntVec3 forward;
@@ -226,7 +226,7 @@ namespace KRWF.RimKata
                 || pawn.stances?.stagger?.Staggered != true || BlocksCombat(combat)
                 || RimKataTemporaryInactivity.IsInactive(pawn)) return;
             var settings = RimKataTargetAccess.SettingsFor(pawn);
-            if (settings?.shakeOffEnabled != true || !Rand.Chance(settings.ShakeOffChance)) return;
+            if (settings?.shakeOffEnabled != true || !Rand.Chance(settings.GetShakeOffChance(pawn))) return;
             if (RimKataSubdueUtility.IsHolding(pawn) || RimKataBreachUtility.Get(pawn) != null) return;
             Thing target = request.firedTarget;
             bool secondary = request.cycle == combat.secondaryWeaponCycle;

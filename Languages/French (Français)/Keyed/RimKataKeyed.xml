@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Comparaison</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Valeur</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Historique de combat</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Utiliser la probabilité du jeu de base pour l'esquive à distance</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Utiliser la probabilité du jeu de base pour la glissade</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Utiliser la probabilité du jeu de base pour le dégagement</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Utiliser la probabilité du jeu de base pour le coup de pied</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus de chance d'esquive à distance</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus de probabilité de coup de pied</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus de probabilité de glissade</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus de probabilité de dégagement</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Utiliser la probabilité du jeu de base pour la parade</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Utiliser la probabilité du jeu de base pour l'esquive en mêlée</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Utiliser la probabilité du jeu de base pour l'interception des projectiles explosifs</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Chance de parade</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Chance d'esquive en mêlée</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Probabilité d'interception des projectiles explosifs</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

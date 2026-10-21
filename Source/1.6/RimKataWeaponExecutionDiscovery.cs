@@ -11,8 +11,9 @@ namespace KRWF.RimKata
     // it never invokes a weapon getter, constructs an instance or fires a test shot.
     internal static class RimKataWeaponExecutionDiscovery
     {
-        private const int MaximumMethods = 128;
-        private const int MaximumInstructions = 18000;
+        internal const int MaximumMethods = 500;
+        internal const int MaximumStoredMethods = MaximumMethods + 2; // Retained lifecycle roots.
+        internal const int MaximumInstructions = 72000;
         private const int MaximumDepth = 10;
         private static readonly Assembly Game = typeof(Verb).Assembly;
         private static readonly Assembly Ours = typeof(RimKataWeaponExecutionDiscovery).Assembly;
@@ -36,6 +37,7 @@ namespace KRWF.RimKata
             internal string Reason;
             internal Type VerbType;
             internal readonly HashSet<MethodInfo> Visited = new HashSet<MethodInfo>();
+            internal readonly HashSet<MethodInfo> FiringEntries = new HashSet<MethodInfo>();
             internal bool HasNativeTick;
             internal bool HasShot;
             internal bool HasCompletion;
@@ -66,13 +68,23 @@ namespace KRWF.RimKata
                 result.CanControlBurst = true;
                 return result;
             }
+            MethodInfo shot = ResolveSlot(type, InstanceMethod(typeof(Verb), "TryCastShot"));
+            // Mark every entry before traversing: another entry can call it before its root visit.
+            result.FiringEntries.UnionWith(new[]
+            {
+                result.Warmup, result.Tick, NativeBurst, NativeReset, shot, result.Count, result.Spacing
+            });
             Visit(result, result.Warmup, 0, true);
             Visit(result, result.Tick, 0, true);
             Visit(result, NativeBurst, 0, true);
             Visit(result, NativeReset, 0, false);
-            Visit(result, ResolveSlot(type, InstanceMethod(typeof(Verb), "TryCastShot")), 0, false);
+            Visit(result, shot, 0, false);
             Visit(result, result.Count, 0, false);
             Visit(result, result.Spacing, 0, false);
+            // Bounded discovery may stop before reaching a lifecycle root. Registration
+            // still needs both entry bodies; retaining them does not complete the analysis.
+            if (!result.Methods.Contains(result.Warmup)) result.Methods.Add(result.Warmup);
+            if (!result.Methods.Contains(result.Tick)) result.Methods.Add(result.Tick);
             result.CanControlBurst = result.HasCountSource && IsReader(result.Count) && IsReader(result.Spacing);
             if (!result.HasNativeTick) Incomplete(result, "A native owner tick could not be established.");
             if (!result.HasShot) Incomplete(result, "The projectile firing leaf could not be established.");
@@ -128,7 +140,11 @@ namespace KRWF.RimKata
             if (gameMethod && method.Name == nameof(Projectile.Launch)
                 && typeof(Projectile).IsAssignableFrom(method.DeclaringType)) result.HasShot = true;
 
-            VisitPatches(result, method, depth);
+            // A native helper whose body stays opaque also retains its complete original wrapper.
+            // Its identity remains above for copying/fingerprints; do not expand only its patches.
+            // Actual firing entries and inspected bodies still trace every external hook.
+            if (!gameMethod || readNativeBody || result.FiringEntries.Contains(method))
+                VisitPatches(result, method, depth);
             if (gameMethod && !readNativeBody) return;
             if (method.IsAbstract || method.ContainsGenericParameters || method.GetMethodBody() == null)
             {
@@ -267,7 +283,7 @@ namespace KRWF.RimKata
         private static MethodInfo ResolveVirtual(Result result, MethodInfo method)
             => ResolveSlot(result.VerbType, method);
 
-        private static MethodInfo ResolveSlot(Type verbType, MethodInfo method)
+        internal static MethodInfo ResolveSlot(Type verbType, MethodInfo method)
         {
             if (method == null || !method.IsVirtual || !typeof(Verb).IsAssignableFrom(method.DeclaringType)
                 || !method.DeclaringType.IsAssignableFrom(verbType)) return method;

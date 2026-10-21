@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>비교</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>수치</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>처치</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>원거리 회피를 바닐라 확률로 대체</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>슬라이딩을 바닐라 확률로 대체</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>떨치기를 바닐라 확률로 대체</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>발차기를 바닐라 확률로 대체</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>원거리 회피 확률 보너스</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>발차기 확률 보너스</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>슬라이딩 확률 보너스</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>떨치기 확률 보너스</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>쳐내기를 바닐라 확률로 대체</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>근접 회피를 바닐라 확률로 대체</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>폭발체 격추를 바닐라 확률로 대체</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>쳐내기 확률</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>근접 회피 확률</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>폭발체 격추 확률</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Karşılaştırma</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Değer</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Çatışma kayıtları</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Menzilli saldırıdan kaçınmada temel oyunun şansını kullan</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Kaymada temel oyunun şansını kullan</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Silkinmede temel oyunun şansını kullan</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Tekmede temel oyunun şansını kullan</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Menzilli saldırıdan kaçınma şansı bonusu</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Tekme olasılığı bonusu</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Kayma olasılığı bonusu</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Silkinme olasılığı bonusu</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Savuşturmada temel oyunun şansını kullan</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Yakın dövüşten kaçınmada temel oyunun şansını kullan</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Patlayıcı mermi önlemede temel oyunun şansını kullan</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Savuşturma şansı</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Yakın dövüşten kaçınma şansı</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Patlayıcı mermi önleme şansı</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Porovnání</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Hodnota</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Bojové záznamy</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Použít šanci ze základní hry pro úhyb před útokem na dálku</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Použít šanci ze základní hry pro skluz</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Použít šanci ze základní hry pro setřesení</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Použít šanci ze základní hry pro kop</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus k šanci na úhyb před útokem na dálku</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus k šanci na kop</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus k šanci na skluz</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus k šanci na setřesení</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Použít šanci ze základní hry pro vykrytí</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Použít šanci ze základní hry pro úhyb v boji na blízko</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Použít šanci ze základní hry pro zachycení výbušných projektilů</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Šance na vykrytí</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Šance na úhyb v boji na blízko</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Šance na zachycení výbušných projektilů</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

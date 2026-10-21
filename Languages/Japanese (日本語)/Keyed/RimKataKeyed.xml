@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>比較</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>数値</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>戦闘記録</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>射撃回避にバニラの確率を使用</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>スライディングにバニラの確率を使用</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>振り払いにバニラの確率を使用</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>蹴りにバニラの確率を使用</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>射撃回避率ボーナス</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>蹴りの確率ボーナス</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>スライディング確率ボーナス</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>振り払い確率ボーナス</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>パリィにバニラの確率を使用</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>近接回避にバニラの確率を使用</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>爆発性投射物迎撃にバニラの確率を使用</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>パリィ確率</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>近接回避率</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>爆発性投射物迎撃の確率</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

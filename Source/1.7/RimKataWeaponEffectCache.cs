@@ -17,8 +17,11 @@ namespace KRWF.RimKata
     {
         private const string Category = "weapon_effects";
         private const string Schema = "2";
-        private const int MaximumMethods = 256;
+        private const int MaximumMethods = RimKataWeaponExecutionDiscovery.MaximumMethods;
         private const int MaximumEffects = 128;
+
+        internal static void Invalidate(string key)
+            => RimKataEquipmentMemory.Current?.Remove(Category, key);
 
         internal static bool TryGet(RimKataWeaponExecutionPlan execution, bool force, out RimKataWeaponEffectPlan plan)
             => TryGet(execution, force, out plan, out _);
@@ -31,7 +34,7 @@ namespace KRWF.RimKata
             if (execution?.Def == null || execution.VerbType == null || execution.HandledByCompatibility
                 || string.IsNullOrEmpty(execution.Key)) return false;
             var memory = RimKataEquipmentMemory.Current;
-            if (force) memory?.Remove(Category, execution.Key);
+            if (force) Invalidate(execution.Key);
             else
             {
                 try

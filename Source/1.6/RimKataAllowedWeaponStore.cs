@@ -18,6 +18,7 @@ namespace KRWF.RimKata
     {
         public int schemaVersion;
         public string sourceDefName;
+        public string sourceLabel;
         public string sourceModId;
         public string sourceDefType;
         public string fingerprint;
@@ -25,6 +26,7 @@ namespace KRWF.RimKata
         public string sourceXmlStatus;
         public RimKataWeaponXmlPayload sourceWeapon = new RimKataWeaponXmlPayload();
         public List<RimKataStoredVerbTiming> convertedVerbs = new List<RimKataStoredVerbTiming>();
+        internal bool needsLabelFormatWrite;
     }
 
     public sealed class RimKataWeaponXmlPayload
@@ -116,6 +118,7 @@ namespace KRWF.RimKata
     {
         private const int SchemaVersion = 1;
         private const string StorageTypeName = "KRWF.RimKata.RimKataAllowedWeaponDef";
+        private const string StorageLabel = "RimKata prepared weapon";
         private static readonly Dictionary<string, string> CapturedXml =
             new Dictionary<string, string>(StringComparer.Ordinal);
         private static readonly Dictionary<ThingDef, RimKataAllowedWeaponDef> Loaded =
@@ -191,6 +194,12 @@ namespace KRWF.RimKata
 
         private static void CaptureDefinition(XmlNode node, Def __result)
         {
+            if (__result is RimKataAllowedWeaponDef stored)
+            {
+                // Normalize old wrappers before Def validation; keep their names as opaque data.
+                NormalizeStoredLabel(stored);
+                return;
+            }
             if (!(__result is ThingDef definition) || definition.defName.NullOrEmpty()
                 || (definition.equipmentType != EquipmentType.Primary && !definition.IsWeapon))
             {
@@ -213,6 +222,15 @@ namespace KRWF.RimKata
                         "Could not capture XML for " + definition.defName + ". " + exception.Message);
                 }
             }
+        }
+
+        private static void NormalizeStoredLabel(RimKataAllowedWeaponDef stored)
+        {
+            if (stored.sourceLabel == null || stored.label != StorageLabel)
+                stored.needsLabelFormatWrite = true;
+            if (stored.sourceLabel == null)
+                stored.sourceLabel = stored.label ?? string.Empty;
+            stored.label = StorageLabel;
         }
 
         internal static void RemoveDisallowedWeapons(ICollection<string> selected)
@@ -239,6 +257,7 @@ namespace KRWF.RimKata
                     continue;
                 }
 
+                RimKataCloseFireMeleeStore.RemoveDefinition(name);
                 try
                 {
                     File.Delete(Path.Combine(directory, FileStem(name) + ".xml"));
@@ -318,7 +337,7 @@ namespace KRWF.RimKata
                 if (createFile) result = Create(definition, sourceXml, fingerprint);
                 // Publish usable timing data even when writing the optional XML file fails.
                 Loaded[definition] = result;
-                if (path != null && (createFile || !File.Exists(path)))
+                if (path != null && (createFile || result.needsLabelFormatWrite || !File.Exists(path)))
                 {
                     stage = "saving weapon XML";
                     Write(path, result);
@@ -519,9 +538,10 @@ namespace KRWF.RimKata
             RimKataAllowedWeaponDef result = new RimKataAllowedWeaponDef
             {
                 defName = "RimKata_AllowedWeapon_" + FileStem(definition.defName),
-                label = definition.label,
+                label = StorageLabel,
                 schemaVersion = SchemaVersion,
                 sourceDefName = definition.defName,
+                sourceLabel = definition.label ?? string.Empty,
                 sourceModId = definition.modContentPack?.PackageIdPlayerFacing ?? string.Empty,
                 sourceDefType = definition.GetType().AssemblyQualifiedName,
                 fingerprint = fingerprint,
@@ -625,12 +645,14 @@ namespace KRWF.RimKata
                 label = Text(element, "label"),
                 schemaVersion = Integer(element, "schemaVersion"),
                 sourceDefName = Text(element, "sourceDefName"),
+                sourceLabel = element.SelectSingleNode("sourceLabel")?.InnerText,
                 sourceModId = Text(element, "sourceModId"),
                 sourceDefType = Text(element, "sourceDefType"),
                 fingerprint = Text(element, "fingerprint"),
                 sourceXmlAvailable = Boolean(element, "sourceXmlAvailable"),
                 sourceXmlStatus = Text(element, "sourceXmlStatus")
             };
+            NormalizeStoredLabel(result);
             XmlNode payload = element.SelectSingleNode("sourceWeapon");
             if (payload != null)
             {
@@ -668,15 +690,17 @@ namespace KRWF.RimKata
 
         private static void Write(string path, RimKataAllowedWeaponDef value)
         {
+            NormalizeStoredLabel(value);
             XmlDocument document = new XmlDocument { XmlResolver = null };
             XmlElement root = document.CreateElement("Defs");
             document.AppendChild(root);
             XmlElement element = document.CreateElement(StorageTypeName);
             root.AppendChild(element);
             Append(document, element, "defName", value.defName);
-            Append(document, element, "label", value.label ?? value.sourceDefName);
+            Append(document, element, "label", StorageLabel);
             Append(document, element, "schemaVersion", value.schemaVersion);
             Append(document, element, "sourceDefName", value.sourceDefName);
+            Append(document, element, "sourceLabel", value.sourceLabel);
             Append(document, element, "sourceModId", value.sourceModId);
             Append(document, element, "sourceDefType", value.sourceDefType);
             Append(document, element, "fingerprint", value.fingerprint);
@@ -712,6 +736,7 @@ namespace KRWF.RimKata
             }
 
             WriteDocument(path, document);
+            value.needsLabelFormatWrite = false;
         }
 
         internal static void WriteDocument(string path, XmlDocument document)

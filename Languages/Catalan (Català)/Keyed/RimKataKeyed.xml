@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Comparació</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Valor</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Registres de combat</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Utilitza la probabilitat del joc base per a l’esquiva a distància</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Utilitza la probabilitat del joc base per al lliscament</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Utilitza la probabilitat del joc base per a la sacsejada</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Utilitza la probabilitat del joc base per a la puntada</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonificació a la probabilitat d’esquiva a distància</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonificació a la probabilitat de puntada</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonificació a la probabilitat de lliscament</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonificació a la probabilitat de sacsejada</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Utilitza la probabilitat del joc base per a la parada</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Utilitza la probabilitat del joc base per a l’esquiva cos a cos</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Utilitza la probabilitat del joc base per a la intercepció de projectils explosius</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Probabilitat de parada</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Probabilitat d’esquiva cos a cos</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Probabilitat d’intercepció de projectils explosius</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

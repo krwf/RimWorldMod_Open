@@ -77,6 +77,22 @@ namespace KRWF.RimKata
             return refresh;
         }
 
+        // Call only for an applied permission change, never for the selector's draft list.
+        internal static void RemoveDefinition(string defName)
+        {
+            if (string.IsNullOrEmpty(defName)) return;
+            ThingDef definition = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
+            if (definition != null)
+            {
+                Prepared.Remove(definition);
+                Loaded.Remove(definition);
+            }
+            RimKataEquipmentMemory.Current?.Remove(AbsentCategory, defName);
+            if (directory != null)
+                RemoveObsoleteFile(Path.Combine(directory,
+                    RimKataAllowedWeaponStore.FileStem(defName) + ".xml"), defName);
+        }
+
         internal static void PrepareDefinition(ThingDef definition, bool refresh)
         {
             if (definition?.IsRangedWeapon != true) return;
@@ -151,7 +167,7 @@ namespace KRWF.RimKata
             {
                 WarnOnce("delete:" + defName,
                     "Could not remove obsolete close-fire melee data for " + defName
-                    + ". It will not be used; cleanup will be retried at the next startup or manual refresh. "
+                    + ". It will not be used. "
                     + exception.Message);
                 return false;
             }

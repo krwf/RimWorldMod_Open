@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Sammenligning</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Værdi</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Kampregistreringer</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Brug grundspillets chance for at undvige afstandsangreb</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Brug grundspillets chance for glidning</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Brug grundspillets chance for afrystning</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Brug grundspillets chance for spark</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus til chancen for at undvige afstandsangreb</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus til chancen for spark</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus til chancen for glidning</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus til chancen for afrystning</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Brug grundspillets chance for parering</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Brug grundspillets chance for undvigelse i nærkamp</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Brug grundspillets chance for opfangning af eksplosive projektiler</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Pareringschance</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Undvigelseschance i nærkamp</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Chance for opfangning af eksplosive projektiler</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

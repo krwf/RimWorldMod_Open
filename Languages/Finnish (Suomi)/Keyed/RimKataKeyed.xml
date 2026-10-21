@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Vertailu</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Arvo</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Taistelutilastot</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Käytä peruspelin todennäköisyyttä etähyökkäyksen väistöön</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Käytä peruspelin todennäköisyyttä liukuun</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Käytä peruspelin todennäköisyyttä ravisteluun</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Käytä peruspelin todennäköisyyttä potkuun</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Etähyökkäyksen väistömahdollisuuden bonus</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Potkun todennäköisyyden bonus</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Liu’un todennäköisyyden bonus</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Ravistelun todennäköisyyden bonus</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Käytä peruspelin todennäköisyyttä torjuntaan</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Käytä peruspelin todennäköisyyttä lähitaisteluväistöön</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Käytä peruspelin todennäköisyyttä räjähtävien ammusten torjuntaan</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Torjuntamahdollisuus</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Lähitaisteluväistön todennäköisyys</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Räjähtävien ammusten torjunnan todennäköisyys</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>

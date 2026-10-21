@@ -144,6 +144,7 @@ namespace KRWF.RimKata
             private Thing interceptionTarget;
             private float movingAccuracyMultiplier;
             private float interceptionAccuracyBonusMultiplier;
+            private float? interceptionChanceOverride;
             private float serumInterceptionMultiplier;
             private bool shotFired;
             private bool suppressCloseLaunch;
@@ -164,6 +165,7 @@ namespace KRWF.RimKata
                     interceptionTarget = InterceptionTarget,
                     movingAccuracyMultiplier = MovingAccuracyMultiplier,
                     interceptionAccuracyBonusMultiplier = InterceptionAccuracyBonusMultiplier,
+                    interceptionChanceOverride = InterceptionChanceOverride,
                     serumInterceptionMultiplier = SerumInterceptionMultiplier,
                     shotFired = ShotFired,
                     suppressCloseLaunch = SuppressCloseLaunch,
@@ -184,6 +186,7 @@ namespace KRWF.RimKata
                 InterceptionTarget = interceptionTarget;
                 MovingAccuracyMultiplier = movingAccuracyMultiplier;
                 InterceptionAccuracyBonusMultiplier = interceptionAccuracyBonusMultiplier;
+                InterceptionChanceOverride = interceptionChanceOverride;
                 SerumInterceptionMultiplier = serumInterceptionMultiplier;
                 ShotFired = shotFired;
                 SuppressCloseLaunch = suppressCloseLaunch;
@@ -202,6 +205,7 @@ namespace KRWF.RimKata
         [ThreadStatic] public static Thing InterceptionTarget;
         [ThreadStatic] public static float MovingAccuracyMultiplier;
         [ThreadStatic] public static float InterceptionAccuracyBonusMultiplier;
+        [ThreadStatic] public static float? InterceptionChanceOverride;
         [ThreadStatic] public static float SerumInterceptionMultiplier;
         [ThreadStatic] public static bool ShotFired;
         [ThreadStatic] public static bool SuppressCloseLaunch;
@@ -223,7 +227,12 @@ namespace KRWF.RimKata
             float nextMovingAccuracyMultiplier = movingShot
                 ? settings?.GetMovingAccuracyMultiplier(shooter) ?? 1f
                 : 1f;
+            float? nextInterceptionChanceOverride = interceptionShot
+                && settings?.interceptionUseVanillaChance == false
+                    ? settings.GetInterceptionChance(shooter)
+                    : (float?)null;
             float nextInterceptionAccuracyBonusMultiplier = interceptionShot
+                && !nextInterceptionChanceOverride.HasValue
                 ? settings?.GetInterceptionAccuracyBonusMultiplier(shooter) ?? 1f
                 : 1f;
             float nextSerumInterceptionMultiplier = interceptionShot
@@ -242,6 +251,7 @@ namespace KRWF.RimKata
             InterceptionTarget = interceptionTarget;
             MovingAccuracyMultiplier = nextMovingAccuracyMultiplier;
             InterceptionAccuracyBonusMultiplier = nextInterceptionAccuracyBonusMultiplier;
+            InterceptionChanceOverride = nextInterceptionChanceOverride;
             SerumInterceptionMultiplier = nextSerumInterceptionMultiplier;
             ShotFired = false;
             SuppressCloseLaunch = false;
@@ -773,7 +783,7 @@ namespace KRWF.RimKata
             if (RimKataFireContext.ActiveVerb != null)
             {
                 __result = Mathf.Clamp01(
-                    __result
+                    (RimKataFireContext.InterceptionChanceOverride ?? __result)
                     * RimKataFireContext.InterceptionAccuracyBonusMultiplier
                     * RimKataFireContext.MovingAccuracyMultiplier
                     * RimKataFireContext.SerumInterceptionMultiplier);

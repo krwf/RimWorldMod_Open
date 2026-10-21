@@ -14,7 +14,6 @@ namespace KRWF.RimKata
 
         private static readonly Dictionary<MethodInfo, ObserverRole> installed =
             new Dictionary<MethodInfo, ObserverRole>();
-        private static readonly HashSet<MethodInfo> reported = new HashSet<MethodInfo>();
         internal static IReadOnlyDictionary<MethodInfo, ObserverRole> Connections => installed;
 
         private static readonly FieldInfo PawnStances = AccessTools.Field(typeof(Pawn), "stances");
@@ -39,12 +38,29 @@ namespace KRWF.RimKata
         internal static int Prepare(Harmony harmony, IEnumerable<ThingDef> definitions)
         {
             if (harmony == null || definitions == null) return 0;
-            var types = new HashSet<Type>();
-            var hediffs = new HashSet<HediffDef>();
-            var pending = new Queue<HediffDef>();
+            int before = installed.Count;
             foreach (ThingDef definition in definitions)
+                if (!TryPrepare(harmony, definition, out string reason))
+                    Log.Warning("[RimKata] Could not connect weapon state readers for "
+                        + definition?.defName + ": " + reason);
+            return installed.Count - before;
+        }
+
+        internal static bool TryPrepare(Harmony harmony, ThingDef definition, out string reason)
+        {
+            reason = null;
+            if (definition?.IsWeapon != true) return true;
+            if (harmony == null)
             {
-                if (definition?.IsWeapon != true) continue;
+                reason = "The Harmony instance is unavailable.";
+                return false;
+            }
+            string context = definition.defName;
+            try
+            {
+                var types = new HashSet<Type>();
+                var hediffs = new HashSet<HediffDef>();
+                var pending = new Queue<HediffDef>();
                 if (definition.comps != null)
                     foreach (CompProperties properties in definition.comps)
                     {
@@ -54,26 +70,25 @@ namespace KRWF.RimKata
                 if (definition.Verbs != null)
                     foreach (VerbProperties properties in definition.Verbs)
                         CollectHediffs(properties, pending, hediffs);
-            }
-            while (pending.Count != 0)
-            {
-                HediffDef definition = pending.Dequeue();
-                if (definition.comps == null) continue;
-                foreach (HediffCompProperties properties in definition.comps)
+                while (pending.Count != 0)
                 {
-                    AddType(properties?.compClass, types);
-                    CollectHediffs(properties, pending, hediffs);
-                }
-            }
-
-            int added = 0;
-            foreach (Type type in types)
-                foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public
-                    | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
-                {
-                    if (installed.ContainsKey(method) || !HasReaderSignature(method)) continue;
-                    try
+                    HediffDef hediff = pending.Dequeue();
+                    if (hediff.comps == null) continue;
+                    foreach (HediffCompProperties properties in hediff.comps)
                     {
+                        AddType(properties?.compClass, types);
+                        CollectHediffs(properties, pending, hediffs);
+                    }
+                }
+
+                foreach (Type type in types)
+                {
+                    context = type.FullName;
+                    foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Public
+                        | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                    {
+                        context = type.FullName + "." + method.Name;
+                        if (installed.ContainsKey(method) || !HasReaderSignature(method)) continue;
                         ObserverRole role = Classify(method);
                         if (role == ObserverRole.None) continue;
                         string hook = role == ObserverRole.Firing ? nameof(FiringPostfix)
@@ -81,16 +96,15 @@ namespace KRWF.RimKata
                         RimKataStartupPatches.Patch(harmony, method,
                             postfix: new HarmonyMethod(typeof(RimKataWeaponStateObservers), hook));
                         installed.Add(method, role);
-                        added++;
-                    }
-                    catch (Exception exception)
-                    {
-                        if (reported.Add(method))
-                            Log.Warning("[RimKata] Could not connect weapon state reader "
-                                + type.FullName + "." + method.Name + ": " + exception.GetType().Name);
                     }
                 }
-            return added;
+                return true;
+            }
+            catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
+            {
+                reason = context + ": " + exception.GetType().Name + ": " + exception.Message;
+                return false;
+            }
         }
 
         private static void AddType(Type type, HashSet<Type> types)
@@ -142,6 +156,13 @@ namespace KRWF.RimKata
             if (patches != null)
             {
                 if (patches.Prefixes.Count != 0 || patches.Finalizers.Count != 0) return ObserverRole.None;
+                // GetCurrentInstructions includes transpilers, but not Harmony 3 inner hooks.
+                foreach (Patch patch in RimKataWeaponExecutionPlans.ExtraPatches(patches, "InnerPrefixes"))
+                    return ObserverRole.None;
+                foreach (Patch patch in RimKataWeaponExecutionPlans.ExtraPatches(patches, "InnerPostfixes"))
+                    return ObserverRole.None;
+                foreach (Patch patch in RimKataWeaponExecutionPlans.ExtraPatches(patches, "InnerFinalizers"))
+                    return ObserverRole.None;
                 foreach (Patch patch in patches.Postfixes)
                 {
                     MethodInfo hook = patch.PatchMethod;

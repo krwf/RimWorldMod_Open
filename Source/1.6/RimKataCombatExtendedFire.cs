@@ -251,9 +251,18 @@ namespace KRWF.RimKata
                 leadDistance.Set(__result, 0f);
                 return;
             }
-            float multiplier = Mathf.Max(0f, RimKataFireContext.MovingAccuracyMultiplier
-                * RimKataFireContext.InterceptionAccuracyBonusMultiplier
-                * RimKataFireContext.SerumInterceptionMultiplier);
+            if (RimKataFireContext.InterceptionShot)
+            {
+                // CE has no hit-percentage output. Only scale weapon spread;
+                // the standalone setting is a spread reduction, not a guaranteed hit.
+                float? chance = RimKataFireContext.InterceptionChanceOverride;
+                float scale = chance.HasValue
+                    ? 1f - Mathf.Clamp01(chance.Value * RimKataFireContext.SerumInterceptionMultiplier)
+                    : 1f / Mathf.Max(0.01f, RimKataFireContext.InterceptionAccuracyBonusMultiplier
+                        * RimKataFireContext.SerumInterceptionMultiplier);
+                spread.Set(__result, Mathf.Min(180f, spread.Get(__result) * scale));
+            }
+            float multiplier = Mathf.Max(0f, RimKataFireContext.MovingAccuracyMultiplier);
             if (Mathf.Approximately(multiplier, 1f)) return;
             // CE uses dispersion rather than vanilla hit-percentage rolls.
             aimingAccuracy.Set(__result, Mathf.Clamp(aimingAccuracy.Get(__result) * multiplier, 0f, 1.5f));
@@ -267,9 +276,7 @@ namespace KRWF.RimKata
         private static void SwayPostfix(Verb __instance, ref float __0, ref float __1, Vector2 __state)
         {
             if (RimKataFireContext.ActiveVerb != __instance) return;
-            float multiplier = RimKataFireContext.MovingAccuracyMultiplier
-                * RimKataFireContext.InterceptionAccuracyBonusMultiplier
-                * RimKataFireContext.SerumInterceptionMultiplier;
+            float multiplier = RimKataFireContext.MovingAccuracyMultiplier;
             float scale = RimKataFireContext.CloseMeleeResolution ? 0f : 1f / Mathf.Max(0.01f, multiplier);
             __0 = __state.x + (__0 - __state.x) * scale;
             __1 = __state.y + (__1 - __state.y) * scale;

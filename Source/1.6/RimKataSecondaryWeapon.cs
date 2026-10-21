@@ -1273,6 +1273,8 @@ namespace KRWF.RimKata
 
             CombatVerbCaches.Remove(pawn);
             RimKataRangeUtility.InvalidateWeaponRanges(pawn);
+            if (RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
+                RimKataEquippedWeaponPlans.Sync(pawn);
             RimKataDualWeaponController.NotifyLoadoutChanged(pawn, state);
         }
 
@@ -1362,6 +1364,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            RimKataEquippedWeaponPlans.Sync(pawn);
             RimKataSimpleSidearmsCompat.NotifyEquipmentChanged(pawn);
             RimKataSecondaryWeaponRegistry registry =
                 RimKataSecondaryWeaponRegistry.CurrentRegistry;

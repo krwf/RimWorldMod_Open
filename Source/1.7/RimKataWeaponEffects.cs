@@ -180,16 +180,6 @@ namespace KRWF.RimKata
             { if (entered) { current = previous; targetCleanup = previousCleanup; } }
         }
 
-        internal static void Prepare(Harmony harmony, bool force = false)
-        {
-            // Refresh is a preparation boundary, never a per-pawn polling path.
-            if (store != null)
-                while (store.records.Count != 0) Release(store.records[store.records.Count - 1], true);
-            plans.Clear();
-            foreach (var execution in RimKataWeaponExecutionPlans.Plans)
-                PrepareWeapon(harmony, execution, force);
-        }
-
         internal static void PrepareWeapon(Harmony harmony, RimKataWeaponExecutionPlan execution, bool force = false)
         {
             execution.EffectStatus = RimKataWeaponEffectStatus.NotDetected;
@@ -218,7 +208,15 @@ namespace KRWF.RimKata
                 RimKataStartupDiagnostics.Count("weapon_effects_connected");
             }
             catch (Exception exception)
-            { Original(execution, exception.GetType().Name + ": " + exception.Message); }
+            { throw new InvalidOperationException("Could not connect weapon effects for " + execution.Def.defName, exception); }
+        }
+
+        internal static void ForgetDefinition(ThingDef definition)
+        {
+            plans.Remove(definition);
+            if (store == null) return;
+            for (int i = store.records.Count - 1; i >= 0; i--)
+                if (store.records[i].weapon.def == definition) Release(store.records[i], true);
         }
 
         private static void Original(RimKataWeaponExecutionPlan execution, string reason)
@@ -653,6 +651,20 @@ namespace KRWF.RimKata
         }
 
         private static void Release(RimKataWeaponEffectState record, bool restoreOriginal)
+        {
+            try { ReleaseCore(record, restoreOriginal); }
+            catch (Exception exception)
+            {
+                plans.Remove(record.weapon.def);
+                foreach (var execution in RimKataWeaponExecutionPlans.ForDefinition(record.weapon.def))
+                    RimKataWeaponExecutionPlans.FailRegistration(execution,
+                        "Weapon effect cleanup failed: " + exception.Message);
+                RimKataWeaponRegistrationFailures.ShowPending();
+            }
+            finally { store?.Forget(record); }
+        }
+
+        private static void ReleaseCore(RimKataWeaponEffectState record, bool restoreOriginal)
         {
             var plan = record.plan;
             var managerDefs = new HashSet<HediffDef>(record.suspendedManagers);

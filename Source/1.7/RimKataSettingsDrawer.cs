@@ -170,7 +170,7 @@ namespace KRWF.RimKata
 
         public static Vector2 RecommendedWindowSize()
         {
-            float labelWidth = MaximumTranslatedLabelWidth();
+            float labelWidth = MaximumTranslatedLabelWidth(RimKataMod.Settings);
             bool showMinimum = HasAnyGrowth(RimKataMod.Settings);
             float selectorWidth = RangePresetWidth();
             float standardWidth = labelWidth
@@ -328,26 +328,29 @@ namespace KRWF.RimKata
                 ResetCombat(settings);
                 buffers.SyncFrom(settings);
             });
-            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_MeleeResponseChance", SkillDefOf.Melee,
+            float meleeResponseMaximum = settings.meleeResponseUseVanillaChance ? float.MaxValue : 100f;
+            DrawFloatRow(viewRect.width, ref y, MeleeResponseLabelKey(settings), SkillDefOf.Melee,
                 ref settings.meleeResponseChanceFixed, ref settings.meleeResponseChancePercent, ref buffers.meleeResponseChance,
                 ref settings.meleeResponseChanceGrowthPerLevelPercent, ref buffers.meleeResponseChanceGrowth,
                 ref settings.meleeResponseChanceMinimumPercent, ref buffers.meleeResponseChanceMinimum,
-                float.MaxValue, float.MaxValue, showMinimum, float.MaxValue);
+                meleeResponseMaximum, meleeResponseMaximum, showMinimum, meleeResponseMaximum);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_ResponseDisarmChance", SkillDefOf.Melee,
                 ref settings.responseDisarmChanceFixed, ref settings.responseDisarmChancePercent, ref buffers.responseDisarmChance,
                 ref settings.responseDisarmChanceGrowthPerLevelPercent, ref buffers.responseDisarmChanceGrowth,
                 ref settings.responseDisarmChanceMinimumPercent, ref buffers.responseDisarmChanceMinimum,
                 100f, 100f, showMinimum);
-            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_MeleeDodgeChance", SkillDefOf.Melee,
+            float meleeDodgeMaximum = settings.meleeDodgeUseVanillaChance ? float.MaxValue : 100f;
+            DrawFloatRow(viewRect.width, ref y, MeleeDodgeLabelKey(settings), SkillDefOf.Melee,
                 ref settings.meleeDodgeChanceFixed, ref settings.meleeDodgeChancePercent, ref buffers.meleeDodgeChance,
                 ref settings.meleeDodgeChanceGrowthPerLevelPercent, ref buffers.meleeDodgeChanceGrowth,
                 ref settings.meleeDodgeChanceMinimumPercent, ref buffers.meleeDodgeChanceMinimum,
-                float.MaxValue, float.MaxValue, showMinimum, float.MaxValue);
-            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_RangedDodgeChance", SkillDefOf.Melee,
+                meleeDodgeMaximum, meleeDodgeMaximum, showMinimum, meleeDodgeMaximum);
+            float rangedDodgeMaximum = settings.rangedDodgeUseVanillaChance ? float.MaxValue : 100f;
+            DrawFloatRow(viewRect.width, ref y, RangedDodgeLabelKey(settings), SkillDefOf.Melee,
                 ref settings.rangedDodgeChanceFixed, ref settings.rangedDodgeChancePercent, ref buffers.rangedDodgeChance,
                 ref settings.rangedDodgeChanceGrowthPerLevelPercent, ref buffers.rangedDodgeChanceGrowth,
                 ref settings.rangedDodgeChanceMinimumPercent, ref buffers.rangedDodgeChanceMinimum,
-                100f, 100f, showMinimum);
+                rangedDodgeMaximum, rangedDodgeMaximum, showMinimum, rangedDodgeMaximum);
             DrawDurationRow(viewRect.width, ref y, settings, buffers, showMinimum);
             DrawKickCooldownRow(viewRect.width, ref y, settings, buffers, showMinimum);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_KickDamage", SkillDefOf.Melee,
@@ -380,11 +383,12 @@ namespace KRWF.RimKata
                 ref settings.proneHuntingStealthBonusGrowthPerLevelPercent, ref buffers.proneHuntingStealthBonusGrowth,
                 ref settings.proneHuntingStealthBonusMinimumPercent, ref buffers.proneHuntingStealthBonusMinimum,
                 100f, 100f, showMinimum, 100f);
-            DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_InterceptionChance", SkillDefOf.Shooting,
+            float interceptionMaximum = settings.interceptionUseVanillaChance ? float.MaxValue : 100f;
+            DrawFloatRow(viewRect.width, ref y, InterceptionLabelKey(settings), SkillDefOf.Shooting,
                 ref settings.interceptionChanceFixed, ref settings.interceptionChancePercent, ref buffers.interceptionChance,
                 ref settings.interceptionChanceGrowthPerLevelPercent, ref buffers.interceptionChanceGrowth,
                 ref settings.interceptionChanceMinimumPercent, ref buffers.interceptionChanceMinimum,
-                float.MaxValue, float.MaxValue, showMinimum, float.MaxValue);
+                interceptionMaximum, interceptionMaximum, showMinimum, interceptionMaximum);
             DrawFloatRow(viewRect.width, ref y, "KRWF_RimKata_InterceptionCriticalChance", SkillDefOf.Shooting,
                 ref settings.interceptionCriticalChanceFixed, ref settings.interceptionCriticalChancePercent, ref buffers.interceptionCriticalChance,
                 ref settings.interceptionCriticalChanceGrowthPerLevelPercent, ref buffers.interceptionCriticalChanceGrowth,
@@ -938,7 +942,27 @@ namespace KRWF.RimKata
                     || !settings.serumInterceptionMultiplierFixed);
         }
 
-        private static float MaximumTranslatedLabelWidth()
+        private static string MeleeResponseLabelKey(RimKataSettings settings)
+            => settings?.meleeResponseUseVanillaChance != false
+                ? "KRWF_RimKata_MeleeResponseChance"
+                : "KRWF_RimKata_MeleeResponseChanceStandalone";
+
+        private static string MeleeDodgeLabelKey(RimKataSettings settings)
+            => settings?.meleeDodgeUseVanillaChance != false
+                ? "KRWF_RimKata_MeleeDodgeChance"
+                : "KRWF_RimKata_MeleeDodgeChanceStandalone";
+
+        private static string InterceptionLabelKey(RimKataSettings settings)
+            => settings?.interceptionUseVanillaChance != false
+                ? "KRWF_RimKata_InterceptionChance"
+                : "KRWF_RimKata_InterceptionChanceStandalone";
+
+        private static string RangedDodgeLabelKey(RimKataSettings settings)
+            => settings?.rangedDodgeUseVanillaChance == true
+                ? "KRWF_RimKata_RangedDodgeChanceBonus"
+                : "KRWF_RimKata_RangedDodgeChance";
+
+        private static float MaximumTranslatedLabelWidth(RimKataSettings settings)
         {
             string[] keys =
             {
@@ -950,11 +974,11 @@ namespace KRWF.RimKata
                 "KRWF_RimKata_SubdueMassLimit",
                 "KRWF_RimKata_ProneMissChance",
                 "KRWF_RimKata_ProneHuntingStealthBonus",
-                "KRWF_RimKata_RangedDodgeChance",
-                "KRWF_RimKata_MeleeResponseChance",
+                RangedDodgeLabelKey(settings),
+                MeleeResponseLabelKey(settings),
                 "KRWF_RimKata_ResponseDisarmChance",
-                "KRWF_RimKata_MeleeDodgeChance",
-                "KRWF_RimKata_InterceptionChance",
+                MeleeDodgeLabelKey(settings),
+                InterceptionLabelKey(settings),
                 "KRWF_RimKata_InterceptionCriticalChance",
                 "KRWF_RimKata_MovingAccuracyMultiplier",
                 "KRWF_RimKata_ArmorCooldownReduction",

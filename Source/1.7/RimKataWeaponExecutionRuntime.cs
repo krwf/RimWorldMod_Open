@@ -34,6 +34,7 @@ namespace KRWF.RimKata
         private static readonly ConditionalWeakTable<RimKataWeaponExecutionPlan, Execution> Executions =
             new ConditionalWeakTable<RimKataWeaponExecutionPlan, Execution>();
         private static readonly HashSet<MethodInfo> Ticks = new HashSet<MethodInfo>();
+        private static readonly HashSet<MethodInfo> FailedTicks = new HashSet<MethodInfo>();
         private static readonly HashSet<MethodInfo> Bursts = new HashSet<MethodInfo>();
         private static readonly HashSet<MethodInfo> Counts = new HashSet<MethodInfo>();
         private static readonly HashSet<MethodInfo> Shots = new HashSet<MethodInfo>();
@@ -58,73 +59,139 @@ namespace KRWF.RimKata
         internal static void Refresh(bool force = false)
         {
             if (harmony == null) return;
+            if (force)
+            {
+                FailedTicks.Clear();
+                RimKataWeaponRegistrationFailures.ResetForManualRefresh();
+            }
+            RimKataEquippedWeaponPlans.Suspend();
             RimKataWeaponExecutionPlans.Refresh(force);
-            PrepareConnections(force);
+            PrepareConnections();
         }
 
-        private static void PrepareConnections(bool force = false)
+        private static void PrepareConnections()
         {
-            var definitions = new HashSet<ThingDef>();
-            var registrations = new List<RimKataWeaponExecutionPlan>();
-            foreach (RimKataWeaponExecutionPlan plan in RimKataWeaponExecutionPlans.Plans)
-            {
-                definitions.Add(plan.Def);
-                plan.FiringReady = false;
-                if (plan.HandledByCompatibility) continue;
-                if (plan.Mode == RimKataWeaponExecutionMode.Vanilla)
-                {
-                    plan.FiringReady = true;
-                    continue;
-                }
-                try
-                {
-                    if (plan.TickMethod != NativeTick)
-                        Install(plan.TickMethod, Ticks, nameof(TickPrefix), nameof(TickFinalizer), TickDispatcher);
-                    foreach (MethodInfo burst in plan.BurstMethods)
-                        Install(burst, Bursts, nameof(BurstPrefix), nameof(BurstFinalizer));
-                    if (plan.BurstCountMethod != null && !Counts.Contains(plan.BurstCountMethod))
-                    {
-                        RimKataStartupPatches.Patch(harmony, plan.BurstCountMethod,
-                            postfix: new HarmonyMethod(typeof(RimKataWeaponExecutionRuntime), nameof(CountPostfix)));
-                        Counts.Add(plan.BurstCountMethod);
-                    }
-                    // A callback may enter TryCastShot without the normal warmup/burst wrapper.
-                    foreach (MethodInfo method in plan.Methods)
-                        if (method.Name == "TryCastShot" && !method.IsStatic && method.ReturnType == typeof(bool)
-                            && typeof(Verb).IsAssignableFrom(method.DeclaringType) && method.GetParameters().Length == 0)
-                            Install(method, Shots, nameof(ShotPrefix), nameof(ShotFinalizer));
-                    if (plan.Mode == RimKataWeaponExecutionMode.Traced) plan.FiringReady = true;
-                    if (plan.RegistrationAccepted) registrations.Add(plan);
-                }
-                catch (Exception exception)
-                {
-                    RimKataWeaponExecutionPlans.FailRegistration(plan, exception.Message);
-                    Log.Warning("[RimKata] Could not connect the firing path for " + plan.Def.defName
-                        + ". Original weapon behavior will be used. " + exception.Message);
-                }
-            }
-            RimKataWeaponStateObservers.Prepare(harmony, definitions);
-            var copies = new Dictionary<RimKataWeaponExecutionPlan, Execution>();
-            // A restored approval still needs a usable session-local firing bundle before effects.
-            foreach (var plan in registrations)
-            {
-                try
-                {
-                    copies.Add(plan, CreateExecution(plan));
-                    plan.FiringReady = true;
-                }
-                catch (Exception exception)
-                {
-                    RimKataWeaponExecutionPlans.FailRegistration(plan, exception.Message);
-                    Log.Warning("[RimKata] Could not register firing execution for " + plan.Def.defName
-                        + ". Original weapon behavior will be used. " + exception.Message);
-                }
-            }
-            RimKataWeaponEffects.Prepare(harmony, force);
-            // Only connected effects need recapturing; do not analyze all weapons again.
-            foreach (var pair in copies) Register(pair.Key, pair.Value, false);
+            // The catalog is disk-backed. Only existing equipment owners acquire live plans.
+            RimKataEquippedWeaponPlans.Resume();
             RimKataEquipmentMemory.Flush();
             Dialog_RimKataWeaponRegistration.ShowPending();
+            RimKataWeaponRegistrationFailures.ShowPending();
+        }
+
+        internal static void AcquireDefinition(ThingDef definition)
+        {
+            if (harmony == null) return;
+            foreach (var plan in RimKataWeaponExecutionPlans.ForDefinition(definition))
+            {
+                if (++plan.Residents != 1) continue;
+                try
+                {
+                    if (!RimKataWeaponExecutionPlans.Load(plan))
+                    {
+                        if (plan.Failed && !plan.HandledByCompatibility)
+                        {
+                            RimKataWeaponExecutionPlans.LoadOriginalEntries(plan);
+                            if (plan.TickMethod != NativeTick && !FailedTicks.Contains(plan.TickMethod)) ConnectTick(plan);
+                        }
+                        continue;
+                    }
+                    if (plan.RegistrationAccepted && !plan.HandledByCompatibility)
+                    {
+                        Register(plan);
+                        continue;
+                    }
+                    Connect(plan);
+                    if (plan.HandledByCompatibility || plan.Mode == RimKataWeaponExecutionMode.Live
+                        || plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration) continue;
+                    plan.FiringReady = true;
+                    RimKataWeaponEffects.PrepareWeapon(harmony, plan);
+                }
+                catch (Exception exception) { Fail(plan, exception); }
+                finally { RimKataWeaponExecutionPlans.ClearPreparationScratch(); }
+            }
+            RimKataEquipmentMemory.Flush();
+            Dialog_RimKataWeaponRegistration.ShowPending();
+            RimKataWeaponRegistrationFailures.ShowPending();
+        }
+
+        internal static void ReleaseDefinition(ThingDef definition)
+        {
+            foreach (var plan in RimKataWeaponExecutionPlans.ForDefinition(definition))
+                if (plan.Residents > 0 && --plan.Residents == 0) ReleasePlan(plan);
+        }
+
+        internal static void ResetGame()
+        {
+            foreach (var plan in RimKataWeaponExecutionPlans.Plans)
+            {
+                plan.Residents = 0;
+                ReleasePlan(plan);
+            }
+        }
+
+        private static void ReleasePlan(RimKataWeaponExecutionPlan plan)
+        {
+            Executions.Remove(plan);
+            try
+            {
+                bool inUse = false;
+                foreach (var other in RimKataWeaponExecutionPlans.ForDefinition(plan.Def))
+                    if (other.Residents > 0) { inUse = true; break; }
+                if (!inUse) RimKataWeaponEffects.ForgetDefinition(plan.Def);
+            }
+            catch (Exception exception)
+            {
+                RimKataWeaponExecutionPlans.FailRegistration(plan, exception.Message);
+            }
+            finally { RimKataWeaponExecutionPlans.Unload(plan); }
+        }
+
+        private static void Fail(RimKataWeaponExecutionPlan plan, Exception exception)
+        {
+            RimKataWeaponExecutionPlans.FailRegistration(plan, exception.GetType().Name + ": " + exception.Message);
+            Executions.Remove(plan);
+            try { RimKataWeaponEffects.ForgetDefinition(plan.Def); }
+            catch (Exception cleanup)
+            {
+                Log.Warning("[RimKata] Could not finish weapon effect cleanup for " + plan.Def.defName + ": " + cleanup.Message);
+            }
+            finally { RimKataWeaponExecutionPlans.Unload(plan); }
+        }
+
+        private static void Connect(RimKataWeaponExecutionPlan plan)
+        {
+            // CE owns firing; its Comp/Hediff state readers still need RimKata's weapon state.
+            if (!plan.HandledByCompatibility && plan.Mode != RimKataWeaponExecutionMode.Vanilla)
+            {
+                if (plan.TickMethod != NativeTick) ConnectTick(plan);
+                foreach (MethodInfo burst in plan.BurstMethods)
+                    Install(burst, Bursts, nameof(BurstPrefix), nameof(BurstFinalizer));
+                if (plan.BurstCountMethod != null && !Counts.Contains(plan.BurstCountMethod))
+                {
+                    RimKataStartupPatches.Patch(harmony, plan.BurstCountMethod,
+                        postfix: new HarmonyMethod(typeof(RimKataWeaponExecutionRuntime), nameof(CountPostfix)));
+                    Counts.Add(plan.BurstCountMethod);
+                }
+                foreach (MethodInfo method in plan.Methods)
+                    if (method.Name == "TryCastShot" && !method.IsStatic && method.ReturnType == typeof(bool)
+                        && typeof(Verb).IsAssignableFrom(method.DeclaringType) && method.GetParameters().Length == 0)
+                        Install(method, Shots, nameof(ShotPrefix), nameof(ShotFinalizer));
+            }
+            if (!RimKataWeaponStateObservers.TryPrepare(harmony, plan.Def, out string reason))
+                throw new NotSupportedException(reason);
+        }
+
+        private static void ConnectTick(RimKataWeaponExecutionPlan plan)
+        {
+            if (plan.TickMethod == null || Ticks.Contains(plan.TickMethod)) return;
+            if (FailedTicks.Contains(plan.TickMethod))
+                throw new NotSupportedException("The original tick hook already failed in this session. Use manual refresh to retry.");
+            try { Install(plan.TickMethod, Ticks, nameof(TickPrefix), nameof(TickFinalizer), TickDispatcher); }
+            catch
+            {
+                if (plan.TickMethod != null) FailedTicks.Add(plan.TickMethod);
+                throw;
+            }
         }
 
         private static void Install(MethodInfo method, HashSet<MethodInfo> installed, string prefix, string finalizer,
@@ -139,34 +206,34 @@ namespace KRWF.RimKata
         }
 
         internal static bool Register(RimKataWeaponExecutionPlan plan)
-            => Register(plan, null, true);
-
-        private static bool Register(RimKataWeaponExecutionPlan plan, Execution execution, bool prepareEffects)
         {
-            try { return RegisterCore(plan, execution, prepareEffects); }
+            try
+            {
+                if (!RimKataWeaponExecutionPlans.Load(plan)) return false;
+                return RegisterCore(plan);
+            }
             catch (Exception exception)
             {
-                RimKataWeaponExecutionPlans.FailRegistration(plan, exception.Message);
-                if (plan != null)
-                {
-                    Executions.Remove(plan);
-                    RimKataWeaponEffects.PrepareWeapon(harmony, plan);
-                }
-                RimKataEquipmentMemory.Flush();
-                Log.Warning("[RimKata] Could not register firing execution for " + plan?.Def?.defName
-                    + ". Original weapon behavior will be used. " + exception.Message);
+                if (plan != null) Fail(plan, exception);
                 return false;
+            }
+            finally
+            {
+                if (plan != null && plan.Residents == 0) ReleasePlan(plan);
+                RimKataWeaponExecutionPlans.ClearPreparationScratch();
+                RimKataEquipmentMemory.Flush();
             }
         }
 
-        private static bool RegisterCore(RimKataWeaponExecutionPlan plan, Execution execution, bool prepareEffects)
+        private static bool RegisterCore(RimKataWeaponExecutionPlan plan)
         {
             if (plan == null) return false;
             if (Executions.TryGetValue(plan, out _)) return true;
-            execution ??= CreateExecution(plan);
+            Connect(plan);
+            Execution execution = CreateExecution(plan);
             plan.Mode = RimKataWeaponExecutionMode.Copied;
             plan.FiringReady = true;
-            if (prepareEffects) RimKataWeaponEffects.PrepareWeapon(harmony, plan);
+            RimKataWeaponEffects.PrepareWeapon(harmony, plan);
             // Effect hooks must be present in the executable snapshot, not merely registered beside it.
             if (plan.EffectStatus == RimKataWeaponEffectStatus.Connected) execution = CreateExecution(plan);
             Executions.Add(plan, execution);
@@ -180,7 +247,7 @@ namespace KRWF.RimKata
 
         private static Execution CreateExecution(RimKataWeaponExecutionPlan plan)
         {
-            Install(plan.TickMethod, Ticks, nameof(TickPrefix), nameof(TickFinalizer), TickDispatcher);
+            ConnectTick(plan);
             string reason;
             if (RimKataWeaponExecutionBundle.TryCreate(plan.Methods, out var bundle, out reason, plan.TickMethod, TickDispatcher)
                 && bundle.TryGetInvoker(plan.TickMethod, out var tick)
@@ -204,7 +271,8 @@ namespace KRWF.RimKata
             if (plan != null)
             {
                 Executions.Remove(plan);
-                RimKataWeaponEffects.PrepareWeapon(harmony, plan);
+                RimKataWeaponEffects.ForgetDefinition(plan.Def);
+                if (plan.Residents == 0) ReleasePlan(plan);
             }
             RimKataEquipmentMemory.Flush();
         }

@@ -291,4 +291,18 @@
   <KRWF_RimKata_StatComparison>Confronto</KRWF_RimKata_StatComparison>
   <KRWF_RimKata_StatValue>Valore</KRWF_RimKata_StatValue>
   <KRWF_RimKata_StatCategoryRecords>Registri di combattimento</KRWF_RimKata_StatCategoryRecords>
+  <KRWF_RimKata_RangedDodgeUseVanillaChance>Usa la probabilità del gioco base per la schivata a distanza</KRWF_RimKata_RangedDodgeUseVanillaChance>
+  <KRWF_RimKata_SlidingUseVanillaChance>Usa la probabilità del gioco base per la scivolata</KRWF_RimKata_SlidingUseVanillaChance>
+  <KRWF_RimKata_ShakeOffUseVanillaChance>Usa la probabilità del gioco base per il divincolamento</KRWF_RimKata_ShakeOffUseVanillaChance>
+  <KRWF_RimKata_KickUseVanillaChance>Usa la probabilità del gioco base per il calcio</KRWF_RimKata_KickUseVanillaChance>
+  <KRWF_RimKata_RangedDodgeChanceBonus>Bonus alla probabilità di schivata a distanza</KRWF_RimKata_RangedDodgeChanceBonus>
+  <KRWF_RimKata_KickChanceBonus>Bonus alla probabilità di calcio</KRWF_RimKata_KickChanceBonus>
+  <KRWF_RimKata_SlidingChanceBonus>Bonus alla probabilità di scivolata</KRWF_RimKata_SlidingChanceBonus>
+  <KRWF_RimKata_ShakeOffChanceBonus>Bonus alla probabilità di divincolamento</KRWF_RimKata_ShakeOffChanceBonus>
+  <KRWF_RimKata_MeleeResponseUseVanillaChance>Usa la probabilità del gioco base per la parata</KRWF_RimKata_MeleeResponseUseVanillaChance>
+  <KRWF_RimKata_MeleeDodgeUseVanillaChance>Usa la probabilità del gioco base per la schivata in mischia</KRWF_RimKata_MeleeDodgeUseVanillaChance>
+  <KRWF_RimKata_InterceptionUseVanillaChance>Usa la probabilità del gioco base per l'intercettazione dei proiettili esplosivi</KRWF_RimKata_InterceptionUseVanillaChance>
+  <KRWF_RimKata_MeleeResponseChanceStandalone>Probabilità di parata</KRWF_RimKata_MeleeResponseChanceStandalone>
+  <KRWF_RimKata_MeleeDodgeChanceStandalone>Probabilità di schivata in mischia</KRWF_RimKata_MeleeDodgeChanceStandalone>
+  <KRWF_RimKata_InterceptionChanceStandalone>Probabilità d'intercettazione dei proiettili esplosivi</KRWF_RimKata_InterceptionChanceStandalone>
 </LanguageData>
