@@ -1,9 +1,0 @@
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\1.7\Assemblies\SYSYayoCompat.dll
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\Mod.csproj.AssemblyReference.cache
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\Mod.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\Mod.AssemblyInfoInputs.cache
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\Mod.AssemblyInfo.cs
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\Mod.csproj.CoreCompileInputs.cache
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\SYSYayoCompat.dll
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\refint\SYSYayoCompat.dll
-C:\Users\user\Documents\RimworldModsFolder\SYS Gun Spinning for Miho Ratkin\Source\obj\Release\ref\SYSYayoCompat.dll

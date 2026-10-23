@@ -31,7 +31,6 @@ namespace KRWF.SYSYayoCompat
 
         private const string HarmonyId = "krwf.sysgunspinningcompat";
         private const string SysHarmonyId = "com.SYS.rimworld.mod";
-        private const string YayoHarmonyId = "com.yayo.yayoAni";
         private const string SysPatchTypeName = "SYS.DrawEquipment_WeaponBackPatch";
 
         private static readonly Harmony Harmony = new Harmony(HarmonyId);
@@ -67,7 +66,6 @@ namespace KRWF.SYSYayoCompat
                         priority = Priority.Last
                     });
                 startupHookInstalled = true;
-                Initialize();
             }
             catch (Exception exception)
             {
@@ -85,7 +83,8 @@ namespace KRWF.SYSYayoCompat
 
         internal static void Initialize()
         {
-            if (initializationState != InitializationState.Waiting)
+            if (!startupConstructorsFinished
+                || initializationState != InitializationState.Waiting)
             {
                 return;
             }
@@ -94,50 +93,37 @@ namespace KRWF.SYSYayoCompat
                 typeof(PawnRenderUtility),
                 nameof(PawnRenderUtility.DrawEquipmentAndApparelExtras),
                 new[] { typeof(Pawn), typeof(Vector3), typeof(Rot4), typeof(PawnRenderFlags) });
-            MethodInfo drawCarriedWeapon = AccessTools.Method(
-                typeof(PawnRenderUtility),
-                nameof(PawnRenderUtility.DrawCarriedWeapon),
-                new[] { typeof(ThingWithComps), typeof(Vector3), typeof(Rot4), typeof(float) });
 
-            if (drawExtras == null || drawCarriedWeapon == null)
+            if (drawExtras == null)
             {
                 initializationState = InitializationState.Failed;
-                Log.Error("[SYS Gun Spinning] RimWorld weapon render methods were not found; compatibility patch was not applied.");
+                Log.Error("[SYS Gun Spinning] RimWorld equipment render method was not found; compatibility patch was not applied.");
                 return;
             }
 
             Patches extrasPatchInfo = Harmony.GetPatchInfo(drawExtras);
-            Patches carriedPatchInfo = Harmony.GetPatchInfo(drawCarriedWeapon);
-            if (!HasTranspiler(extrasPatchInfo, YayoHarmonyId)
-                || !HasTranspiler(carriedPatchInfo, YayoHarmonyId))
+            List<Patch> sysPrefixes = FindSysOwnedPrefixes(extrasPatchInfo);
+            if (sysPrefixes.Count == 0)
             {
-                if (!startupConstructorsFinished)
-                {
-                    return;
-                }
-
-                initializationState = InitializationState.Failed;
-                Log.Warning("[SYS Gun Spinning] Yayo's Animation weapon patches were not detected; SYS was left unchanged.");
+                initializationState = InitializationState.CompletedNoTarget;
+                Log.Message("[SYS Gun Spinning] No active SYS weapon render prefix was found; no compatibility patch was needed.");
                 return;
             }
 
-            List<MethodInfo> sysPrefixes = FindSysPrefixes(extrasPatchInfo);
-            if (sysPrefixes.Count == 0)
+            if (!TryValidateSysPrefixes(sysPrefixes, out string validationError))
             {
-                if (!startupConstructorsFinished)
-                {
-                    return;
-                }
-
-                initializationState = InitializationState.CompletedNoTarget;
-                Log.Message("[SYS Gun Spinning] No active SYS weapon render prefix was found; no compatibility patch was needed.");
+                initializationState = InitializationState.Failed;
+                Log.Error(
+                    $"[SYS Gun Spinning] An unfamiliar SYS prefix was found on the equipment render method ({validationError}); nothing was changed.");
                 return;
             }
 
             initializationState = InitializationState.Applying;
 
             List<SysSheathAdapter> adapters = new List<SysSheathAdapter>();
-            foreach (Assembly assembly in sysPrefixes.Select(method => method.DeclaringType.Assembly).Distinct())
+            foreach (Assembly assembly in sysPrefixes
+                .Select(patch => patch.PatchMethod.DeclaringType.Assembly)
+                .Distinct())
             {
                 if (!SysSheathAdapter.TryCreate(assembly, out SysSheathAdapter adapter, out string error))
                 {
@@ -151,23 +137,16 @@ namespace KRWF.SYSYayoCompat
 
             SysSheathRenderPatch.Configure(adapters);
 
-            MethodInfo compatPrefixMethod = AccessTools.Method(
-                typeof(SysSheathRenderPatch),
-                nameof(SysSheathRenderPatch.Prefix));
             MethodInfo compatPostfixMethod = AccessTools.Method(
                 typeof(SysSheathRenderPatch),
                 nameof(SysSheathRenderPatch.Postfix));
-            if (compatPrefixMethod == null || compatPostfixMethod == null)
+            if (compatPostfixMethod == null)
             {
                 initializationState = InitializationState.Failed;
                 Log.Error("[SYS Gun Spinning] Compatibility render methods were not found; SYS was left unchanged.");
                 return;
             }
 
-            HarmonyMethod prefix = new HarmonyMethod(compatPrefixMethod)
-            {
-                priority = Priority.Last
-            };
             HarmonyMethod postfix = new HarmonyMethod(compatPostfixMethod)
             {
                 priority = Priority.Last
@@ -175,16 +154,17 @@ namespace KRWF.SYSYayoCompat
 
             try
             {
-                // Register the replacement first so a failure while adding our patch
-                // leaves the still-active SYS renderer untouched.
-                Harmony.Patch(drawExtras, prefix: prefix, postfix: postfix);
-
-                foreach (MethodInfo sysPrefix in sysPrefixes)
+                // Add only the SYS sheath postfix before removing the blocker. Weapon
+                // rendering remains owned by RimWorld and the other active render mods.
+                Harmony.Patch(drawExtras, postfix: postfix);
+                if (!HasOwnedPostfix(drawExtras, HarmonyId))
                 {
-                    Harmony.Unpatch(drawExtras, sysPrefix);
+                    throw new InvalidOperationException("the SYS sheath postfix was not registered");
                 }
 
-                if (FindSysPrefixes(Harmony.GetPatchInfo(drawExtras)).Count != 0)
+                Harmony.Unpatch(drawExtras, HarmonyPatchType.Prefix, SysHarmonyId);
+
+                if (FindSysOwnedPrefixes(Harmony.GetPatchInfo(drawExtras)).Count != 0)
                 {
                     throw new InvalidOperationException("one or more SYS prefixes remained active");
                 }
@@ -192,35 +172,140 @@ namespace KRWF.SYSYayoCompat
             catch (Exception exception)
             {
                 initializationState = InitializationState.Failed;
+                bool compatibilityPatchRemoved = true;
                 try
                 {
-                    Harmony.Unpatch(drawExtras, compatPrefixMethod);
-                    Harmony.Unpatch(drawExtras, compatPostfixMethod);
+                    Harmony.Unpatch(drawExtras, HarmonyPatchType.Postfix, HarmonyId);
+                    compatibilityPatchRemoved = !HasOwnedPostfix(drawExtras, HarmonyId);
+                    if (!compatibilityPatchRemoved)
+                    {
+                        Log.Error("[SYS Gun Spinning] The compatibility postfix remained active during rollback.");
+                    }
                 }
                 catch (Exception rollbackException)
                 {
+                    compatibilityPatchRemoved = false;
                     Log.Error(
                         $"[SYS Gun Spinning] Compatibility rollback also failed: {rollbackException}");
                 }
 
-                Log.Error(
-                    $"[SYS Gun Spinning] Could not replace the blocking SYS prefix; compatibility patch was rolled back: {exception}");
+                bool sysRestored;
+                string restoreError;
+                try
+                {
+                    sysRestored = TryRestoreSysPrefixes(drawExtras, sysPrefixes, out restoreError);
+                }
+                catch (Exception restoreException)
+                {
+                    sysRestored = false;
+                    restoreError = restoreException.GetType().Name + ": " + restoreException.Message;
+                }
+
+                if (sysRestored && compatibilityPatchRemoved)
+                {
+                    Log.Error(
+                        $"[SYS Gun Spinning] Could not replace the blocking SYS prefix; the SYS prefix set was restored and the compatibility patch was removed: {exception}");
+                }
+                else
+                {
+                    string rollbackStatus = "SYS restore: "
+                        + (sysRestored ? "complete" : restoreError)
+                        + "; compatibility postfix removal: "
+                        + (compatibilityPatchRemoved ? "complete" : "failed");
+                    Log.Error(
+                        $"[SYS Gun Spinning] Could not replace the blocking SYS prefix, and rollback was incomplete ({rollbackStatus}): {exception}");
+                }
+
                 return;
             }
 
             initializationState = InitializationState.Applied;
             Log.Message(
-                $"[SYS Gun Spinning] Restored the original/Yayo weapon render path; removed {sysPrefixes.Count} blocking SYS prefix(es) and retained {adapters.Count} SYS sheath renderer(s).");
+                $"[SYS Gun Spinning] Restored the vanilla/active-mod weapon render path; removed {sysPrefixes.Count} blocking SYS prefix(es) and retained {adapters.Count} SYS sheath renderer(s).");
         }
 
-        private static bool HasTranspiler(Patches patches, string owner)
+        private static bool TryRestoreSysPrefixes(
+            MethodInfo original,
+            IEnumerable<Patch> originalPrefixes,
+            out string error)
         {
-            return patches?.Transpilers?.Any(patch => patch.owner == owner) == true;
+            List<Patch> snapshots = originalPrefixes.ToList();
+            List<string> failures = new List<string>();
+            HashSet<MethodInfo> activeMethods = new HashSet<MethodInfo>(
+                FindSysOwnedPrefixes(Harmony.GetPatchInfo(original))
+                    .Select(patch => patch.PatchMethod));
+
+            foreach (Patch patch in snapshots)
+            {
+                MethodInfo patchMethod = patch.PatchMethod;
+                if (patchMethod == null || activeMethods.Contains(patchMethod))
+                {
+                    continue;
+                }
+
+                try
+                {
+                    HarmonyMethod restoredPrefix = new HarmonyMethod(
+                        patchMethod,
+                        patch.priority,
+                        patch.before,
+                        patch.after,
+                        patch.debug);
+                    new Harmony(patch.owner).Patch(original, prefix: restoredPrefix);
+                    activeMethods.Add(patchMethod);
+                }
+                catch (Exception exception)
+                {
+                    failures.Add(patchMethod.DeclaringType?.FullName + "." + patchMethod.Name
+                        + ": " + exception.GetType().Name + ": " + exception.Message);
+                }
+            }
+
+            List<Patch> restoredPrefixes = FindSysOwnedPrefixes(Harmony.GetPatchInfo(original));
+            foreach (Patch patch in snapshots)
+            {
+                if (!restoredPrefixes.Any(restored => HasEquivalentMetadata(patch, restored)))
+                {
+                    MethodInfo patchMethod = patch.PatchMethod;
+                    failures.Add(patchMethod.DeclaringType?.FullName + "." + patchMethod.Name
+                        + " was not restored with its original ordering metadata");
+                }
+            }
+
+            if (restoredPrefixes.Count != snapshots.Count)
+            {
+                failures.Add("the restored SYS prefix count did not match the original snapshot");
+            }
+
+            error = failures.Count == 0 ? null : string.Join("; ", failures);
+            return failures.Count == 0;
         }
 
-        private static List<MethodInfo> FindSysPrefixes(Patches patches)
+        private static bool HasEquivalentMetadata(Patch expected, Patch actual)
         {
-            List<MethodInfo> result = new List<MethodInfo>();
+            return expected.PatchMethod == actual.PatchMethod
+                && expected.owner == actual.owner
+                && expected.priority == actual.priority
+                && expected.debug == actual.debug
+                && SequenceEqual(expected.before, actual.before)
+                && SequenceEqual(expected.after, actual.after);
+        }
+
+        private static bool SequenceEqual(string[] left, string[] right)
+        {
+            return (left ?? Array.Empty<string>())
+                .SequenceEqual(right ?? Array.Empty<string>());
+        }
+
+        private static bool HasOwnedPostfix(MethodInfo original, string owner)
+        {
+            return Harmony.GetPatchInfo(original)?.Postfixes?
+                .Any(patch => patch.owner == owner) == true;
+        }
+
+        private static List<Patch> FindSysOwnedPrefixes(Patches patches)
+        {
+            List<Patch> result = new List<Patch>();
             if (patches?.Prefixes == null)
             {
                 return result;
@@ -228,22 +313,58 @@ namespace KRWF.SYSYayoCompat
 
             foreach (Patch patch in patches.Prefixes)
             {
-                MethodInfo method = patch.PatchMethod;
-                if (patch.owner != SysHarmonyId
-                    || method == null
-                    || method.ReturnType != typeof(bool)
-                    || method.DeclaringType?.FullName != SysPatchTypeName)
+                if (patch.owner != SysHarmonyId)
                 {
                     continue;
                 }
 
-                if (!result.Contains(method))
-                {
-                    result.Add(method);
-                }
+                result.Add(patch);
             }
 
             return result;
+        }
+
+        private static bool TryValidateSysPrefixes(IEnumerable<Patch> prefixes, out string error)
+        {
+            List<string> failures = new List<string>();
+            HashSet<MethodInfo> methods = new HashSet<MethodInfo>();
+            foreach (Patch patch in prefixes)
+            {
+                MethodInfo method = patch.PatchMethod;
+                string methodName = method == null
+                    ? null
+                    : method.DeclaringType?.FullName + "." + method.Name;
+                if (!IsBlockingSysPrefix(method))
+                {
+                    failures.Add(string.IsNullOrEmpty(methodName) ? "unresolved patch method" : methodName);
+                }
+                else if (!methods.Add(method))
+                {
+                    failures.Add(methodName + " was registered more than once");
+                }
+            }
+
+            error = failures.Count == 0 ? null : string.Join("; ", failures);
+            return failures.Count == 0;
+        }
+
+        private static bool IsBlockingSysPrefix(MethodInfo method)
+        {
+            // Ratkin and Miho use the same blocker type but reverse these two arguments.
+            if (method == null
+                || !method.IsStatic
+                || method.ReturnType != typeof(bool)
+                || method.DeclaringType?.FullName != SysPatchTypeName)
+            {
+                return false;
+            }
+
+            ParameterInfo[] parameters = method.GetParameters();
+            return parameters.Length == 2
+                && ((parameters[0].ParameterType == typeof(Pawn)
+                        && parameters[1].ParameterType == typeof(Vector3))
+                    || (parameters[0].ParameterType == typeof(Vector3)
+                        && parameters[1].ParameterType == typeof(Pawn)));
         }
     }
 
@@ -379,12 +500,6 @@ namespace KRWF.SYSYayoCompat
 
     internal static class SysSheathRenderPatch
     {
-        internal struct RenderState
-        {
-            internal bool Captured;
-            internal Vector3 RootLoc;
-        }
-
         private static Dictionary<Type, SysSheathAdapter> adaptersByCompType;
 
         internal static void Configure(IEnumerable<SysSheathAdapter> adapters)
@@ -392,22 +507,12 @@ namespace KRWF.SYSYayoCompat
             adaptersByCompType = adapters.ToDictionary(adapter => adapter.CompType);
         }
 
-        public static void Prefix(Vector3 drawPos, out RenderState __state)
-        {
-            __state = new RenderState
-            {
-                Captured = true,
-                RootLoc = drawPos
-            };
-        }
-
         public static void Postfix(
             Pawn pawn,
-            PawnRenderFlags flags,
-            RenderState __state)
+            Vector3 drawPos,
+            PawnRenderFlags flags)
         {
-            if (!__state.Captured
-                || adaptersByCompType == null
+            if (adaptersByCompType == null
                 || pawn == null
                 || pawn.Dead
                 || !pawn.Spawned
@@ -430,6 +535,8 @@ namespace KRWF.SYSYayoCompat
                 && busy.focusTarg.IsValid;
             bool weaponVisible = aiming || PawnRenderUtility.CarryWeaponOpenly(pawn);
 
+            // Preserve only SYS's sheath state. Weapon placement and animation stay in
+            // the vanilla/active-mod render chain that the removed SYS prefix blocked.
             Graphic graphic;
             if (weaponVisible)
             {
@@ -447,7 +554,7 @@ namespace KRWF.SYSYayoCompat
 
             if (graphic != null)
             {
-                adapter.Draw(sheathComp, pawn, __state.RootLoc, graphic);
+                adapter.Draw(sheathComp, pawn, drawPos, graphic);
             }
         }
 
