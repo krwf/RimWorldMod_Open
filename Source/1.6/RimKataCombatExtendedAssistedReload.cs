@@ -67,6 +67,7 @@ namespace KRWF.RimKata
                 Install(AccessTools.Method(compType, "TryPrepareShot", Type.EmptyTypes), nameof(ShotPrefix), false);
                 Install(AccessTools.Method(typeof(RimKataCombatExtendedAmmo), nameof(RimKataCombatExtendedAmmo.EnsureReady)), nameof(ReadyPostfix), true);
                 Install(AccessTools.Method(typeof(RimKataMapComponent), nameof(RimKataMapComponent.MapComponentTick)), nameof(TickPostfix), true);
+                Install(AccessTools.Method(typeof(RimKataMapComponent), nameof(RimKataMapComponent.MapRemoved)), nameof(MapRemovedPrefix), false);
                 Install(AccessTools.Method(typeof(RimKataMapComponent), nameof(RimKataMapComponent.ExposeData)), nameof(ExposePostfix), true);
             }
             catch (Exception exception)
@@ -137,7 +138,7 @@ namespace KRWF.RimKata
             if (pawn?.Spawned != true || pawn.Dead || pawn.Downed || pawn.InMentalState
                 || pawn.IsBurning() || weapon == null || weapon.Destroyed
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
-                || !RimKataEquipmentUtility.HasEnabledArmor(pawn)
+                || !RimKataEquipmentUtility.HasEnabledArmor(pawn, meleeWeapon: false)
                 || !RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)
                 || pawn.equipment?.Primary == null
                 || weapon.holdingOwner != pawn.equipment.GetDirectlyHeldThings()) return false;
@@ -284,6 +285,14 @@ namespace KRWF.RimKata
             if (state.weapon != null && Weapons.TryGetValue(state.weapon, out ReloadState current) && current == state)
                 Weapons.Remove(state.weapon);
             queue.entries.RemoveAt(index);
+        }
+
+        private static void MapRemovedPrefix(RimKataMapComponent __instance)
+        {
+            if (!Queues.TryGetValue(__instance, out ReloadQueue queue)) return;
+            for (int i = queue.entries.Count - 1; i >= 0; i--)
+                Remove(queue, i);
+            Queues.Remove(__instance);
         }
 
         private static void ExposePostfix(RimKataMapComponent __instance)

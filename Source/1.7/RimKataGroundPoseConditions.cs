@@ -9,7 +9,8 @@ namespace KRWF.RimKata
     internal static class RimKataGroundPoseConditions
     {
         internal static bool HasMovementJob(Pawn pawn)
-            => pawn.pather?.Moving == true || pawn.CurJobDef == JobDefOf.Goto;
+            => pawn.pather?.Moving == true || pawn.CurJobDef == JobDefOf.Goto
+                || RimKataPerspectiveShiftCompat.IsControlled(pawn) && RimKataPerspectiveShiftCompat.ManualMovement;
 
         internal static bool HasAttackableOpponent(Pawn pawn, RimKataPawnCombatState state)
             => TryGetAttackableOpponent(pawn, state, out _);

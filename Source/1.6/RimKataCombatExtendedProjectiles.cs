@@ -175,6 +175,7 @@ namespace KRWF.RimKata
             }
             Pawn attacker = launcher as Pawn;
             if (IsDirectBullet(shot) && attacker != null && defender != null
+                && RimKataEligibilityCache.IsCachedQualifiedPawn(defender)
                 && attacker.Map == defender.Map && attacker.Position.AdjacentTo8WayOrInside(defender.Position)
                 && RimKataTargeting.IsAutomaticEnemy(defender, attacker)
                 && defender.CanReachImmediate(attacker, PathEndMode.Touch)

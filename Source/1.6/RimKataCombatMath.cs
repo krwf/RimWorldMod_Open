@@ -292,7 +292,9 @@ namespace KRWF.RimKata
                 originalBurstCount);
             float cooldownTicks = RimKataWeaponEffectStats.AdjustedCooldownTicks(verb, pawn);
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
-            if (settings != null && RimKataEquipmentUtility.HasEnabledArmor(pawn))
+            // A ranged weapon's melee Verb still uses its ranged apparel permission.
+            bool meleeWeapon = verb.EquipmentSource?.def?.IsMeleeWeapon ?? true;
+            if (settings != null && RimKataEquipmentUtility.HasEnabledArmor(pawn, meleeWeapon))
             {
                 cooldownTicks *= settings.GetArmorCooldownFactor(pawn);
             }

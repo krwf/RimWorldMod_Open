@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Avstand</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-rustning og -bekledning</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering av «{0}» reduserer nedkjølingstiden for aktiverte våpen.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Avstandsvåpen</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Nærkampvåpen</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering av «{0}» eller «{1}» reduserer nedkjølingstiden for aktiverte våpen av den aktuelle typen.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Bekledningstype</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Hodeplagg</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Rustning</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Det ble funnet våpen med en spesiell avfyringsmåte. Vil du registrere dem?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Bekreft kopierer angrepsrutinene til hurtigbufferen. Avbryt, Esc eller Lukk beholder den opprinnelige avfyringen uten omgjøring til enkeltskudd. Lukking under registreringen beholder allerede registrerte oppføringer.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrerer… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrering fullført: {0} registrert, {1} mislykket.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registrert</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Klargjøring av kjøring: {0} lyktes, {1} mislyktes.\nLagring på disk: {2} lagret, {3} mislyktes.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Kjøringen er klargjort, men registreringen kunne ikke lagres. Oppdater utstyrsdataene for å prøve igjen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Kjøringen er klargjort og lagret på disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrering mislyktes. Den opprinnelige avfyringen beholdes; omgjøring til enkeltskudd er deaktivert.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Velg egenskapsverdier</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Vis feilsøkingsknapp</KRWF_RimKata_ShowDebugGizmo>

@@ -35,7 +35,7 @@ namespace KRWF.RimKata
             }
 
             float vanillaFactor = VanillaCooldownFactor(pawn);
-            bool armorApplied = RimKataEquipmentUtility.HasEnabledArmor(pawn);
+            bool armorApplied = RimKataEquipmentUtility.HasEnabledArmor(pawn, meleeWeapon: false);
             float armorFactor = ArmorCooldownFactor(pawn);
 
             string armorLine = armorApplied
@@ -64,7 +64,7 @@ namespace KRWF.RimKata
         private static float ArmorCooldownFactor(Pawn pawn)
         {
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
-            return settings != null && RimKataEquipmentUtility.HasEnabledArmor(pawn)
+            return settings != null && RimKataEquipmentUtility.HasEnabledArmor(pawn, meleeWeapon: false)
                 ? settings.GetArmorCooldownFactor(pawn)
                 : 1f;
         }

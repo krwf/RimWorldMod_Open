@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>À distância</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armaduras e roupas RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Ativar “{0}” reduz o tempo de recarga das armas habilitadas.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Arma à distância</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Arma corpo a corpo</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Ativar “{0}” ou “{1}” reduz o tempo de recarga das armas habilitadas do tipo correspondente.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Tipo de roupa</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Chapéus</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armadura</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Foram encontradas armas com um modo de disparo especial. Deseja registrá-las?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Confirmar copia as rotinas de ataque para o cache. Cancelar, Esc ou Fechar mantém o disparo original sem conversão para tiro único. Fechar durante o registro mantém as entradas já registradas.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrando… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registro concluído: {0} registradas, {1} falhas.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Preparação da execução: {0} sucessos, {1} falhas.\nArmazenamento em disco: {2} salvos, {3} falhas.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>A execução está preparada, mas não foi possível salvar o registro. Atualize os dados do equipamento para tentar novamente.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Execução preparada e salva em disco.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Falha no registro. O disparo original é mantido; a conversão para tiro único está desativada.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Selecionar atributos</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Mostrar botão de depuração</KRWF_RimKata_ShowDebugGizmo>

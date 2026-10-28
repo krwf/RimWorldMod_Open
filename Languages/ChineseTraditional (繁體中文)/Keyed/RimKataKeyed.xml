@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>遠程</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata 護甲與服裝</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>啟用「{0}」後，可縮短已啟用武器的冷卻時間</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>遠程武器</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>近戰武器</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>啟用「{0}」或「{1}」後，可縮短已啟用的對應類型武器的冷卻時間</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>服裝類型</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>頭部裝備</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>護甲</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>發現使用特殊攻擊方式的武器。是否註冊？</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>確認後會複製攻擊執行程序並儲存到快取。取消、Esc 或關閉將保留原有射擊方式，不進行單發轉換。註冊過程中關閉視窗，已註冊的項目仍會保留。</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>正在註冊… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>註冊完成：成功 {0} 項，失敗 {1} 項。</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>註冊成功</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>執行準備：成功 {0} 項，失敗 {1} 項。\n磁碟儲存：成功 {2} 項，失敗 {3} 項。</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>執行準備已完成，但無法儲存註冊資訊。請重新整理裝備資料後重試。</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>執行準備和磁碟儲存已完成。</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>註冊失敗。保留原有射擊方式，停用單發轉換。</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>選擇屬性</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>顯示除錯按鈕</KRWF_RimKata_ShowDebugGizmo>

@@ -265,11 +265,16 @@ namespace KRWF.RimKata
         private Thing AssignedTarget => TargetThingA;
         private bool IsPlayerForced => job?.playerForced == true;
         internal bool IsDirectionalFire => job != null && job.targetA.IsValid && !job.targetA.HasThing;
-        internal bool IsStructureMelee => structureMelee || (job?.targetA.Thing is Building
+        private bool IsWeaponScopedMelee => RimKataDualWeaponController.IsWeaponScopedMeleeJob(job);
+        private bool IsStructureAttack => structureMelee || (job?.targetA.Thing is Building
             && job.verbToUse?.IsMeleeAttack == true);
-        internal bool CanAbsorbAutomaticAttackJob => !endingJob && !IsStructureMelee;
+        internal bool IsStructureMelee => IsStructureAttack && !IsWeaponScopedMelee;
+        internal bool CanAbsorbAutomaticAttackJob => !endingJob && !IsStructureAttack;
         internal bool StructureMeleeLimitReached => structureMeleeAttacksMade > 0
             && structureMeleeAttacksMade >= job.maxNumMeleeAttacks;
+
+        internal bool IsStructureMeleeAttackFor(ThingWithComps weapon)
+            => IsStructureAttack && (!IsWeaponScopedMelee || job.targetB.Thing == weapon);
 
         private bool EnsureDirectionalFireInitialized()
         {
@@ -307,7 +312,7 @@ namespace KRWF.RimKata
 
         public override bool TryMakePreToilReservations(bool errorOnFailed)
         {
-            if (IsStructureMelee && job.targetA.Thing is IAttackTarget target)
+            if (IsStructureAttack && job.targetA.Thing is IAttackTarget target)
                 pawn.Map.attackTargetReservationManager.Reserve(pawn, job, target);
             return true;
         }
@@ -338,8 +343,8 @@ namespace KRWF.RimKata
                 if (IsStructureMelee)
                 {
                     RimKataDualWeaponController.Reset(pawn, false);
-                    QueueNearbyStructureMeleeAttack();
                 }
+                if (IsStructureAttack) QueueNearbyStructureMeleeAttack();
                 RimKataDualWeaponController
                     .NotifyDedicatedCombatJobFinished(pawn);
             });
@@ -366,6 +371,13 @@ namespace KRWF.RimKata
                 }
                 if (!dualCycleStateImported)
                 {
+                    if (IsWeaponScopedMelee
+                        && !RimKataDualWeaponController.NotifyPlayerWeaponTarget(
+                            pawn, job.verbToUse, AssignedTarget, true, allowMelee: true))
+                    {
+                        EndRimKataJobWith(JobCondition.Incompletable);
+                        return;
+                    }
                     dualCycleStateImported = true;
                     RimKataDualWeaponController.ImportLegacyPrimaryState(
                         pawn,
@@ -412,6 +424,12 @@ namespace KRWF.RimKata
 
         private void CombatTick()
         {
+            if (IsWeaponScopedMelee && IsStructureAttack
+                && (StructureMeleeLimitReached || !IsValidAssignedTarget(AssignedTarget)))
+            {
+                EndRimKataJobWith(JobCondition.Succeeded);
+                return;
+            }
             if (IsStructureMelee)
                 RimKataDualWeaponController.TickStructureMelee(pawn, this);
             else
@@ -442,7 +460,9 @@ namespace KRWF.RimKata
                     Job followup = job.Clone();
                     followup.def = JobDefOf.AttackMelee;
                     followup.targetA = nearby;
-                    followup.verbToUse = null;
+                    // AttackMelee uses B as a stand position, not an equipment slot.
+                    if (IsWeaponScopedMelee) followup.targetB = LocalTargetInfo.Invalid;
+                    else followup.verbToUse = null;
                     pawn.jobs.jobQueue.EnqueueFirst(followup);
                     return;
                 }
@@ -850,8 +870,16 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Verb), nameof(Verb.OrderForceTarget))]
     public static class Patch_Verb_OrderForceTarget_RimKata
     {
-        public static bool Prefix(Verb __instance, LocalTargetInfo target)
+        [ThreadStatic] private static Verb orderedMeleeVerb;
+
+        internal static Verb OrderedMeleeVerbFor(Pawn pawn, Job job)
+            => job?.def == JobDefOf.AttackMelee && job.playerForced
+                && orderedMeleeVerb?.CasterPawn == pawn ? orderedMeleeVerb : null;
+
+        public static bool Prefix(Verb __instance, LocalTargetInfo target, out Verb __state)
         {
+            __state = orderedMeleeVerb;
+            orderedMeleeVerb = null;
             Pawn pawn = __instance?.CasterPawn;
             if (RimKataSubdueCombat.TryHandleWeaponOrder(__instance, target)) return false;
             if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
@@ -862,6 +890,14 @@ namespace KRWF.RimKata
 
             if (__instance?.IsMeleeAttack == true)
             {
+                if (target.HasThing
+                    && RimKataDualWeaponController.CanUsePlayerMeleeWeaponCommand(pawn, __instance))
+                {
+                    // Vanilla creates AttackMelee without retaining the selected weapon.
+                    // Keep it only for this order; StartJob still gets first choice of breach.
+                    orderedMeleeVerb = __instance;
+                    return true;
+                }
                 bool closeTargetAccepted = target.HasThing
                     && RimKataDualWeaponController
                         .TryNotifyPlayerMeleeCloseTarget(
@@ -969,6 +1005,11 @@ namespace KRWF.RimKata
             pawn.jobs.TryTakeOrderedJob(job, JobTag.Misc);
             return false;
         }
+
+        public static void Finalizer(Verb __state)
+        {
+            orderedMeleeVerb = __state;
+        }
     }
 
     [HarmonyPatch(
@@ -1020,20 +1061,22 @@ namespace KRWF.RimKata
                 return true;
             }
 
-            // StartJob handles breach and explicit structure melee before ranged conversion.
-            if (job?.def == JobDefOf.AttackMelee && job.targetA.Thing is Building)
-                return true;
-
-            if (Patch_CommandVerbTarget_RimKataSecondarySwap
+            Verb orderedMeleeVerb = Patch_Verb_OrderForceTarget_RimKata
+                .OrderedMeleeVerbFor(___pawn, job);
+            if (orderedMeleeVerb == null && Patch_CommandVerbTarget_RimKataSecondarySwap
                     .TryConsumePendingMeleeAttack(
                         ___pawn,
                         job,
-                        out Verb secondaryMeleeVerb)
-                && RimKataDualWeaponController
-                    .TryConvertSecondaryMeleeAttackOrder(
-                        ___pawn,
-                        job,
-                        secondaryMeleeVerb))
+                        out Verb secondaryMeleeVerb))
+                orderedMeleeVerb = secondaryMeleeVerb;
+            if (orderedMeleeVerb != null) job.verbToUse = orderedMeleeVerb;
+
+            // Preserve the selected verb, but let StartJob handle breach before conversion.
+            if (job?.def == JobDefOf.AttackMelee && job.targetA.Thing is Building)
+                return true;
+
+            if (orderedMeleeVerb != null && RimKataDualWeaponController
+                    .TryConvertWeaponMeleeAttackOrder(___pawn, job, orderedMeleeVerb))
             {
                 return true;
             }
@@ -1361,7 +1404,8 @@ namespace KRWF.RimKata
             Job job,
             bool fromQueue)
         {
-            if (!fromQueue
+            if (RimKataDualWeaponController.IsWeaponScopedMeleeJob(job)
+                || !fromQueue
                 || job?.def != RimKataDefOf.RimKata_Attack
                 || !job.targetA.HasThing
                 || job.playerForced != true

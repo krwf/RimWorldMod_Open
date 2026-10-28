@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Tầm xa</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Giáp và trang phục RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Bật “{0}” giúp giảm thời gian hồi chiêu của vũ khí được bật.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Vũ khí tầm xa</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Vũ khí cận chiến</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Bật “{0}” hoặc “{1}” giúp giảm thời gian hồi chiêu của vũ khí được bật thuộc loại tương ứng.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Loại trang phục</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Đồ đội đầu</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Giáp</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Đã tìm thấy vũ khí có cách bắn đặc biệt. Bạn có muốn đăng ký chúng không?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Xác nhận sẽ sao chép các quy trình tấn công vào bộ nhớ đệm. Hủy, Esc hoặc Đóng giữ cách bắn gốc mà không chuyển sang từng phát. Đóng trong khi đăng ký vẫn giữ các mục đã đăng ký.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Đang đăng ký… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Đăng ký hoàn tất: {0} thành công, {1} thất bại.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Đã đăng ký</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Chuẩn bị thực thi: {0} thành công, {1} thất bại.\nLưu vào đĩa: {2} đã lưu, {3} thất bại.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Đã chuẩn bị thực thi nhưng không thể lưu thông tin đăng ký. Hãy làm mới dữ liệu trang bị để thử lại.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Đã chuẩn bị thực thi và lưu vào đĩa.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Đăng ký thất bại. Giữ cách bắn gốc; chuyển sang từng phát bị tắt.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Chọn chỉ số</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Hiện nút gỡ lỗi</KRWF_RimKata_ShowDebugGizmo>

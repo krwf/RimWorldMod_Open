@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Εξ αποστάσεως</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Πανοπλία και ενδύματα RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Η ενεργοποίηση του «{0}» μειώνει τον χρόνο επαναφοράς των ενεργών όπλων.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Όπλο εξ αποστάσεως</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Όπλο μάχης σώμα με σώμα</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Η ενεργοποίηση του «{0}» ή του «{1}» μειώνει τον χρόνο επαναφοράς των ενεργών όπλων του αντίστοιχου τύπου.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Τύπος ενδύματος</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Καλύμματα κεφαλής</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Πανοπλία</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Βρέθηκαν όπλα με ιδιαίτερο τρόπο πυροδότησης. Θέλετε να τα καταχωρίσετε;</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Η επιβεβαίωση αντιγράφει τις διαδικασίες επίθεσης στην κρυφή μνήμη. Ακύρωση, Esc ή Κλείσιμο διατηρεί την αρχική πυροδότηση χωρίς μετατροπή σε μονή βολή. Το κλείσιμο κατά την καταχώριση διατηρεί τις ήδη καταχωρισμένες εγγραφές.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Καταχώριση… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Η καταχώριση ολοκληρώθηκε: {0} επιτυχίες, {1} αποτυχίες.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Καταχωρίστηκε</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Προετοιμασία εκτέλεσης: {0} επιτυχίες, {1} αποτυχίες.\nΑποθήκευση στον δίσκο: {2} αποθηκεύτηκαν, {3} απέτυχαν.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Η εκτέλεση είναι έτοιμη, αλλά η καταχώριση δεν μπόρεσε να αποθηκευτεί. Ανανεώστε τα δεδομένα εξοπλισμού για να δοκιμάσετε ξανά.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Η εκτέλεση προετοιμάστηκε και αποθηκεύτηκε στον δίσκο.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Η καταχώριση απέτυχε. Διατηρείται η αρχική πυροδότηση· η μετατροπή σε μονή βολή απενεργοποιείται.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Επιλογή στατιστικών</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Εμφάνιση κουμπιού αποσφαλμάτωσης</KRWF_RimKata_ShowDebugGizmo>

@@ -40,8 +40,11 @@ namespace KRWF.RimKata
         // Firing registration never implies that weapon-owned effects were connected.
         internal RimKataWeaponEffectStatus EffectStatus;
         internal string EffectReason;
+        internal string EffectCacheFingerprint;
+        internal string EffectCacheSnapshot;
         internal bool Loaded;
         internal bool Failed;
+        internal bool CacheStored;
         internal int Residents;
     }
 
@@ -85,39 +88,54 @@ namespace KRWF.RimKata
             => def != null && ByDefinition.TryGetValue(def, out var types)
                 ? (IEnumerable<RimKataWeaponExecutionPlan>)types.Values : Array.Empty<RimKataWeaponExecutionPlan>();
 
-        internal static void Refresh(bool force = false)
+        internal static HashSet<ThingDef> ChangedDefinitions()
+        {
+            var selected = new HashSet<string>(RimKataMod.Settings?.enabledWeaponDefNames
+                ?? new List<string>(), StringComparer.Ordinal);
+            var changed = new HashSet<ThingDef>();
+            foreach (ThingDef def in ByDefinition.Keys)
+                if (!selected.Contains(def.defName)) changed.Add(def);
+            foreach (string name in selected)
+            {
+                ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(name);
+                if (def?.Verbs != null && !ByDefinition.ContainsKey(def)) changed.Add(def);
+            }
+            return changed;
+        }
+
+        internal static bool IsCurrent(RimKataWeaponExecutionPlan plan)
+            => plan != null && ReferenceEquals(Get(plan.Def, plan.VerbType), plan);
+
+        internal static bool IsRegistrationStored(RimKataWeaponExecutionPlan plan)
+            => plan.CacheStored && RimKataEquipmentMemory.Current?.Contains(Category, plan.Key, BaseFingerprint(plan)) == true;
+
+        // Only startup, a confirmed manual refresh, or newly enabled definitions enter discovery.
+        internal static List<RimKataWeaponExecutionPlan> Refresh(bool force = false)
         {
             Revision++;
             var selected = RimKataMod.Settings?.enabledWeaponDefNames;
-            var allowed = selected == null ? null : new HashSet<string>(selected, StringComparer.Ordinal);
-            HashSet<string> removed = null;
+            var allowed = new HashSet<string>(selected ?? new List<string>(), StringComparer.Ordinal);
+            var prepared = new List<RimKataWeaponExecutionPlan>();
             if (force) Failures.Clear();
-            foreach (RimKataWeaponExecutionPlan previous in All)
+            foreach (ThingDef def in new List<ThingDef>(ByDefinition.Keys))
             {
-                bool disabled = allowed != null && !allowed.Contains(previous.Def.defName);
-                if (force || disabled)
+                bool disabled = !allowed.Contains(def.defName);
+                if (!force && !disabled) continue;
+                foreach (RimKataWeaponExecutionPlan previous in ByDefinition[def].Values)
                 {
                     RimKataEquipmentMemory.Current?.Remove(Category, previous.Key);
                     RimKataWeaponEffectCache.Invalidate(previous.Key);
-                }
-                if (disabled)
-                {
                     Failures.Remove(previous.Key);
-                    if ((removed ??= new HashSet<string>(StringComparer.Ordinal)).Add(previous.Def.defName))
-                        RimKataCloseFireMeleeStore.RemoveDefinition(previous.Def.defName);
+                    All.Remove(previous);
+                    Pending.Remove(previous);
                 }
+                ByDefinition.Remove(def);
+                if (disabled) RimKataCloseFireMeleeStore.RemoveDefinition(def.defName);
             }
-            ByDefinition.Clear();
-            All.Clear();
-            Pending.Clear();
-            Modules.Clear();
             MethodFingerprints.Clear();
             Readers.Clear();
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-                if (!assembly.IsDynamic)
-                    foreach (Module module in assembly.GetModules())
-                        Modules[assembly.FullName + "|" + module.ModuleVersionId.ToString("D")] = module;
-            if (selected == null) return;
+            if (selected == null) return prepared;
+            bool modulesReady = false;
             var scanned = new Dictionary<Type, RimKataWeaponExecutionDiscovery.Result>();
             using (RimKataStartupDiagnostics.Measure("discovery", "weapon_execution"))
             foreach (string name in selected)
@@ -131,12 +149,22 @@ namespace KRWF.RimKata
                     Type type = properties?.verbClass;
                     if (properties == null || properties.IsMeleeAttack || type == null
                         || !typeof(Verb).IsAssignableFrom(type) || types.ContainsKey(type)) continue;
+                    if (!modulesReady)
+                    {
+                        Modules.Clear();
+                        foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+                            if (!assembly.IsDynamic)
+                                foreach (Module module in assembly.GetModules())
+                                    Modules[assembly.FullName + "|" + module.ModuleVersionId.ToString("D")] = module;
+                        modulesReady = true;
+                    }
                     var plan = new RimKataWeaponExecutionPlan
                     {
                         Def = def, VerbType = type,
                         Key = RimKataEquipmentMemory.Fingerprint(def.defName + "\n" + TypeIdentity(type)),
                         HandledByCompatibility = compatibilityHandler?.Invoke(type) == true
                     };
+                    RimKataEquipmentOwnership.RememberExecution(def, plan.Key);
                     try
                     {
                         if (Failures.TryGetValue(plan.Key, out string failure))
@@ -162,6 +190,7 @@ namespace KRWF.RimKata
                                 Apply(plan, result);
                                 Store(plan);
                             }
+                            RimKataWeaponEffectCache.Prepare(plan);
                         }
                     }
                     catch (Exception exception)
@@ -170,12 +199,17 @@ namespace KRWF.RimKata
                     }
                     types.Add(type, plan);
                     All.Add(plan);
+                    prepared.Add(plan);
                     if (plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration) Pending.Add(plan);
                     Unload(plan);
                 }
+                var currentKeys = new HashSet<string>(StringComparer.Ordinal);
+                foreach (RimKataWeaponExecutionPlan plan in types.Values) currentKeys.Add(plan.Key);
+                RimKataEquipmentOwnership.ForgetObsoleteExecutions(def, currentKeys);
             }
             MethodFingerprints.Clear();
             Readers.Clear();
+            return prepared;
         }
 
         // Called only by equipment/registration preparation, never by a firing or render getter.
@@ -185,29 +219,19 @@ namespace KRWF.RimKata
             if (plan.Loaded) return true;
             try
             {
-                bool accepted = plan.RegistrationAccepted, declined = plan.RegistrationDeclined;
-                string fingerprint = plan.Fingerprint;
-                if (!TryRestore(plan))
+                if (!TryRestore(plan, validateRoute: false))
                 {
-                    Apply(plan, RimKataWeaponExecutionDiscovery.Analyze(plan.VerbType, plan.HandledByCompatibility));
-                    if (plan.Fingerprint == fingerprint)
-                    {
-                        plan.RegistrationAccepted = accepted;
-                        plan.RegistrationDeclined = declined;
-                        if (declined) plan.Mode = RimKataWeaponExecutionMode.Live;
-                        else if (accepted) plan.Mode = RimKataWeaponExecutionMode.Copied;
-                    }
-                    Store(plan);
+                    FailRegistration(plan, "Prepared firing data could not be restored. Use the equipment refresh to prepare it again.", discardCache: false);
+                    return false;
                 }
                 BindReaders(plan);
                 if (plan.RegistrationDeclined) plan.AllowConversion = false;
                 plan.Loaded = true;
-                if (plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration && !Pending.Contains(plan)) Pending.Add(plan);
                 return true;
             }
             catch (Exception exception)
             {
-                FailRegistration(plan, exception.GetType().Name + ": " + exception.Message);
+                FailRegistration(plan, exception.GetType().Name + ": " + exception.Message, discardCache: false);
                 Unload(plan);
                 return false;
             }
@@ -289,12 +313,15 @@ namespace KRWF.RimKata
             Store(plan);
         }
 
-        internal static void FailRegistration(RimKataWeaponExecutionPlan plan, string reason)
+        internal static void FailRegistration(RimKataWeaponExecutionPlan plan, string reason, bool discardCache = true)
         {
             if (plan == null) return;
             Revision++;
-            plan.RegistrationAccepted = false;
-            plan.RegistrationDeclined = false;
+            if (discardCache)
+            {
+                plan.RegistrationAccepted = false;
+                plan.RegistrationDeclined = false;
+            }
             plan.FiringReady = false;
             plan.Mode = RimKataWeaponExecutionMode.Live;
             plan.AllowConversion = false;
@@ -308,7 +335,7 @@ namespace KRWF.RimKata
                 Failures[plan.Key] = reason;
             }
             Pending.Remove(plan);
-            RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
+            if (discardCache) RimKataEquipmentMemory.Current?.Remove(Category, plan.Key);
             RimKataWeaponRegistrationFailures.Record(plan.Def, reason);
         }
 
@@ -399,7 +426,7 @@ namespace KRWF.RimKata
                 foreach (object value in values) if (value is Patch patch) yield return patch;
         }
 
-        private static bool TryRestore(RimKataWeaponExecutionPlan plan)
+        private static bool TryRestore(RimKataWeaponExecutionPlan plan, bool validateRoute = true)
         {
             var memory = RimKataEquipmentMemory.Current;
             if (memory == null || !memory.TryRead(Category, plan.Key, BaseFingerprint(plan), out XmlElement data)
@@ -415,7 +442,7 @@ namespace KRWF.RimKata
                 if (item.GetAttribute("burst") == "1") bursts.Add(method);
             }
             if (methods.Count == 0 || methods.Count > RimKataWeaponExecutionDiscovery.MaximumStoredMethods) return false;
-            string fingerprint = RouteFingerprint(methods.ToArray());
+            string fingerprint = validateRoute ? RouteFingerprint(methods.ToArray()) : plan.Fingerprint;
             if (fingerprint != data.GetAttribute("route")) return false;
             plan.Methods = methods.ToArray();
             plan.BurstMethods = bursts.ToArray();
@@ -438,6 +465,7 @@ namespace KRWF.RimKata
             plan.AllowConversion = plan.HandledByCompatibility || (!plan.RegistrationDeclined
                 && !plan.RegistrationAccepted && plan.AnalysisComplete && plan.CanControlBurst);
             plan.Fingerprint = fingerprint;
+            plan.CacheStored = true;
             RimKataStartupDiagnostics.Count("weapon_execution_cache_hit");
             return true;
         }
@@ -457,6 +485,7 @@ namespace KRWF.RimKata
 
         private static void Store(RimKataWeaponExecutionPlan plan)
         {
+            plan.CacheStored = false;
             if (plan.Methods.Length == 0 || plan.WarmupMethod == null || plan.TickMethod == null)
             {
                 // Registration decisions do not require keeping an unequipped execution graph alive.
@@ -464,7 +493,7 @@ namespace KRWF.RimKata
                 {
                     var changed = (XmlElement)saved.CloneNode(true);
                     changed.SetAttribute("decision", plan.RegistrationAccepted ? "accepted" : plan.RegistrationDeclined ? "declined" : "");
-                    RimKataEquipmentMemory.Current.Store(Category, plan.Key, BaseFingerprint(plan), changed);
+                    plan.CacheStored = RimKataEquipmentMemory.Current.Store(Category, plan.Key, BaseFingerprint(plan), changed);
                 }
                 return;
             }
@@ -489,7 +518,7 @@ namespace KRWF.RimKata
                 if (bursts.Contains(method)) item.SetAttribute("burst", "1");
                 data.AppendChild(item);
             }
-            RimKataEquipmentMemory.Current?.Store(Category, plan.Key, BaseFingerprint(plan), data);
+            plan.CacheStored = RimKataEquipmentMemory.Current?.Store(Category, plan.Key, BaseFingerprint(plan), data) == true;
         }
     }
 }

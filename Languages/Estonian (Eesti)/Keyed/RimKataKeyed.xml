@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Kaugvõitlus</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata soomus ja rõivad</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Valiku „{0}“ lubamine lühendab lubatud relvade jahtumisaega.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Kaugvõitlusrelv</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Lähivõitlusrelv</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Valiku „{0}“ või „{1}“ lubamine lühendab vastavat tüüpi lubatud relvade jahtumisaega.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Rõiva tüüp</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Peakate</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Soomus</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Leiti erilise tulistamisviisiga relvi. Kas soovite need registreerida?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Kinnitamine kopeerib rünnakuprotseduurid vahemällu. Tühistamine, Esc või sulgemine säilitab algse tulistamisviisi ilma üksiklaskudeks teisendamiseta. Registreerimise ajal sulgemisel jäävad juba registreeritud kirjed alles.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registreerimine… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registreerimine lõpetatud: {0} õnnestus, {1} ebaõnnestus.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registreeritud</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Käivitamise ettevalmistus: {0} õnnestus, {1} ebaõnnestus.\nKettale salvestamine: {2} salvestatud, {3} ebaõnnestus.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Käivitamine on ette valmistatud, kuid registreeringut ei õnnestunud salvestada. Uuesti proovimiseks värskendage varustuse andmeid.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Käivitamine on ette valmistatud ja kettale salvestatud.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registreerimine ebaõnnestus. Algne tulistamisviis säilib; üksiklaskudeks teisendamine on keelatud.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Vali näitajad</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Näita silumisnuppu</KRWF_RimKata_ShowDebugGizmo>

@@ -135,8 +135,12 @@ namespace KRWF.RimKata
             result.Methods.Add(method);
             bool gameMethod = method.DeclaringType?.Assembly == Game;
             if (method == NativeTick) result.HasNativeTick = true;
+            // Beam graser and incinerator apply damage through the native beam shot;
+            // they have the same burst lifecycle without launching a Projectile.
             if (gameMethod && method.Name == "TryCastShot"
-                && typeof(Verb_LaunchProjectile).IsAssignableFrom(method.DeclaringType)) result.HasShot = true;
+                && (typeof(Verb_LaunchProjectile).IsAssignableFrom(method.DeclaringType)
+                    || method.DeclaringType == typeof(Verb_ShootBeam)
+                    || method.DeclaringType == typeof(Verb_ArcSprayIncinerator))) result.HasShot = true;
             if (gameMethod && method.Name == nameof(Projectile.Launch)
                 && typeof(Projectile).IsAssignableFrom(method.DeclaringType)) result.HasShot = true;
 

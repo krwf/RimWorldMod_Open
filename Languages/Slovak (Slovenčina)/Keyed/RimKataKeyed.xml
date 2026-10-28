@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Na diaľku</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Brnenie a oblečenie RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Zapnutie „{0}“ skracuje čas obnovenia povolených zbraní.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Zbraň na diaľku</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Zbraň na blízko</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Zapnutie „{0}“ alebo „{1}“ skracuje čas obnovenia povolených zbraní daného typu.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Typ oblečenia</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Pokrývka hlavy</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Brnenie</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Našli sa zbrane s osobitným spôsobom streľby. Chcete ich zaregistrovať?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Potvrdenie skopíruje postupy útoku do vyrovnávacej pamäte. Zrušenie, Esc alebo zatvorenie zachová pôvodnú streľbu bez prevodu na jednotlivé výstrely. Zatvorenie počas registrácie ponechá už zaregistrované položky.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrácia… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrácia dokončená: {0} úspešných, {1} neúspešných.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Zaregistrované</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Príprava vykonávania: {0} úspešných, {1} neúspešných.\nUloženie na disk: {2} uložených, {3} neúspešných.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Vykonávanie je pripravené, ale registráciu sa nepodarilo uložiť. Obnovte údaje vybavenia a skúste to znova.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Vykonávanie pripravené a uložené na disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrácia zlyhala. Pôvodná streľba zostáva zachovaná; prevod na jednotlivé výstrely je vypnutý.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Vybrať štatistiky</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Zobraziť ladiace tlačidlo</KRWF_RimKata_ShowDebugGizmo>

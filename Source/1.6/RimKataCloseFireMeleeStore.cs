@@ -78,9 +78,9 @@ namespace KRWF.RimKata
         }
 
         // Call only for an applied permission change, never for the selector's draft list.
-        internal static void RemoveDefinition(string defName)
+        internal static bool RemoveDefinition(string defName)
         {
-            if (string.IsNullOrEmpty(defName)) return;
+            if (string.IsNullOrEmpty(defName)) return false;
             ThingDef definition = DefDatabase<ThingDef>.GetNamedSilentFail(defName);
             if (definition != null)
             {
@@ -88,9 +88,9 @@ namespace KRWF.RimKata
                 Loaded.Remove(definition);
             }
             RimKataEquipmentMemory.Current?.Remove(AbsentCategory, defName);
-            if (directory != null)
-                RemoveObsoleteFile(Path.Combine(directory,
-                    RimKataAllowedWeaponStore.FileStem(defName) + ".xml"), defName);
+            if (directory == null) return false;
+            return RemoveObsoleteFile(Path.Combine(directory,
+                RimKataAllowedWeaponStore.FileStem(defName) + ".xml"), defName);
         }
 
         internal static void PrepareDefinition(ThingDef definition, bool refresh)
@@ -117,13 +117,20 @@ namespace KRWF.RimKata
                 : Path.Combine(directory, RimKataAllowedWeaponStore.FileStem(definition.defName) + ".xml");
             if (result == null && !refresh && path != null && File.Exists(path))
             {
-                try { result = Read(path, definition, fingerprint); }
+                bool invalidStoredXml;
+                try
+                {
+                    result = Read(path, definition, fingerprint);
+                    invalidStoredXml = result == null;
+                }
                 catch (Exception exception)
                 {
+                    invalidStoredXml = RimKataAllowedWeaponStore.IsInvalidStoredXml(exception);
                     WarnOnce("read:" + definition.defName,
                         "Could not read close-fire melee data for " + definition.defName
                         + "; it will be regenerated. " + exception.Message);
                 }
+                if (invalidStoredXml) RemoveObsoleteFile(path, definition.defName);
             }
             if (result == null)
             {

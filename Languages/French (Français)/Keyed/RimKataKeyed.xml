@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>À distance</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armures et vêtements RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Activer « {0} » réduit le délai de récupération des armes autorisées.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Arme à distance</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Arme de mêlée</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Activer « {0} » ou « {1} » réduit le délai de récupération des armes autorisées du type correspondant.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Type de vêtement</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Couvre-chef</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armure</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Des armes utilisant un mode de tir particulier ont été détectées. Voulez-vous les enregistrer ?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Confirmer copie leurs routines d'attaque dans le cache. Annuler, Échap ou Fermer conserve le tir d'origine sans conversion en tir unique. Fermer pendant l'enregistrement conserve les entrées déjà enregistrées.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Enregistrement… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Enregistrement terminé : {0} réussites, {1} échecs.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Enregistré</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Préparation de l’exécution : {0} réussites, {1} échecs.\nSauvegarde sur disque : {2} sauvegardés, {3} échecs.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>L’exécution est prête, mais l’enregistrement n’a pas pu être sauvegardé. Actualisez les données d’équipement pour réessayer.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Exécution préparée et sauvegardée sur disque.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Échec de l'enregistrement. Le tir d'origine est conservé ; la conversion en tir unique est désactivée.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Choisir les statistiques</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Afficher le bouton de débogage</KRWF_RimKata_ShowDebugGizmo>

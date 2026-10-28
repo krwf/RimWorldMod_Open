@@ -26,7 +26,7 @@ namespace KRWF.RimKata
                     {
                         store.Select(settings, profile);
                         buffers.SyncFrom(settings);
-                        RimKataMod.ApplyCombatFeatureSettingsChange();
+                        RimKataMod.ApplyCombatFeatureSettingsChange(refreshEquipment: false);
                     }
                     catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
                     {
@@ -46,7 +46,7 @@ namespace KRWF.RimKata
                         {
                             store.DeleteCurrent(settings);
                             buffers.SyncFrom(settings);
-                            RimKataMod.ApplyCombatFeatureSettingsChange();
+                            RimKataMod.ApplyCombatFeatureSettingsChange(refreshEquipment: false);
                         }
                         catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
                         {

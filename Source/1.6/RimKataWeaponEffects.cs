@@ -18,8 +18,6 @@ namespace KRWF.RimKata
         internal bool managersInitialized;
         internal bool secondarySnapshot = true;
         internal List<HediffDef> suspendedManagers = new List<HediffDef>();
-        internal readonly List<Hediff> baselineHediffs = new List<Hediff>();
-        internal RimKataWeaponEffectStats.Snapshot statSnapshot;
         internal ThingWithComps primaryWeapon;
         internal int lastTick = -1;
         internal int intervalDelta;
@@ -130,7 +128,6 @@ namespace KRWF.RimKata
                 if (list.Count == 0) owners.Remove(record.pawn);
             }
             record.managers.Clear(); record.effects.Clear(); record.cycle = null;
-            record.baselineHediffs.Clear(); record.statSnapshot = null;
         }
     }
 
@@ -169,24 +166,27 @@ namespace KRWF.RimKata
         {
             private readonly RimKataWeaponEffectState previous;
             private readonly TargetCleanup previousCleanup;
+            private readonly RimKataWeaponEffectStats.Scope stats;
             private readonly bool entered;
             internal Scope(RimKataWeaponEffectState record, object owner = null)
             {
                 previous = current; previousCleanup = targetCleanup; entered = true; current = record;
+                stats = new RimKataWeaponEffectStats.Scope(owner, record?.verb);
                 // A nested callback belonging to another manager must not inherit this removal reason.
                 if (owner != null && owner != targetCleanup.manager) targetCleanup = default;
             }
             public void Dispose()
-            { if (entered) { current = previous; targetCleanup = previousCleanup; } }
+            { if (entered) { stats.Dispose(); current = previous; targetCleanup = previousCleanup; } }
         }
 
-        internal static void PrepareWeapon(Harmony harmony, RimKataWeaponExecutionPlan execution, bool force = false)
+        internal static void PrepareWeapon(Harmony harmony, RimKataWeaponExecutionPlan execution)
         {
             execution.EffectStatus = RimKataWeaponEffectStatus.NotDetected;
             execution.EffectReason = null;
             if (!RimKataWeaponExecutionRuntime.CanPrepareEffects(execution))
             {
                 plans.Remove(execution.Def);
+                RimKataWeaponEffectStats.ReleaseDefinition(execution.Def);
                 if (store != null)
                     for (int i = store.records.Count - 1; i >= 0; i--)
                         if (store.records[i].weapon.def == execution.Def) Release(store.records[i], true);
@@ -196,7 +196,7 @@ namespace KRWF.RimKata
             { execution.EffectStatus = RimKataWeaponEffectStatus.Connected; return; }
             try
             {
-                if (!RimKataWeaponEffectCache.TryGet(execution, force, out var plan, out string reason))
+                if (!RimKataWeaponEffectCache.TryGet(execution, out var plan, out string reason))
                 { if (reason != null) Original(execution, reason); return; }
                 if (!RimKataWeaponEffectHealth.Initialize(out reason)) { Original(execution, reason); return; }
                 RimKataWeaponEffectStats.IsSupported(StatDefOf.AimingDelayFactor);
@@ -214,6 +214,7 @@ namespace KRWF.RimKata
         internal static void ForgetDefinition(ThingDef definition)
         {
             plans.Remove(definition);
+            RimKataWeaponEffectStats.ReleaseDefinition(definition);
             if (store == null) return;
             for (int i = store.records.Count - 1; i >= 0; i--)
                 if (store.records[i].weapon.def == definition) Release(store.records[i], true);
@@ -224,6 +225,7 @@ namespace KRWF.RimKata
             execution.EffectStatus = RimKataWeaponEffectStatus.Original;
             execution.EffectReason = reason;
             RimKataStartupDiagnostics.Count("weapon_effects_original");
+            if (!RimKataWeaponEffectCache.RememberUnsupported(execution, reason)) return;
             Log.Warning("[RimKata] Weapon effects remain on the original shared path for "
                 + execution.Def.defName + ": " + reason
                 + " Firing registration does not imply weapon-local effect support.");
@@ -231,6 +233,8 @@ namespace KRWF.RimKata
 
         private static void Install(Harmony harmony, MethodInfo method)
         {
+            // Rewritten native helpers are trace/fingerprint dependencies, never new global hooks.
+            if (method.DeclaringType?.Assembly == typeof(Pawn).Assembly) return;
             if (installed.Contains(method)) return;
             bool owner = !method.IsStatic && (typeof(Verb).IsAssignableFrom(method.DeclaringType)
                 || typeof(ThingComp).IsAssignableFrom(method.DeclaringType)
@@ -335,6 +339,7 @@ namespace KRWF.RimKata
                         Release(old, true);
                 }
             if (active) Bind(registry, pawn, second, state);
+            else SyncStats(pawn, state, null);
         }
 
         private static void Bind(RimKataWeaponEffectRegistry registry, Pawn pawn,
@@ -383,11 +388,18 @@ namespace KRWF.RimKata
                     }
                 }
                 SuspendNativeSecondary(record, shared);
-                shared.UnionWith(plan.ManagerDefs);
-                shared.UnionWith(plan.Effects);
-                RimKataWeaponEffectStats.Capture(record, shared);
-                EnsureManagers(record);
             }
+            SyncStats(record.pawn, combat, record);
+            if (first) EnsureManagers(record);
+        }
+
+        private static void SyncStats(Pawn pawn, RimKataPawnCombatState combat, RimKataWeaponEffectState secondary)
+        {
+            if (combat?.dualEngagementActive != true)
+            { RimKataWeaponEffectStats.ReleasePawn(pawn); return; }
+            CanBind(combat.primaryWeaponCycle, out var primaryPlan);
+            RimKataWeaponEffectStats.Sync(pawn, combat.primaryWeaponCycle, combat.secondaryWeaponCycle,
+                primaryPlan, secondary?.plan, secondary);
         }
 
         private static void SuspendNativeSecondary(RimKataWeaponEffectState record, HashSet<HediffDef> shared)
@@ -507,12 +519,6 @@ namespace KRWF.RimKata
         }
 
         internal static bool HasEffects(Verb verb) => verb != null && store != null && store.verbs.ContainsKey(verb);
-        internal static bool TryGetStatContext(Verb verb, out RimKataWeaponEffectState record)
-        {
-            record = null;
-            return verb != null && store != null && store.verbs.TryGetValue(verb, out record) && record.plan != null;
-        }
-
         internal static bool TryReadScopedState(Pawn pawn, ThingWithComps weapon, out RimKataRangedAttackState state)
         {
             state = default;
@@ -624,7 +630,7 @@ namespace KRWF.RimKata
         private static float GetStatValue(Thing thing, StatDef stat, bool applyPostProcess, int cacheStaleAfterTicks)
             => current != null && thing == current.pawn
                 ? RimKataWeaponEffectStats.GetStatValue(current.verb, current.pawn, stat, applyPostProcess, cacheStaleAfterTicks)
-                : thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
+                : RimKataWeaponEffectStats.GetScopedStatValue(thing, stat, applyPostProcess, cacheStaleAfterTicks);
 
         private static IEnumerable<CodeInstruction> RewriteAccess(IEnumerable<CodeInstruction> instructions,
             MethodBase __originalMethod, ILGenerator generator)
@@ -661,7 +667,7 @@ namespace KRWF.RimKata
                         "Weapon effect cleanup failed: " + exception.Message);
                 RimKataWeaponRegistrationFailures.ShowPending();
             }
-            finally { store?.Forget(record); }
+            finally { store?.Forget(record); RimKataWeaponEffectStats.ReleasePawn(record.pawn); }
         }
 
         private static void ReleaseCore(RimKataWeaponEffectState record, bool restoreOriginal)
@@ -700,16 +706,22 @@ namespace KRWF.RimKata
 
         internal static void ReleaseWeapon(ThingWithComps weapon)
         {
+            RimKataWeaponEffectStats.ReleaseWeapon(weapon);
             if (weapon != null && store != null && store.weapons.TryGetValue(weapon, out var record)) Release(record, true);
         }
 
         internal static void ReleasePawn(Pawn pawn)
         {
+            RimKataWeaponEffectStats.ReleasePawn(pawn);
             if (pawn == null || store == null || !store.owners.TryGetValue(pawn, out var records)) return;
             while (records.Count != 0) Release(records[records.Count - 1], true);
         }
 
-        internal static void ResetGame() { store = null; current = null; targetCleanup = default; }
+        internal static void ResetGame()
+        {
+            store = null; current = null; targetCleanup = default;
+            RimKataWeaponEffectStats.ResetGame();
+        }
     }
 }
 

@@ -1,5 +1,129 @@
 # RimKata 소스 메서드 색인
 
+## 2026-10-29 허용 의류의 원거리·근접 무기 구분
+
+- `RimKataSettings.ExposeArmorPermissions`: 기존 `enabledArmorDefNames`는 읽기 전용 이관 자료입니다. 새 `enabledRangedArmorDefNames`·`enabledMeleeArmorDefNames` 노드가 없을 때 각각 독립 복사하며, 이미 저장된 빈 목록과 개별 선택은 보존합니다. 설정 snapshot·장비 출처 정리에도 두 전역 목록을 포함하고 프로필에는 넣지 않습니다.
+- `Dialog_RimKataDefSelector`: 의류의 두 체크와 종류별 필터 결과 일괄 선택을 분리합니다. 허용 여부 필터·메인 선택 수는 합집합이며 확인 때 각각 반영, 초기화 때 양쪽 기본값 적용, 닫기 때 작업 사본 폐기를 유지합니다. 29개 언어에 열 이름과 설명을 반영했습니다.
+- `EquipmentUtility.HasEnabledArmor(pawn, meleeWeapon)`: 해당 무기 종류의 허용 집합만 조회하며 비어 있으면 착용 목록을 순회하지 않습니다. `CombatMath.CooldownTicksForSingleShot`·`DualWeaponController.TryTakeVanillaMeleeCooldown`은 실제 무기 Def 분류를 사용합니다. 총의 근접 Verb도 원거리 허용이며, CE 보조 재장전과 원거리 쿨다운 스탯은 원거리 허용에 연결합니다. 기존 감소율 산식과 공격 사이클은 유지합니다.
+- 확인: 1.6/1.7 Release 경고·오류 0. 실제 Scribe의 구 목록 이관·빈 목록·새 독립값·누락 항목·신규 기본값 및 런타임 종류별 허용 분리를 확인했습니다. 인게임 창 배치·전투는 별도입니다.
+
+## 2026-10-29 PS 돌파 카메라 추적
+
+- `ApplyRender → FollowBreachRender → BreachCameraPosition`: PS `Avatar.UpdateCamera`의 셀 중심 대체값에만 현재 조종 폰의 돌파 Job 조건을 적용하여 `Pawn.DrawPos`의 보간된 이동 좌표를 사용합니다. 카메라 잠금·PS 물리 좌표의 우선순위와 기존 easing/줌/흔들림을 보존합니다.
+- PS 물리 좌표·렌더 행렬·이동 제어권은 변경하지 않습니다. 돌파 종료·취소 후 현재 Job 조건에서 자동으로 원래 추적에 복귀합니다. 다른 폰 순회나 별도 위치 캐시는 없으며 1.6/1.7의 전용 PS 렌더 소스에만 연결합니다. 도약 자세의 높이·회전 행렬까지 카메라에 적용하지는 않습니다.
+
+## 2026-10-29 PS 우클릭 제압 범위 정정
+
+- 일반 우클릭 메뉴를 여는 `SelectorOnGUI / GetOptions` 공유 훅·입력 범위·전체 옵션 래퍼는 제거했습니다. PS 원래 메뉴 차단과 운반물/다른 선택 폰/수정키 처리를 유지합니다.
+- `SelectorClickPrefix → TryShowPlayerSubdueMenu`: 소집 조종폰이 Touch 거리의 폰을 우클릭하면 제압 단일 항목을 우선 표시합니다. 중립/다운 폰도 기존 제압 조건을 사용하며 그 밖에는 기존 집중 공격·빈 땅 중지 동작입니다. 제압을 선택할 때 자격·무게·대상 상태·Touch를 다시 확인한 뒤 기존 집중 공격을 정리하고 원래 제압 명령을 호출합니다.
+- `FloatMenuOptionProvider_RimKataSubdue.OptionFor`: 기존 제압 항목 생성 본문을 공용화하여 번역·거절 사유·예약 표시·실행 명령을 재사용합니다. PS 밖의 제압에는 Touch 제한을 추가하지 않습니다. 일반 메뉴 목록이나 전체 모드의 메뉴 공급자를 새로 탐색하지 않습니다.
+
+## 2026-10-29 PS 집중 공격 선 표시
+
+- 좌클릭 수동 사격(`HasManualFireInput`) 중에는 PS 전용 선 출력과 선택된 폰의 `DrawCombatIndicators` 집중선 출력을 모두 생략합니다. 우클릭 집중·기즈모 지정 선은 유지하며, 공격·근접 문맥에 사용되는 `focusedTargetFromAttackGizmo` 값은 표시 목적으로 변경하지 않습니다.
+- `DrawPlayerOverlays → DrawPlayerFocusedTargets`: 기존 PS 전용 `MapGizmoUtility.MapUIUpdate` 연결에서 현재 조종 폰 한 명의 기존 두 cycle만 읽습니다. 기즈모 hover 없이도 집중 공격 선을 그리며 이미 선택된 폰은 본래 `DrawCombatIndicators`에 맡겨 중복 출력을 피합니다.
+- `DrawFocusedTargetLine`: 기존 검은 선의 재질·굵기·좌표 계산을 그대로 재사용합니다. `showFocusedAttackLine` 설정, 현재 맵·생존·유효 표적 조건을 유지합니다. 일반 폰 렌더 gate나 PS의 바닐라 Job 선 숨김 패치는 바꾸지 않고, 쿨다운 표시·표적 재탐색·별도 표적 목록을 추가하지 않습니다.
+
+## 2026-10-29 PS 소집 우클릭 집중 공격
+
+- `SelectorClickPrefix`: 소집 여부와 관계없이 기존 우클릭 집중 공격 지정(주 슬롯 우선·부 슬롯·교대)을 사용합니다. 우클릭 지정 전에 좌클릭 수동 사격을 종료하고, 성공 시 소집 입력 상태를 동기화하여 클릭 유지 없이 집중 공격을 허용합니다. 빈 땅 우클릭은 기존처럼 집중 공격·전투를 중지합니다.
+- `CombatFire`: 좌클릭 수동 사격의 첫 입력에서만 기존 두 슬롯의 집중 대상을 정리합니다. 누르고 있는 동안의 조준점 갱신은 발사 주기와 쿨다운을 유지하며, 클릭 해제 후 이전 집중 대상을 복원하지 않습니다.
+- `IsManualCloseTarget`: PS 소집 폰의 차단되지 않은 명시적 슬롯 집중 대상도 Touch 거리이면 기존 근접 사격 문맥을 사용합니다. 일반 후보·다운 대상 허용 규칙은 변경하지 않습니다. 양버전 소스에 적용하며 인게임 검증은 별도입니다.
+
+## 2026-10-28 PS 이동 중 바닥 사격 주기 보존
+
+- `SetDirectionalTarget`: 클릭 셀을 방향 기준으로 저장합니다. 최초 등록만 `BeginDirectionalFire`, 지속 입력의 방향 변경은 `UpdateDirectionalFire`로 연결하여 교전 소유 무기와 동일 틱 실행 경계를 반복 초기화하지 않습니다.
+- `RimKataDirectionalFire.RegisterSlot`: PS 소집 좌클릭 유지 중 이미 등록된 방향의 갱신은 진행 중 Native 요청·계획·조준·쿨다운을 보존합니다. 새 방향 등록과 일반 난사 명령의 기존 초기화는 유지합니다.
+- `ExtendsManualFireToRange / TryGetShotTarget`: PS 수동 난사에서만 사거리 밖 클릭 셀을 방향 기준으로 허용하고, 실제 탄환의 끝점은 현재 폰 위치에서 무기 사거리 안으로 투영합니다. 난사 비활성은 클릭 셀과 기존 사거리 제한을 사용합니다.
+- `RimKataNativeAttack.PrepareShot`: PS 일반 셀 사격의 실제 발사 직전에 현재 위치로 끝점을 재계산하여 요청 표적·계획 셀·Verb 표적을 함께 갱신합니다. Queue 이후 WASD 이동으로 이전 끝점이 사거리 밖이 되는 실패를 막으며 반응 공격·제압·발차기·사냥은 이 갱신 대상이 아닙니다. 일반 후보 차단·다운 대상 허용·클릭 해제 동작은 유지합니다. 소스·빌드 확인과 인게임 재현 확인은 별개입니다.
+
+## 2026-10-28 PS 소집 수동 표적과 폭발체 후보 분리
+
+- `IsDraftedControlled / AllowsCycleTarget`: PS 직접 조종 중인 소집 폰만 일반 후보 탐색·입력·선택과 기존 일반 후보 계획을 차단합니다. 명시적 집중 대상·공격 명령·수동 셀 사격 및 폭발체 요격은 유지합니다. `WaitAttackPrefix`도 이 범위의 바닐라 자동 공격을 막으며 `MayAutoFire / FireAtWill`는 반응 사격·요격용 허용 의미를 유지합니다.
+- `SharedTargetSearch.Begin / Advance / TrySelectCandidate`: 일반 링 탐색은 시작하지 않고 남은 일반 후보를 정리합니다. 폭발체는 기존 별도 목록에서 선택하고, `randomAttackEnabled` 설정 자체는 바꾸지 않습니다. 비소집 조종 폰과 다른 폰은 기존 동작입니다.
+- `IsManualTarget`: 현재 클릭 표적 하나와 두 장착 무기 참조를 사용합니다. 집중 대상 등록·유지·계획 검증과 `NativeAttack.CanContinue`에 동일한 다운 대상 허용을 전달합니다. 클릭 해제·소집 변경·아바타/로드 초기화 때 권한이 끝나며 사망 표적은 기존대로 거절합니다. 두 슬롯의 조준·쿨다운과 반응 공격 실행 경로는 유지합니다.
+
+## 2026-10-28 PS 소집 클릭 수명과 혼합 무기 사격
+
+- `RimKataPerspectiveShiftCompat.PhysicsPrefix → UpdateManualFireInput → EndManualFire`: 소집 좌클릭의 유지·해제를 WASD와 별개로 처리합니다. 클릭이 등록한 주·부 무기만 참조하여 목표·일반 공격 계획을 정리하고 쿨다운·실행 중 요격/반응 공격은 보존합니다. 미저장 입력 상태는 아바타 교체·로드 때 초기화하며, 명시적 기즈모 공격과 비소집 우클릭 집중 공격은 별도 수명입니다.
+- `OwnsFireInput / CombatFire / SetManualTarget`: 주 슬롯 근접·부 슬롯 원거리도 수동 사격 입구에 포함합니다. 근접거리라는 이유로 전체 `TryMeleeAttack`에 넘기던 분기를 없애고 각 무기의 기존 cycle에 집중 대상을 등록합니다. `IsManualCloseTarget`은 클릭 소유 무기의 Touch 대상만 해당 cycle의 근접 사격 문맥에 포함하며 전역 근접 대상 범위는 넓히지 않습니다.
+- `SetDirectionalTarget / RimKataDirectionalFire.Register / TryGetShotTarget`: PS 클릭 유지 중에는 기존 셀 표적 자료를 재사용합니다. 난사 비활성이면 클릭 셀 그대로, 활성이면 기존 최대 사거리 끝점을 사용하며 클릭 해제 때 폐기합니다. 일반 난사 등록·기즈모 허용 조건은 유지합니다.
+- `ClearManualWeaponTarget`: 기존 원거리 공격 중지 함수의 쿨다운 보존 본문을 공용화하여 PS 수동 근접무기도 정리합니다. 기존 `ClearRangedTargetingForHoldFire`의 원거리 한정 조건은 유지합니다. 새 일반 폰 순회·렌더 검색은 추가하지 않습니다. 아래 과거 전체 집계는 재산출하지 않았습니다.
+- 클릭 해제 차단은 `BlocksAutomaticAttack`과 소집 `WaitAttackPrefix`에서 처리합니다. `MayAutoFire / FireAtWill`까지 끄면 떨치기·슬라이딩의 반응 사격 선택과 요격 탐색이 막히므로 기존 허용 의미를 유지합니다.
+
+## 2026-10-27 무기별 근접 명령과 전체 근접 명령 구분
+
+- `Patch_Verb_OrderForceTarget_RimKata.OrderedMeleeVerbFor`: 실제 무기 명령 호출 동안만 선택한 Verb를 보존하고 Finalizer에서 이전 문맥을 복원합니다. `TryTakeOrderedJob`에서 Verb를 인계하며 문은 기존 돌파 우선 처리를 거칩니다. 별도 전체 근접 공격 기즈모는 이 무기별 문맥을 사용하지 않습니다.
+- `TryConvertWeaponMeleeAttackOrder`(기존 `TryConvertSecondaryMeleeAttackOrder`)와 `TryConvertStructureMeleeJob`: 주·부 슬롯의 허용 근접무기 명령을 기존 개별 cycle에 연결합니다. `RimKata_Attack`으로 바꾼 후에만 `targetB`에 무기를 저장합니다. 바닐라 `AttackMelee.targetB`는 서 있을 위치이므로 구조물 연속 명령을 되돌릴 때 표식을 비웁니다.
+- `IsWeaponScopedMeleeJob / ResolveWeaponScopedFocusJobWeapon / CanRushTarget`: 명시된 무기의 목표만 변경하고 다른 슬롯의 계획·쿨다운은 보존합니다. 소집 접근은 실제 장착 무기와 해당 cycle의 집중 대상이 일치할 때만 허용합니다. `JobDriver_RimKataAttack.IsStructureMelee`는 전체 구조물 근접 모드만 뜻하며, 무기별 명령은 일반 cycle을 사용합니다. 구조물 예약·공격 횟수·연속 공격은 별도로 유지합니다.
+- `AllowsWeaponScopedIncapacitatedTarget`: 현재 무기·대상·Job의 `killIncappedTarget`이 일치하는 명시 근접 명령만 다운 대상을 허용합니다. 전역 검색이나 일반 폰 Tick을 추가하지 않습니다. 이번 항목만 부분 갱신했으며 아래 과거 전체 집계와 범위 밖 줄 번호는 재산출하지 않았습니다. 소스·빌드 확인은 인게임 검증과 구분합니다.
+
+## 2026-10-26 Perspective Shift 전용 호환 경계
+
+- **첫 인게임 제보 후 보완:** 소집 좌클릭은 허용 원거리 무기의 입력을 기존 두 cycle에 전달하고 일시 실패/Busy를 PS 주 무기 단독 발사로 우회하지 않습니다. 비소집 땅 우클릭은 집중 공격을 해제하고, 유효 focus가 있으면 WASD 중에도 표적·사격을 유지합니다. PS `ProcessMovement`의 해당 공격 Job 종료 호출만 보류하며 다른 작업 종료는 유지합니다. 같은 적 반복 지정은 빈 주·부 슬롯을 채운 뒤 유지하고 사냥 표식의 prone 거리 우회는 제거했습니다.
+- `RimKataPerspectiveShiftGizmos`: PS의 hover Verb만 기억하여 `MapUIUpdate`에서 검은 테두리를 그립니다. PS 기즈모 입력에는 `ProcessGroupInput`을 이어 부 슬롯 메뉴를 연결하고 부 슬롯 공격 단축키는 PS 표시 범위에서만 숨깁니다. 근접 기즈모의 원래 action은 대상 확정 순간 조종 폰 한 명의 선택 문맥으로 실행한 뒤 복원합니다. `NotifyGizmoOrder`는 마우스 해제 전 hold-to-fire의 재해석을 차단합니다. 소스 반영·양버전 빌드 완료이며 실제 게임 재검증은 대기 중입니다. 주 슬롯 Y의 직접 원인은 미확정으로 별도 키 재배정을 넣지 않았습니다.
+
+- `RimKataPerspectiveShiftCompat`: 활성 모드에 `PerspectiveShift.Avatar`가 있을 때만 별도 Harmony 소유자로 연결합니다. 조종 중인 자격자 한 명의 참조와 기존 자격 캐시를 먼저 확인합니다. PS의 전투 JobGiver 두 곳·자동 공격·FireAtWill·Job override Prefix만 좁게 교체하며, 비참여자는 원래 PS Prefix를 호출합니다. 실패 시 이번 연결을 해제하고 교체한 PS Prefix를 복원합니다.
+- `SelectorClickPrefix / PhysicsPrefix / ProcessMovementPrefix`: 비소집 빈 땅 우클릭은 자동 공격 중지, 적 우클릭은 재개와 기존 무기 focus 지정입니다. 비소집 WASD는 focus가 없을 때만 공격을 취소하며, 월드 화면·기절/카메라 고정·입력 창에서는 취소 키로 해석하지 않습니다. 돌파/승인된 날아 차기 접근은 기존 Job·pather에 이동권을 넘기고 PS의 잔여 물리 좌표를 정리합니다.
+- `RimKataPerspectiveShiftCombat`: 기존 두 무기 cycle에 주 슬롯 → 부 슬롯 → 교대 순으로 집중 표적을 지정하고 쿨다운은 유지합니다. 난사는 각 무기의 기존 유효 사거리 끝점을 사용합니다. 중지는 일반 공격 후보·실행 경계에만 적용하고, 요격 및 이미 시작된 반응 공격의 전용 실행 수명을 유지합니다.
+- `RimKataPerspectiveShiftMotion`: 소집 수동 근접 명령의 단일 대상·현재 Job만 보관합니다. 시작과 대상 셀 변경 때만 마지막 3→2→1칸의 8방향 직선 접근을 확인합니다. 처음부터 직선 2칸이면 기존 대기·제자리 도약을 사용하며, 발동 실패/대기 취소는 원래 근접 Job으로 돌려줍니다. 경로가 유효하지 않게 바뀐 경우나 WASD 취소는 해당 인계만 해제합니다. 비소집 자동 추격은 기존 날아 차기 조건을 재사용합니다.
+- `KeepSubduedTarget`: PS의 소집 시 자동 내려놓기에서 실제 RimKata 제압 대상만 보존합니다. 다른 운반물은 PS 원본으로 처리합니다.
+- `RimKataPerspectiveShiftRender`: PS가 직접 그리는 마우스 조준 범위에서만 부 무기의 각도·위치를 같은 축으로 연결합니다. 기즈모 처리는 `Gizmos` 소스로 분리하며 새 렌더 참가자나 전역 폰 조회를 만들지 않습니다.
+- 소스는 양버전 `RimKataPerspectiveShift{Compat,Combat,Motion,Render,Gizmos}.cs`로 분리합니다. 본체 변경은 기존 전투·자세·날아 차기·렌더 연결점에 한정하며, 기본 회피·공중제비·쳐내기·떨치기·슬라이딩 발동 규칙은 변경하지 않습니다. 게임에서의 입력·자세·사격 검증은 빌드/훅 검증과 별개입니다.
+
+## 2026-10-26 무효 캐시·미참조 분석 파일 정리
+
+- `EquipmentMemory.CleanupAnalysisFiles`: 시작 준비·수동 새로 고침·허용 목록 변경의 색인 저장 성공 후 `analysis` 최상위 XML을 참조 경로와 대조합니다. 참조 없는 XML은 내용/무기 종류와 관계없이 정리하고 공유 파일은 마지막 참조까지 보존합니다. 10-25의 두 파일 해시 전용 마이그레이션을 대체합니다. 캐시 색인을 읽지 못했으면 새 유효 색인이 저장되기 전에는 정리하지 않습니다.
+- `EquipmentOwnership.Initialize / ForgetObsoleteExecutions`: 기존 효과 없음 기록과 효과 payload의 무기 이름·실행 키 연결을 이관합니다. 현재 활성 무기의 모든 Verb 준비가 끝난 뒤 현재 키 집합에서 빠진 과거 키만 정리하며, 비활성 모드의 자료를 현재 타입 부재만으로 삭제하지 않습니다.
+- `AllowedWeaponStore.LoadOrCreate / CloseFireMeleeStore.PrepareDefinition`: 저장 XML의 확정된 형식·내용·버전 검증 실패는 해당 파일 삭제 후 기존 생성 경로로 연결합니다. 파일 잠금·권한 오류 및 원본 XML 오류를 저장 파일 손상으로 취급하지 않고, 수동 새로 고침 확인 전에는 기존 파일을 바꾸지 않습니다.
+
+## 2026-10-25 무기 분석·복원·등록 경계
+
+- `EquipmentOwnership.Initialize / RememberSettings / RememberExecution / CommitCleanup`: 시작 준비에서 설치된 활성·비활성 모드 전체와 장비 소유 메타데이터를 비교합니다. 설치가 사라지고 현재 Def도 없는 장비의 전역 설정 4목록·허용 XML·추가 근접 XML·실행/효과·개별 렌더 일치 기록만 정리합니다. 공식 콘텐츠·설치된 비활성 모드·소유 불명 기록은 보존합니다. 설정/색인/실물 삭제 성공까지 소유·해시/파일 참조를 남깁니다. 일반 설정 확정과 신규 계획 준비는 소유 정보 기록만 하며, 전투 중 재분석·새 폰 순회는 없습니다.
+- `EquipmentMemory.MigrateLegacyProjectilePayloads`: 확인된 구 소각기·빔 그레이저 payload 두 내용의 전체 해시와 16/64자리 파일명만 확인합니다. 현재 색인 참조가 없고 내용이 일치할 때만 색인 저장 후 삭제합니다. 다른 고아 파일은 탐색·삭제하지 않으며 완료 기록 이후 이 검사를 생략합니다.
+- `WeaponExecutionDiscovery.Visit`: 바닐라 `Verb_ShootBeam.TryCastShot`과 `Verb_ArcSprayIncinerator.TryCastShot`을 투사체 없는 직접 피해 발사 지점으로 인식합니다. 빔 그레이저·소각기의 실제 경로를 지원하며, 무기명 기반 분석 생략이나 등록창 숨김이 아닙니다. 연사 횟수·종료·외부 패치 분석과 캐시 지문 검증은 유지합니다.
+- `EquipmentUtility.RefreshPreparedWeapons`: 허용 무기 집합이 달라질 때만 `ExecutionRuntime.RefreshAllowedDefinitions`, 수동 새로 고침 확정에서는 `Refresh(true)`를 호출합니다. 일반 설정의 단발 준비값 갱신과 공격 경로 분석을 혼동하지 않습니다.
+- `ExecutionPlans.ChangedDefinitions / Refresh`: 시작 준비·수동 재준비·신규 허용 무기만 분석합니다. 허용 해제는 해당 실행·효과·효과 없음 기록과 추가 근접 XML만 제거합니다. 유지되는 계획·승인·장착 연결은 재생성하지 않습니다.
+- `EquippedWeaponPlans.Suspend(changedDefinitions) / Resume`: 기존 장착자 목록의 참조 수만 조정합니다. 바뀌지 않은 무기를 해제하지 않으며 준비 중 건강·장비 콜백의 소유자 변경도 같은 복원 루프에서 반영합니다.
+- `ExecutionPlans.Load / WeaponEffectCache.TryGet`: 준비된 상세 자료 복원 전용입니다. 실패해도 분석기를 호출하거나 등록 대기에 추가하지 않습니다. 효과의 원본 정의·Harmony 지문 검증은 `WeaponEffectCache.Prepare`에서만 하고 경량 검증 문자열을 유지합니다. 효과 없음은 `weapon_effect_status`의 작은 공용 기록이며 별도 분석 XML을 만들지 않습니다.
+- `ExecutionRuntime.AcquireDefinition / RestoreExecution`: 기존 승인 실행과 Comp/Hediff·부 슬롯 스탯·CE 공통 관찰 연결을 복원합니다. 이 경로는 신규 등록·승인 저장·등록창 요청을 하지 않습니다. Copied 실행 복원 성공 후 `AllowConversion`을 다시 적용해야 합니다.
+- `ExecutionRuntime.Register → Plans.Register → Store/Flush/Contains`: 사용자 승인 작업과 자동 복원을 구분합니다. 실행 성공, 상세 XML 저장 성공, 색인 저장 후 해당 항목 생존을 따로 확인합니다. 개별 payload 공개 실패는 Flush 전체 성공과 함께 발생할 수 있습니다.
+- `Dialog_RimKataWeaponRegistration.ShowPending(prepared)`: 명시적인 준비 작업의 대상만 표시 예약합니다. 삭제·교체된 계획은 `IsCurrent`로 제외하며 남은 예약은 기존 창 종료 후 처리합니다. 파일 저장 실패는 등록 실패와 다른 문구로 표시합니다.
+- 공격 경로와 사용자 결정은 `equipment-memory`에 있으며 게임 세이브에 저장하지 않습니다. 저장/로드의 무기 상태·실행 연결 갱신을 공격 경로 재분석의 근거로 삼지 않습니다.
+
+## 2026-10-22 프로필 적용과 장비 갱신 경계
+
+- `ProfileMenu.Open`의 선택·삭제 → `ApplyCombatFeatureSettingsChange(refreshEquipment:false)`: 프로필 전투 설정과 장착 무기의 기존 바인딩을 갱신하되 전역 장비 카탈로그 무효화는 생략합니다. 같은 프로필 선택의 SaveCurrent/적용 흐름은 유지합니다.
+- `RuntimeSettingsSnapshot.EquipmentMatches → WriteSettings`: 허용 무기·허용 의류·양손 무기·한손 예외의 네 목록이 기존 snapshot과 다를 때만 `EquipmentUtility.InvalidateCaches`를 호출합니다. 프로필 전환/목록 확정 후 부모 창 닫기의 중복 갱신을 막습니다. 초기 준비·CommitListSettings·수동 새로고침은 변경하지 않습니다.
+- `PreparedWeaponData.ConversionEnabled → IsCurrent/Bind`: 단발 전환은 현재 폰 프로필에 맞는 기존 준비값을 사용합니다. 프로필에 없는 장비 목록을 재분석하여 적용하는 경로로 되돌리지 않습니다.
+
+## 2026-10-22 CE 무기별 사격 스탯 조회
+
+- `CombatExtendedFire.Apply → WeaponStatTranspiler → ReadWeaponStat`: CE 인스턴스 메서드 `CasterShootingAccuracyValue(Thing caster)`의 원본 스탯 호출 두 곳에 자신의 Verb를 전달합니다. 기존 스탯 문맥이 있는 폰의 ShootingAccuracyPawn만 `WeaponEffectStats.GetStatValue`로 연결하고 다른 조회는 원본을 유지합니다. CE의 getter 상한·후처리와 포탑 분기를 바꾸지 않습니다.
+- `ActiveVerb`를 조회 소유자로 쓰지 않습니다. 실제 함수 인스턴스를 사용하므로 중첩 호출이나 발사 외 조회에서도 다른 무기의 문맥을 물려받지 않습니다. 문맥이 없으면 원본으로 끝나며 참가자 등록·스탯 분석을 조회 경로에서 시작하지 않습니다.
+
+## 2026-10-22 무기별 기준 스탯 분리
+
+- `WeaponEffects.Sync → SyncStats → WeaponEffectStats.Sync`: 부 무기에 효과가 없어도 주 무기에 확인된 효과가 있으면 양쪽 스탯 문맥을 생성합니다. `CanBind`는 기존 분리 효과 관리자 조건으로 유지하고 스탯 조회 조건과 혼동하지 않습니다.
+- `WeaponEffectStats.Capture / StatContext.Refresh`: 두 무기의 알려진 효과를 제외한 공통 기준 건강 + 자기 무기의 효과만 원본 수식에 전달합니다. 주 무기 native 효과와 부 무기 local 효과의 출처를 구분합니다.
+- `WeaponEffectStats.Scope / Resolve / GetScopedStatValue`: 기존 custom Verb/Comp 및 주 무기 manager/effect 콜백의 스탯 조회를 연결합니다. 다른 소유자의 중첩 호출은 이전 문맥을 물려받지 않으며 Dispose에서 복원합니다.
+- `WeaponEffectStats.HasStatContext`: `DualWeaponController`의 공용 조준값 재사용 여부에만 사용합니다. `WeaponEffects.HasEffects`의 기존 효과 관리자 소유권 의미는 유지합니다.
+- `ReleasePawn / ReleaseWeapon / ReleaseDefinition / ResetGame`: 해당 무기 쌍의 스탯 문맥을 기존 수명에서 해제합니다. 첫 바닐라 opening의 이미 계산된 시간과 CE 후처리 인계는 별도 경계이며 임의 재계산하지 않습니다.
+
+## 2026-10-22 CE 전체 점검 후 경계
+
+- `CombatExtendedAssistedReload.MapRemovedPrefix → Remove`: 제거되는 맵의 기존 재장전 목록만 정리합니다. 일반 폰/다른 맵을 순회하지 않습니다.
+- `CombatExtendedGroundPose.ThrowPrefix`: 기존 CurrentVerb와 실제 launcher/equipment가 일치할 때 기존 연출 좌표의 x/z만 CE Throw 원점에 반영합니다. heading/높이/속도 계산은 변경하지 않습니다.
+- `CombatExtendedLoadout.InventoryPostfix / CombatExtendedProjectiles.CaptureCloseShot`: 일반 폰은 기존 자격 캐시에서 제외하고 부 슬롯 조회·근접 적대/도달 검사를 생략합니다.
+- `InkCombatCompat.ApplyCombatExtended → DeferCombatExtendedDefense → ResolveAfterInk`: CE 원본 방어를 유지하면서 RimKata 판정만 Ink 뒤로 미룹니다. Ink 실패 후 기존 TryResolveCombatExtendedMeleeDefense를 재진입 guard 아래 호출하고 기존 결과·로그·소리·stagger와 finalizer를 연결합니다. 새 CE 보정은 Ink와 CE가 동시에 활성일 때만 설치됩니다.
+- **CE 근접의 RimKata 방어 실패 후 CE 원본 회피 판정은 사용자가 그대로 두도록 지시했습니다.** Ink 동시 활성 보완을 이유로 CE 단독 판정 수를 변경하지 않습니다.
+
+## 2026-10-22 CE 런타임 분류와 효과 helper 경계
+
+- `WeaponExecutionRuntime.Bind`: XML에 없는 실제 런타임 CE Verb도 기존 CE 경로/변환 허용으로 분류합니다. 다른 미분석 타입은 원본 Live를 유지합니다.
+- `WeaponEffectDiscovery.Graph.Add/Inspect/OriginalAccesses → Effects.Install`: 외부 transpiler의 추가 접근을 원본 IL 접근 횟수와 대조합니다. native helper는 지문/한도에 포함하되 설치 대상에서 제외합니다. 새 직접 scoped 접근은 원본 폴백하며, 새 custom 호출은 기존 그래프를 따라갑니다. 모든 IL 의미의 동등성을 증명하는 기능은 아닙니다.
+- `WeaponEffectCache.RememberUnsupported/TryGet/Invalidate → Effects.Original`: 실패 사유/기존 지문만 세션에 기억하고 같은 재장착의 분석과 경고를 생략합니다. 강제 재읽기는 기존 무효화 경계를 사용하며 정상 계획 수명과 플레이어 캐시는 유지합니다.
+
 ## 2026-10-22 발사 경계와 허용 해제 캐시 정리
 
 - `WeaponExecutionDiscovery.Analyze/Visit`: 실제 발사 진입점 집합을 먼저 준비하고, 본문을 읽지 않는 바닐라 공용 함수에서는 패치 내부만 확장하지 않습니다. 해당 함수의 식별자는 보존하며 실제 발사 함수·외부 구현·Comp/Hediff 연결은 기존 경로를 유지합니다.
@@ -2397,7 +2521,7 @@
 
 - **역할:** 제압 운반자는 전용 작업 처리에 맡기고 일반 자격자의 공격 주문은 기존 전용 사이클로 연결하며 구조물 근접 주문은 돌파 진입 판정을 보존합니다.
 - **호출받음:** 직접 **0곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) ×3 · [Patch_CommandVerbTarget_RimKataSecondarySwap.TryConsumePendingMeleeAttack(Verse.Pawn pawn, Verse.AI.Job job, out Verse.Verb verb)](#m-1747) · [RimKataDualWeaponController.CanOrderRangedCloseAttack(Verse.Pawn pawn, Verse.Verb verb, Verse.Thing target)](#m-0916) · [RimKataDualWeaponController.CanUsePlayerWeaponCommand(Verse.Pawn pawn, Verse.Verb verb)](#m-0910) · [RimKataDualWeaponController.IsDedicatedFollowupActive(Verse.Pawn pawn)](#m-0963) · [RimKataDualWeaponController.TryConvertPlayerRushOrder(Verse.Pawn pawn, Verse.AI.Job job)](#m-1010) · [RimKataDualWeaponController.TryConvertSecondaryMeleeAttackOrder(Verse.Pawn pawn, Verse.AI.Job job, Verse.Verb meleeVerb)](#m-1009) · [RimKataEligibility.CanBeginGunKataAttack(Verse.Pawn pawn)](#m-1162) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574) · [RimKataWeaponSlotUtility.BestRangedCombatVerb(Verse.Pawn pawn, \[Verse.Thing target = null\])](#m-1700) · [RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(Verse.Pawn pawn, Verse.Thing target)](#m-1698) · [RimKataWeaponSlotUtility.CanWeaponAttackTargetWithoutRushing(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.Thing target)](#m-1699)
+- **호출 — 프로젝트 내부:** [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) ×3 · [Patch_CommandVerbTarget_RimKataSecondarySwap.TryConsumePendingMeleeAttack(Verse.Pawn pawn, Verse.AI.Job job, out Verse.Verb verb)](#m-1747) · [RimKataDualWeaponController.CanOrderRangedCloseAttack(Verse.Pawn pawn, Verse.Verb verb, Verse.Thing target)](#m-0916) · [RimKataDualWeaponController.CanUsePlayerWeaponCommand(Verse.Pawn pawn, Verse.Verb verb)](#m-0910) · [RimKataDualWeaponController.IsDedicatedFollowupActive(Verse.Pawn pawn)](#m-0963) · [RimKataDualWeaponController.TryConvertPlayerRushOrder(Verse.Pawn pawn, Verse.AI.Job job)](#m-1010) · [RimKataDualWeaponController.TryConvertWeaponMeleeAttackOrder(Verse.Pawn pawn, Verse.AI.Job job, Verse.Verb meleeVerb)](#m-1009) · [RimKataEligibility.CanBeginGunKataAttack(Verse.Pawn pawn)](#m-1162) · [RimKataEligibilityCache.IsCachedQualifiedPawn(Verse.Pawn pawn)](#m-1170) · [RimKataSubdueUtility.IsHolding(Verse.Pawn pawn)](#m-2574) · [RimKataWeaponSlotUtility.BestRangedCombatVerb(Verse.Pawn pawn, \[Verse.Thing target = null\])](#m-1700) · [RimKataWeaponSlotUtility.CanAttackTargetWithoutRushing(Verse.Pawn pawn, Verse.Thing target)](#m-1698) · [RimKataWeaponSlotUtility.CanWeaponAttackTargetWithoutRushing(Verse.Pawn pawn, Verse.ThingWithComps weapon, Verse.Thing target)](#m-1699)
 - **호출 — 외부:** `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `Verse.JobMaker.ReturnToPool(Verse.AI.Job job)`
 
 <a id="m-0117"></a>
@@ -15726,13 +15850,13 @@
 
 <a id="m-1009"></a>
 
-### 135. RimKataDualWeaponController.TryConvertSecondaryMeleeAttackOrder
+### 135. RimKataDualWeaponController.TryConvertWeaponMeleeAttackOrder
 
-`public static bool TryConvertSecondaryMeleeAttackOrder( Pawn pawn, Job job, Verb meleeVerb)` · [L4291](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:4291)
+`public static bool TryConvertWeaponMeleeAttackOrder( Pawn pawn, Job job, Verb meleeVerb)` · [L4397](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:4397)
 
-- **역할:** 비소집 Pawn의 강제 부무기 근접 명령을 무기를 보존한 전용 돌격 Job으로 바꿉니다.
+- **역할:** 소집·비소집 Pawn의 주·부 슬롯 근접 명령을 선택한 무기만의 집중 공격 Job으로 바꿉니다. 공유 돌격 요청과 다른 슬롯의 계획은 변경하지 않습니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.StateFor(Verse.Pawn pawn, bool create)](#m-1110) · [RimKataEligibility.CanBeginGunKataAttack(Verse.Pawn pawn)](#m-1162) · [RimKataPawnCombatState.RequestPlayerRush(Verse.Thing target)](#m-0537) · [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959) · [RimKataWeaponSlotUtility.CanUseSecondarySlot(Verse.Pawn pawn, Verse.ThingWithComps primary, bool accessVerified)](#m-1696) · [RimKataWeaponSlotUtility.PrimaryWeapon(Verse.Pawn pawn)](#m-1686) · [RimKataWeaponSlotUtility.SecondaryWeapon(Verse.Pawn pawn)](#m-1687)
+- **호출 — 프로젝트 내부:** [RimKataDualWeaponController.CanUsePlayerMeleeWeaponCommand](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:1387) · [RimKataTargeting.IsIncapacitatedTarget(Verse.Pawn pawn)](#m-1959)
 - **호출 — 외부:** `RimWorld.FireUtility.IsBurning(Verse.Thing t)` · `Verse.Verb.Available()`
 
 <a id="m-1010"></a>

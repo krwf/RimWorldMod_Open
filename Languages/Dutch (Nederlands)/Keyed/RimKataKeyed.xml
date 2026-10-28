@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Afstand</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-pantser en -kleding</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Het inschakelen van “{0}” verkort de afkoeltijd van ingeschakelde wapens.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Afstandswapen</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Contactwapen</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Het inschakelen van “{0}” of “{1}” verkort de afkoeltijd van ingeschakelde wapens van dat type.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Kledingtype</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Hoofdbedekking</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Pantser</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Er zijn wapens met een bijzondere schietwijze gevonden. Wilt u ze registreren?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Bevestigen kopieert de aanvalsroutines naar de cache. Annuleren, Esc of Sluiten behoudt de oorspronkelijke schietwijze zonder omzetting naar enkelschots. Sluiten tijdens registratie behoudt reeds geregistreerde items.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registreren… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registratie voltooid: {0} geregistreerd, {1} mislukt.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Geregistreerd</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Uitvoering voorbereiden: {0} geslaagd, {1} mislukt.\nOpslag op schijf: {2} opgeslagen, {3} mislukt.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>De uitvoering is voorbereid, maar de registratie kon niet worden opgeslagen. Vernieuw de uitrustingsgegevens om het opnieuw te proberen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Uitvoering voorbereid en op schijf opgeslagen.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registratie mislukt. De oorspronkelijke schietwijze blijft behouden; omzetting naar enkelschots is uitgeschakeld.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Statistieken kiezen</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Debugknop tonen</KRWF_RimKata_ShowDebugGizmo>

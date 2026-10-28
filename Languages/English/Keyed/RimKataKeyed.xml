@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Ranged</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata armor and apparel</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Enabling “{0}” reduces the cooldown of enabled weapons.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Ranged weapon</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Melee weapon</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Enabling “{0}” or “{1}” reduces the cooldown of enabled weapons of that type.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Apparel type</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Headgear</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armor</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Weapons with unusual firing behavior were found. Would you like to register them?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Confirm copies their attack execution routines into the cache. Cancel, Esc or Close keeps the original firing behavior without single-shot conversion. Closing during registration keeps entries already registered.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registering… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registration complete: {0} registered, {1} failed.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registered</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Execution preparation: {0} succeeded, {1} failed.\nDisk storage: {2} saved, {3} failed.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Execution prepared, but the registration could not be saved. Refresh the equipment data to retry.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Execution prepared and saved to disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registration failed. Original firing behavior retained; single-shot conversion is disabled.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Select stats</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Show debug gizmo</KRWF_RimKata_ShowDebugGizmo>

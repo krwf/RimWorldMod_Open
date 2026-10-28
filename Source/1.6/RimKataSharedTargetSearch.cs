@@ -312,8 +312,9 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (!RandomAttackEnabled(pawn)
-                && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn))
+            if (RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
+                || (!RandomAttackEnabled(pawn)
+                    && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn)))
             {
                 StopOrdinaryTargetSearch(combatState);
                 return false;
@@ -391,8 +392,9 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (!RandomAttackEnabled(pawn)
-                && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn))
+            if (RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
+                || (!RandomAttackEnabled(pawn)
+                    && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn)))
             {
                 StopOrdinaryTargetSearch(combatState);
                 return false;
@@ -577,6 +579,7 @@ namespace KRWF.RimKata
         {
             RimKataSharedTargetSearchState search = combatState?.sharedTargetSearch;
             if (search == null || pawn?.Map == null || target == null
+                || RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
                 || (!primaryEligible && !secondaryEligible))
             {
                 return false;
@@ -732,6 +735,8 @@ namespace KRWF.RimKata
             cycle.cachedDirectionalFireCell = IntVec3.Invalid;
             bool includeDirectionalFire = ordinaryWeaponEnabled && !verb.IsMeleeAttack
                 && cycle.HasDirectionalFire;
+            // Direct input owns ordinary targets; projectile reactions and manual cells remain independent.
+            ordinaryWeaponEnabled &= !RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn);
             if (!randomAttack && includeDirectionalFire)
             {
                 if (!RimKataDirectionalFire.TryGetShotTarget(pawn, cycle, verb, out LocalTargetInfo shot))
@@ -879,6 +884,7 @@ namespace KRWF.RimKata
                 || pawn?.Map == null
                 || pawn.InMentalState
                 || combatState == null
+                || RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
                 || (!randomAttackVerified
                     && !RandomAttackEnabled(pawn)
                     && !RimKataDualWeaponController.AllowsNonRandomMovingSearch(pawn)))
@@ -951,6 +957,8 @@ namespace KRWF.RimKata
                     verb,
                     target);
             }
+
+            if (RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)) return false;
 
             if (registeredCandidate)
             {
@@ -1453,6 +1461,7 @@ namespace KRWF.RimKata
         {
             if (cycle?.weapon == null
                 || verb == null
+                || RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
                 || !IsLiveRegisteredCandidate(pawn, target))
             {
                 return false;
@@ -2117,6 +2126,7 @@ namespace KRWF.RimKata
         {
             bool closeCombatContext = IsCloseCombatContext(combatState);
             return pawn?.Map != null
+                && !RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)
                 && cycle?.weapon != null
                 && RimKataEquipmentUtility.IsWeaponEnabled(cycle.weapon.def)
                 && verb != null
@@ -2133,6 +2143,8 @@ namespace KRWF.RimKata
         internal static bool HasNonRandomMovingVacancy(
             Pawn pawn, RimKataPawnCombatState combatState)
         {
+            if (RimKataPerspectiveShiftCompat.IsDraftedControlled(pawn)) return false;
+
             if (combatState == null)
             {
                 ThingWithComps primary = pawn?.equipment?.Primary;

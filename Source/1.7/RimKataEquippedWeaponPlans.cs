@@ -10,6 +10,7 @@ namespace KRWF.RimKata
             new Dictionary<Pawn, ThingDef[]>(RimKataReferenceComparer<Pawn>.Instance);
         private static bool suspended;
         private static bool changingSuspension;
+        private static Dictionary<ThingDef, int> suspendedReferences;
 
         internal static void Sync(Pawn pawn)
         {
@@ -64,15 +65,22 @@ namespace KRWF.RimKata
             if (!suspended) Release(definitions);
         }
 
-        internal static void Suspend()
+        internal static void Suspend(HashSet<ThingDef> changedDefinitions = null)
         {
             if (suspended || changingSuspension) return;
-            var snapshot = new List<ThingDef[]>(Owners.Values);
+            var snapshot = CountDefinitions(new List<KeyValuePair<Pawn, ThingDef[]>>(Owners));
+            suspendedReferences = new Dictionary<ThingDef, int>();
+            foreach (var entry in snapshot)
+                if (changedDefinitions != null && !changedDefinitions.Contains(entry.Key))
+                    suspendedReferences.Add(entry.Key, entry.Value);
             suspended = true;
             changingSuspension = true;
             try
             {
-                foreach (ThingDef[] definitions in snapshot) Release(definitions);
+                foreach (var entry in snapshot)
+                    if (!suspendedReferences.ContainsKey(entry.Key))
+                        for (int i = 0; i < entry.Value; i++)
+                            RimKataWeaponExecutionRuntime.ReleaseDefinition(entry.Key);
             }
             finally { changingSuspension = false; }
         }
@@ -83,17 +91,29 @@ namespace KRWF.RimKata
             changingSuspension = true;
             try
             {
-                List<KeyValuePair<Pawn, ThingDef[]>> restored = null;
                 while (true)
                 {
                     var snapshot = new List<KeyValuePair<Pawn, ThingDef[]>>(Owners);
-                    foreach (var owner in snapshot) Acquire(owner.Value);
-                    if (restored != null)
-                        foreach (var owner in restored) Release(owner.Value);
-                    restored = snapshot;
+                    Dictionary<ThingDef, int> previous = suspendedReferences;
+                    Dictionary<ThingDef, int> current = CountDefinitions(snapshot);
+                    // Record this operation's counts before callbacks can change Owners.
+                    suspendedReferences = current;
+                    foreach (var entry in current)
+                    {
+                        previous.TryGetValue(entry.Key, out int count);
+                        for (int i = count; i < entry.Value; i++)
+                            RimKataWeaponExecutionRuntime.AcquireDefinition(entry.Key);
+                    }
+                    foreach (var entry in previous)
+                    {
+                        current.TryGetValue(entry.Key, out int count);
+                        for (int i = count; i < entry.Value; i++)
+                            RimKataWeaponExecutionRuntime.ReleaseDefinition(entry.Key);
+                    }
                     // Health/equipment callbacks update only Owners while restoration is in flight.
                     if (MatchesOwners(snapshot)) break;
                 }
+                suspendedReferences = null;
                 suspended = false;
             }
             finally { changingSuspension = false; }
@@ -103,8 +123,22 @@ namespace KRWF.RimKata
         internal static void Clear()
         {
             Owners.Clear();
+            suspendedReferences = null;
             suspended = false;
             changingSuspension = false;
+        }
+
+        private static Dictionary<ThingDef, int> CountDefinitions(
+            List<KeyValuePair<Pawn, ThingDef[]>> snapshot)
+        {
+            var counts = new Dictionary<ThingDef, int>();
+            foreach (var owner in snapshot)
+                foreach (ThingDef definition in owner.Value)
+                {
+                    counts.TryGetValue(definition, out int count);
+                    counts[definition] = count + 1;
+                }
+            return counts;
         }
 
         private static bool MatchesOwners(List<KeyValuePair<Pawn, ThingDef[]>> snapshot)

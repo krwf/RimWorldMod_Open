@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Etätaistelu</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-haarniskat ja -vaatteet</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>”{0}”-valinnan käyttöönotto lyhentää käytössä olevien aseiden palautumisaikaa.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Etätaisteluase</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Lähitaisteluase</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Valinnan ”{0}” tai ”{1}” käyttöönotto lyhentää vastaavan tyyppisten käytössä olevien aseiden palautumisaikaa.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Vaatetyyppi</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Päähine</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Haarniska</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Löytyi aseita, joilla on erityinen ampumistapa. Haluatko rekisteröidä ne?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Vahvistaminen kopioi hyökkäysrutiinit välimuistiin. Peruuta, Esc tai Sulje säilyttää alkuperäisen ampumistavan ilman kertatulimuunnosta. Sulkeminen rekisteröinnin aikana säilyttää jo rekisteröidyt kohteet.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Rekisteröidään… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Rekisteröinti valmis: {0} onnistui, {1} epäonnistui.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Rekisteröity</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Suorituksen valmistelu: {0} onnistui, {1} epäonnistui.\nTallennus levylle: {2} tallennettu, {3} epäonnistui.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Suoritus on valmisteltu, mutta rekisteröintiä ei voitu tallentaa. Päivitä varustetiedot ja yritä uudelleen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Suoritus on valmisteltu ja tallennettu levylle.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Rekisteröinti epäonnistui. Alkuperäinen ampumistapa säilytetään; kertatulimuunnos on pois käytöstä.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Valitse ominaisuusarvot</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Näytä virheenkorjauspainike</KRWF_RimKata_ShowDebugGizmo>

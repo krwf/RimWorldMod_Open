@@ -19,7 +19,7 @@ namespace KRWF.RimKata
             : base(RimKataFlyingKick.TakeoffTicks + 1, target, null) { }
     }
 
-    // Only the sole-target push handoff creates this short, cancellable opportunity.
+    // The sole-target push handoff and PS two-cell melee orders share this cancellable opportunity.
     public sealed class Stance_RimKataFlyingKickWait : Stance_Cooldown
     {
         private int jobId, dueTick;
@@ -167,6 +167,23 @@ namespace KRWF.RimKata
         private static readonly Dictionary<Pawn, RimKataPawnCombatState> Active =
             new Dictionary<Pawn, RimKataPawnCombatState>();
 
+        internal static RimKataFlyingKickState Current(Pawn pawn)
+            => pawn != null && Active.TryGetValue(pawn, out var combat) ? combat.flyingKick : null;
+
+        internal static bool CanControlApproach(Pawn pawn, Pawn target)
+        {
+            if (Active.ContainsKey(pawn) || RimKataFlyingKickApproach.WasUsedForCurrentJob(pawn) || !LiveTarget(pawn, target)
+                || RimKataTargetAccess.SettingsFor(pawn)?.flyingKickEnabled != true) return false;
+            var combat = RimKataResponseVisualParticipantCache.BodyVisualFor(pawn)?.equipmentState;
+            return ApprovedApproach(pawn, target, ref combat) && CanStart(pawn, combat);
+        }
+
+        internal static void CancelControlled(Pawn pawn)
+        {
+            if (pawn != null && Active.TryGetValue(pawn, out var combat)) Abort(combat);
+            else if (pawn?.stances?.curStance is Stance_RimKataFlyingKickWait waiting) waiting.Cancel();
+        }
+
         internal static bool IsApproachCellCandidate(Pawn pawn, out IntVec3 previous)
         {
             previous = default;
@@ -260,6 +277,7 @@ namespace KRWF.RimKata
             RimKataFlyingKickApproach.NotifyStarted(pawn);
             BeginContact(combat);
             Publish(combat);
+            RimKataPerspectiveShiftCompat.FlyingKickStarted(pawn, target);
         }
 
         internal static int Distance(IntVec3 a, IntVec3 b)
@@ -606,6 +624,7 @@ namespace KRWF.RimKata
             combat.flyingKick = null;
             Active.Remove(combat.pawn);
             ReleaseTakeoff(combat.pawn);
+            RimKataPerspectiveShiftCompat.FlyingKickFinished(combat.pawn);
         }
 
         private static void ReleaseTakeoff(Pawn pawn)

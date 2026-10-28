@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -53,28 +54,42 @@ namespace KRWF.RimKata
             harmony = instance;
             RimKataWeaponExecutionPlans.SetCompatibilityHandler(RimKataCombatExtendedFire.IsVerbType);
             RimKataWeaponExecutionPlans.Initialize(instance);
-            PrepareConnections();
+            PrepareConnections(RimKataWeaponExecutionPlans.PendingRegistration.ToArray());
         }
 
         internal static void Refresh(bool force = false)
         {
             if (harmony == null) return;
-            if (force)
+            if (!force)
             {
-                FailedTicks.Clear();
-                RimKataWeaponRegistrationFailures.ResetForManualRefresh();
+                RefreshAllowedDefinitions();
+                return;
             }
+            FailedTicks.Clear();
+            RimKataWeaponRegistrationFailures.ResetForManualRefresh();
             RimKataEquippedWeaponPlans.Suspend();
-            RimKataWeaponExecutionPlans.Refresh(force);
-            PrepareConnections();
+            List<RimKataWeaponExecutionPlan> prepared;
+            try { prepared = RimKataWeaponExecutionPlans.Refresh(true); }
+            finally { RimKataEquippedWeaponPlans.Resume(); }
+            PrepareConnections(prepared);
         }
 
-        private static void PrepareConnections()
+        internal static void RefreshAllowedDefinitions()
         {
-            // The catalog is disk-backed. Only existing equipment owners acquire live plans.
-            RimKataEquippedWeaponPlans.Resume();
-            RimKataEquipmentMemory.Flush();
-            Dialog_RimKataWeaponRegistration.ShowPending();
+            if (harmony == null) return;
+            HashSet<ThingDef> changed = RimKataWeaponExecutionPlans.ChangedDefinitions();
+            if (changed.Count == 0) return;
+            RimKataEquippedWeaponPlans.Suspend(changed);
+            List<RimKataWeaponExecutionPlan> prepared;
+            try { prepared = RimKataWeaponExecutionPlans.Refresh(); }
+            finally { RimKataEquippedWeaponPlans.Resume(); }
+            PrepareConnections(prepared);
+        }
+
+        private static void PrepareConnections(IEnumerable<RimKataWeaponExecutionPlan> prepared)
+        {
+            if (RimKataEquipmentMemory.Flush()) RimKataEquipmentMemory.CleanupAnalysisFiles();
+            Dialog_RimKataWeaponRegistration.ShowPending(prepared);
             RimKataWeaponRegistrationFailures.ShowPending();
         }
 
@@ -97,7 +112,7 @@ namespace KRWF.RimKata
                     }
                     if (plan.RegistrationAccepted && !plan.HandledByCompatibility)
                     {
-                        Register(plan);
+                        RestoreExecution(plan);
                         continue;
                     }
                     Connect(plan);
@@ -109,8 +124,6 @@ namespace KRWF.RimKata
                 catch (Exception exception) { Fail(plan, exception); }
                 finally { RimKataWeaponExecutionPlans.ClearPreparationScratch(); }
             }
-            RimKataEquipmentMemory.Flush();
-            Dialog_RimKataWeaponRegistration.ShowPending();
             RimKataWeaponRegistrationFailures.ShowPending();
         }
 
@@ -207,42 +220,48 @@ namespace KRWF.RimKata
 
         internal static bool Register(RimKataWeaponExecutionPlan plan)
         {
+            bool registered = false;
             try
             {
                 if (!RimKataWeaponExecutionPlans.Load(plan)) return false;
-                return RegisterCore(plan);
+                RestoreExecution(plan, prepareEffects: true);
+                RimKataWeaponExecutionPlans.Register(plan);
+                bool flushed = RimKataEquipmentMemory.Flush();
+                plan.CacheStored = flushed && RimKataWeaponExecutionPlans.IsRegistrationStored(plan);
+                if (!plan.CacheStored)
+                    Log.Warning("[RimKata] Firing execution is prepared for " + plan.Def.defName
+                        + ", but its registration could not be saved. Refresh the equipment data to retry saving.");
+                registered = true;
             }
             catch (Exception exception)
             {
                 if (plan != null) Fail(plan, exception);
-                return false;
             }
             finally
             {
                 if (plan != null && plan.Residents == 0) ReleasePlan(plan);
                 RimKataWeaponExecutionPlans.ClearPreparationScratch();
-                RimKataEquipmentMemory.Flush();
             }
+            return registered && !plan.Failed;
         }
 
-        private static bool RegisterCore(RimKataWeaponExecutionPlan plan)
+        private static void RestoreExecution(RimKataWeaponExecutionPlan plan, bool prepareEffects = false)
         {
-            if (plan == null) return false;
-            if (Executions.TryGetValue(plan, out _)) return true;
+            if (Executions.TryGetValue(plan, out _)) return;
             Connect(plan);
             Execution execution = CreateExecution(plan);
             plan.Mode = RimKataWeaponExecutionMode.Copied;
             plan.FiringReady = true;
+            if (prepareEffects) RimKataWeaponEffectCache.Prepare(plan);
             RimKataWeaponEffects.PrepareWeapon(harmony, plan);
             // Effect hooks must be present in the executable snapshot, not merely registered beside it.
             if (plan.EffectStatus == RimKataWeaponEffectStatus.Connected) execution = CreateExecution(plan);
             Executions.Add(plan, execution);
-            RimKataWeaponExecutionPlans.Register(plan);
-            RimKataEquipmentMemory.Flush();
-            Log.Message("[RimKata] Registered firing execution for " + plan.Def.defName
-                + ": methods=" + execution.bundle.CopiedMethodCount + ", linked_calls=" + execution.bundle.LinkedCallCount
-                + ", original_calls=" + execution.bundle.RetainedCallCount + ".");
-            return true;
+            plan.AllowConversion = plan.CanControlBurst;
+            if (prepareEffects)
+                Log.Message("[RimKata] Prepared firing execution for " + plan.Def.defName
+                    + ": methods=" + execution.bundle.CopiedMethodCount + ", linked_calls=" + execution.bundle.LinkedCallCount
+                    + ", original_calls=" + execution.bundle.RetainedCallCount + ".");
         }
 
         private static Execution CreateExecution(RimKataWeaponExecutionPlan plan)
@@ -274,7 +293,14 @@ namespace KRWF.RimKata
                 RimKataWeaponEffects.ForgetDefinition(plan.Def);
                 if (plan.Residents == 0) ReleasePlan(plan);
             }
-            RimKataEquipmentMemory.Flush();
+            bool flushed = RimKataEquipmentMemory.Flush();
+            if (plan != null)
+            {
+                plan.CacheStored = flushed && RimKataWeaponExecutionPlans.IsRegistrationStored(plan);
+                if (!plan.CacheStored)
+                    Log.Warning("[RimKata] Could not save the original-firing decision for " + plan.Def.defName
+                        + ". The decision remains active for this session.");
+            }
         }
 
         internal static RimKataWeaponExecutionPlan Bind(Verb verb)
@@ -289,12 +315,16 @@ namespace KRWF.RimKata
                 binding.plan = RimKataWeaponExecutionPlans.Get(definition, verb.GetType());
                 if (binding.plan == null && definition != null && harmony != null)
                 {
-                    // A Comp can replace the XML Verb with a runtime-only subclass. Do not
-                    // mistake an unprepared type for a verified vanilla conversion route.
+                    // A Comp can replace the XML Verb with a runtime-only subclass. Keep
+                    // recognized CE verbs on their existing compatibility route; other
+                    // unprepared types must retain the original execution without conversion.
+                    bool handledByCompatibility = RimKataCombatExtendedFire.IsVerbType(verb.GetType());
                     binding.plan = new RimKataWeaponExecutionPlan
                     {
                         Def = definition, VerbType = verb.GetType(),
-                        Mode = RimKataWeaponExecutionMode.Live, AllowConversion = false
+                        HandledByCompatibility = handledByCompatibility,
+                        Mode = handledByCompatibility ? RimKataWeaponExecutionMode.Vanilla : RimKataWeaponExecutionMode.Live,
+                        AllowConversion = handledByCompatibility
                     };
                 }
             }

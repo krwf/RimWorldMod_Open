@@ -205,7 +205,8 @@ namespace KRWF.RimKata
         private static void InventoryPostfix(
             ThingComp __instance, ref float ___currentWeightCached, ref float ___currentBulkCached)
         {
-            if (!(__instance.parent is Pawn pawn))
+            if (!(__instance.parent is Pawn pawn)
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
                 return;
             ThingWithComps secondary = RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
             if (!RimKataCombatExtendedCompat.IsHeldSecondary(pawn, secondary))

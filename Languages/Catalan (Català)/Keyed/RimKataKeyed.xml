@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>A distància</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armadures i indumentària de RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Activar «{0}» redueix el temps de refredament de les armes permeses.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Arma a distància</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Arma cos a cos</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Activar «{0}» o «{1}» redueix el temps de refredament de les armes permeses del tipus corresponent.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Tipus d’indumentària</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Cascs i barrets</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armadura</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>S'han trobat armes amb un comportament de tret especial. Les voleu registrar?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Confirma copia les rutines d'atac a la memòria cau. Cancel·la, Esc o Tanca conserva els trets originals sense convertir-los en trets únics. Tancar durant el registre conserva les entrades ja registrades.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrant… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registre complet: {0} registrades, {1} fallides.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registrada</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Preparació de l’execució: {0} correctes, {1} fallides.\nDesament al disc: {2} desats, {3} fallits.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>L’execució està preparada, però no s’ha pogut desar el registre. Actualitzeu les dades de l’equipament per tornar-ho a provar.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Execució preparada i desada al disc.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Ha fallat el registre. Es conserven els trets originals; la conversió a tret únic està desactivada.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Seleccionar estadístiques</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Mostrar el botó de depuració</KRWF_RimKata_ShowDebugGizmo>

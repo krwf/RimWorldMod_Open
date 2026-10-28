@@ -19,6 +19,7 @@ namespace KRWF.RimKata
             internal Verb_RimKataKick kick;
             internal Pawn attacker, defender;
             internal bool defenseOwned, resolved, avoided, rimKataAvoided, parried, resolving, continueDamage;
+            internal bool ceDefenseDeferred;
             internal float dodgeChance;
             internal BattleLogEntry_MeleeCombat hitLog;
             internal MoteRequest mote;
@@ -64,6 +65,8 @@ namespace KRWF.RimKata
         [ThreadStatic] private static MeleeScope melee;
         [ThreadStatic] private static DodgeScope dodge;
         private static Action<Verb_MeleeAttack, bool, bool> recordSharedDefense;
+        private static MethodInfo ceTextMethod;
+        private static Action<Vector3, Map, string, float> ceThrowText;
         private static readonly MethodInfo ParryMethod = AccessTools.DeclaredMethod(
             typeof(RimKataDefenseUtility), "TryResolveMeleeParry",
             new[] { typeof(Pawn), typeof(Pawn), typeof(Verb), typeof(bool) });
@@ -104,6 +107,7 @@ namespace KRWF.RimKata
                 RimKataStartupPatches.Patch(harmony, dodgePostfix, prefix: Patch(nameof(KeepResolvedDodge)));
                 RimKataStartupPatches.Patch(harmony, damagePrefix, prefix: Patch(nameof(ReuseDefense)),
                     postfix: Patch(nameof(ResolveAfterInk)));
+                ApplyCombatExtended(harmony);
             }
             catch (Exception exception)
             {
@@ -114,6 +118,26 @@ namespace KRWF.RimKata
 
         private static HarmonyMethod Patch(string name, int priority = Priority.Normal)
             => new HarmonyMethod(typeof(RimKataInkCombatCompat), name) { priority = priority };
+
+        private static void ApplyCombatExtended(Harmony harmony)
+        {
+            Type ce = RimKataActiveModTypes.Find("CombatExtended.Verb_MeleeAttackCE");
+            if (ce == null) return;
+            MethodInfo attack = AccessTools.DeclaredMethod(ce, "TryCastShot", Type.EmptyTypes);
+            ceTextMethod = AccessTools.DeclaredMethod(RimKataActiveModTypes.Find("CombatExtended.MoteMakerCE"),
+                "ThrowText", new[] { typeof(Vector3), typeof(Map), typeof(string), typeof(float) });
+            if (attack?.ReturnType != typeof(bool))
+                throw new InvalidOperationException("CE melee entry did not match Ink integration.");
+            Validate(ceTextMethod, typeof(void), typeof(Vector3), typeof(Map), typeof(string), typeof(float));
+            ceThrowText = AccessTools.MethodDelegate<Action<Vector3, Map, string, float>>(ceTextMethod);
+            RimKataStartupPatches.Patch(harmony, attack,
+                prefix: Patch(nameof(MeleePrefix), Priority.First),
+                transpiler: Patch(nameof(MeleeTranspiler), Priority.Last),
+                finalizer: Patch(nameof(MeleeFinalizer), Priority.Last));
+            RimKataStartupPatches.Patch(harmony, AccessTools.DeclaredMethod(typeof(RimKataDefenseUtility),
+                nameof(RimKataDefenseUtility.TryResolveCombatExtendedMeleeDefense)),
+                prefix: Patch(nameof(DeferCombatExtendedDefense), Priority.First));
+        }
 
         private static void Validate(MethodInfo method, Type result, params Type[] parameters)
         {
@@ -187,6 +211,18 @@ namespace KRWF.RimKata
             return false;
         }
 
+        private static bool DeferCombatExtendedDefense(Verb_MeleeAttack attackingVerb,
+            ref bool parried, ref bool __result)
+        {
+            if (melee.resolving || !IsCurrentAttack(attackingVerb)
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(melee.defender)
+                || !RimKataEligibility.CanUseDefense(melee.defender)) return true;
+            // CE's own dodge/parry stays in place. Only RimKata's defense waits for Ink's damage decision.
+            melee.defenseOwned = melee.ceDefenseDeferred = true;
+            parried = __result = false;
+            return false;
+        }
+
         private static bool KeepResolvedDodge(Verb_MeleeAttack __0)
             => !dodge.defenseOwned || dodge.verb != __0 || dodge.target != melee.defender
                 || !IsCurrentAttack(__0);
@@ -223,17 +259,25 @@ namespace KRWF.RimKata
             melee.resolving = true;
             try
             {
-                if (Rand.Chance(melee.dodgeChance))
+                if (melee.ceDefenseDeferred)
+                {
+                    melee.rimKataAvoided = RimKataDefenseUtility.TryResolveCombatExtendedMeleeDefense(
+                        (Verb_MeleeAttack)melee.verb, out melee.parried);
+                }
+                else if (Rand.Chance(melee.dodgeChance))
                 {
                     melee.rimKataAvoided = true;
-                    RimKataGroundPoseUtility.NotifyAvoidance(melee.defender, melee.attacker, true);
-                    MoteMaker.ThrowText(melee.defender.DrawPos, melee.defender.Map,
-                        "TextMote_Dodge".Translate(), 1.9f);
                 }
                 else
                 {
                     melee.parried = ResolveParry(melee.defender, melee.attacker, melee.verb, true);
                     melee.rimKataAvoided = melee.parried;
+                }
+                if (melee.rimKataAvoided && !melee.parried)
+                {
+                    RimKataGroundPoseUtility.NotifyAvoidance(melee.defender, melee.attacker, true);
+                    MoteMaker.ThrowText(melee.defender.DrawPos, melee.defender.Map,
+                        "TextMote_Dodge".Translate(), 1.9f);
                 }
                 melee.avoided = melee.rimKataAvoided;
                 if (melee.avoided)
@@ -256,8 +300,10 @@ namespace KRWF.RimKata
                 standingKick.RecordResolvedDefense(melee.continueDamage && !melee.avoided);
         }
 
-        private static IEnumerable<CodeInstruction> MeleeTranspiler(IEnumerable<CodeInstruction> instructions)
+        private static IEnumerable<CodeInstruction> MeleeTranspiler(IEnumerable<CodeInstruction> instructions,
+            MethodBase __originalMethod)
         {
+            bool ce = __originalMethod.DeclaringType != typeof(Verb_MeleeAttack);
             MethodInfo stagger = AccessTools.Method(typeof(StaggerHandler), nameof(StaggerHandler.StaggerFor),
                 new[] { typeof(int), typeof(float) });
             MethodInfo log = AccessTools.Method(typeof(Verb_MeleeAttack), nameof(Verb_MeleeAttack.CreateCombatLog));
@@ -268,7 +314,7 @@ namespace KRWF.RimKata
             MethodInfo fleck = AccessTools.Method(typeof(FleckMaker), nameof(FleckMaker.Static),
                 new[] { typeof(Vector3), typeof(Map), typeof(FleckDef), typeof(float) });
             MethodInfo damage = AccessTools.DeclaredMethod(typeof(Verb_MeleeAttack), "ApplyMeleeDamageToTarget");
-            int staggerCalls = 0, logCalls = 0, soundCalls = 0, moteCalls = 0, fleckCalls = 0, damageCalls = 0;
+            int staggerCalls = 0, logCalls = 0, soundCalls = 0, moteCalls = 0, fleckCalls = 0, damageCalls = 0, ceTextCalls = 0;
             foreach (CodeInstruction code in instructions)
             {
                 if (code.Calls(stagger))
@@ -295,6 +341,12 @@ namespace KRWF.RimKata
                     code.opcode = OpCodes.Call;
                     code.operand = AccessTools.Method(typeof(RimKataInkCombatCompat), nameof(DeferImpactFleck));
                 }
+                else if (ce && code.Calls(ceTextMethod))
+                {
+                    ceTextCalls++;
+                    code.opcode = OpCodes.Call;
+                    code.operand = AccessTools.Method(typeof(RimKataInkCombatCompat), nameof(CombatExtendedText));
+                }
                 if (code.opcode == OpCodes.Ret)
                 {
                     var owner = new CodeInstruction(OpCodes.Ldarg_0);
@@ -315,9 +367,16 @@ namespace KRWF.RimKata
                     yield return CodeInstruction.Call(typeof(RimKataInkCombatCompat), nameof(FlushImpactEffects));
                 }
             }
-            if (staggerCalls != 1 || soundCalls != 1 || logCalls != 3
-                || moteCalls != 1 || fleckCalls != 1 || damageCalls != 1)
+            if (staggerCalls != 1 || soundCalls != (ce ? 2 : 1) || logCalls != (ce ? 5 : 3)
+                || moteCalls != (ce ? 0 : 1) || fleckCalls != (ce ? 0 : 1)
+                || damageCalls != (ce ? 2 : 1) || ceTextCalls != (ce ? 1 : 0))
                 throw new InvalidOperationException("Ink Combat melee continuation layout did not match.");
+        }
+
+        private static void CombatExtendedText(Vector3 location, Map map, string text, float timeBeforeStartFadeout)
+        {
+            if (melee.ceDefenseDeferred && melee.resolved && melee.avoided) return;
+            ceThrowText(location, map, text, timeBeforeStartFadeout);
         }
 
         private static Mote DeferImpactMote(Vector3 location, Map map, ThingDef def,

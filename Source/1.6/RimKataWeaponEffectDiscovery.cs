@@ -189,6 +189,7 @@ namespace KRWF.RimKata
                 // The weapon graph must not expand unrelated health/graphics callbacks again.
                 if (method.DeclaringType == typeof(Pawn_HealthTracker) && IsScopedAccess(method)) return;
                 bool custom = Custom(method.DeclaringType);
+                bool rewrittenHelper = false;
                 if ((custom || method.DeclaringType?.Assembly == GameAssembly) && inspectedPatches.Add(method))
                 {
                     Patches patches = Harmony.GetPatchInfo(method);
@@ -203,12 +204,14 @@ namespace KRWF.RimKata
                                 if (patch.PatchMethod?.DeclaringType?.Assembly != OwnAssembly
                                     && (kind != "InnerPrefixes" || !ExcludesWeapon(patch.PatchMethod, method))) Add(patch.PatchMethod);
                         if (!custom && patches.Transpilers.Any(p => p.PatchMethod?.DeclaringType?.Assembly != OwnAssembly))
-                            failure = "A game helper has an external IL rewrite outside the scoped custom graph: " + method;
+                            rewrittenHelper = true;
                     }
                 }
-                if (!custom || !seen.Add(method)) return;
+                if ((!custom && !rewrittenHelper) || !seen.Add(method)) return;
                 if (method.ContainsGenericParameters || method.IsAbstract || method.GetMethodBody() == null)
                 { failure = "An original method cannot be inspected: " + method; return; }
+                if (rewrittenHelper && !(method is MethodInfo))
+                { failure = "A rewritten game constructor cannot be retained as an effect dependency: " + method; return; }
                 pending.Enqueue(method);
                 if (method is MethodInfo callable) Methods.Add(callable);
                 // Transpilers are executed by GetCurrentInstructions; their emitted runtime calls are inspected below.
@@ -228,18 +231,32 @@ namespace KRWF.RimKata
                     { failure = "The connected effect method graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumMethods + " methods."; break; }
                     MethodBase current = pending.Dequeue();
                     List<CodeInstruction> codes = PatchProcessor.GetCurrentInstructions(current);
+                    bool originalHelper = current.DeclaringType?.Assembly == GameAssembly;
+                    var originalAccesses = originalHelper ? OriginalAccesses(current) : null;
                     instructions += codes.Count;
                     if (instructions > RimKataWeaponExecutionDiscovery.MaximumInstructions)
                     { failure = "The connected effect method graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumInstructions + " instructions."; break; }
                     foreach (CodeInstruction code in codes)
                     {
-                        if (code.opcode == OpCodes.Calli || code.opcode == OpCodes.Ldvirtftn)
+                        // The native body remains an original call. Inspect accesses added by
+                        // transpilers, rather than expanding unrelated native health callbacks.
+                        // Opcode and occurrence count matter: a read changed to a write/address
+                        // or a repeated call must not disappear into the original access set.
+                        if (originalAccesses != null && code.operand is MemberInfo member
+                            && originalAccesses.TryGetValue((code.opcode, member), out int remaining) && remaining > 0)
+                        { originalAccesses[(code.opcode, member)] = remaining - 1; continue; }
+                        if (code.opcode == OpCodes.Calli || code.opcode == OpCodes.Ldvirtftn
+                            || (originalHelper && code.opcode == OpCodes.Ldftn))
                         { failure = "An indirect effect call has no fixed target: " + current; break; }
                         if (code.operand is FieldInfo field && UnsafeField(field, code.opcode))
                         { failure = "An effect accesses direct health or unresolved callback storage: " + field; break; }
                         if (!(code.operand is MethodBase called)) continue;
                         if (IsScopedAccess(called))
                         {
+                            // Rewriting a common native helper would introduce a global hook.
+                            // Keep the weapon on its original effect path if that is required.
+                            if (originalHelper)
+                            { failure = "A rewritten game helper adds an unscoped health/equipment access: " + called; break; }
                             Add(called);
                             if (!(current is MethodInfo))
                                 failure = "A constructor requires a scoped health/equipment rewrite: " + current;
@@ -265,6 +282,19 @@ namespace KRWF.RimKata
                 }
                 reason = failure;
                 return failure == null;
+            }
+
+            private static Dictionary<(OpCode, MemberInfo), int> OriginalAccesses(MethodBase method)
+            {
+                var result = new Dictionary<(OpCode, MemberInfo), int>();
+                foreach (CodeInstruction code in PatchProcessor.GetOriginalInstructions(method))
+                    if (code.operand is MemberInfo member)
+                    {
+                        var key = (code.opcode, member);
+                        result.TryGetValue(key, out int count);
+                        result[key] = count + 1;
+                    }
+                return result;
             }
 
             private bool UnsafeField(FieldInfo field, OpCode op)

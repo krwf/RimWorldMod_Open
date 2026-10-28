@@ -389,9 +389,11 @@ namespace KRWF.RimKata
         protected override bool AppliesInt(FloatMenuContext context)
             => RimKataSubdueUtility.CanOrder(context.FirstSelectedPawn);
         protected override FloatMenuOption GetSingleOptionFor(Pawn clickedPawn, FloatMenuContext context)
+            => OptionFor(context.FirstSelectedPawn, clickedPawn);
+
+        internal static FloatMenuOption OptionFor(Pawn pawn, Pawn clickedPawn)
         {
-            Pawn pawn = context.FirstSelectedPawn;
-            if (clickedPawn == pawn) return null;
+            if (!RimKataSubdueUtility.CanOrder(pawn) || clickedPawn == pawn) return null;
             string unavailable = RimKataSubdueUtility.Unavailable(pawn, clickedPawn);
             string label = "KRWF_RimKata_Subdue".Translate();
             if (unavailable != null) return new FloatMenuOption(label + ": " + unavailable, null);

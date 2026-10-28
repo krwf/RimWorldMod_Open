@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>射撃</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata 防具・衣服</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>「{0}」を有効にすると、有効な武器のクールダウンを短縮</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>射撃武器</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>近接武器</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>「{0}」または「{1}」を有効にすると、該当する種類の有効な武器のクールダウンを短縮</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>衣服の種類</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>頭装備</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>防具</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>特殊な攻撃方式を使用する武器が見つかりました。登録しますか？</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>確認すると攻撃の実行処理をコピーしてキャッシュに保存します。キャンセル・Esc・閉じるでは元の射撃方式を維持し、単発への変換は行いません。登録中に閉じても、登録済みの項目は保持されます。</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>登録中… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>登録完了：成功 {0} 件、失敗 {1} 件。</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>登録成功</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>実行準備：成功 {0} 件、失敗 {1} 件。\nディスク保存：成功 {2} 件、失敗 {3} 件。</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>実行準備は完了しましたが、登録情報を保存できませんでした。装備データを更新して再試行してください。</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>実行準備とディスクへの保存が完了しました。</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>登録に失敗しました。元の射撃方式を維持し、単発への変換は無効になります。</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>能力値を選択</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>デバッグギズモを表示</KRWF_RimKata_ShowDebugGizmo>

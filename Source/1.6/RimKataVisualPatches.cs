@@ -1120,7 +1120,8 @@ namespace KRWF.RimKata
                     primary,
                     secondary);
             bool showFocusedLine = RimKataTargetAccess.SettingsFor(pawn)
-                ?.showFocusedAttackLine != false;
+                ?.showFocusedAttackLine != false
+                && !RimKataPerspectiveShiftCompat.HasManualFireInput(pawn);
             if (showFocusedLine && frame.closeTarget != null)
             {
                 DrawFocusedCloseTargetLine(
@@ -1220,7 +1221,7 @@ namespace KRWF.RimKata
                 FocusedTargetLineWidthForCamera());
         }
 
-        private static void DrawFocusedTargetLine(
+        internal static void DrawFocusedTargetLine(
             Pawn pawn,
             Thing target,
             bool fromAttackGizmo)
@@ -1287,10 +1288,11 @@ namespace KRWF.RimKata
 
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             bool fallCombat = context.pawn == pawn && context.fallAimTarget.IsValid;
+            bool externalAim = RimKataPerspectiveShiftCompat.HasExternalAim(pawn);
             if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
                 pawn, weapon, snapshotActive
                     ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
-                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat && !fallCombat, out _, out _)
+                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat && !fallCombat && !externalAim, out _, out _)
                     == RimKataWeaponRenderProbe.SecondaryDrawResult.Custom)
             {
                 return;
@@ -1319,6 +1321,10 @@ namespace KRWF.RimKata
                     equipmentPivot,
                     aimAngle);
             }
+            else if (externalAim)
+            {
+                drawLoc = EquipmentCenter(pawn, weapon, equipmentPivot, aimAngle);
+            }
             else if (!secondary
                 && RimKataGunReadyDrawUtility.TryGetNextAim(pawn, out ThingWithComps activeWeapon, out LocalTargetInfo _)
                 && activeWeapon != weapon)
@@ -1338,14 +1344,14 @@ namespace KRWF.RimKata
                 {
                     placementPivot = root;
                 }
-                if (!hasOwnTarget)
+                if (!hasOwnTarget && !externalAim)
                 {
                     drawLoc = placementPivot + SecondaryOffsetForFacing(
                         primaryDrawLoc - placementPivot, pawn.Rotation);
                 }
             }
 
-            bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat;
+            bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat && !externalAim;
             DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
                 placementPivot, bodyAltitude, prepared);
         }
@@ -2855,7 +2861,7 @@ namespace KRWF.RimKata
             }
         }
 
-        private static void DrawAutomaticSearchRange(Verb verb)
+        internal static void DrawAutomaticSearchRange(Verb verb)
         {
             Pawn pawn = verb?.CasterPawn;
             if (pawn == null

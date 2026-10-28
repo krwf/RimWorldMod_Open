@@ -16,66 +16,140 @@ namespace KRWF.RimKata
     internal static class RimKataWeaponEffectCache
     {
         private const string Category = "weapon_effects";
-        private const string Schema = "2";
+        private const string StatusCategory = "weapon_effect_status";
+        private const string Schema = "3";
         private const int MaximumMethods = RimKataWeaponExecutionDiscovery.MaximumMethods;
         private const int MaximumEffects = 128;
+        // A rejection survives unequipping and ordinary settings refreshes, but never a new process.
+        // Keep only the existing route fingerprint and reason; no failed graph or XML is retained.
+        private static readonly Dictionary<string, Rejection> rejected = new Dictionary<string, Rejection>(StringComparer.Ordinal);
+
+        private sealed class Rejection
+        {
+            internal string Fingerprint;
+            internal string Reason;
+            internal bool Reported;
+        }
 
         internal static void Invalidate(string key)
-            => RimKataEquipmentMemory.Current?.Remove(Category, key);
-
-        internal static bool TryGet(RimKataWeaponExecutionPlan execution, bool force, out RimKataWeaponEffectPlan plan)
-            => TryGet(execution, force, out plan, out _);
-
-        internal static bool TryGet(RimKataWeaponExecutionPlan execution, bool force,
-            out RimKataWeaponEffectPlan plan, out string reason)
         {
-            plan = null;
-            reason = null;
-            if (execution?.Def == null || execution.VerbType == null || execution.HandledByCompatibility
-                || string.IsNullOrEmpty(execution.Key)) return false;
+            rejected.Remove(key);
+            RimKataEquipmentMemory.Current?.Remove(Category, key);
+            RimKataEquipmentMemory.Current?.Remove(StatusCategory, key);
+        }
+
+        internal static bool RememberUnsupported(RimKataWeaponExecutionPlan execution, string reason)
+        {
+            if (rejected.TryGetValue(execution.Key, out Rejection previous)
+                && previous.Fingerprint == execution.Fingerprint && previous.Reason == reason)
+            {
+                if (previous.Reported) return false;
+                previous.Reported = true;
+                return true;
+            }
+            rejected[execution.Key] = new Rejection
+                { Fingerprint = execution.Fingerprint, Reason = reason, Reported = true };
+            return true;
+        }
+
+        // Called only by explicit catalog preparation. Equipment acquisition restores below;
+        // a cache miss during a game must never expand the analysis scope or ask to register.
+        internal static bool Prepare(RimKataWeaponExecutionPlan execution, bool force = false)
+        {
+            if (!CanRead(execution) || execution.Failed || execution.RegistrationDeclined
+                || (!execution.AnalysisComplete && execution.Mode != RimKataWeaponExecutionMode.Copied
+                    && !execution.RegistrationAccepted)) return false;
+            execution.EffectCacheFingerprint = null;
+            execution.EffectCacheSnapshot = null;
             var memory = RimKataEquipmentMemory.Current;
             if (force) Invalidate(execution.Key);
             else
             {
                 try
                 {
-                    if (TryRestore(execution, out plan))
+                    if (TryRestore(execution, true, out _))
                     {
+                        rejected.Remove(execution.Key);
                         RimKataStartupDiagnostics.Count("weapon_effect_cache_hit");
                         return true;
                     }
                 }
-                catch { plan = null; } // Stale/corrupt metadata is a miss, not a partial plan.
+                catch { } // Only this preparation boundary may replace stale metadata.
             }
             memory?.Remove(Category, execution.Key);
+            memory?.Remove(StatusCategory, execution.Key);
             RimKataStartupDiagnostics.Count("weapon_effect_cache_miss");
+            RimKataWeaponEffectPlan plan = null;
+            string reason = null;
             try
             {
                 if (!RimKataWeaponEffectDiscovery.TryAnalyze(execution, out plan, out reason))
-                { plan = null; return false; }
-                if (!Valid(execution, plan))
                 {
                     plan = null;
-                    reason = "The original effect trace returned incomplete metadata.";
+                    if (reason != null) { RememberUnavailable(execution, reason); return false; }
+                    // A completed check with no effects is different from missing metadata.
+                }
+                else if (!Valid(execution, plan))
+                {
+                    RememberUnavailable(execution, "The original effect trace returned incomplete metadata.");
                     return false;
                 }
             }
             catch (Exception exception)
             {
-                plan = null;
-                reason = exception.GetType().Name + ": " + exception.Message;
+                RememberUnavailable(execution, exception.GetType().Name + ": " + exception.Message);
                 return false;
             }
-            // Missing/unsupported/failed traces are deliberately not cached; later preparation retries them.
-            reason = null;
-            try { Store(execution, plan); }
+            try
+            {
+                if (!Store(execution, plan))
+                    throw new InvalidOperationException("The prepared effect metadata could not be stored.");
+                rejected.Remove(execution.Key);
+                return true;
+            }
             catch (Exception exception)
             {
                 memory?.Remove(Category, execution.Key);
+                memory?.Remove(StatusCategory, execution.Key);
+                RememberUnavailable(execution, plan == null ? null
+                    : "Prepared weapon effect metadata is unavailable. Use Refresh to prepare it again.");
                 Log.Warning("[RimKata] Could not remember the weapon effect path for " + execution.Def.defName
-                    + ". The verified in-memory plan remains available. " + exception.GetType().Name + ": " + exception.Message);
+                    + ". Existing effect connections remain available; new connections will keep the original effect path. "
+                    + exception.GetType().Name + ": " + exception.Message);
+                return false;
             }
-            return true;
+        }
+
+        internal static bool TryGet(RimKataWeaponExecutionPlan execution,
+            out RimKataWeaponEffectPlan plan, out string reason)
+        {
+            plan = null;
+            reason = null;
+            if (!CanRead(execution)) return false;
+            if (rejected.TryGetValue(execution.Key, out Rejection previous)
+                && previous.Fingerprint == execution.Fingerprint)
+            {
+                reason = previous.Reason;
+                return false;
+            }
+            try
+            {
+                if (TryRestore(execution, false, out plan)) return plan != null;
+            }
+            catch { plan = null; }
+            reason = "Prepared weapon effect metadata is unavailable. Use Refresh to prepare it again.";
+            return false;
+        }
+
+        private static bool CanRead(RimKataWeaponExecutionPlan execution)
+            => execution?.Def != null && execution.VerbType != null && !execution.HandledByCompatibility
+                && !string.IsNullOrEmpty(execution.Key);
+
+        private static void RememberUnavailable(RimKataWeaponExecutionPlan execution, string reason)
+        {
+            if (rejected.TryGetValue(execution.Key, out Rejection previous)
+                && previous.Fingerprint == execution.Fingerprint && previous.Reason == reason) return;
+            rejected[execution.Key] = new Rejection { Fingerprint = execution.Fingerprint, Reason = reason };
         }
 
         private static string BaseFingerprint(RimKataWeaponExecutionPlan execution)
@@ -85,12 +159,24 @@ namespace KRWF.RimKata
                 + "\n" + TypeIdentity(typeof(Verb)) + "\n" + TypeIdentity(typeof(Harmony))
                 + "\n" + TypeIdentity(typeof(RimKataWeaponEffectCache)));
 
-        private static bool TryRestore(RimKataWeaponExecutionPlan execution, out RimKataWeaponEffectPlan plan)
+        private static bool TryRestore(RimKataWeaponExecutionPlan execution, bool validateSource,
+            out RimKataWeaponEffectPlan plan)
         {
             plan = null;
             var memory = RimKataEquipmentMemory.Current;
-            if (memory == null || !memory.TryRead(Category, execution.Key, BaseFingerprint(execution), out XmlElement data)
+            string fingerprint = validateSource ? BaseFingerprint(execution) : execution.EffectCacheFingerprint;
+            if (string.IsNullOrEmpty(fingerprint)) return false;
+            if (memory != null && memory.TryRead(StatusCategory, execution.Key, fingerprint, out XmlElement status)
+                && status.GetAttribute("schema") == Schema && status.GetAttribute("weapon") == execution.Def.defName
+                && status.GetAttribute("status") == "none" && !status.HasChildNodes
+                && MatchesSnapshot(execution, null, status.GetAttribute("snapshot"), validateSource))
+            {
+                RememberPrepared(execution, fingerprint, status.GetAttribute("snapshot"), validateSource);
+                return true;
+            }
+            if (memory == null || !memory.TryRead(Category, execution.Key, fingerprint, out XmlElement data)
                 || data.GetAttribute("schema") != Schema || data.GetAttribute("weapon") != execution.Def.defName) return false;
+            if (data.GetAttribute("status") != "prepared") return false;
             var methods = new List<MethodInfo>();
             var managers = new List<HediffDef>();
             var effects = new List<HediffDef>();
@@ -117,12 +203,28 @@ namespace KRWF.RimKata
                 WeaponDef = execution.Def, VerbType = execution.VerbType,
                 ManagerDefs = managers.ToArray(), Effects = effects.ToArray(), AnalyzedMethods = methods.ToArray()
             };
-            if (!Valid(execution, restored) || Snapshot(execution, restored) != data.GetAttribute("snapshot")) return false;
+            if (!Valid(execution, restored, validateSource)
+                || !MatchesSnapshot(execution, restored, data.GetAttribute("snapshot"), validateSource)) return false;
+            RememberPrepared(execution, fingerprint, data.GetAttribute("snapshot"), validateSource);
             plan = restored;
             return true;
         }
 
-        private static bool Valid(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan)
+        private static bool MatchesSnapshot(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan,
+            string snapshot, bool validateSource)
+            => !string.IsNullOrEmpty(snapshot)
+                && (validateSource ? Snapshot(execution, plan) : execution.EffectCacheSnapshot) == snapshot;
+
+        private static void RememberPrepared(RimKataWeaponExecutionPlan execution, string fingerprint,
+            string snapshot, bool validateSource = true)
+        {
+            if (!validateSource) return;
+            execution.EffectCacheFingerprint = fingerprint;
+            execution.EffectCacheSnapshot = snapshot;
+        }
+
+        private static bool Valid(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan,
+            bool validateDefinitions = true)
         {
             if (plan == null || plan.WeaponDef != execution.Def || plan.VerbType != execution.VerbType
                 || plan.AnalyzedMethods == null || plan.AnalyzedMethods.Length == 0
@@ -135,10 +237,12 @@ namespace KRWF.RimKata
                 if (method.ContainsGenericParameters || method.DeclaringType == null) return false;
             if (!Unique(plan.ManagerDefs) || !Unique(plan.Effects)) return false;
             var managers = new HashSet<HediffDef>(plan.ManagerDefs);
-            foreach (HediffDef manager in managers)
-                if (!RimKataWeaponEffectDiscovery.ManagerOnly(manager)) return false;
+            if (validateDefinitions)
+                foreach (HediffDef manager in managers)
+                    if (!RimKataWeaponEffectDiscovery.ManagerOnly(manager)) return false;
             foreach (HediffDef effect in plan.Effects)
-                if (managers.Contains(effect) || !RimKataWeaponEffectDiscovery.StatOnly(effect)) return false;
+                if (managers.Contains(effect)
+                    || (validateDefinitions && !RimKataWeaponEffectDiscovery.StatOnly(effect))) return false;
             return true;
         }
 
@@ -150,21 +254,31 @@ namespace KRWF.RimKata
             return true;
         }
 
-        private static void Store(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan)
+        private static bool Store(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan)
         {
             XmlElement data = RimKataEquipmentMemory.NewData();
             data.SetAttribute("schema", Schema);
             data.SetAttribute("weapon", execution.Def.defName);
-            data.SetAttribute("snapshot", Snapshot(execution, plan));
-            foreach (MethodInfo method in plan.AnalyzedMethods)
+            data.SetAttribute("status", plan == null ? "none" : "prepared");
+            string snapshot = Snapshot(execution, plan);
+            string fingerprint = BaseFingerprint(execution);
+            data.SetAttribute("snapshot", snapshot);
+            if (plan != null)
             {
-                XmlElement item = data.OwnerDocument.CreateElement("method");
-                item.SetAttribute("identity", MemberIdentity(method));
-                data.AppendChild(item);
+                foreach (MethodInfo method in plan.AnalyzedMethods)
+                {
+                    XmlElement item = data.OwnerDocument.CreateElement("method");
+                    item.SetAttribute("identity", MemberIdentity(method));
+                    data.AppendChild(item);
+                }
+                AppendDefinitions(data, "manager", plan.ManagerDefs);
+                AppendDefinitions(data, "effect", plan.Effects);
             }
-            AppendDefinitions(data, "manager", plan.ManagerDefs);
-            AppendDefinitions(data, "effect", plan.Effects);
-            RimKataEquipmentMemory.Current?.Store(Category, execution.Key, BaseFingerprint(execution), data);
+            // No-effect weapons need one small common-cache record, not an analysis XML file.
+            bool stored = RimKataEquipmentMemory.Current?.Store(plan == null ? StatusCategory : Category,
+                execution.Key, fingerprint, data) == true;
+            if (stored) RememberPrepared(execution, fingerprint, snapshot);
+            return stored;
         }
 
         private static void AppendDefinitions(XmlElement data, string kind, HediffDef[] definitions)
@@ -181,14 +295,14 @@ namespace KRWF.RimKata
         {
             var text = new StringBuilder();
             Token(text, RimKataAllowedWeaponStore.CapturedSourceXml(execution.Def));
-            Token(text, RouteFingerprint(plan.AnalyzedMethods));
+            Token(text, RouteFingerprint(plan?.AnalyzedMethods ?? Array.Empty<MethodInfo>()));
             var writer = new DataWriter(text);
             writer.Value(execution.Def.Verbs);
             writer.Value(execution.Def.comps);
             Token(text, "managers");
-            foreach (HediffDef manager in plan.ManagerDefs) writer.Definition(manager);
+            if (plan != null) foreach (HediffDef manager in plan.ManagerDefs) writer.Definition(manager);
             Token(text, "effects");
-            foreach (HediffDef effect in plan.Effects) writer.Definition(effect);
+            if (plan != null) foreach (HediffDef effect in plan.Effects) writer.Definition(effect);
             return RimKataEquipmentMemory.Fingerprint(text.ToString());
         }
         private static void Token(StringBuilder text, string value)

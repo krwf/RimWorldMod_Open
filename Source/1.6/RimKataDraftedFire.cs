@@ -54,6 +54,7 @@ namespace KRWF.RimKata
 
         public static bool TryQueuePhysicalMeleeAttack(Pawn pawn, Thing target)
         {
+            if (RimKataPerspectiveShiftCompat.BlocksAutomaticAttack(pawn)) return true;
             if (RimKataSubdueCombat.TryHandleMeleeAttempt(pawn, target)) return true;
             if (pawn?.Map == null
                 || pawn.InMentalState
@@ -137,7 +138,8 @@ namespace KRWF.RimKata
 
         private static bool CanControllerPrerequisites(Pawn pawn)
         {
-            return pawn?.Drafted == true
+            return (pawn?.Drafted == true || RimKataPerspectiveShiftCompat.IsControlled(pawn))
+                && !RimKataPerspectiveShiftCompat.BlocksAutomaticAttack(pawn)
                 && IsAutomaticFireJob(pawn.CurJobDef)
                 && RimKataEligibility.CanBeginGunKataAttack(pawn);
         }

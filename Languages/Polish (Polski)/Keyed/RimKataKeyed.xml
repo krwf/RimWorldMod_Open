@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Dystansowa</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Pancerz i odzież RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Włączenie „{0}” skraca czas odnowienia dozwolonych broni.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Broń dystansowa</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Broń do walki wręcz</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Włączenie „{0}” lub „{1}” skraca czas odnowienia dozwolonych broni danego typu.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Typ odzieży</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Nakrycie głowy</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Pancerz</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Znaleziono broń o nietypowym sposobie strzelania. Czy chcesz ją zarejestrować?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Potwierdzenie kopiuje procedury ataku do pamięci podręcznej. Anulowanie, Esc lub zamknięcie zachowuje oryginalny ostrzał bez zamiany na pojedyncze strzały. Zamknięcie podczas rejestracji zachowuje już zarejestrowane wpisy.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Rejestrowanie… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Rejestracja zakończona: {0} udanych, {1} nieudanych.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Zarejestrowano</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Przygotowanie wykonania: udane {0}, nieudane {1}.\nZapis na dysk: zapisano {2}, błędy {3}.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Wykonywanie zostało przygotowane, ale nie udało się zapisać rejestracji. Odśwież dane wyposażenia, aby spróbować ponownie.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Wykonanie przygotowane i zapisane na dysku.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Rejestracja nie powiodła się. Oryginalny ostrzał zostaje zachowany; zamiana na pojedyncze strzały jest wyłączona.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Wybierz statystyki</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Pokaż przycisk debugowania</KRWF_RimKata_ShowDebugGizmo>

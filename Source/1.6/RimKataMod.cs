@@ -25,6 +25,8 @@ namespace KRWF.RimKata
             {
                 using (RimKataStartupDiagnostics.Measure("preparation", "profiles_and_weapons"))
                 {
+                    bool equipmentChanged = RimKataEquipmentOwnership.Initialize();
+                    if (!equipmentChanged || RimKataMod.SaveEquipmentCleanup()) RimKataEquipmentOwnership.CommitCleanup();
                     if (!RimKataMod.EnsureProfilesInitialized())
                     {
                         RimKataPreparedWeaponData.RefreshDefinitions();
@@ -86,6 +88,8 @@ namespace KRWF.RimKata
             RunCompatibility("compat_rebound", "ProjectileInversion.API", RimKataReboundCompat.Apply);
             RunCompatibility("compat_pocketsand", "PocketSand.JobDriver_Equip", RimKataPocketSandCompat.Apply);
             RunCompatibility("compat_simple_sidearms", "SimpleSidearms.rimworld.CompSidearmMemory", RimKataSimpleSidearmsCompat.Apply);
+            LongEventHandler.ExecuteWhenFinished(() => RunCompatibility("compat_perspective_shift",
+                "PerspectiveShift.Avatar", () => RimKataPerspectiveShiftCompat.Apply(harmony)));
             LongEventHandler.ExecuteWhenFinished(() =>
             {
                 try { RunCompatibility("compat_muzzle_flash", "MuzzleFlash.MuzzleFlashUtility", () => RimKataMuzzleFlashCompat.Apply(harmony)); }
@@ -153,7 +157,8 @@ namespace KRWF.RimKata
             private readonly float aiSecondaryWeaponChancePercent;
             private readonly string activeProfileId;
             private readonly string[] enabledWeaponDefNames;
-            private readonly string[] enabledArmorDefNames;
+            private readonly string[] enabledRangedArmorDefNames;
+            private readonly string[] enabledMeleeArmorDefNames;
             private readonly string[] twoHandWeaponDefNames;
             private readonly string[] oneHandWeaponOverrideDefNames;
 
@@ -179,7 +184,8 @@ namespace KRWF.RimKata
                 aiSecondaryWeaponChancePercent = settings?.aiSecondaryWeaponChancePercent ?? 0f;
                 activeProfileId = settings?.ActiveProfileId;
                 enabledWeaponDefNames = CaptureList(settings?.enabledWeaponDefNames);
-                enabledArmorDefNames = CaptureList(settings?.enabledArmorDefNames);
+                enabledRangedArmorDefNames = CaptureList(settings?.enabledRangedArmorDefNames);
+                enabledMeleeArmorDefNames = CaptureList(settings?.enabledMeleeArmorDefNames);
                 twoHandWeaponDefNames = CaptureList(settings?.twoHandWeaponDefNames);
                 oneHandWeaponOverrideDefNames = CaptureList(settings?.oneHandWeaponOverrideDefNames);
             }
@@ -209,8 +215,15 @@ namespace KRWF.RimKata
                     && showDebugGizmo == settings.showDebugGizmo
                     && aiSecondaryWeaponChancePercent == settings.aiSecondaryWeaponChancePercent
                     && string.Equals(activeProfileId, settings.ActiveProfileId, StringComparison.Ordinal)
+                    && EquipmentMatches(settings);
+            }
+
+            public bool EquipmentMatches(RimKataSettings settings)
+            {
+                return settings != null
                     && ListMatches(enabledWeaponDefNames, settings.enabledWeaponDefNames)
-                    && ListMatches(enabledArmorDefNames, settings.enabledArmorDefNames)
+                    && ListMatches(enabledRangedArmorDefNames, settings.enabledRangedArmorDefNames)
+                    && ListMatches(enabledMeleeArmorDefNames, settings.enabledMeleeArmorDefNames)
                     && ListMatches(twoHandWeaponDefNames, settings.twoHandWeaponDefNames)
                     && ListMatches(oneHandWeaponOverrideDefNames, settings.oneHandWeaponOverrideDefNames);
             }
@@ -424,7 +437,10 @@ namespace KRWF.RimKata
             bool settingsChanged = settingsBeforeEdit != null
                 && !settingsBeforeEdit.Matches(Settings);
             RimKataTargetAccess.Rebuild();
-            RimKataEquipmentUtility.InvalidateCaches();
+            if (settingsBeforeEdit != null && !settingsBeforeEdit.EquipmentMatches(Settings))
+            {
+                RimKataEquipmentUtility.InvalidateCaches();
+            }
             if (settingsChanged)
             {
                 RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
@@ -461,15 +477,38 @@ namespace KRWF.RimKata
             }
         }
 
+        internal static bool SaveEquipmentCleanup()
+        {
+            // The equipment lists are global; cleanup must not save or switch a combat profile.
+            if (instance == null) return false;
+            try
+            {
+                instance.uiBuffers.SyncFrom(Settings);
+                instance.SaveBaseSettings();
+                return true;
+            }
+            catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
+            {
+                RimKataSettingsWindowSafety.Report("equipment cleanup save", exception);
+                return false;
+            }
+        }
+
+        private void SaveBaseSettings() => base.WriteSettings();
+
         private static void ShowProfileError(Exception exception)
         {
             RimKataSettingsWindowSafety.Report("profile initialization or save", exception);
         }
 
-        internal static void ApplyCombatFeatureSettingsChange()
+        internal static void ApplyCombatFeatureSettingsChange(bool refreshEquipment = true)
         {
             RimKataTargetAccess.Rebuild();
-            RimKataEquipmentUtility.InvalidateCaches();
+            // Profiles change runtime settings, not the shared equipment catalog.
+            if (refreshEquipment)
+            {
+                RimKataEquipmentUtility.InvalidateCaches();
+            }
             RimKataStrengthUtility.NotifySettingsChanged(false);
             RimKataWeaponSlotUtility.NotifyCombatFeaturesChanged();
             RimKataCrawlFireUtility.NotifySettingsChanged();

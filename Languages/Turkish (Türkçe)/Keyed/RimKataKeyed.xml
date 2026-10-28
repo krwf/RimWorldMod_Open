@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Menzilli</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata zırh ve giysileri</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>“{0}” seçeneğini etkinleştirmek etkin silahların bekleme süresini azaltır.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Menzilli silah</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Yakın dövüş silahı</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>“{0}” veya “{1}” seçeneğini etkinleştirmek ilgili türdeki etkin silahların bekleme süresini azaltır.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Giysi türü</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Başlık</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Zırh</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Özel ateş etme biçimine sahip silahlar bulundu. Bunları kaydetmek ister misiniz?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Onaylama, saldırı yordamlarını önbelleğe kopyalar. İptal, Esc veya Kapat, tek atışa dönüştürmeden özgün ateş etme biçimini korur. Kayıt sırasında kapatırsanız önceden kaydedilen girdiler korunur.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Kaydediliyor… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Kayıt tamamlandı: {0} başarılı, {1} başarısız.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Kaydedildi</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Çalıştırma hazırlığı: {0} başarılı, {1} başarısız.\nDiske kayıt: {2} kaydedildi, {3} başarısız.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Çalıştırma hazırlandı, ancak kayıt bilgileri kaydedilemedi. Yeniden denemek için ekipman verilerini yenileyin.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Çalıştırma hazırlandı ve diske kaydedildi.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Kayıt başarısız. Özgün ateş etme biçimi korunur; tek atışa dönüştürme devre dışıdır.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>İstatistik seç</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Hata ayıklama düğmesini göster</KRWF_RimKata_ShowDebugGizmo>

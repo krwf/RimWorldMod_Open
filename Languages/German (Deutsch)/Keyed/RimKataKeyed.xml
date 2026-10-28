@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Fernkampf</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-Rüstung und -Bekleidung</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Das Aktivieren von „{0}“ verkürzt die Abklingzeit aktivierter Waffen.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Fernkampfwaffe</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Nahkampfwaffe</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Das Aktivieren von „{0}“ oder „{1}“ verkürzt die Abklingzeit aktivierter Waffen des entsprechenden Typs.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Bekleidungstyp</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Kopfbedeckung</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Rüstung</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Waffen mit besonderem Schussverhalten wurden gefunden. Möchtest du sie registrieren?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Bestätigen kopiert ihre Angriffsroutinen in den Cache. Abbrechen, Esc oder Schließen behält das ursprüngliche Schussverhalten ohne Einzelschussumwandlung bei. Beim Schließen während der Registrierung bleiben bereits registrierte Einträge erhalten.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrierung läuft… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrierung abgeschlossen: {0} erfolgreich, {1} fehlgeschlagen.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registriert</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Ausführungsvorbereitung: {0} erfolgreich, {1} fehlgeschlagen.\nSpeicherung auf Datenträger: {2} gespeichert, {3} fehlgeschlagen.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Die Ausführung ist vorbereitet, aber die Registrierung konnte nicht gespeichert werden. Aktualisieren Sie die Ausrüstungsdaten, um es erneut zu versuchen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Ausführung vorbereitet und auf Datenträger gespeichert.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrierung fehlgeschlagen. Das ursprüngliche Schussverhalten bleibt erhalten; die Einzelschussumwandlung ist deaktiviert.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Werte auswählen</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Debug-Schaltfläche anzeigen</KRWF_RimKata_ShowDebugGizmo>

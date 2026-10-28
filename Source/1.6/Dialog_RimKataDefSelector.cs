@@ -56,16 +56,16 @@ namespace KRWF.RimKata
             internal readonly Rect Name;
             internal readonly Rect Selection;
             internal readonly Rect Allowed;
-            internal readonly Rect Grip;
+            internal readonly Rect Secondary;
             internal readonly Rect Info;
 
-            internal EquipmentColumns(Rect row, float allowedWidth, float gripWidth, float infoWidth)
+            internal EquipmentColumns(Rect row, float allowedWidth, float secondaryWidth, float infoWidth)
             {
                 Info = new Rect(row.xMax - infoWidth, row.y, infoWidth, row.height);
-                Grip = gripWidth > 0f
-                    ? new Rect(Info.x - EquipmentColumnGap - gripWidth, row.y, gripWidth, row.height)
+                Secondary = secondaryWidth > 0f
+                    ? new Rect(Info.x - EquipmentColumnGap - secondaryWidth, row.y, secondaryWidth, row.height)
                     : Rect.zero;
-                float rightColumnX = gripWidth > 0f ? Grip.x : Info.x;
+                float rightColumnX = secondaryWidth > 0f ? Secondary.x : Info.x;
                 Allowed = new Rect(rightColumnX - EquipmentColumnGap - allowedWidth,
                     row.y, allowedWidth, row.height);
                 float nameX = row.x + 32f;
@@ -80,6 +80,7 @@ namespace KRWF.RimKata
         private readonly List<ThingDef> candidates;
         private readonly HashSet<string> candidateDefNames;
         private readonly HashSet<string> selectedDefNames;
+        private readonly HashSet<string> selectedMeleeArmorDefNames;
         private readonly HashSet<string> twoHandedDefNames;
         private readonly HashSet<string> oneHandedOverrideDefNames;
         private Vector2 scrollPosition;
@@ -105,8 +106,9 @@ namespace KRWF.RimKata
 
             List<string> source = kind == RimKataDefSelectionKind.Weapon
                 ? settings.enabledWeaponDefNames
-                : settings.enabledArmorDefNames;
+                : settings.enabledRangedArmorDefNames;
             selectedDefNames = new HashSet<string>(source, StringComparer.Ordinal);
+            selectedMeleeArmorDefNames = new HashSet<string>(settings.enabledMeleeArmorDefNames, StringComparer.Ordinal);
             twoHandedDefNames = new HashSet<string>(settings.twoHandWeaponDefNames, StringComparer.Ordinal);
             oneHandedOverrideDefNames = new HashSet<string>(settings.oneHandWeaponOverrideDefNames, StringComparer.Ordinal);
 
@@ -139,18 +141,20 @@ namespace KRWF.RimKata
             y += 36f;
 
             DrawFilterControls(new Rect(inRect.x, y, inRect.width, 30f));
-            y += 36f;
+            y += kind == RimKataDefSelectionKind.Weapon ? 36f : 72f;
             if (nonHuman)
             {
                 DrawNonHumanCategoryDropdown(new Rect(inRect.x, y, inRect.width, 30f));
                 y += 36f;
             }
             float contentWidth = inRect.width - 18f;
-            float allowedWidth = HeaderColumnWidth("KRWF_RimKata_EquipmentAllowed");
-            float gripWidth = kind == RimKataDefSelectionKind.Weapon ? GripColumnWidth() : 0f;
+            float allowedWidth = HeaderColumnWidth(kind == RimKataDefSelectionKind.Weapon
+                ? "KRWF_RimKata_EquipmentAllowed" : "KRWF_RimKata_ApparelRangedWeapon");
+            float secondaryWidth = kind == RimKataDefSelectionKind.Weapon
+                ? GripColumnWidth() : HeaderColumnWidth("KRWF_RimKata_ApparelMeleeWeapon");
             float infoWidth = HeaderColumnWidth("KRWF_RimKata_EquipmentInfo");
             DrawColumnHeaders(new EquipmentColumns(new Rect(inRect.x, y, contentWidth, RowHeight),
-                allowedWidth, gripWidth, infoWidth));
+                allowedWidth, secondaryWidth, infoWidth));
             y += RowHeight;
             Widgets.DrawLineHorizontal(inRect.x, y, contentWidth);
             y += 5f;
@@ -178,7 +182,7 @@ namespace KRWF.RimKata
                     bool selected = selectedDefNames.Contains(def.defName);
                     Rect iconRect = new Rect(row.x + 2f, row.y + 3f, 24f, 24f);
                     Widgets.DefIcon(iconRect, def);
-                    EquipmentColumns columns = new EquipmentColumns(row, allowedWidth, gripWidth, infoWidth);
+                    EquipmentColumns columns = new EquipmentColumns(row, allowedWidth, secondaryWidth, infoWidth);
                     Widgets.CheckboxLabeled(columns.Selection, def.LabelCap + " [" + def.defName + "]", ref selected,
                         paintable: allowedStateFilter == AllowedStateFilter.All);
                     if (selected)
@@ -194,7 +198,7 @@ namespace KRWF.RimKata
                     {
                         bool twoHanded = EffectiveTwoHanded(def);
                         bool previous = twoHanded;
-                        DrawRightAlignedCheckbox(columns.Grip, "KRWF_RimKata_TwoHandedWeapon".Translate(), ref twoHanded,
+                        DrawRightAlignedCheckbox(columns.Secondary, "KRWF_RimKata_TwoHandedWeapon".Translate(), ref twoHanded,
                             allowedStateFilter == AllowedStateFilter.All);
                         if (twoHanded != previous)
                         {
@@ -209,6 +213,17 @@ namespace KRWF.RimKata
                                 oneHandedOverrideDefNames.Add(def.defName);
                             }
                         }
+                    }
+                    else
+                    {
+                        bool meleeSelected = selectedMeleeArmorDefNames.Contains(def.defName);
+                        Widgets.Checkbox(new Vector2(columns.Secondary.center.x - CheckboxSize * 0.5f,
+                            columns.Secondary.center.y - CheckboxSize * 0.5f), ref meleeSelected, CheckboxSize,
+                            paintable: allowedStateFilter == AllowedStateFilter.All);
+                        if (meleeSelected)
+                            selectedMeleeArmorDefNames.Add(def.defName);
+                        else
+                            selectedMeleeArmorDefNames.Remove(def.defName);
                     }
 
                     DrawInfoButton(new Rect(columns.Info.center.x - CheckboxSize * 0.5f,
@@ -238,7 +253,8 @@ namespace KRWF.RimKata
                 Mathf.Max(0f, refreshRect.x - resetRect.xMax - ButtonGap * 2f), resetRect.height);
             string explanation = kind == RimKataDefSelectionKind.Weapon
                 ? "KRWF_RimKata_TwoHandedWeaponExplanation".Translate("KRWF_RimKata_TwoHandedWeapon".Translate())
-                : "KRWF_RimKata_ApparelPermissionExplanation".Translate("KRWF_RimKata_EquipmentAllowed".Translate());
+                : "KRWF_RimKata_ApparelPermissionExplanation".Translate(
+                    "KRWF_RimKata_ApparelRangedWeapon".Translate(), "KRWF_RimKata_ApparelMeleeWeapon".Translate());
             RimKataFeatureWindowUtility.DrawCenteredExplanation(explanationRect, explanation);
             DrawButtons(new Rect(inRect.x, inRect.yMax - 30f, inRect.width, 30f));
         }
@@ -257,12 +273,16 @@ namespace KRWF.RimKata
             commitChangesOnClose = false;
             List<string> target = kind == RimKataDefSelectionKind.Weapon
                 ? settings.enabledWeaponDefNames
-                : settings.enabledArmorDefNames;
+                : settings.enabledRangedArmorDefNames;
             ApplyScopedSelection(target, selectedDefNames);
             if (kind == RimKataDefSelectionKind.Weapon)
             {
                 ApplyScopedSelection(settings.twoHandWeaponDefNames, twoHandedDefNames);
                 ApplyScopedSelection(settings.oneHandWeaponOverrideDefNames, oneHandedOverrideDefNames);
+            }
+            else
+            {
+                ApplyScopedSelection(settings.enabledMeleeArmorDefNames, selectedMeleeArmorDefNames);
             }
             RimKataMod.CommitListSettings();
         }
@@ -306,11 +326,11 @@ namespace KRWF.RimKata
 
             if (allowedStateFilter == AllowedStateFilter.Yes)
             {
-                filtered = filtered.Where(def => selectedDefNames.Contains(def.defName));
+                filtered = filtered.Where(def => IsSelected(def.defName));
             }
             else if (allowedStateFilter == AllowedStateFilter.No)
             {
-                filtered = filtered.Where(def => !selectedDefNames.Contains(def.defName));
+                filtered = filtered.Where(def => !IsSelected(def.defName));
             }
 
             if (query.Length > 0)
@@ -322,17 +342,27 @@ namespace KRWF.RimKata
             return filtered.ToList();
         }
 
+        private bool IsSelected(string defName)
+        {
+            return selectedDefNames.Contains(defName)
+                || (kind == RimKataDefSelectionKind.Armor && selectedMeleeArmorDefNames.Contains(defName));
+        }
+
         private void ResetSelection()
         {
             IEnumerable<string> defaults = kind == RimKataDefSelectionKind.Weapon
                 ? RimKataSettings.DefaultEnabledWeaponDefNames
                 : RimKataSettings.DefaultEnabledArmorDefNames;
             selectedDefNames.ExceptWith(candidateDefNames);
+            if (kind == RimKataDefSelectionKind.Armor)
+                selectedMeleeArmorDefNames.ExceptWith(candidateDefNames);
             foreach (string defName in defaults)
             {
                 if (candidateDefNames.Contains(defName))
                 {
                     selectedDefNames.Add(defName);
+                    if (kind == RimKataDefSelectionKind.Armor)
+                        selectedMeleeArmorDefNames.Add(defName);
                 }
             }
 
@@ -402,14 +432,15 @@ namespace KRWF.RimKata
                 longestName = Mathf.Max(longestName, Text.CalcSize(displayName).x);
             }
 
-            float gripWidth = kind == RimKataDefSelectionKind.Weapon
+            float secondaryWidth = kind == RimKataDefSelectionKind.Weapon
                 ? GripColumnWidth()
-                : 0f;
+                : HeaderColumnWidth("KRWF_RimKata_ApparelMeleeWeapon");
             float desiredRowWidth = 32f
                 + longestName
                 + EquipmentColumnGap
-                + HeaderColumnWidth("KRWF_RimKata_EquipmentAllowed")
-                + (gripWidth > 0f ? EquipmentColumnGap + gripWidth : 0f)
+                + HeaderColumnWidth(kind == RimKataDefSelectionKind.Weapon
+                    ? "KRWF_RimKata_EquipmentAllowed" : "KRWF_RimKata_ApparelRangedWeapon")
+                + EquipmentColumnGap + secondaryWidth
                 + EquipmentColumnGap
                 + HeaderColumnWidth("KRWF_RimKata_EquipmentInfo");
             Text.Font = previousFont;
@@ -425,9 +456,10 @@ namespace KRWF.RimKata
             Text.Anchor = TextAnchor.MiddleLeft;
             Widgets.Label(columns.Name, "KRWF_RimKata_TargetName".Translate());
             Text.Anchor = previousAnchor;
-            DrawCenteredLabel(columns.Allowed, "KRWF_RimKata_EquipmentAllowed".Translate());
-            if (kind == RimKataDefSelectionKind.Weapon)
-                DrawCenteredLabel(columns.Grip, "KRWF_RimKata_TwoHandedWeapon".Translate());
+            DrawCenteredLabel(columns.Allowed, (kind == RimKataDefSelectionKind.Weapon
+                ? "KRWF_RimKata_EquipmentAllowed" : "KRWF_RimKata_ApparelRangedWeapon").Translate());
+            DrawCenteredLabel(columns.Secondary, (kind == RimKataDefSelectionKind.Weapon
+                ? "KRWF_RimKata_TwoHandedWeapon" : "KRWF_RimKata_ApparelMeleeWeapon").Translate());
             DrawCenteredLabel(columns.Info, "KRWF_RimKata_EquipmentInfo".Translate());
         }
 
@@ -455,7 +487,8 @@ namespace KRWF.RimKata
 
         private void DrawFilterControls(Rect rect)
         {
-            float columnWidth = (rect.width - FilterColumnGap * 2f) / 3f;
+            int columnCount = kind == RimKataDefSelectionKind.Weapon ? 3 : 2;
+            float columnWidth = (rect.width - FilterColumnGap * (columnCount - 1)) / columnCount;
             Rect kindRect = new Rect(rect.x, rect.y, columnWidth, rect.height);
             if (kind == RimKataDefSelectionKind.Weapon)
             {
@@ -467,7 +500,18 @@ namespace KRWF.RimKata
             }
 
             DrawAllowedStateDropdown(new Rect(rect.x + columnWidth + FilterColumnGap, rect.y, columnWidth, rect.height));
-            DrawFilteredSelectionDropdown(new Rect(rect.x + (columnWidth + FilterColumnGap) * 2f, rect.y, columnWidth, rect.height));
+            if (kind == RimKataDefSelectionKind.Weapon)
+            {
+                DrawFilteredSelectionDropdown(new Rect(rect.x + (columnWidth + FilterColumnGap) * 2f, rect.y, columnWidth, rect.height),
+                    selectedDefNames);
+            }
+            else
+            {
+                DrawFilteredSelectionDropdown(new Rect(rect.x, rect.y + 36f, columnWidth, rect.height),
+                    selectedDefNames, "KRWF_RimKata_ApparelRangedWeapon");
+                DrawFilteredSelectionDropdown(new Rect(rect.x + columnWidth + FilterColumnGap, rect.y + 36f, columnWidth, rect.height),
+                    selectedMeleeArmorDefNames, "KRWF_RimKata_ApparelMeleeWeapon");
+            }
         }
 
         private void DrawWeaponKindDropdown(Rect rect)
@@ -537,30 +581,33 @@ namespace KRWF.RimKata
             }
         }
 
-        private void DrawFilteredSelectionDropdown(Rect rect)
+        private void DrawFilteredSelectionDropdown(Rect rect, HashSet<string> selection, string columnKey = null)
         {
-            if (Widgets.ButtonText(rect, "KRWF_RimKata_FilteredResults".Translate()))
+            string label = "KRWF_RimKata_FilteredResults".Translate();
+            if (columnKey != null)
+                label = columnKey.Translate() + ": " + label;
+            if (Widgets.ButtonText(rect, label))
             {
                 Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>
                 {
-                    new FloatMenuOption("KRWF_RimKata_SelectFiltered".Translate(), () => SetFilteredSelection(true)),
-                    new FloatMenuOption("KRWF_RimKata_ClearFiltered".Translate(), () => SetFilteredSelection(false))
+                    new FloatMenuOption("KRWF_RimKata_SelectFiltered".Translate(), () => SetFilteredSelection(selection, true)),
+                    new FloatMenuOption("KRWF_RimKata_ClearFiltered".Translate(), () => SetFilteredSelection(selection, false))
                 }));
             }
         }
 
-        private void SetFilteredSelection(bool selected)
+        private void SetFilteredSelection(HashSet<string> selection, bool selected)
         {
             List<ThingDef> filtered = FilteredCandidates();
             foreach (ThingDef def in filtered)
             {
                 if (selected)
                 {
-                    selectedDefNames.Add(def.defName);
+                    selection.Add(def.defName);
                 }
                 else
                 {
-                    selectedDefNames.Remove(def.defName);
+                    selection.Remove(def.defName);
                 }
             }
         }

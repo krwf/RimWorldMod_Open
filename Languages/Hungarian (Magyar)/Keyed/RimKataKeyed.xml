@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Távolsági</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-páncél és -ruházat</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>„{0}” engedélyezése csökkenti az engedélyezett fegyverek visszatöltési idejét.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Távolsági fegyver</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Közelharci fegyver</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>A „{0}” vagy „{1}” engedélyezése csökkenti az adott típusú engedélyezett fegyverek visszatöltési idejét.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Ruházat típusa</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Fejfedő</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Páncél</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Különleges tüzelésű fegyvereket találtunk. Szeretné regisztrálni őket?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>A megerősítés a támadási rutinokat a gyorsítótárba másolja. A Mégse, az Esc vagy a bezárás megtartja az eredeti tüzelést, egyes lövésre alakítás nélkül. Regisztráció közbeni bezáráskor a már regisztrált elemek megmaradnak.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Regisztráció… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Regisztráció kész: {0} sikeres, {1} sikertelen.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Regisztrálva</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Végrehajtás előkészítése: {0} sikeres, {1} sikertelen.\nLemezre mentés: {2} mentve, {3} sikertelen.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>A végrehajtás előkészítve, de a regisztrációt nem sikerült menteni. Frissítse a felszerelés adatait az újrapróbálkozáshoz.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>A végrehajtás előkészítve és lemezre mentve.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>A regisztráció sikertelen. Az eredeti tüzelés megmarad; az egyes lövésre alakítás ki van kapcsolva.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Statisztikák kiválasztása</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Hibakereső gomb megjelenítése</KRWF_RimKata_ShowDebugGizmo>

@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>A distanza</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armature e indumenti RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Attivare «{0}» riduce il tempo di recupero delle armi abilitate.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Arma a distanza</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Arma da mischia</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Attivare «{0}» o «{1}» riduce il tempo di recupero delle armi abilitate del tipo corrispondente.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Tipo di indumento</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Copricapo</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armatura</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Sono state trovate armi con un comportamento di fuoco particolare. Vuoi registrarle?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Conferma copia le routine di attacco nella cache. Annulla, Esc o Chiudi mantiene il fuoco originale senza conversione a colpo singolo. Chiudere durante la registrazione conserva le voci già registrate.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrazione… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrazione completata: {0} riuscite, {1} fallite.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registrata</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Preparazione dell’esecuzione: {0} riuscite, {1} fallite.\nSalvataggio su disco: {2} salvate, {3} fallite.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>L’esecuzione è pronta, ma non è stato possibile salvare la registrazione. Aggiorna i dati dell’equipaggiamento per riprovare.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Esecuzione preparata e salvata su disco.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrazione fallita. Il fuoco originale viene mantenuto; la conversione a colpo singolo è disattivata.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Seleziona statistiche</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Mostra il pulsante di debug</KRWF_RimKata_ShowDebugGizmo>

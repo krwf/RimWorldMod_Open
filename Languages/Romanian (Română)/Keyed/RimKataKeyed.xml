@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>La distanță</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Armuri și îmbrăcăminte RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Activarea „{0}” reduce timpul de reactivare al armelor permise.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Armă la distanță</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Armă de luptă corp la corp</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Activarea „{0}” sau „{1}” reduce timpul de reactivare al armelor permise de tipul corespunzător.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Tipul îmbrăcămintei</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Acoperământ pentru cap</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Armură</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Au fost găsite arme cu un mod special de tragere. Doriți să le înregistrați?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Confirmarea copiază rutinele de atac în memoria cache. Anulare, Esc sau Închidere păstrează tragerea originală fără conversie la foc cu foc. Închiderea în timpul înregistrării păstrează intrările deja înregistrate.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Se înregistrează… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Înregistrare finalizată: {0} reușite, {1} eșuate.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Înregistrat</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Pregătirea execuției: {0} reușite, {1} eșuate.\nStocare pe disc: {2} salvate, {3} eșuate.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Execuția este pregătită, dar înregistrarea nu a putut fi salvată. Actualizați datele echipamentului pentru a încerca din nou.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Execuție pregătită și salvată pe disc.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Înregistrarea a eșuat. Tragerea originală este păstrată; conversia la foc cu foc este dezactivată.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Selectează statisticile</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Afișează butonul de depanare</KRWF_RimKata_ShowDebugGizmo>

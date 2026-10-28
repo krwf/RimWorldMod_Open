@@ -233,6 +233,57 @@ namespace KRWF.RimKata
             stored.label = StorageLabel;
         }
 
+        internal static IEnumerable<KeyValuePair<string, string>> GetKnownOwners()
+        {
+            var records = new List<RimKataAllowedWeaponDef>(Loaded.Values);
+            records.AddRange(DefDatabase<RimKataAllowedWeaponDef>.AllDefsListForReading);
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            foreach (RimKataAllowedWeaponDef record in records)
+            {
+                string name = record?.sourceDefName;
+                if (name.NullOrEmpty() || string.IsNullOrWhiteSpace(record.sourceModId)
+                    || record.defName != "RimKata_AllowedWeapon_" + FileStem(name)
+                    || !seen.Add(name)) continue;
+                yield return new KeyValuePair<string, string>(name, record.sourceModId);
+            }
+        }
+
+        internal static bool RemoveDefinition(string name)
+        {
+            if (!DeleteDefinitionFile(name)) return false;
+            List<ThingDef> removed = null;
+            foreach (var entry in Loaded)
+                if (entry.Value.sourceDefName == name)
+                    (removed ??= new List<ThingDef>()).Add(entry.Key);
+            if (removed != null)
+                foreach (ThingDef definition in removed)
+                {
+                    Loaded.Remove(definition);
+                    RetryOnRefresh.Remove(definition);
+                }
+            return true;
+        }
+
+        private static bool DeleteDefinitionFile(string name)
+        {
+            if (name.NullOrEmpty() || directory == null) return false;
+            try
+            {
+                string path = Path.GetFullPath(Path.Combine(directory, FileStem(name) + ".xml"));
+                if (!string.Equals(Path.GetDirectoryName(path), directory, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("The prepared weapon path is outside its storage directory.");
+                File.Delete(path);
+                return true;
+            }
+            catch (DirectoryNotFoundException) { return true; }
+            catch (Exception exception)
+            {
+                WarnOnce("delete:" + name,
+                    "Could not remove the prepared weapon file for " + name + ". " + exception.Message);
+                return false;
+            }
+        }
+
         internal static void RemoveDisallowedWeapons(ICollection<string> selected)
         {
             if (selected == null || directory == null)
@@ -258,16 +309,7 @@ namespace KRWF.RimKata
                 }
 
                 RimKataCloseFireMeleeStore.RemoveDefinition(name);
-                try
-                {
-                    File.Delete(Path.Combine(directory, FileStem(name) + ".xml"));
-                    removedNames.Add(name);
-                }
-                catch (Exception exception)
-                {
-                    WarnOnce("delete:" + name,
-                        "Could not remove the prepared weapon file for " + name + ". " + exception.Message);
-                }
+                if (DeleteDefinitionFile(name)) removedNames.Add(name);
             }
             if (removedNames.Count == 0)
             {
@@ -279,6 +321,7 @@ namespace KRWF.RimKata
                 if (removedNames.Contains(Loaded[original].sourceDefName))
                 {
                     Loaded.Remove(original);
+                    RetryOnRefresh.Remove(original);
                 }
             }
         }
@@ -330,8 +373,17 @@ namespace KRWF.RimKata
                 if (result == null && path != null && File.Exists(path))
                 {
                     stage = "stored weapon XML";
-                    RimKataAllowedWeaponDef stored = Read(path);
-                    if (IsCurrent(stored, definition, sourceXml, fingerprint)) result = stored;
+                    try
+                    {
+                        RimKataAllowedWeaponDef stored = Read(path);
+                        if (IsCurrent(stored, definition, sourceXml, fingerprint)) result = stored;
+                    }
+                    catch (Exception exception) when (IsInvalidStoredXml(exception))
+                    {
+                        ReportDataFailure(definition, stage, exception,
+                            "The invalid cached file will be discarded and rebuilt.");
+                    }
+                    if (result == null) DeleteDefinitionFile(definition.defName);
                 }
                 bool createFile = result == null;
                 if (createFile) result = Create(definition, sourceXml, fingerprint);
@@ -490,6 +542,9 @@ namespace KRWF.RimKata
         private static bool IsDataFailure(Exception exception) => exception is XmlException
             || exception is IOException || exception is UnauthorizedAccessException
             || exception is FormatException || exception is OverflowException;
+
+        internal static bool IsInvalidStoredXml(Exception exception) => exception is XmlException
+            || exception is InvalidDataException || exception is FormatException || exception is OverflowException;
 
         private static string WeaponPath(ThingDef definition) => directory == null ? null
             : Path.Combine(directory, FileStem(definition.defName) + ".xml");

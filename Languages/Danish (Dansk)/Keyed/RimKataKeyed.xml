@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Afstand</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-rustning og -beklædning</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering af “{0}” reducerer nedkølingstiden for aktiverede våben.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Afstandsvåben</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Nærkampsvåben</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering af “{0}” eller “{1}” reducerer nedkølingstiden for aktiverede våben af den pågældende type.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Beklædningstype</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Hovedbeklædning</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Rustning</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Der blev fundet våben med en særlig affyringsmåde. Vil du registrere dem?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Bekræft kopierer angrebsrutinerne til cachen. Annuller, Esc eller Luk bevarer den oprindelige affyring uden konvertering til enkeltskud. Hvis du lukker under registreringen, beholdes allerede registrerede poster.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrerer… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrering fuldført: {0} registreret, {1} mislykket.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registreret</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Klargøring af udførelse: {0} lykkedes, {1} mislykkedes.\nLagring på disk: {2} gemt, {3} mislykkedes.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Udførelsen er klargjort, men registreringen kunne ikke gemmes. Opdater udstyrsdataene for at prøve igen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Udførelsen er klargjort og gemt på disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrering mislykkedes. Den oprindelige affyring bevares; konvertering til enkeltskud er deaktiveret.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Vælg egenskabsværdier</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Vis fejlfindingsknap</KRWF_RimKata_ShowDebugGizmo>

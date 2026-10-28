@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>원거리</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata 방어구 및 의류</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>{0} 시 허용 무기의 쿨다운을 감소</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>원거리 무기</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>근접 무기</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>“{0}” 또는 “{1}” 허용 시 해당 종류의 허용 무기 쿨다운을 감소</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>의류 종류</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>머리 장비</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>보호구</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>특수한 방식으로 공격하는 무기를 확인했습니다. 등록하시겠습니까?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>확인하면 공격 실행 묶음을 복사하여 캐시에 저장합니다. 취소·ESC·닫기는 원래 공격 방식을 유지하며 단발 전환을 적용하지 않습니다. 도중에 닫아도 이미 등록한 항목은 유지됩니다.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>등록 중… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>등록 완료: 성공 {0}개, 실패 {1}개.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>등록 성공</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>실행 준비: 성공 {0}, 실패 {1}\n디스크 저장: 성공 {2}, 실패 {3}</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>실행 준비는 완료했지만 등록 정보를 저장하지 못했습니다. 장비 새로 고침으로 다시 시도해 주세요.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>실행 준비와 디스크 저장 완료</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>등록 실패. 원래 공격 방식을 유지하며 단발 전환은 적용하지 않습니다.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>스탯 선택</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>디버그 기즈모 표시</KRWF_RimKata_ShowDebugGizmo>

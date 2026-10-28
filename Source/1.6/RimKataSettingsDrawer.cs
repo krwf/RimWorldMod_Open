@@ -216,7 +216,8 @@ namespace KRWF.RimKata
                 Find.WindowStack.Add(new Dialog_RimKataDefSelector(settings, RimKataDefSelectionKind.Weapon));
             }
 
-            int loadedArmorCount = RimKataEquipmentUtility.LoadedSelectionCount(settings.enabledArmorDefNames, RimKataDefSelectionKind.Armor);
+            int loadedArmorCount = RimKataEquipmentUtility.LoadedSelectionCount(
+                settings.enabledRangedArmorDefNames.Concat(settings.enabledMeleeArmorDefNames), RimKataDefSelectionKind.Armor);
             string armorButton = "KRWF_RimKata_EditArmor".Translate() + " (" + "KRWF_RimKata_SelectedCount".Translate(loadedArmorCount) + ")";
             if (Widgets.ButtonText(new Rect(equipmentButtonWidth + equipmentButtonGap, y, equipmentButtonWidth, ButtonHeight), armorButton))
             {

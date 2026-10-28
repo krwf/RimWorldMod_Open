@@ -239,11 +239,14 @@ namespace KRWF.RimKata
             if (pawn?.Spawned != true || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                 || RimKataBreachUtility.Get(pawn) != null) return;
             if (RimKataReactiveMotion.Participant(pawn) != null) return;
+            if (RimKataPerspectiveShiftCompat.IsControlled(pawn)
+                && RimKataPerspectiveShiftCompat.MotionTarget(pawn) != null) return;
             RimKataPawnCombatState state = knownState;
             if (state == null) Active.TryGetValue(pawn, out state);
             if (state?.groundPose?.phase == RimKataFallPhase.Rising) return;
             if (state?.groundPose != null && !state.groundPose.PronePose) return;
             bool allowed = !knownInsideCandidateRange
+                && !RimKataPerspectiveShiftCompat.HasDirectionalOrder(pawn, state)
                 && RimKataGroundPoseConditions.CanEnterProne(pawn, verb, target);
             if (!allowed)
             {
@@ -306,6 +309,7 @@ namespace KRWF.RimKata
                 || ClearDirectionalFireProne(state) || state.groundPose?.PronePose != true) return;
             if (pawn.CurJobDef == JobDefOf.AttackStatic || pawn.CurJobDef == RimKataDefOf.RimKata_Attack
                 || pawn.CurJobDef == JobDefOf.Wait_Combat || pawn.jobs?.curDriver is JobDriver_Hunt) return;
+            if (RimKataPerspectiveShiftCompat.KeepsAim(pawn, state)) return;
             if (pawn.Drafted && pawn.drafter.FireAtWill && state.dualEngagementActive) return;
             BeginRise(state);
         }
@@ -315,8 +319,8 @@ namespace KRWF.RimKata
             RimKataGroundPoseState pose = state?.groundPose;
             if (pose == null || (!pose.PronePose
                     && !(pose.phase == RimKataFallPhase.Rising && pose.risingFromProne))
-                || !(state.pawn?.jobs?.curDriver is JobDriver_RimKataAttack driver)
-                || !driver.IsDirectionalFire) return false;
+                || !((state.pawn?.jobs?.curDriver is JobDriver_RimKataAttack driver && driver.IsDirectionalFire)
+                    || RimKataPerspectiveShiftCompat.HasDirectionalOrder(state.pawn, state))) return false;
             Clear(state);
             return true;
         }

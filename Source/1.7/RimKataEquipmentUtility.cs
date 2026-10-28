@@ -14,7 +14,8 @@ namespace KRWF.RimKata
     public static class RimKataEquipmentUtility
     {
         private static HashSet<string> enabledWeaponDefNames;
-        private static HashSet<string> enabledArmorDefNames;
+        private static HashSet<string> enabledRangedArmorDefNames;
+        private static HashSet<string> enabledMeleeArmorDefNames;
         private static List<ThingDef> enabledOneHandGeneratableWeapons;
 
         internal static int WeaponConfigurationRevision { get; private set; }
@@ -60,7 +61,25 @@ namespace KRWF.RimKata
         public static bool IsArmorEnabled(ThingDef def)
         {
             EnsureCaches();
-            return def != null && enabledArmorDefNames.Contains(def.defName);
+            return def != null && (enabledRangedArmorDefNames.Contains(def.defName)
+                || enabledMeleeArmorDefNames.Contains(def.defName));
+        }
+
+        public static bool IsArmorEnabled(ThingDef def, bool meleeWeapon)
+        {
+            EnsureCaches();
+            return def != null && (meleeWeapon ? enabledMeleeArmorDefNames : enabledRangedArmorDefNames).Contains(def.defName);
+        }
+
+        public static bool HasEnabledArmor(Pawn pawn, bool meleeWeapon)
+        {
+            EnsureCaches();
+            HashSet<string> allowed = meleeWeapon ? enabledMeleeArmorDefNames : enabledRangedArmorDefNames;
+            List<Apparel> worn = pawn?.apparel?.WornApparel;
+            if (allowed.Count == 0 || worn == null) return false;
+            for (int i = 0; i < worn.Count; i++)
+                if (allowed.Contains(worn[i].def.defName)) return true;
+            return false;
         }
 
         public static bool HasEnabledArmor(Pawn pawn)
@@ -110,8 +129,9 @@ namespace KRWF.RimKata
 
         public static void InvalidateCaches()
         {
-            enabledWeaponDefNames = null;
-            enabledArmorDefNames = null;
+            RimKataEquipmentOwnership.RememberSettings();
+            enabledRangedArmorDefNames = null;
+            enabledMeleeArmorDefNames = null;
             enabledOneHandGeneratableWeapons = null;
             RimKataGripUtility.InvalidateCache();
             RefreshPreparedWeapons();
@@ -120,21 +140,32 @@ namespace KRWF.RimKata
 
         internal static void RefreshPreparedWeapons(bool forceExecution = false)
         {
+            IEnumerable<string> selected = RimKataMod.Settings?.enabledWeaponDefNames;
+            selected ??= Array.Empty<string>();
+            bool weaponsChanged = enabledWeaponDefNames == null || !enabledWeaponDefNames.SetEquals(selected);
+            if (weaponsChanged)
+                enabledWeaponDefNames = new HashSet<string>(selected, StringComparer.Ordinal);
+
             unchecked { WeaponConfigurationRevision++; }
             RimKataPreparedWeaponData.RefreshDefinitions();
-            RimKataWeaponExecutionRuntime.Refresh(forceExecution);
+            // Other settings still update prepared values without rebuilding firing plans.
+            if (forceExecution)
+                RimKataWeaponExecutionRuntime.Refresh(true);
+            else if (weaponsChanged)
+                RimKataWeaponExecutionRuntime.RefreshAllowedDefinitions();
         }
 
         private static void EnsureCaches()
         {
-            if (enabledWeaponDefNames != null && enabledArmorDefNames != null)
+            if (enabledWeaponDefNames != null && enabledRangedArmorDefNames != null && enabledMeleeArmorDefNames != null)
             {
                 return;
             }
 
             RimKataSettings settings = RimKataMod.Settings;
-            enabledWeaponDefNames = new HashSet<string>(settings?.enabledWeaponDefNames ?? new List<string>(), StringComparer.Ordinal);
-            enabledArmorDefNames = new HashSet<string>(settings?.enabledArmorDefNames ?? new List<string>(), StringComparer.Ordinal);
+            enabledWeaponDefNames ??= new HashSet<string>(settings?.enabledWeaponDefNames ?? new List<string>(), StringComparer.Ordinal);
+            enabledRangedArmorDefNames ??= new HashSet<string>(settings?.enabledRangedArmorDefNames ?? new List<string>(), StringComparer.Ordinal);
+            enabledMeleeArmorDefNames ??= new HashSet<string>(settings?.enabledMeleeArmorDefNames ?? new List<string>(), StringComparer.Ordinal);
         }
     }
 

@@ -19,6 +19,7 @@ namespace KRWF.RimKata
         private static string temporaryDirectory;
         private static string analysisDirectory;
         private static bool warned;
+        private static bool cacheReadFailed;
         private static View current = new View(false);
 
         internal static View Current => current;
@@ -33,6 +34,7 @@ namespace KRWF.RimKata
             storageDirectory = null;
             temporaryDirectory = null;
             analysisDirectory = null;
+            cacheReadFailed = false;
             current = new View(false);
             try
             {
@@ -66,6 +68,7 @@ namespace KRWF.RimKata
             {
                 // A malformed cache must not retain a partially loaded view.
                 current = new View(false);
+                cacheReadFailed = true;
                 RimKataStartupDiagnostics.Count("cache_file_rejected");
                 Warn(exception);
             }
@@ -74,6 +77,18 @@ namespace KRWF.RimKata
         internal static View BeginRefresh()
         {
             return current.Copy(true);
+        }
+
+        internal static void CleanupAnalysisFiles()
+        {
+            try
+            {
+                // An unreadable index is not evidence that its payloads are unreferenced.
+                if (current.dirty && !Flush()) return;
+                if (cacheReadFailed || storageDirectory == null || analysisDirectory == null) return;
+                current.DeleteUnreferencedAnalysisFiles();
+            }
+            catch (Exception exception) { Warn(exception); }
         }
 
         // Startup writes are collected in memory and flushed after preparation.
@@ -155,6 +170,81 @@ namespace KRWF.RimKata
 
             internal bool ForceRefresh { get; }
 
+            internal List<KeyValuePair<string, XmlElement>> GetMetadata(string category)
+            {
+                EnsureOpen();
+                var result = new List<KeyValuePair<string, XmlElement>>();
+                if (category == null || IsAnalysis(category)
+                    || !categories.TryGetValue(category, out Dictionary<string, Entry> entries)) return result;
+                foreach (KeyValuePair<string, Entry> entry in entries)
+                    if (entry.Value.Data != null)
+                        result.Add(new KeyValuePair<string, XmlElement>(entry.Key, CopyData(entry.Value.Data)));
+                return result;
+            }
+
+            internal List<KeyValuePair<string, string>> GetAnalysisWeaponLinks(ISet<string> knownKeys)
+            {
+                EnsureOpen();
+                var result = new List<KeyValuePair<string, string>>();
+                if (!categories.TryGetValue("weapon_effects", out Dictionary<string, Entry> entries)) return result;
+                List<string> invalid = null;
+                foreach (KeyValuePair<string, Entry> item in entries)
+                {
+                    if (knownKeys != null && knownKeys.Contains(item.Key)) continue;
+                    try
+                    {
+                        // Recover legacy ownership one payload at a time, without retaining its graph.
+                        XmlElement data = item.Value.Data ?? ReadPayload(item.Value.PayloadPath, item.Value.Payload);
+                        string weapon = data.GetAttribute("weapon");
+                        if (data.Name == "data" && data.NamespaceURI.Length == 0 && !string.IsNullOrEmpty(weapon))
+                            result.Add(new KeyValuePair<string, string>(item.Key, weapon));
+                    }
+                    catch (Exception exception)
+                    {
+                        Warn(exception);
+                        if (InvalidPayload(exception))
+                        {
+                            if (invalid == null) invalid = new List<string>();
+                            invalid.Add(item.Key);
+                        }
+                    }
+                }
+                if (invalid != null)
+                    foreach (string key in invalid) Remove("weapon_effects", key);
+                return result;
+            }
+
+            internal bool TryGetAnalysisReference(string category, string key, out string payload, out string file)
+            {
+                EnsureOpen();
+                payload = null;
+                file = null;
+                if (category == null || key == null || !IsAnalysis(category)
+                    || !categories.TryGetValue(category, out Dictionary<string, Entry> entries)
+                    || !entries.TryGetValue(key, out Entry entry) || entry.Payload == null) return false;
+                payload = entry.Payload;
+                file = Path.GetFileNameWithoutExtension(entry.PayloadPath);
+                return !string.IsNullOrEmpty(file);
+            }
+
+            // Ownership cleanup calls this only after its updated index was committed.
+            internal bool TryDeleteUnreferencedAnalysis(string payload, string file)
+            {
+                EnsureOpen();
+                try
+                {
+                    string path = PayloadPath(payload, file);
+                    if (ReferencesPayload(path, payload)) return true;
+                    ReadPayload(path, payload);
+                    RejectReparsePoint(path);
+                    File.Delete(path);
+                    return true;
+                }
+                catch (FileNotFoundException) { return true; }
+                catch (DirectoryNotFoundException) { return true; }
+                catch (Exception exception) { Warn(exception); return false; }
+            }
+
             internal bool TryRead(string category, string key, string fingerprint, out XmlElement data)
             {
                 EnsureOpen();
@@ -172,12 +262,12 @@ namespace KRWF.RimKata
                 catch (Exception exception)
                 {
                     Warn(exception);
-                    Remove(category, key);
+                    if (InvalidPayload(exception)) Remove(category, key);
                     return false;
                 }
             }
 
-            internal void Store(string category, string key, string fingerprint, XmlElement data)
+            internal bool Store(string category, string key, string fingerprint, XmlElement data)
             {
                 EnsureOpen();
                 ValidateKey(category, key, fingerprint);
@@ -190,15 +280,16 @@ namespace KRWF.RimKata
                         // Disk caching is optional; callers keep using their discovered runtime data.
                         Warn(exception);
                         Remove(category, key);
+                        return false;
                     }
-                    return;
+                    return true;
                 }
                 if (categories.TryGetValue(category, out Dictionary<string, Entry> previous)
                     && previous.TryGetValue(key, out Entry known) && known.Fingerprint == fingerprint
                     && known.Data.OuterXml == data.OuterXml)
                 {
                     RimKataStartupDiagnostics.Count("cache_records_unchanged");
-                    return;
+                    return true;
                 }
                 if (!categories.TryGetValue(category, out Dictionary<string, Entry> entries))
                 {
@@ -209,6 +300,7 @@ namespace KRWF.RimKata
                 dirty = true;
                 RimKataStartupDiagnostics.Count("cache_records_changed");
                 staged = false;
+                return true;
             }
 
             internal void Restore(string category, string key, string fingerprint, XmlElement data)
@@ -286,6 +378,44 @@ namespace KRWF.RimKata
                     || !string.Equals(Path.GetDirectoryName(entry.PayloadPath), analysisDirectory,
                         StringComparison.OrdinalIgnoreCase)) return;
                 retiredPayloads[entry.PayloadPath] = entry.Payload;
+            }
+
+            internal void DeleteUnreferencedAnalysisFiles()
+            {
+                EnsureOpen();
+                string directory = Path.GetFullPath(analysisDirectory);
+                if (!string.Equals(directory, Path.Combine(Path.GetFullPath(storageDirectory), "analysis"),
+                    StringComparison.OrdinalIgnoreCase)) throw new IOException("Invalid analysis cleanup path.");
+                RejectReparsePoint(storageDirectory);
+                RejectReparsePoint(directory);
+                if (!Directory.Exists(directory)) return;
+                var referenced = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (Dictionary<string, Entry> entries in categories.Values)
+                    foreach (Entry entry in entries.Values)
+                        if (entry.Payload != null) referenced.Add(Path.GetFullPath(entry.PayloadPath));
+                foreach (string candidate in Directory.EnumerateFiles(directory, "*.xml", SearchOption.TopDirectoryOnly))
+                {
+                    try
+                    {
+                        string path = Path.GetFullPath(candidate);
+                        if (!string.Equals(Path.GetDirectoryName(path), directory, StringComparison.OrdinalIgnoreCase))
+                            throw new IOException("Invalid analysis cleanup file path.");
+                        if (referenced.Contains(path)) continue;
+                        RejectReparsePoint(directory);
+                        RejectReparsePoint(path);
+                        File.Delete(path);
+                    }
+                    catch (Exception exception) { Warn(exception); }
+                }
+            }
+
+            private bool ReferencesPayload(string path, string payload)
+            {
+                foreach (Dictionary<string, Entry> entries in categories.Values)
+                    foreach (Entry entry in entries.Values)
+                        if (entry.Payload != null && (entry.Payload == payload
+                            || string.Equals(entry.PayloadPath, path, StringComparison.OrdinalIgnoreCase))) return true;
+                return false;
             }
 
             private string CreatePayloadStagePath(string payload)
@@ -454,6 +584,15 @@ namespace KRWF.RimKata
             {
                 return categories.TryGetValue(category, out Dictionary<string, Entry> entries)
                     && entries.ContainsKey(key);
+            }
+
+            internal bool Contains(string category, string key, string fingerprint)
+            {
+                EnsureOpen();
+                return category != null && key != null && fingerprint != null
+                    && categories.TryGetValue(category, out Dictionary<string, Entry> entries)
+                    && entries.TryGetValue(key, out Entry entry)
+                    && string.Equals(entry.Fingerprint, fingerprint, StringComparison.Ordinal);
             }
 
             private void EnsureOpen()
@@ -711,6 +850,10 @@ namespace KRWF.RimKata
             return data;
         }
 
+        private static bool InvalidPayload(Exception exception)
+            => exception is XmlException || exception is InvalidDataException
+                || exception is FileNotFoundException || exception is DirectoryNotFoundException;
+
         private static void WritePayload(XmlElement data, string path)
         {
             using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
@@ -780,6 +923,7 @@ namespace KRWF.RimKata
             // Candidate and destination share a directory and volume. No delete-first fallback.
             if (File.Exists(destination)) File.Replace(candidate, destination, null);
             else File.Move(candidate, destination);
+            cacheReadFailed = false;
         }
 
         private static void EnsureDirectory(string path)

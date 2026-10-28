@@ -33,7 +33,8 @@ namespace KRWF.RimKata
         {
             if (pawn?.Map == null || state == null || !cell.InBounds(pawn.Map)
                 || cell == pawn.Position
-                || RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled == false) return false;
+                || (RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled == false
+                    && !RimKataPerspectiveShiftCompat.HasManualFireInput(pawn))) return false;
             bool registered = RegisterSlot(pawn, state.primaryWeaponCycle, cell, weapon);
             return RegisterSlot(pawn, state.secondaryWeaponCycle, cell, weapon) || registered;
         }
@@ -45,11 +46,13 @@ namespace KRWF.RimKata
                 || !cycle.ordinaryWeaponEnabled || cycle.boundVerb?.IsMeleeAttack != false
                 || cycle.weapon.def.IsRangedWeapon != true) return false;
             float range = RimKataRangeUtility.ResolveEffectiveRange(pawn, cycle.weapon, cycle.boundVerb);
-            if (range <= 0f || pawn.Position.DistanceToSquared(cell) > range * range) return false;
+            if (range <= 0f || pawn.Position.DistanceToSquared(cell) > range * range
+                && !RimKataPerspectiveShiftCompat.ExtendsManualFireToRange(pawn)) return false;
             if (cycle.directionalFireCell != cell)
             {
-                cycle.nativeAttack?.Cancel();
-                cycle.ClearPlan();
+                // A held PS input changes aim without restarting either weapon's current shot.
+                if (!cycle.HasDirectionalFire || !RimKataPerspectiveShiftCompat.HasManualFireInput(pawn))
+                    cycle.ClearPlan();
                 cycle.cachedCandidateTarget = null;
                 cycle.cachedCandidateInterception = false;
                 cycle.cachedDirectionalFireCell = IntVec3.Invalid;
@@ -105,12 +108,16 @@ namespace KRWF.RimKata
             float range = RimKataRangeUtility.ResolveEffectiveRange(pawn, cycle.weapon, verb);
             IntVec3 anchor = cycle.directionalFireCell;
             if (!anchor.InBounds(pawn.Map) || anchor == pawn.Position || range <= 0f
-                || pawn.Position.DistanceToSquared(anchor) > range * range)
+                || pawn.Position.DistanceToSquared(anchor) > range * range
+                    && !RimKataPerspectiveShiftCompat.ExtendsManualFireToRange(pawn))
             {
                 Clear(cycle);
                 return false;
             }
-            if (!TryGetEndpoint(pawn.Position, anchor, range, pawn.Map, out IntVec3 end)) return false;
+            IntVec3 end = anchor;
+            bool manualCell = RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled == false
+                && RimKataPerspectiveShiftCompat.HasManualFireInput(pawn);
+            if (!manualCell && !TryGetEndpoint(pawn.Position, anchor, range, pawn.Map, out end)) return false;
             LocalTargetInfo shot = new LocalTargetInfo(end);
             ExecutionScope previous = Begin(verb, end);
             try

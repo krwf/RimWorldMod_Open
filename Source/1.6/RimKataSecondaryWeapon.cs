@@ -1639,6 +1639,15 @@ namespace KRWF.RimKata
 
     public sealed class FloatMenuOptionProvider_RimKataEquipSecondary : FloatMenuOptionProvider_Equip
     {
+        protected override bool MechanoidCanDo => true;
+
+        public override bool SelectedPawnValid(Pawn pawn, FloatMenuContext context)
+        {
+            // Both draft states are supported. Only this menu bypasses the mutant
+            // provider whitelist; qualification and equipment checks remain below.
+            return pawn != null && (pawn.IsMutant || base.SelectedPawnValid(pawn, context));
+        }
+
         protected override FloatMenuOption GetSingleOptionFor(Thing clickedThing, FloatMenuContext context)
         {
             Pawn pawn = context.FirstSelectedPawn;
@@ -1703,6 +1712,15 @@ namespace KRWF.RimKata
         protected override bool Multiselect => false;
 
         protected override bool CanSelfTarget => true;
+
+        protected override bool MechanoidCanDo => true;
+
+        public override bool SelectedPawnValid(Pawn pawn, FloatMenuContext context)
+        {
+            // Match the equip menu; the existing checks still require an owned
+            // secondary weapon and preserve quest-related unequip restrictions.
+            return pawn != null && (pawn.IsMutant || base.SelectedPawnValid(pawn, context));
+        }
 
         protected override bool AppliesInt(FloatMenuContext context)
         {

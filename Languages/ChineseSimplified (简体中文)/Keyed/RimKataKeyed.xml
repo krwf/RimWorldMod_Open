@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>远程</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata 护甲与服装</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>启用“{0}”后，可缩短已启用武器的冷却时间</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>远程武器</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>近战武器</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>启用“{0}”或“{1}”后，可缩短已启用的对应类型武器的冷却时间</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>服装类型</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>头部装备</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>护甲</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>发现使用特殊攻击方式的武器。是否注册？</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>确认后会复制攻击执行程序并保存到缓存。取消、Esc 或关闭将保留原有射击方式，不进行单发转换。注册过程中关闭窗口，已注册的项目仍会保留。</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>正在注册… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>注册完成：成功 {0} 项，失败 {1} 项。</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>注册成功</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>执行准备：成功 {0} 项，失败 {1} 项。\n磁盘保存：成功 {2} 项，失败 {3} 项。</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>执行准备已完成，但无法保存注册信息。请刷新装备数据后重试。</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>执行准备和磁盘保存已完成。</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>注册失败。保留原有射击方式，禁用单发转换。</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>选择属性</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>显示调试按钮</KRWF_RimKata_ShowDebugGizmo>

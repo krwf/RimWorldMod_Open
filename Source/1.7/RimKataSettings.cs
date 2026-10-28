@@ -751,7 +751,8 @@ namespace KRWF.RimKata
         public bool enableHostilePawnEffects = true;
 
         public List<string> enabledWeaponDefNames = DefaultEnabledWeaponDefNames.ToList();
-        public List<string> enabledArmorDefNames = DefaultEnabledArmorDefNames.ToList();
+        public List<string> enabledRangedArmorDefNames = DefaultEnabledArmorDefNames.ToList();
+        public List<string> enabledMeleeArmorDefNames = DefaultEnabledArmorDefNames.ToList();
         public List<string> twoHandWeaponDefNames = new List<string>();
         public List<string> oneHandWeaponOverrideDefNames = new List<string>();
 
@@ -1073,7 +1074,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref enableFriendlyPawnEffects, "enableFriendlyPawnEffects", true);
             Scribe_Values.Look(ref enableHostilePawnEffects, "enableHostilePawnEffects", true);
             Scribe_Collections.Look(ref enabledWeaponDefNames, "enabledWeaponDefNames", LookMode.Value);
-            Scribe_Collections.Look(ref enabledArmorDefNames, "enabledArmorDefNames", LookMode.Value);
+            ExposeArmorPermissions();
             Scribe_Collections.Look(ref twoHandWeaponDefNames, "twoHandWeaponDefNames", LookMode.Value);
             Scribe_Collections.Look(ref oneHandWeaponOverrideDefNames, "oneHandWeaponOverrideDefNames", LookMode.Value);
 
@@ -1149,7 +1150,8 @@ namespace KRWF.RimKata
                     .Where(rule => rule != null && !string.IsNullOrEmpty(rule.key))
                     .GroupBy(rule => rule.key, StringComparer.Ordinal)
                     .Select(group => group.Last()).ToList();
-                enabledArmorDefNames = SanitizeDefNames(enabledArmorDefNames);
+                enabledRangedArmorDefNames = SanitizeDefNames(enabledRangedArmorDefNames);
+                enabledMeleeArmorDefNames = SanitizeDefNames(enabledMeleeArmorDefNames);
                 twoHandWeaponDefNames = SanitizeDefNames(twoHandWeaponDefNames);
                 oneHandWeaponOverrideDefNames = SanitizeDefNames(oneHandWeaponOverrideDefNames);
 
@@ -1178,6 +1180,26 @@ namespace KRWF.RimKata
                     }
                 }
             }
+        }
+
+        private void ExposeArmorPermissions()
+        {
+            bool migrateRanged = Scribe.mode == LoadSaveMode.LoadingVars
+                && Scribe.loader.curXmlParent?["enabledRangedArmorDefNames"] == null;
+            bool migrateMelee = Scribe.mode == LoadSaveMode.LoadingVars
+                && Scribe.loader.curXmlParent?["enabledMeleeArmorDefNames"] == null;
+            List<string> legacy = null;
+            if (migrateRanged || migrateMelee)
+            {
+                legacy = DefaultEnabledArmorDefNames.ToList();
+                if (Scribe.loader.curXmlParent?["enabledArmorDefNames"] != null)
+                    Scribe_Collections.Look(ref legacy, "enabledArmorDefNames", LookMode.Value);
+            }
+            Scribe_Collections.Look(ref enabledRangedArmorDefNames, "enabledRangedArmorDefNames", LookMode.Value);
+            Scribe_Collections.Look(ref enabledMeleeArmorDefNames, "enabledMeleeArmorDefNames", LookMode.Value);
+            // Copy each legacy permission independently; existing new-format empty lists remain disabled.
+            if (migrateRanged) enabledRangedArmorDefNames = legacy?.ToList() ?? new List<string>();
+            if (migrateMelee) enabledMeleeArmorDefNames = legacy?.ToList() ?? new List<string>();
         }
 
         internal void SanitizeModFeatures()

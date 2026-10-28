@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Дальнобойное</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Броня и одежда RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Включение «{0}» сокращает время восстановления разрешённого оружия.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Дальнобойное оружие</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Оружие ближнего боя</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Включение «{0}» или «{1}» сокращает время восстановления разрешённого оружия соответствующего типа.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Тип одежды</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Головные уборы</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Броня</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Обнаружено оружие с особым способом стрельбы. Зарегистрировать его?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Подтверждение копирует процедуры атаки в кэш. Отмена, Esc или закрытие сохраняет исходную стрельбу без перевода на одиночные выстрелы. При закрытии во время регистрации уже зарегистрированные записи сохраняются.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Регистрация… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Регистрация завершена: успешно — {0}, ошибок — {1}.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Зарегистрировано</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Подготовка выполнения: успешно — {0}, ошибок — {1}.\nСохранение на диск: сохранено — {2}, ошибок — {3}.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Выполнение подготовлено, но данные регистрации не удалось сохранить. Обновите данные снаряжения и повторите попытку.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Выполнение подготовлено и сохранено на диск.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Регистрация не удалась. Исходная стрельба сохранена; перевод на одиночные выстрелы отключён.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Выбрать показатели</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Показывать кнопку отладки</KRWF_RimKata_ShowDebugGizmo>

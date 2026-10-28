@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -9,26 +10,40 @@ namespace KRWF.RimKata
     internal sealed class Dialog_RimKataWeaponRegistration : Window
     {
         private static bool queued;
+        private static readonly HashSet<RimKataWeaponExecutionPlan> requested = new HashSet<RimKataWeaponExecutionPlan>();
         private readonly RimKataWeaponExecutionPlan[] plans;
         private readonly string[] labels;
         private readonly bool[] succeeded;
+        private readonly bool[] saved;
         private Vector2 scroll;
         private string message;
         private int completed;
         private int registered;
+        private int unsaved;
         private bool running;
         private bool closed;
 
-        internal static void ShowPending()
+        internal static void ShowPending(IEnumerable<RimKataWeaponExecutionPlan> prepared)
         {
-            if (queued || RimKataWeaponExecutionPlans.PendingRegistration.Count == 0) return;
+            foreach (var plan in prepared)
+                if (NeedsRegistration(plan)) requested.Add(plan);
+            ShowRequested();
+        }
+
+        private static bool NeedsRegistration(RimKataWeaponExecutionPlan plan)
+            => RimKataWeaponExecutionPlans.IsCurrent(plan)
+                && plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration;
+
+        private static void ShowRequested()
+        {
+            if (queued || requested.Count == 0) return;
             queued = true;
             LongEventHandler.ExecuteWhenFinished(() =>
             {
                 queued = false;
                 if (Find.WindowStack == null || Find.WindowStack.IsOpen<Dialog_RimKataWeaponRegistration>()) return;
-                var snapshot = RimKataWeaponExecutionPlans.PendingRegistration
-                    .Where(plan => plan.Mode == RimKataWeaponExecutionMode.NeedsRegistration).ToArray();
+                var snapshot = requested.Where(NeedsRegistration).ToArray();
+                requested.Clear();
                 if (snapshot.Length != 0)
                     Find.WindowStack.Add(new Dialog_RimKataWeaponRegistration(snapshot));
             });
@@ -40,6 +55,7 @@ namespace KRWF.RimKata
             labels = plans.Select(plan => (plan.Def.LabelCap + " [" + plan.Def.defName + "]"
                 + "\n" + (plan.Def.modContentPack?.Name ?? "RimWorld")).ToString()).ToArray();
             succeeded = new bool[plans.Length];
+            saved = new bool[plans.Length];
             forcePause = true;
             doCloseX = true;
             closeOnCancel = true;
@@ -57,7 +73,12 @@ namespace KRWF.RimKata
             if (closed || !running) return;
             // Run one registration per update, outside OnGUI and its layout/repaint passes.
             RimKataWeaponExecutionPlan plan = plans[completed];
-            try { succeeded[completed] = RimKataWeaponExecutionRuntime.Register(plan); }
+            try
+            {
+                if (RimKataWeaponExecutionPlans.IsCurrent(plan))
+                    succeeded[completed] = RimKataWeaponExecutionRuntime.Register(plan);
+                saved[completed] = succeeded[completed] && plan.CacheStored;
+            }
             catch (Exception exception) when (!RimKataSettingsWindowSafety.IsGuiExit(exception))
             {
                 // Cleanup failure must not keep the dialog retrying the same weapon forever.
@@ -70,6 +91,7 @@ namespace KRWF.RimKata
             }
             if (!succeeded[completed]) RimKataWeaponRegistrationFailures.MarkDisplayed(plan.Def);
             if (succeeded[completed]) registered++;
+            if (succeeded[completed] && !saved[completed]) unsaved++;
             completed++;
             if (completed == plans.Length) running = false;
             UpdateMessage();
@@ -79,7 +101,8 @@ namespace KRWF.RimKata
         {
             var text = new StringBuilder();
             if (completed == plans.Length)
-                text.Append("KRWF_RimKata_WeaponRegistrationComplete".Translate(registered, completed - registered));
+                text.Append("KRWF_RimKata_WeaponRegistrationComplete".Translate(
+                    registered, completed - registered, registered - unsaved, unsaved));
             else
             {
                 text.Append(running
@@ -89,11 +112,11 @@ namespace KRWF.RimKata
             }
             for (int i = 0; i < plans.Length; i++)
             {
-                if (completed == plans.Length && succeeded[i]) continue;
+                if (completed == plans.Length && saved[i]) continue;
                 text.Append("\n\n").Append(labels[i]);
                 if (i < completed)
                     text.Append("\n").Append((succeeded[i]
-                        ? "KRWF_RimKata_WeaponRegistrationSuccess"
+                        ? saved[i] ? "KRWF_RimKata_WeaponRegistrationSuccess" : "KRWF_RimKata_WeaponRegistrationNotSaved"
                         : "KRWF_RimKata_WeaponRegistrationFailure").Translate());
             }
             message = text.ToString();
@@ -158,9 +181,11 @@ namespace KRWF.RimKata
                 running = false;
                 // Completed registrations remain accepted; only the untouched remainder is declined.
                 for (int i = completed; i < plans.Length; i++)
-                    RimKataWeaponExecutionRuntime.Decline(plans[i]);
+                    if (RimKataWeaponExecutionPlans.IsCurrent(plans[i]))
+                        RimKataWeaponExecutionRuntime.Decline(plans[i]);
             }
             base.PostClose();
+            ShowRequested();
             RimKataWeaponRegistrationFailures.ShowPending();
         }
     }

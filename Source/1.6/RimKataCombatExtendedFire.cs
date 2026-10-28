@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using HarmonyLib;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -47,6 +48,8 @@ namespace KRWF.RimKata
             FieldInfo aiming = AccessTools.Field(shooter, "_isAiming");
             MethodInfo report = AccessTools.Method(launcher, "ShiftVecReportFor",
                 new[] { typeof(LocalTargetInfo), typeof(IntVec3) });
+            MethodInfo casterAccuracy = AccessTools.DeclaredMethod(launcher, "CasterShootingAccuracyValue",
+                new[] { typeof(Thing) });
             MethodInfo swayVector = AccessTools.Method(launcher, "GetSwayVec",
                 new[] { typeof(float).MakeByRefType(), typeof(float).MakeByRefType() });
             MethodInfo shootLine = AccessTools.DeclaredMethod(launcher, "TryFindCEShootLineFromTo",
@@ -55,6 +58,7 @@ namespace KRWF.RimKata
             Type reportType = RimKataActiveModTypes.Find("CombatExtended.ShiftVecReport");
             if (shots == null || shootShots == null || aim == null || aiming?.FieldType != typeof(bool)
                 || report?.ReturnType != reportType || reportType == null || swayVector == null
+                || casterAccuracy?.ReturnType != typeof(float) || casterAccuracy.IsStatic
                 || shootLine?.ReturnType != typeof(bool))
                 throw new InvalidOperationException("CE firing API does not match the supported shape.");
 
@@ -94,6 +98,8 @@ namespace KRWF.RimKata
             if (shootShots != shots) RimKataStartupPatches.Patch(harmony, shootShots, postfix: countPatch);
             RimKataStartupPatches.Patch(harmony, report, postfix: new HarmonyMethod(
                 typeof(RimKataCombatExtendedFire), nameof(ReportPostfix)));
+            RimKataStartupPatches.Patch(harmony, casterAccuracy, transpiler: new HarmonyMethod(
+                typeof(RimKataCombatExtendedFire), nameof(WeaponStatTranspiler)));
             RimKataStartupPatches.Patch(harmony, swayVector,
                 prefix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPrefix)),
                 postfix: new HarmonyMethod(typeof(RimKataCombatExtendedFire), nameof(SwayPostfix)));
@@ -106,6 +112,39 @@ namespace KRWF.RimKata
             RimKataCombatExtendedNativeAttack.Apply(harmony, launcher);
             RimKataCombatExtendedCrawlFire.Apply(harmony, shooter);
         }
+
+        private static IEnumerable<CodeInstruction> WeaponStatTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            MethodInfo original = AccessTools.Method(typeof(StatExtension), nameof(StatExtension.GetStatValue),
+                new[] { typeof(Thing), typeof(StatDef), typeof(bool), typeof(int) });
+            MethodInfo replacement = AccessTools.Method(typeof(RimKataCombatExtendedFire), nameof(ReadWeaponStat));
+            int count = 0;
+            foreach (CodeInstruction instruction in instructions)
+            {
+                if (!instruction.Calls(original)) { yield return instruction; continue; }
+                // The CE instance is the queried weapon, including nested and non-firing reads.
+                var owner = new CodeInstruction(OpCodes.Ldarg_0);
+                owner.labels.AddRange(instruction.labels);
+                instruction.labels.Clear();
+                for (int i = instruction.blocks.Count - 1; i >= 0; i--)
+                    if (instruction.blocks[i].blockType != ExceptionBlockType.EndExceptionBlock)
+                    { owner.blocks.Insert(0, instruction.blocks[i]); instruction.blocks.RemoveAt(i); }
+                yield return owner;
+                instruction.opcode = OpCodes.Call;
+                instruction.operand = replacement;
+                count++;
+                yield return instruction;
+            }
+            if (count != 2)
+                throw new InvalidOperationException("CE shooting stat reads do not match the supported shape.");
+        }
+
+        private static float ReadWeaponStat(Thing thing, StatDef stat, bool applyPostProcess,
+            int cacheStaleAfterTicks, Verb verb)
+            => stat == StatDefOf.ShootingAccuracyPawn && thing is Pawn pawn
+                && RimKataWeaponEffectStats.HasStatContext(verb)
+                    ? RimKataWeaponEffectStats.GetStatValue(verb, pawn, stat, applyPostProcess, cacheStaleAfterTicks)
+                    : thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
 
         private static void ApplyPublicShotPatches(Harmony harmony, Type launcher)
         {

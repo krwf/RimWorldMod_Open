@@ -51,6 +51,8 @@ namespace KRWF.RimKata
             MethodInfo ray = AccessTools.DeclaredMethod(projectileType, "RayCast", new[] {
                 typeof(Thing), typeof(VerbProperties), typeof(Vector2), typeof(float), typeof(float),
                 typeof(float), typeof(float), typeof(float), typeof(float), typeof(Thing), typeof(bool) });
+            MethodInfo thrown = AccessTools.DeclaredMethod(projectileType, "Throw", new[] {
+                typeof(Thing), typeof(Vector3), typeof(Vector3), typeof(Thing) });
             FieldInfo distanceField = AccessTools.Field(verbType, "distance");
             FieldInfo collisionField = AccessTools.Field(projectileType, "minCollisionDistance");
             MethodInfo collision = AccessTools.Method(verbType, "GetMinCollisionDistance", new[] { typeof(float) });
@@ -66,6 +68,7 @@ namespace KRWF.RimKata
                 typeof(Vector3), typeof(int), typeof(int), typeof(float) });
             if (shot?.ReturnType != typeof(bool) || line?.ReturnType != typeof(bool)
                 || launch?.ReturnType != typeof(void) || ray?.ReturnType != typeof(void)
+                || thrown?.ReturnType != typeof(void)
                 || distanceField?.FieldType != typeof(float) || collisionField?.FieldType != typeof(float)
                 || collision?.ReturnType != typeof(float) || gravityGetter?.ReturnType != typeof(float)
                 || angle?.ReturnType != typeof(float?) || !angle.IsStatic
@@ -121,6 +124,7 @@ namespace KRWF.RimKata
                 RimKataStartupPatches.Patch(adapter, line, prefix: Patch(nameof(LinePrefix)));
                 RimKataStartupPatches.Patch(adapter, launch, prefix: Patch(nameof(LaunchPrefix)));
                 RimKataStartupPatches.Patch(adapter, ray, prefix: Patch(nameof(RayPrefix)));
+                RimKataStartupPatches.Patch(adapter, thrown, prefix: Patch(nameof(ThrowPrefix)));
                 applied = true;
             }
             catch
@@ -171,6 +175,18 @@ namespace KRWF.RimKata
             float length = distance(current.verb);
             Adjust(__instance, launcher, equipment, true, shotHeight, shotSpeed,
                 ref origin, ref shotAngle, ref shotRotation, ref length);
+        }
+
+        private static void ThrowPrefix(Thing launcher, Thing equipment, ref Vector3 origin)
+        {
+            // CE grenades bypass the base firing method, but the common shot scope
+            // still identifies the actual weapon. Preserve CE's height and heading.
+            Verb verb = Patch_Verb_TryCastShot_RimKata.CurrentVerb;
+            if (!applied || verb == null || launcher != verb.Caster || equipment != verb.EquipmentSource
+                || !RimKataGroundPoseUtility.TryGetShotCenter(verb, out Vector3 center, headCentered: true)
+                || !Finite(center.x) || !Finite(center.z)) return;
+            origin.x = center.x;
+            origin.z = center.z;
         }
 
         private static void Adjust(Thing projectile, Thing launcher, Thing equipment, bool instant,

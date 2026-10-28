@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Na dálku</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Zbroj a oděvy RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Zapnutí „{0}“ zkracuje dobu obnovy povolených zbraní.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Zbraň na dálku</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Zbraň na blízko</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Zapnutí „{0}“ nebo „{1}“ zkracuje dobu obnovy povolených zbraní daného typu.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Typ oděvu</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Pokrývka hlavy</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Zbroj</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Byly nalezeny zbraně se zvláštním způsobem střelby. Chcete je zaregistrovat?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Potvrzení zkopíruje postupy útoku do mezipaměti. Zrušení, Esc nebo zavření zachová původní střelbu bez převodu na jednotlivé výstřely. Zavření během registrace ponechá již zaregistrované položky.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrace… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrace dokončena: {0} úspěšných, {1} neúspěšných.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Zaregistrováno</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Příprava provádění: {0} úspěšných, {1} neúspěšných.\nUložení na disk: {2} uloženo, {3} selhalo.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Provádění je připraveno, ale registraci se nepodařilo uložit. Obnovte data vybavení a zkuste to znovu.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Provádění připraveno a uloženo na disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registrace selhala. Původní střelba zůstává zachována; převod na jednotlivé výstřely je vypnutý.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Vybrat statistiky</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Zobrazit ladicí tlačítko</KRWF_RimKata_ShowDebugGizmo>

@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Distans</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>RimKata-rustning och -kläder</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering av ”{0}” förkortar nedkylningstiden för aktiverade vapen.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Distansvapen</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Närstridsvapen</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Aktivering av ”{0}” eller ”{1}” förkortar nedkylningstiden för aktiverade vapen av motsvarande typ.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Klädtyp</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Huvudbonad</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Rustning</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Vapen med ett särskilt sätt att skjuta har hittats. Vill du registrera dem?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Bekräfta kopierar attackrutinerna till cachen. Avbryt, Esc eller Stäng behåller den ursprungliga eldgivningen utan omvandling till enkelskott. Stängning under registrering behåller redan registrerade poster.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Registrerar… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Registrering klar: {0} registrerade, {1} misslyckade.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Registrerad</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Förberedelse av körning: {0} lyckades, {1} misslyckades.\nLagring på disk: {2} sparade, {3} misslyckades.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Körningen är förberedd, men registreringen kunde inte sparas. Uppdatera utrustningsdata för att försöka igen.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Körningen är förberedd och sparad på disk.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Registreringen misslyckades. Den ursprungliga eldgivningen behålls; omvandling till enkelskott är avstängd.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Välj egenskapsvärden</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Visa felsökningsknapp</KRWF_RimKata_ShowDebugGizmo>

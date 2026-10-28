@@ -90,7 +90,9 @@
   <KRWF_RimKata_WeaponKindRanged>Дальнобійна</KRWF_RimKata_WeaponKindRanged>
 
   <KRWF_RimKata_ArmorDialogTitle>Броня та одяг RimKata</KRWF_RimKata_ArmorDialogTitle>
-  <KRWF_RimKata_ApparelPermissionExplanation>Увімкнення «{0}» скорочує час відновлення дозволеної зброї.</KRWF_RimKata_ApparelPermissionExplanation>
+  <KRWF_RimKata_ApparelRangedWeapon>Дальнобійна зброя</KRWF_RimKata_ApparelRangedWeapon>
+  <KRWF_RimKata_ApparelMeleeWeapon>Зброя ближнього бою</KRWF_RimKata_ApparelMeleeWeapon>
+  <KRWF_RimKata_ApparelPermissionExplanation>Увімкнення «{0}» або «{1}» скорочує час відновлення дозволеної зброї відповідного типу.</KRWF_RimKata_ApparelPermissionExplanation>
   <KRWF_RimKata_ApparelKindFilter>Тип одягу</KRWF_RimKata_ApparelKindFilter>
   <KRWF_RimKata_ApparelKindHeadgear>Головні убори</KRWF_RimKata_ApparelKindHeadgear>
   <KRWF_RimKata_ApparelKindArmor>Броня</KRWF_RimKata_ApparelKindArmor>
@@ -274,8 +276,9 @@
   <KRWF_RimKata_WeaponRegistrationPrompt>Виявлено зброю з особливим способом стрільби. Зареєструвати її?</KRWF_RimKata_WeaponRegistrationPrompt>
   <KRWF_RimKata_WeaponRegistrationExplanation>Підтвердження копіює процедури атаки в кеш. Скасування, Esc або закриття зберігає початкову стрільбу без переведення на одиночні постріли. Закриття під час реєстрації зберігає вже зареєстровані записи.</KRWF_RimKata_WeaponRegistrationExplanation>
   <KRWF_RimKata_WeaponRegistrationProgress>Реєстрація… {0}/{1}</KRWF_RimKata_WeaponRegistrationProgress>
-  <KRWF_RimKata_WeaponRegistrationComplete>Реєстрацію завершено: успішно — {0}, помилок — {1}.</KRWF_RimKata_WeaponRegistrationComplete>
-  <KRWF_RimKata_WeaponRegistrationSuccess>Зареєстровано</KRWF_RimKata_WeaponRegistrationSuccess>
+  <KRWF_RimKata_WeaponRegistrationComplete>Підготовка виконання: успішно — {0}, помилок — {1}.\nЗбереження на диск: збережено — {2}, помилок — {3}.</KRWF_RimKata_WeaponRegistrationComplete>
+  <KRWF_RimKata_WeaponRegistrationNotSaved>Виконання підготовлено, але дані реєстрації не вдалося зберегти. Оновіть дані спорядження та спробуйте знову.</KRWF_RimKata_WeaponRegistrationNotSaved>
+  <KRWF_RimKata_WeaponRegistrationSuccess>Виконання підготовлено та збережено на диск.</KRWF_RimKata_WeaponRegistrationSuccess>
   <KRWF_RimKata_WeaponRegistrationFailure>Реєстрація не вдалася. Початкову стрільбу збережено; переведення на одиночні постріли вимкнено.</KRWF_RimKata_WeaponRegistrationFailure>
   <KRWF_RimKata_StatSelection>Вибрати показники</KRWF_RimKata_StatSelection>
   <KRWF_RimKata_ShowDebugGizmo>Показувати кнопку налагодження</KRWF_RimKata_ShowDebugGizmo>

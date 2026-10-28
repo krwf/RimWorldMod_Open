@@ -250,7 +250,8 @@ namespace KRWF.RimKata
             if (targetThing != null && (!targetThing.Spawned || targetThing.Map != pawn.Map
                 || (targetThing is Pawn victim && (victim.Dead
                     || (huntingSession == null && RimKataTargeting.IsIncapacitatedTarget(victim)
-                        && !(playerForced && killIncappedTarget))))))
+                        && !(playerForced && killIncappedTarget)
+                        && !RimKataPerspectiveShiftCompat.IsManualTarget(pawn, weapon, targetThing))))))
             {
                 return false;
             }
@@ -261,6 +262,20 @@ namespace KRWF.RimKata
 
         internal bool PrepareShot()
         {
+            if (!target.HasThing && cycle?.HasDirectionalFire == true
+                && reactiveMotion == null && subdueState == null && kickAttack == null && huntingSession == null
+                && RimKataPerspectiveShiftCompat.HasManualFireInput(pawn))
+            {
+                // PS can move after Queue; project at the actual shot without restarting its cycle.
+                if (!RimKataDirectionalFire.TryGetShotTarget(pawn, cycle, verb, out LocalTargetInfo shot))
+                {
+                    Cancel();
+                    return false;
+                }
+                target = shot;
+                cycle.plannedDirectionalFireCell = shot.Cell;
+                currentTarget(verb) = shot;
+            }
             if (subdueState != null)
             {
                 try
