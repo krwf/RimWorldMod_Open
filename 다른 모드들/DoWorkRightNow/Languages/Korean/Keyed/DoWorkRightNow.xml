@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <DWRN.ToolTitle>Do work right now · 지금 작업해</DWRN.ToolTitle>
+  <DWRN.ToolInstructions>이 경고 아이콘을 누른 뒤 작업 열의 제목을 클릭하세요. 해당 작업에 할당된 정착민이 다른 작업·욕구·시간표보다 그 작업을 먼저 수행합니다.\n\n같은 제목을 다시 누르면 해제됩니다. 다른 제목을 누르면 강제 작업이 바뀝니다. 맵마다 한 종류의 작업을 강제할 수 있습니다.\n\n아이콘을 다시 누르거나 Esc 또는 우클릭으로 선택 도구를 닫습니다. 도구를 닫아도 이미 지정한 강제 작업은 유지됩니다.</DWRN.ToolInstructions>
+  <DWRN.ToolArmed>선택 도구 활성화: 작업 제목을 클릭하세요.</DWRN.ToolArmed>
+  <DWRN.ActiveWork>강제 작업: {0}</DWRN.ActiveWork>
+  <DWRN.NoForcedWork>이 맵에 지정된 강제 작업이 없습니다.</DWRN.NoForcedWork>
+  <DWRN.HeaderForce>이 작업에 할당된 정착민에게 {0} 작업을 강제합니다.</DWRN.HeaderForce>
+  <DWRN.HeaderRelease>클릭하면 {0} 작업 강제가 해제됩니다.</DWRN.HeaderRelease>
+  <DWRN.WorkEnabled>Do work right now: 할당된 정착민에게 {0} 작업을 강제합니다.</DWRN.WorkEnabled>
+  <DWRN.WorkDisabled>Do work right now: {0} 작업 강제를 해제했습니다.</DWRN.WorkDisabled>
+  <DWRN.NoWorkGivers>{0}에는 강제할 수 있는 자동 작업이 없습니다.</DWRN.NoWorkGivers>
+  <DWRN.TabActive>Do work right now — 강제 작업: {0}</DWRN.TabActive>
+  <DWRN.TabArmed>Do work right now — 강제 작업 선택 도구 사용 중</DWRN.TabArmed>
+</LanguageData>

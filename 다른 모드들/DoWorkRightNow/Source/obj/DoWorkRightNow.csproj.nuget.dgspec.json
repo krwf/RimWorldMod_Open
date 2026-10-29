@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\DoWorkRightNow.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\DoWorkRightNow.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\DoWorkRightNow.csproj",
+        "projectName": "DoWorkRightNow",
+        "projectPath": "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\DoWorkRightNow.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net10.0",
+          "net472"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net10.0": {
+            "targetAlias": "net10.0",
+            "projectReferences": {}
+          },
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "all"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net10.0": {
+          "targetAlias": "net10.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316/PortableRuntimeIdentifierGraph.json"
+        },
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "Krafs.Rimworld.Ref": {
+              "include": "Compile",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.6.4871, )"
+            },
+            "Lib.Harmony": {
+              "include": "Compile",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.3, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.316\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

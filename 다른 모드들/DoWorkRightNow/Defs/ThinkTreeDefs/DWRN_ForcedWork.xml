@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+  <!-- Registered rather than constructed ad hoc: jobs retain a valid source node on save/load. -->
+  <ThinkTreeDef>
+    <defName>DWRN_ForcedWork</defName>
+    <thinkRoot Class="RimWorld.JobGiver_Work">
+      <emergency>false</emergency>
+      <leaveJoinableLordIfIssuesJob>true</leaveJoinableLordIfIssuesJob>
+    </thinkRoot>
+  </ThinkTreeDef>
+</Defs>

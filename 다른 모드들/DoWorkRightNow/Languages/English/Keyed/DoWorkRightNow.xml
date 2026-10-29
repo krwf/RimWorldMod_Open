@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+  <DWRN.ToolTitle>Do work right now</DWRN.ToolTitle>
+  <DWRN.ToolInstructions>Click this warning icon, then click a work column heading. All colonists assigned to that work will do it before other work, needs, or their timetable.\n\nClick the same heading again to clear the order. A different heading replaces it. One forced work type per map.\n\nClick the icon again, press Esc, or right-click to put away the tool. Putting away the tool does not clear an active order.</DWRN.ToolInstructions>
+  <DWRN.ToolArmed>Tool selected: click a work heading.</DWRN.ToolArmed>
+  <DWRN.ActiveWork>Forced work: {0}</DWRN.ActiveWork>
+  <DWRN.NoForcedWork>No forced work on this map.</DWRN.NoForcedWork>
+  <DWRN.HeaderForce>Force {0} for all assigned colonists.</DWRN.HeaderForce>
+  <DWRN.HeaderRelease>Click to stop forcing {0}.</DWRN.HeaderRelease>
+  <DWRN.WorkEnabled>Do work right now: forcing {0} for assigned colonists.</DWRN.WorkEnabled>
+  <DWRN.WorkDisabled>Do work right now: forced {0} cleared.</DWRN.WorkDisabled>
+  <DWRN.NoWorkGivers>{0} has no automatic work jobs to force.</DWRN.NoWorkGivers>
+  <DWRN.TabActive>Do work right now — forced work: {0}</DWRN.TabActive>
+  <DWRN.TabArmed>Do work right now — selection tool active</DWRN.TabArmed>
+</LanguageData>

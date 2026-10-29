@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "M6mUcZNrCBY=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\user\\Documents\\RimworldModsFolder\\RimKata_Git\\다른 모드들\\DoWorkRightNow\\Source\\DoWorkRightNow.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\user\\.nuget\\packages\\krafs.rimworld.ref\\1.6.4871\\krafs.rimworld.ref.1.6.4871.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\lib.harmony\\2.4.3\\lib.harmony.2.4.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "C:\\Users\\user\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net472\\1.0.3\\microsoft.netframework.referenceassemblies.net472.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

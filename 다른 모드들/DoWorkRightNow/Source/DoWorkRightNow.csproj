@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net472;net10.0</TargetFrameworks>
+    <AssemblyName>DoWorkRightNow</AssemblyName>
+    <RootNamespace>KRWF.DWRN</RootNamespace>
+    <Version>1.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <DebugType>none</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <!-- The SDK also disables its intermediate framework suffix with the flag
+         above. Keep compiler caches isolated so version builds cannot mix. -->
+    <IntermediateOutputPath>obj/$(Configuration)/$(TargetFramework)/</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net472'">
+    <!-- RimRef includes the game's own .NET Framework reference assemblies. -->
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <AutomaticallyUseReferenceAssemblyPackages>true</AutomaticallyUseReferenceAssemblyPackages>
+    <DefineConstants>$(DefineConstants);RW16</DefineConstants>
+    <OutputPath>../1.6/Assemblies/</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <DefineConstants>$(DefineConstants);RW17</DefineConstants>
+    <OutputPath>../1.7/Assemblies/</OutputPath>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4871" PrivateAssets="all" IncludeAssets="compile" />
+    <PackageReference Include="Lib.Harmony" Version="2.4.3" PrivateAssets="all" IncludeAssets="compile" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.7.4990-unstable" PrivateAssets="all" IncludeAssets="compile" />
+    <PackageReference Include="Lib.Harmony" Version="3.0.0-rc.3" PrivateAssets="all" IncludeAssets="compile" />
+  </ItemGroup>
+</Project>
