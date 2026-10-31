@@ -26,7 +26,21 @@ namespace KRWF.HoldsRoofRadius
 
                 if (!def.placeWorkers.Contains(workerType))
                     def.placeWorkers.Add(workerType);
+
+                AddToggleComp(def.blueprintDef);
+                AddToggleComp(def.frameDef);
             }
+        }
+
+        private static void AddToggleComp(ThingDef def)
+        {
+            if (def == null)
+                return;
+
+            def.comps ??= new List<CompProperties>();
+
+            if (!def.comps.Exists(props => props.compClass == typeof(Comp_HoldsRoofRadiusToggle)))
+                def.comps.Add(new CompProperties(typeof(Comp_HoldsRoofRadiusToggle)));
         }
 
         public static bool ShouldAddRadius(ThingDef def)
@@ -68,6 +82,15 @@ namespace KRWF.HoldsRoofRadius
             Color ghostCol,
             Thing thing = null)
         {
+            RoofRadiusDisplay.DrawGhost?.Invoke(def, center, rot, thing);
+        }
+
+        internal static void DrawGhostRadius(
+            ThingDef def,
+            IntVec3 center,
+            Rot4 rot,
+            Thing thing)
+        {
             if (thing != null)
                 return;
 
@@ -104,6 +127,11 @@ namespace KRWF.HoldsRoofRadius
         }
 
         public override void MapComponentUpdate()
+        {
+            RoofRadiusDisplay.DrawSelected?.Invoke(map);
+        }
+
+        internal static void DrawSelectedRadius(Map map)
         {
             if (Find.CurrentMap != map
                 || Find.ScreenshotModeHandler.Active)
@@ -150,6 +178,51 @@ namespace KRWF.HoldsRoofRadius
             }
             if (cells.Count > 0)
                 GenDraw.DrawFieldEdges(new List<IntVec3>(cells));
+        }
+    }
+
+    internal static class RoofRadiusDisplay
+    {
+        private static readonly Action<Map> SelectedRenderer = MapComponent_HoldsRoofRadius.DrawSelectedRadius;
+        private static readonly Action<ThingDef, IntVec3, Rot4, Thing> GhostRenderer = PlaceWorker_HoldsRoofRadius.DrawGhostRadius;
+
+        internal static Action<Map> DrawSelected { get; private set; } = SelectedRenderer;
+        internal static Action<ThingDef, IntVec3, Rot4, Thing> DrawGhost { get; private set; } = GhostRenderer;
+
+        internal static bool Enabled => DrawSelected != null;
+
+        internal static void Toggle()
+        {
+            bool enabled = !Enabled;
+            // Disconnect both renderers: disabled callbacks do not collect or draw cells.
+            DrawSelected = enabled ? SelectedRenderer : null;
+            DrawGhost = enabled ? GhostRenderer : null;
+        }
+    }
+
+    [StaticConstructorOnStartup]
+    public class Comp_HoldsRoofRadiusToggle : ThingComp
+    {
+        private static readonly Texture2D Icon = ContentFinder<Texture2D>.Get("HRR");
+
+        public override IEnumerable<Gizmo> CompGetGizmosExtra()
+        {
+            yield return new Command_HoldsRoofRadiusToggle
+            {
+                defaultLabel = "HRR",
+                icon = Icon,
+                isActive = () => RoofRadiusDisplay.Enabled,
+                toggleAction = RoofRadiusDisplay.Toggle
+            };
+        }
+    }
+
+    public class Command_HoldsRoofRadiusToggle : Command_Toggle
+    {
+        public override bool InheritInteractionsFrom(Gizmo other)
+        {
+            // All selected blueprints/frames share one state, so toggle only once.
+            return false;
         }
     }
 }
