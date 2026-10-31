@@ -117,7 +117,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyPawnSpawned(Pawn pawn, bool refreshPersonal = false)
         {
-            if (pawn?.Spawned != true || pawn.Dead) return;
+            if (pawn?.Spawned != true || pawn.health == null || pawn.Dead) return;
             if (refreshPersonal) RimKataStatActivation.Forget(pawn);
             bool wasQualified = IsCachedQualifiedPawn(pawn);
             if (refreshPersonal && TryGetEntry(pawn, out Entry entry))
@@ -336,7 +336,9 @@ namespace KRWF.RimKata
 
         public static bool HasAnyAccessSource(Pawn pawn)
         {
-            if (pawn == null)
+            // PostMake can query access before CreateInitialComponents supplies health.
+            // Do not cache that incomplete pawn as denied; spawn will read its sources.
+            if (pawn?.health == null)
             {
                 return false;
             }
@@ -749,7 +751,9 @@ namespace KRWF.RimKata
         {
             traits &= RimKataPersonalActivation.TraitsEnabled;
             skills &= RimKataPersonalActivation.SkillsEnabled;
-            if ((!traits && !skills) || pawn == null || pawn.Dead) return;
+            // Modded PostMake can assign skills/traits before health exists.
+            // SpawnSetup refreshes both sources once the pawn is initialized.
+            if ((!traits && !skills) || pawn?.health == null || pawn.Dead) return;
             if (!TryGetEntry(pawn, out Entry entry))
             {
                 if (pawn.Spawned) NotifyPawnSpawned(pawn);
@@ -774,7 +778,7 @@ namespace KRWF.RimKata
 
         internal static void RefreshStatSource(Pawn pawn)
         {
-            if (pawn == null || pawn.Dead || !TryGetEntry(pawn, out Entry entry)) return;
+            if (pawn?.health == null || pawn.Dead || !TryGetEntry(pawn, out Entry entry)) return;
             bool changed;
             lock (entry)
             {
@@ -793,7 +797,7 @@ namespace KRWF.RimKata
         internal static bool TryGetQualificationDisplay(Pawn pawn, out bool unrestricted)
         {
             unrestricted = false;
-            if (pawn == null || pawn.Dead) return false;
+            if (pawn?.health == null || pawn.Dead) return false;
             if (pawn.Spawned)
             {
                 if (!TryGetEntry(pawn, out Entry entry) || !entry.qualified) return false;

@@ -89,7 +89,7 @@ namespace KRWF.RimKata
 
         internal static bool ReadQualified(Pawn pawn, bool monitor = true)
         {
-            if (!Enabled || pawn == null || pawn.Dead) return false;
+            if (!Enabled || pawn?.health == null || pawn.Dead) return false;
             if (monitor && (!RimKataEligibility.FactionEffectsEnabled(pawn)
                 || RimKataTargetAccess.IsEnabled(pawn))) return false;
             if (watches.TryGetValue(pawn, out Watch existing)) return existing.qualified;
@@ -174,7 +174,7 @@ namespace KRWF.RimKata
                 Watch watch = entry.watch;
                 if (entry.tick != now || watch.scheduled != now) continue;
                 watch.scheduled = -1;
-                if (watch.pawn.Dead || !watch.pawn.Spawned || watch.pawn.Map != map)
+                if (watch.pawn.health == null || watch.pawn.Dead || !watch.pawn.Spawned || watch.pawn.Map != map)
                 { Forget(watch.pawn); continue; }
                 if (remaining-- <= 0) { Schedule(watch, now + 1); continue; }
                 Changes changes = watch.pending;

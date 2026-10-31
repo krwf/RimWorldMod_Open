@@ -130,7 +130,7 @@ namespace KRWF.RimKata
 
         internal static void Refresh(Pawn pawn, bool? qualified = null, bool notifyLoadout = true)
         {
-            if (pawn == null || installing.Contains(pawn) || !refreshing.Add(pawn)) return;
+            if (pawn?.health == null || installing.Contains(pawn) || !refreshing.Add(pawn)) return;
             try
             {
                 if (!rulesReady) RebuildRules();

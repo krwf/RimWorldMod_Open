@@ -62,7 +62,7 @@ namespace KRWF.RimKata
         internal bool TryRead(Pawn pawn, out float raw)
         {
             raw = 0f;
-            if (pawn == null || pawn.Dead) return false;
+            if (pawn?.health == null || pawn.Dead) return false;
             try { return Read(pawn, out raw); }
             catch (Exception)
             {

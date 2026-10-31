@@ -7,7 +7,7 @@ namespace KRWF.RimKata
     {
         public static bool HasRimKataAccess(Pawn pawn)
         {
-            if (pawn == null)
+            if (pawn?.health == null)
             {
                 return false;
             }
