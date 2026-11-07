@@ -179,7 +179,7 @@ namespace KRWF.RimKata
         private static void RestoreSecondary(Pawn pawn, ThingWithComps secondary)
         {
             if (!InInventory(pawn, secondary)
-                || RimKataSecondaryHandRequirement.HasMissingHand(pawn)
+                || !RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn)
                 || RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn) != null
                 || !EquipmentUtility.CanEquip(secondary, pawn)
                 || !RimKataWeaponSlotUtility.CanEquipAsSecondary(pawn, secondary)) return;

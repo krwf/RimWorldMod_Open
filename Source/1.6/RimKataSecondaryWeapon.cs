@@ -754,6 +754,20 @@ namespace KRWF.RimKata
         }
     }
 
+    internal enum RimKataSecondaryEquipFailure
+    {
+        None,
+        InvalidEquipment,
+        NoAccess,
+        Disabled,
+        NoPrimary,
+        PrimaryNotAllowed,
+        WeaponNotAllowed,
+        InsufficientManipulationLimbs,
+        PrimaryTwoHanded,
+        WeaponTwoHanded
+    }
+
     public static class RimKataWeaponSlotUtility
     {
         private sealed class CachedCombatVerb
@@ -916,7 +930,8 @@ namespace KRWF.RimKata
             bool accessVerified)
         {
             return RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
-                && CanUseOneHandWeapon(pawn, primary, accessVerified);
+                && CanUseOneHandWeapon(pawn, primary, accessVerified)
+                && RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn);
         }
 
         internal static bool CanUseOneHandWeapon(
@@ -1081,17 +1096,55 @@ namespace KRWF.RimKata
 
         public static bool CanEquipAsSecondary(Pawn pawn, ThingWithComps weapon)
         {
+            return SecondaryEquipFailure(pawn, weapon) == RimKataSecondaryEquipFailure.None;
+        }
+
+        internal static string SecondaryEquipFailureKey(RimKataSecondaryEquipFailure failure)
+        {
+            return failure switch
+            {
+                RimKataSecondaryEquipFailure.Disabled => "KRWF_RimKata_SecondaryDisabled",
+                RimKataSecondaryEquipFailure.NoPrimary => "KRWF_RimKata_SecondaryNoPrimary",
+                RimKataSecondaryEquipFailure.PrimaryNotAllowed => "KRWF_RimKata_SecondaryPrimaryNotAllowed",
+                RimKataSecondaryEquipFailure.WeaponNotAllowed => "KRWF_RimKata_SecondaryWeaponNotAllowed",
+                RimKataSecondaryEquipFailure.InsufficientManipulationLimbs => "KRWF_RimKata_SecondaryMissingHand",
+                RimKataSecondaryEquipFailure.PrimaryTwoHanded => "KRWF_RimKata_SecondaryPrimaryTwoHanded",
+                RimKataSecondaryEquipFailure.WeaponTwoHanded => "KRWF_RimKata_SecondaryWeaponTwoHanded",
+                _ => null
+            };
+        }
+
+        internal static RimKataSecondaryEquipFailure SecondaryEquipFailure(
+            Pawn pawn,
+            ThingWithComps weapon)
+        {
             ThingWithComps primary = PrimaryWeapon(pawn);
-            return pawn != null
-                && weapon != null
-                && weapon.def?.equipmentType == EquipmentType.Primary
-                && weapon != primary
-                && weapon != SecondaryWeapon(pawn)
-                && RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
-                && RimKataEligibility.HasRimKataAccess(pawn)
-                && RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
-                && RimKataEquipmentUtility.IsWeaponEnabled(weapon.def)
-                && RimKataGripUtility.CanGripPair(pawn, primary?.def, weapon.def);
+            if (pawn == null || weapon == null
+                || weapon.def?.equipmentType != EquipmentType.Primary
+                || weapon == primary || weapon == SecondaryWeapon(pawn))
+                return RimKataSecondaryEquipFailure.InvalidEquipment;
+            if (RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled == false)
+                return RimKataSecondaryEquipFailure.Disabled;
+            if (!RimKataEligibility.HasRimKataAccess(pawn))
+                return RimKataSecondaryEquipFailure.NoAccess;
+            if (primary == null)
+                return RimKataSecondaryEquipFailure.NoPrimary;
+            if (!RimKataEquipmentUtility.IsWeaponEnabled(primary.def))
+                return RimKataSecondaryEquipFailure.PrimaryNotAllowed;
+            if (!RimKataEquipmentUtility.IsWeaponEnabled(weapon.def))
+                return RimKataSecondaryEquipFailure.WeaponNotAllowed;
+            if (pawn.health?.hediffSet == null || pawn.RaceProps?.body?.AllParts == null)
+                return RimKataSecondaryEquipFailure.InvalidEquipment;
+            if (!RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn))
+                return RimKataSecondaryEquipFailure.InsufficientManipulationLimbs;
+            if (!RimKataGripUtility.CanGripPair(pawn, primary.def, weapon.def))
+            {
+                // The pair check already accounts for the pawn's enhanced grip.
+                return RimKataGripUtility.GripTypeFor(primary.def) == RimKataGripType.TwoHand
+                    ? RimKataSecondaryEquipFailure.PrimaryTwoHanded
+                    : RimKataSecondaryEquipFailure.WeaponTwoHanded;
+            }
+            return RimKataSecondaryEquipFailure.None;
         }
 
         public static bool TryEquipSecondary(
@@ -1182,7 +1235,8 @@ namespace KRWF.RimKata
             ThingWithComps secondary,
             bool dropInvalidSecondary)
         {
-            if (secondary == null)
+            if (secondary == null || pawn?.health?.hediffSet == null
+                || pawn.RaceProps?.body?.AllParts == null)
             {
                 return;
             }
@@ -1190,7 +1244,8 @@ namespace KRWF.RimKata
             ThingWithComps primary = PrimaryWeapon(pawn);
             bool validWeapons = RimKataEquipmentUtility.IsWeaponEnabled(primary?.def)
                 && RimKataEquipmentUtility.IsWeaponEnabled(secondary.def)
-                && RimKataGripUtility.CanGripPair(pawn, primary.def, secondary.def);
+                && RimKataGripUtility.CanGripPair(pawn, primary.def, secondary.def)
+                && RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn);
             bool valid = RimKataTargetAccess.SettingsFor(pawn)?.secondaryWeaponEnabled != false
                 && validWeapons;
             if (valid || !dropInvalidSecondary)
@@ -1593,7 +1648,7 @@ namespace KRWF.RimKata
             Toil equip = ToilMaker.MakeToil("RimKataEquipSecondary");
             equip.initAction = delegate
             {
-                if (RimKataSecondaryHandRequirement.HasMissingHand(pawn))
+                if (RimKataSecondaryHandRequirement.HasInsufficientManipulationLimbs(pawn))
                 {
                     RimKataSecondaryWeaponRegistry.CurrentRegistry?.RemoveRecovery(pawn);
                     EndJobWith(JobCondition.Incompletable);
@@ -1652,7 +1707,14 @@ namespace KRWF.RimKata
         {
             Pawn pawn = context.FirstSelectedPawn;
             ThingWithComps weapon = clickedThing as ThingWithComps;
-            if (!RimKataWeaponSlotUtility.CanEquipAsSecondary(pawn, weapon))
+            RimKataSecondaryEquipFailure failure =
+                RimKataWeaponSlotUtility.SecondaryEquipFailure(pawn, weapon);
+            if (failure == RimKataSecondaryEquipFailure.InvalidEquipment
+                || failure == RimKataSecondaryEquipFailure.NoAccess
+                // Runtime checks stop at the disabled option; only the menu needs
+                // to verify access before showing that reason.
+                || (failure == RimKataSecondaryEquipFailure.Disabled
+                    && !RimKataEligibility.HasRimKataAccess(pawn)))
             {
                 return null;
             }
@@ -1670,7 +1732,14 @@ namespace KRWF.RimKata
             }
 
             option.Label = "Equip".Translate(clickedThing.LabelShort) + " [RimKata]";
-            if (RimKataSecondaryHandRequirement.HasMissingHand(pawn))
+            string failureKey = RimKataWeaponSlotUtility.SecondaryEquipFailureKey(failure);
+            if (failureKey != null)
+            {
+                option.Label += ": " + failureKey.Translate();
+                option.action = null;
+                return option;
+            }
+            if (RimKataSecondaryHandRequirement.HasInsufficientManipulationLimbs(pawn))
             {
                 option.Label += ": " + "KRWF_RimKata_SecondaryMissingHand".Translate();
                 option.action = null;

@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: следующая цель — {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: перезаряжается</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Атаковать</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Опция дополнительного оружия отключена.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Сначала экипируйте оружие в основной слот.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Основное оружие не разрешено для RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Это оружие не разрешено для RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Двуручное основное оружие не позволяет использовать эту комбинацию оружия.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Это двуручное оружие нельзя экипировать в дополнительный слот.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Нельзя взять дополнительное оружие при отсутствии кисти.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Поменять</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Поменять (в бою)</KRWF_RimKata_SecondaryMenuSwapCombat>

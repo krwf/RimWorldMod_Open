@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: επόμενος στόχος {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: σε επαναφορά</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Επίθεση</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Η επιλογή δευτερεύοντος όπλου είναι απενεργοποιημένη.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Εξοπλίστε πρώτα ένα όπλο στην κύρια θέση.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Το κύριο όπλο δεν είναι ενεργοποιημένο για το RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Αυτό το όπλο δεν είναι ενεργοποιημένο για το RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Το δίχειρο κύριο όπλο δεν επιτρέπει αυτόν τον συνδυασμό όπλων.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Αυτό το δίχειρο όπλο δεν μπορεί να εξοπλιστεί στη δευτερεύουσα θέση.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Δεν είναι δυνατός ο εξοπλισμός δευτερεύοντος όπλου όταν λείπει ένα χέρι.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Εναλλαγή</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Εναλλαγή (σε μάχη)</KRWF_RimKata_SecondaryMenuSwapCombat>

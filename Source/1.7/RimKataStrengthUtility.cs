@@ -130,7 +130,8 @@ namespace KRWF.RimKata
 
         internal static void Refresh(Pawn pawn, bool? qualified = null, bool notifyLoadout = true)
         {
-            if (pawn?.health == null || installing.Contains(pawn) || !refreshing.Add(pawn)) return;
+            if (pawn?.health?.hediffSet == null || pawn.RaceProps?.body?.AllParts == null
+                || installing.Contains(pawn) || !refreshing.Add(pawn)) return;
             try
             {
                 if (!rulesReady) RebuildRules();
@@ -162,7 +163,7 @@ namespace KRWF.RimKata
                     }
                     if (enhancedGrip || percent > 0d)
                         current = new Entry((float)Math.Min(percent / 100d, float.MaxValue),
-                            enhancedGrip && !RimKataSecondaryHandRequirement.HasMissingHand(pawn));
+                            enhancedGrip && RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn));
                 }
                 if (current == null) entries.TryRemove(pawn, out _);
                 else entries[pawn] = current;
@@ -307,7 +308,11 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Pawn_HealthTracker), nameof(Pawn_HealthTracker.RestorePart))]
     internal static class Patch_RestorePart_RimKataStrength
     {
-        private static void Postfix(Pawn ___pawn) => RimKataStrengthUtility.NotifyPartRestored(___pawn);
+        private static void Postfix(Pawn ___pawn)
+        {
+            RimKataSecondaryHandRequirement.NotifyPartRestored(___pawn);
+            RimKataStrengthUtility.NotifyPartRestored(___pawn);
+        }
     }
 
     [HarmonyPatch(typeof(Caravan), nameof(Caravan.AddPawn))]

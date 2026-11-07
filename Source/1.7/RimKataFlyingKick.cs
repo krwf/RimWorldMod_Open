@@ -371,6 +371,15 @@ namespace KRWF.RimKata
                     || flight.phase == RimKataFlyingKickPhase.Backstep
                         && pawn.stances.curStance is not Stance_RimKataFlyingKickWait)
                     Abort(combat);
+                else if (airborne && pawn.pather?.Moving == true && pawn.pather.WillCollideNextCell
+                    && !pawn.CanReachImmediate(flight.target, PathEndMode.Touch))
+                {
+                    // Use the pather's actual pawn-collision result, including noncombat pass-through.
+                    flight.attack.Cancel();
+                    ReleaseTakeoff(pawn);
+                    flight.replaceUnarmedAttack = false;
+                    BeginDescent(flight, RimKataFlyingKickPhase.Fall, 4);
+                }
                 else if (RefreshApproach(combat))
                 {
                     if (airborne && pawn.CanReachImmediate(flight.target, PathEndMode.Touch))
@@ -439,7 +448,7 @@ namespace KRWF.RimKata
                     bool fall = flight.phase == RimKataFlyingKickPhase.Fall;
                     Clear(combat);
                     if (fall) RimKataGroundPoseUtility.AcceptFlyingKickFall(combat, flight.target,
-                        flight.visual.angle, flight.visual.offset);
+                        flight.visual.angle, flight.visual.offset, allowMovementRise: !flight.attackResolved);
                     return;
                 }
             }

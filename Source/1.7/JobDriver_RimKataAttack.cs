@@ -791,6 +791,13 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            if (target != AssignedTarget
+                && RimKataTargeting.IsValidAutomaticAttackTarget(pawn, target))
+            {
+                // The completed order does not grant its permissions to an automatic successor.
+                job.playerForced = false;
+                job.killIncappedTarget = false;
+            }
             SetAssignedTarget(target);
             return true;
         }

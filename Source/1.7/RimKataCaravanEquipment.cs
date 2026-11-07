@@ -19,9 +19,9 @@ namespace KRWF.RimKata
 
         internal static bool CanUseSlot(Pawn pawn)
         {
-            return pawn != null && !pawn.Spawned && !pawn.Dead && !pawn.Downed
+            return pawn?.health?.hediffSet != null && !pawn.Spawned && !pawn.Dead && !pawn.Downed
                 && pawn.equipment != null && pawn.GetCaravan() != null
-                && !RimKataSecondaryHandRequirement.HasMissingHand(pawn)
+                && RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn)
                 && RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn);
         }
 
@@ -38,7 +38,7 @@ namespace KRWF.RimKata
                 || (weapon.def.IsRangedWeapon && pawn.WorkTagIsDisabled(WorkTags.Shooting))
                 || pawn.health?.capacities?.CapableOf(PawnCapacityDefOf.Manipulation) != true)
             {
-                if (pawn != null && RimKataSecondaryHandRequirement.HasMissingHand(pawn))
+                if (pawn != null && RimKataSecondaryHandRequirement.HasInsufficientManipulationLimbs(pawn))
                     reason = "KRWF_RimKata_SecondaryMissingHand".Translate();
                 return false;
             }

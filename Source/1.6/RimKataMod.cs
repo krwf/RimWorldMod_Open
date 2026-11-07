@@ -47,6 +47,8 @@ namespace KRWF.RimKata
 
             try
             {
+                RunCompatibility("compat_immersive_warfare", "SmartCombat.StackVisuals",
+                    RimKataImmersiveWarfareCompat.Initialize);
                 RimKataStartupPatches.Apply(harmony, Assembly.GetExecutingAssembly());
             }
             catch (Exception exception)
@@ -88,6 +90,7 @@ namespace KRWF.RimKata
             RunCompatibility("compat_rebound", "ProjectileInversion.API", RimKataReboundCompat.Apply);
             RunCompatibility("compat_pocketsand", "PocketSand.JobDriver_Equip", RimKataPocketSandCompat.Apply);
             RunCompatibility("compat_simple_sidearms", "SimpleSidearms.rimworld.CompSidearmMemory", RimKataSimpleSidearmsCompat.Apply);
+            RunCompatibility("compat_monolyn", "ASEL.CompAbilityEffect_WeaponCodex", RimKataMonolynCompat.Apply);
             LongEventHandler.ExecuteWhenFinished(() => RunCompatibility("compat_perspective_shift",
                 "PerspectiveShift.Avatar", () => RimKataPerspectiveShiftCompat.Apply(harmony)));
             LongEventHandler.ExecuteWhenFinished(() =>

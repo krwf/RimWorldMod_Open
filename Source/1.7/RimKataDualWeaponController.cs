@@ -939,6 +939,9 @@ namespace KRWF.RimKata
                 state.secondaryWeaponCycle.ClearInvalidVisualTarget(pawn);
             }
 
+            Thing orderedTarget = playerForced
+                ? assignedTarget ?? state.closeAttackRequestTarget
+                : null;
             Thing closeTarget = ResolveTickCloseTarget(
                 pawn,
                 state,
@@ -1080,7 +1083,7 @@ namespace KRWF.RimKata
             if (firstCycle != null)
             {
                 TickWeaponCycle(
-                    pawn, state, firstCycle, assignedTarget, playerForced,
+                    pawn, state, firstCycle, assignedTarget, orderedTarget, playerForced,
                     killIncappedTarget, closeCombatContext, blockedByStance,
                     out firstPromotionTarget, allowAutomaticRangedFire,
                     randomAttackEnabled, currentTick, weaponScopedFocusJobWeapon,
@@ -1107,7 +1110,7 @@ namespace KRWF.RimKata
             if (secondCycle != null)
             {
                 TickWeaponCycle(
-                    pawn, state, secondCycle, assignedTarget, playerForced,
+                    pawn, state, secondCycle, assignedTarget, orderedTarget, playerForced,
                     killIncappedTarget, closeCombatContext, StanceBlocksRimKata(pawn),
                     out secondPromotionTarget, allowAutomaticRangedFire,
                     randomAttackEnabled, currentTick, weaponScopedFocusJobWeapon,
@@ -4856,7 +4859,7 @@ namespace KRWF.RimKata
             {
                 verb = melee, evaluated = true, closeContext = true, usable = true
             };
-            TickWeaponCycle(pawn, state, cycle, target, true, false, true,
+            TickWeaponCycle(pawn, state, cycle, target, target, true, false, true,
                 StanceBlocksRimKata(pawn), out Thing _, false, false, tick, null,
                 ref availability);
         }
@@ -6149,71 +6152,80 @@ namespace KRWF.RimKata
                 return;
             }
 
-            bool hasAccess = accessVerified || RimKataEligibility.HasRimKataAccess(pawn);
-            ThingWithComps primary = hasAccess
-                ? RimKataWeaponSlotUtility.PrimaryWeapon(pawn)
-                : null;
-            ThingWithComps secondary = RimKataWeaponSlotUtility.CanUseSecondarySlot(
-                    pawn,
-                    primary,
-                    hasAccess)
-                    ? accessVerified
-                        ? RimKataWeaponSlotUtility
-                            .SecondaryWeaponWithVerifiedAccess(pawn)
-                        : RimKataWeaponSlotUtility.SecondaryWeapon(pawn)
-                    : null;
-
-            bool slotsMoved = (primary != state.primaryWeaponCycle.weapon
-                    && primary != null
-                    && primary == state.secondaryWeaponCycle.weapon)
-                || (secondary != state.secondaryWeaponCycle.weapon
-                    && secondary != null
-                    && secondary == state.primaryWeaponCycle.weapon);
-            if (slotsMoved)
-            {
-                RimKataWeaponCycleState previousPrimary = state.primaryWeaponCycle;
-                state.primaryWeaponCycle = state.secondaryWeaponCycle;
-                state.secondaryWeaponCycle = previousPrimary;
-            }
-
-            bool changed = state.primaryWeaponCycle.Bind(primary)
-                | state.secondaryWeaponCycle.Bind(secondary);
-            ResolveWeaponBinding(pawn, state.primaryWeaponCycle);
-            ResolveWeaponBinding(pawn, state.secondaryWeaponCycle);
-            RimKataWeaponEffects.Sync(pawn, state);
-            RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
-            if (settings?.directionalFireEnabled == false
-                && !RimKataPerspectiveShiftCompat.HasManualFireInput(pawn))
-                RimKataDirectionalFire.Clear(state);
-            if (settings?.smoothAimTransition == false)
-            {
-                state.primaryWeaponCycle.cooldownTurnTarget = null;
-                state.primaryWeaponCycle.cooldownTurnTicks = 0;
-                state.secondaryWeaponCycle.cooldownTurnTarget = null;
-                state.secondaryWeaponCycle.cooldownTurnTicks = 0;
-            }
-            Job job = pawn.CurJob;
-            if (job?.def == RimKataDefOf.RimKata_Attack
-                && !job.playerForced
-                && job.verbToUse?.EquipmentSource is ThingWithComps previousJobWeapon
-                && previousJobWeapon != primary && previousJobWeapon != secondary)
-            {
-                job.verbToUse = state.primaryWeaponCycle.boundVerb
-                    ?? state.secondaryWeaponCycle.boundVerb;
-            }
+            // Consume this request before callbacks so a new invalidation survives the bind.
             state.weaponBindingsDirty = false;
-            bool configurationChanged = state.weaponConfigurationRevision >= 0
-                && state.weaponConfigurationRevision != revision;
-            state.weaponConfigurationRevision = revision;
-            if (changed || slotsMoved || configurationChanged)
+            try
             {
-                state.sharedTargetSearch?.Reset();
-                state.ResetCandidateSaturationExpansion(true);
-                if (state.engagementOwnerWeapon != primary
-                    && state.engagementOwnerWeapon != secondary)
+                bool hasAccess = accessVerified || RimKataEligibility.HasRimKataAccess(pawn);
+                ThingWithComps primary = hasAccess
+                    ? RimKataWeaponSlotUtility.PrimaryWeapon(pawn)
+                    : null;
+                ThingWithComps secondary = RimKataWeaponSlotUtility.CanUseSecondarySlot(
+                        pawn,
+                        primary,
+                        hasAccess)
+                        ? accessVerified
+                            ? RimKataWeaponSlotUtility
+                                .SecondaryWeaponWithVerifiedAccess(pawn)
+                            : RimKataWeaponSlotUtility.SecondaryWeapon(pawn)
+                        : null;
+
+                bool slotsMoved = (primary != state.primaryWeaponCycle.weapon
+                        && primary != null
+                        && primary == state.secondaryWeaponCycle.weapon)
+                    || (secondary != state.secondaryWeaponCycle.weapon
+                        && secondary != null
+                        && secondary == state.primaryWeaponCycle.weapon);
+                if (slotsMoved)
                 {
-                    state.engagementOwnerWeapon = null;
+                    RimKataWeaponCycleState previousPrimary = state.primaryWeaponCycle;
+                    state.primaryWeaponCycle = state.secondaryWeaponCycle;
+                    state.secondaryWeaponCycle = previousPrimary;
                 }
+
+                bool changed = state.primaryWeaponCycle.Bind(primary)
+                    | state.secondaryWeaponCycle.Bind(secondary);
+                ResolveWeaponBinding(pawn, state.primaryWeaponCycle);
+                ResolveWeaponBinding(pawn, state.secondaryWeaponCycle);
+                RimKataWeaponEffects.Sync(pawn, state);
+                RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
+                if (settings?.directionalFireEnabled == false
+                    && !RimKataPerspectiveShiftCompat.HasManualFireInput(pawn))
+                    RimKataDirectionalFire.Clear(state);
+                if (settings?.smoothAimTransition == false)
+                {
+                    state.primaryWeaponCycle.cooldownTurnTarget = null;
+                    state.primaryWeaponCycle.cooldownTurnTicks = 0;
+                    state.secondaryWeaponCycle.cooldownTurnTarget = null;
+                    state.secondaryWeaponCycle.cooldownTurnTicks = 0;
+                }
+                Job job = pawn.CurJob;
+                if (job?.def == RimKataDefOf.RimKata_Attack
+                    && !job.playerForced
+                    && job.verbToUse?.EquipmentSource is ThingWithComps previousJobWeapon
+                    && previousJobWeapon != primary && previousJobWeapon != secondary)
+                {
+                    job.verbToUse = state.primaryWeaponCycle.boundVerb
+                        ?? state.secondaryWeaponCycle.boundVerb;
+                }
+                bool configurationChanged = state.weaponConfigurationRevision >= 0
+                    && state.weaponConfigurationRevision != revision;
+                state.weaponConfigurationRevision = revision;
+                if (changed || slotsMoved || configurationChanged)
+                {
+                    state.sharedTargetSearch?.Reset();
+                    state.ResetCandidateSaturationExpansion(true);
+                    if (state.engagementOwnerWeapon != primary
+                        && state.engagementOwnerWeapon != secondary)
+                    {
+                        state.engagementOwnerWeapon = null;
+                    }
+                }
+            }
+            catch
+            {
+                state.weaponBindingsDirty = true;
+                throw;
             }
         }
 
@@ -6494,6 +6506,7 @@ namespace KRWF.RimKata
             RimKataPawnCombatState state,
             RimKataWeaponCycleState cycle,
             Thing assignedTarget,
+            Thing orderedTarget,
             bool playerForced,
             bool killIncappedTarget,
             bool closeCombatContext,
@@ -6512,6 +6525,7 @@ namespace KRWF.RimKata
                 && cycle.weapon != weaponScopedFocusJobWeapon)
             {
                 assignedTarget = null;
+                orderedTarget = null;
                 playerForced = false;
                 killIncappedTarget = false;
             }
@@ -6559,8 +6573,7 @@ namespace KRWF.RimKata
             bool newAutomaticRangedAttacksBlocked =
                 !allowAutomaticRangedFire
                 && !closeCombatContext
-                && !verb.IsMeleeAttack
-                && !playerForced;
+                && !verb.IsMeleeAttack;
             bool requestAutomaticRefill = allowAutomaticRangedFire
                 && !closeCombatContext
                 && (randomAttackEnabled || AllowsNonRandomMovingSearch(pawn));
@@ -6571,12 +6584,16 @@ namespace KRWF.RimKata
                 verb,
                 closeCombatContext,
                 ref availability);
-            bool dedicatedAssignedTarget = ordinaryWeaponEnabled && assignedTarget != null
-                && pawn?.CurJobDef == RimKataDefOf.RimKata_Attack
-                && pawn.CurJob.targetA.Thing == assignedTarget;
-            // Each weapon cycle owns its target independently of job.targetA.
-            bool directAssignedTarget = ordinaryWeaponEnabled
-                && assignedTarget != null && playerForced;
+            bool assignedTargetPlayerForced = playerForced
+                && assignedTarget != null && assignedTarget == orderedTarget;
+            bool hasAssignedTarget = ordinaryWeaponEnabled && assignedTarget != null
+                && (closeCombatContext || assignedTargetPlayerForced
+                    || (pawn.CurJobDef == RimKataDefOf.RimKata_Attack
+                        && pawn.CurJob.targetA.Thing == assignedTarget));
+            // A general job supplies a target to check, not a target lock for both weapons.
+            bool assignedTargetControlsCycle = hasAssignedTarget
+                && pawn.jobs?.curDriver is JobDriver_RimKataAttack structureDriver
+                && structureDriver.IsStructureMeleeAttackFor(cycle.weapon);
             if (focusedTargetControlsCycle && !cycle.HasPlan)
             {
                 return;
@@ -6584,6 +6601,7 @@ namespace KRWF.RimKata
 
             if (newAutomaticRangedAttacksBlocked
                 && !focusedTargetControlsCycle
+                && !assignedTargetPlayerForced
                 && !cycle.HasPlan)
             {
                 return;
@@ -6632,7 +6650,7 @@ namespace KRWF.RimKata
             bool checkedDirectionalPlan = false;
             bool explicitPlan = cycle.plannedTarget != null
                 && (cycle.plannedTarget == cycle.focusedTarget
-                    || (playerForced && cycle.plannedTarget == assignedTarget));
+                    || (playerForced && cycle.plannedTarget == orderedTarget));
             bool checkPreparedTarget = cycle.plannedInterception
                 || explicitPlan
                 || cycle.cooldownTicksRemaining <= 1;
@@ -6643,7 +6661,7 @@ namespace KRWF.RimKata
                     pawn,
                     cycle,
                     verb,
-                    assignedTarget,
+                    orderedTarget,
                     playerForced,
                     killIncappedTarget,
                     closeCombatContext,
@@ -6660,7 +6678,7 @@ namespace KRWF.RimKata
                         state,
                         cycle,
                         verb,
-                        assignedTarget,
+                        orderedTarget,
                         playerForced,
                         killIncappedTarget,
                         closeCombatContext,
@@ -6670,15 +6688,16 @@ namespace KRWF.RimKata
 
             if (newAutomaticRangedAttacksBlocked
                 && !focusedTargetControlsCycle
+                && !assignedTargetPlayerForced
                 && !cycle.HasPlan)
             {
                 return;
             }
 
-            bool automaticPromotionAttempted = false;
             Thing rangeAdmittedAimTarget = null;
             if (!focusedTargetControlsCycle
-                && !directAssignedTarget
+                && !assignedTargetControlsCycle
+                && !newAutomaticRangedAttacksBlocked
                 && !cycle.HasPlan)
             {
                 rangeCheckedTarget = null;
@@ -6696,9 +6715,7 @@ namespace KRWF.RimKata
                         rangeAdmittedAimTarget = cycle.cachedCandidateTarget;
                 }
 
-                automaticPromotionAttempted =
-                    cycle.HasCachedCandidate;
-                if (automaticPromotionAttempted
+                if (cycle.HasCachedCandidate
                     && TryPromoteCachedCandidate(
                         pawn,
                         state,
@@ -6711,10 +6728,20 @@ namespace KRWF.RimKata
                         out Thing promotedCandidate,
                         ref availability))
                 {
-                    promotedAutomaticTarget = promotedCandidate;
-                    checkedDirectionalPlan = cycle.plannedDirectionalFireCell.IsValid
-                        && availability.checkedDirectionalVerb == verb
-                        && availability.checkedDirectionalCell == cycle.plannedDirectionalFireCell;
+                    if (ValidPlan(
+                            pawn, cycle, verb, orderedTarget, playerForced,
+                            killIncappedTarget, closeCombatContext, ref availability))
+                    {
+                        promotedAutomaticTarget = promotedCandidate;
+                        checkedTarget = cycle.plannedTarget;
+                        checkedDirectionalPlan = cycle.plannedDirectionalFireCell.IsValid;
+                    }
+                    else
+                    {
+                        HandleInvalidPlanAtExecution(
+                            pawn, state, cycle, verb, orderedTarget, playerForced,
+                            killIncappedTarget, closeCombatContext, requestAutomaticRefill);
+                    }
                 }
             }
 
@@ -6724,39 +6751,19 @@ namespace KRWF.RimKata
             }
 
             if (!focusedTargetControlsCycle
+                && hasAssignedTarget
                 && !cycle.HasPlan
-                && cycle.cooldownTicksRemaining <= 1)
+                && cycle.cooldownTicksRemaining <= 1
+                && (!newAutomaticRangedAttacksBlocked || assignedTargetPlayerForced))
             {
                 rangeCheckedTarget = null;
-                if (directAssignedTarget)
+                // An empty or rejected automatic selection must not strand a valid job target.
+                if (TrySetKnownTarget(
+                        pawn, cycle, verb, assignedTarget, assignedTargetPlayerForced,
+                        killIncappedTarget, closeCombatContext, false,
+                        cycle.cooldownTicksRemaining <= 0, ref availability))
                 {
-                    TrySetKnownTarget(
-                        pawn,
-                        cycle,
-                        verb,
-                        assignedTarget,
-                        playerForced,
-                        killIncappedTarget,
-                        closeCombatContext,
-                        false,
-                        cycle.cooldownTicksRemaining <= 0,
-                        ref availability);
-                }
-                else if (!automaticPromotionAttempted
-                    && dedicatedAssignedTarget
-                    && cycle.automaticCandidateCollectionClosed)
-                {
-                    TrySetKnownTarget(
-                        pawn,
-                        cycle,
-                        verb,
-                        assignedTarget,
-                        false,
-                        killIncappedTarget,
-                        closeCombatContext,
-                        false,
-                        cycle.cooldownTicksRemaining <= 0,
-                        ref availability);
+                    checkedTarget = cycle.plannedTarget;
                 }
             }
 
@@ -6778,15 +6785,15 @@ namespace KRWF.RimKata
             if (cycle.HasPlan
                 && !cycle.plannedInterception
                 && cycle.plannedTarget != cycle.focusedTarget
-                && !(playerForced && cycle.plannedTarget == assignedTarget)
+                && !(playerForced && cycle.plannedTarget == orderedTarget)
                 && cycle.plannedTarget != checkedTarget)
             {
                 if (!ValidPlan(
-                        pawn, cycle, verb, assignedTarget, playerForced,
+                        pawn, cycle, verb, orderedTarget, playerForced,
                         killIncappedTarget, closeCombatContext, ref availability))
                 {
                     HandleInvalidPlanAtExecution(
-                        pawn, state, cycle, verb, assignedTarget, playerForced,
+                        pawn, state, cycle, verb, orderedTarget, playerForced,
                         killIncappedTarget, closeCombatContext, requestAutomaticRefill);
                     promotedAutomaticTarget = null;
                     return;
@@ -6865,11 +6872,11 @@ namespace KRWF.RimKata
             if (((cycle.plannedDirectionalFireCell.IsValid && !checkedDirectionalPlan)
                     || cycle.plannedTarget != checkedTarget)
                 && !ValidPlan(
-                    pawn, cycle, verb, assignedTarget, playerForced,
+                    pawn, cycle, verb, orderedTarget, playerForced,
                     killIncappedTarget, closeCombatContext, ref availability))
             {
                 HandleInvalidPlanAtExecution(
-                    pawn, state, cycle, verb, assignedTarget, playerForced,
+                    pawn, state, cycle, verb, orderedTarget, playerForced,
                     killIncappedTarget, closeCombatContext, allowAutomaticRangedFire);
                 return;
             }
@@ -6893,9 +6900,13 @@ namespace KRWF.RimKata
             if (!cycle.plannedInterception
                 && !RimKataPerspectiveShiftCompat.AllowsCycleTarget(pawn, cycle, cycle.plannedTarget)) return;
 
+            bool orderedPlan = cycle.plannedTarget != null && playerForced
+                && cycle.plannedTarget == orderedTarget;
+            bool focusedPlan = cycle.plannedTarget != null
+                && cycle.plannedTarget == cycle.focusedTarget;
             if (!allowAutomaticRangedFire
                 && !actionVerb.IsMeleeAttack
-                && !playerForced
+                && !orderedPlan
                 && !cycle.focusedTargetFromAttackGizmo)
             {
                 return;
@@ -6927,8 +6938,11 @@ namespace KRWF.RimKata
             attack.assignedTarget = assignedTarget;
             attack.firedTarget = cycle.plannedTarget;
             attack.target = target;
-            attack.playerForced = playerForced;
-            attack.killIncappedTarget = killIncappedTarget;
+            attack.playerForced = orderedPlan || focusedPlan;
+            attack.killIncappedTarget = (orderedPlan && killIncappedTarget)
+                || (focusedPlan && AllowsWeaponScopedIncapacitatedTarget(
+                    pawn, cycle.weapon, cycle.plannedTarget));
+            attack.targetSelectionLocked = assignedTargetControlsCycle || focusedPlan;
             attack.closeCombatContext = closeCombatContext;
             attack.allowAutomaticRangedFire = allowAutomaticRangedFire;
             attack.randomAttackEnabled = randomAttackEnabled;
@@ -7000,7 +7014,7 @@ namespace KRWF.RimKata
             if (promoted != null && pawn.CurJob == attack.job)
             {
                 TryPromoteAutomaticJobTarget(
-                    pawn, state, attack.assignedTarget, attack.playerForced,
+                    pawn, state, attack.assignedTarget, attack.job?.playerForced == true,
                     attack.cycle == state.primaryWeaponCycle ? promoted : null,
                     attack.cycle == state.secondaryWeaponCycle ? promoted : null,
                     attack.randomAttackEnabled, out Thing _);
@@ -7097,7 +7111,7 @@ namespace KRWF.RimKata
                 {
                     RimKataSharedTargetSearch.Begin(pawn, state, pawn.Position);
                 }
-                bool allowAutomaticReselection = !playerForced
+                bool allowAutomaticReselection = !attack.targetSelectionLocked
                     && (allowAutomaticRangedFire
                         || closeCombatContext
                         || verb.IsMeleeAttack);

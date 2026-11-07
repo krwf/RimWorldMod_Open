@@ -483,12 +483,12 @@ namespace KRWF.RimKata
         }
 
         internal static void AcceptFlyingKickFall(RimKataPawnCombatState state, Thing target,
-            float angle, Vector3 offset)
+            float angle, Vector3 offset, bool allowMovementRise = false)
         {
             Pawn pawn = state.pawn;
             Rot4 facing = pawn.Rotation;
             var pose = new RimKataGroundPoseState {
-                phase = RimKataFallPhase.Fallen, flyingKickFall = true,
+                phase = RimKataFallPhase.Fallen, flyingKickFall = !allowMovementRise,
                 holdTicks = RimKataTargetAccess.SettingsFor(pawn)?.meleeFallDurationTicks ?? 50,
                 angle = angle, headAimAngle = RimKataGroundPoseConditions.HeadAimAngle(pawn, state),
                 originalFacing = facing, offset = offset, rollOrigin = offset,
@@ -497,6 +497,8 @@ namespace KRWF.RimKata
             state.groundPose = pose;
             SetFocus(pawn, pose, target);
             Register(state);
+            // A blocked, unexecuted kick uses ordinary fall recovery, even if the path already exists.
+            if (allowMovementRise) NotifyMovement(pawn);
             RimKataResponseVisualParticipantCache.RefreshBodyVisual(state);
         }
 

@@ -87,12 +87,22 @@ namespace KRWF.RimKata
             return true;
         }
 
-        internal static bool ReadQualified(Pawn pawn, bool monitor = true)
+        internal static bool ReadQualified(Pawn pawn, bool monitor = true, bool refresh = false)
         {
             if (!Enabled || pawn?.health == null || pawn.Dead) return false;
             if (monitor && (!RimKataEligibility.FactionEffectsEnabled(pawn)
-                || RimKataTargetAccess.IsEnabled(pawn))) return false;
-            if (watches.TryGetValue(pawn, out Watch existing)) return existing.qualified;
+                || RimKataTargetAccess.IsEnabled(pawn)))
+            { Forget(pawn); return false; }
+            if (watches.TryGetValue(pawn, out Watch existing))
+            {
+                if (existing.map != pawn.Map || !pawn.Spawned) Forget(pawn);
+                else
+                {
+                    // Re-evaluate in place; do not discard pending events or the map schedule.
+                    if (refresh && !existing.reading) Evaluate(existing, Changes.All);
+                    return existing.qualified;
+                }
+            }
             // Some information stats ask for RimKata access from ShouldShowFor/GetValue.
             // A world-pawn/card snapshot has no registered watch to break that recursion.
             if (evaluating == pawn) return false;
@@ -126,8 +136,19 @@ namespace KRWF.RimKata
                 {
                     Prepared prepared = rules[i];
                     if ((prepared.changes & changes) != 0)
-                        watch.matches[i] = prepared.item.TryRead(watch.pawn, out float value)
-                            && prepared.item.Compare(value, prepared.rule);
+                    {
+                        var result = prepared.item.ReadCurrent(watch.pawn, out float value);
+                        if (result == RimKataActivationStatItem.ReadResult.Unavailable)
+                        {
+                            // Keep the last successful value and retry only this watched pawn.
+                            watch.pending |= prepared.changes;
+                            if (watches.TryGetValue(watch.pawn, out Watch current) && current == watch)
+                                Schedule(watch, Math.Max(Now + Period, watch.nextEvent));
+                        }
+                        else
+                            watch.matches[i] = result == RimKataActivationStatItem.ReadResult.Value
+                                && prepared.item.Compare(value, prepared.rule);
+                    }
                     any |= watch.matches[i];
                 }
                 watch.qualified = any;

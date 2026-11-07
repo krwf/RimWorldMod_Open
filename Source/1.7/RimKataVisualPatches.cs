@@ -1019,19 +1019,24 @@ namespace KRWF.RimKata
 
         internal static void DrawSecondaryAfterExternalPrimary(
             Pawn pawn, ThingWithComps primary, ThingWithComps secondary, Vector3 root,
-            float bodyAltitude, bool combat = false)
+            float bodyAltitude, bool combat = false, Vector3? fallbackLocation = null,
+            float? fallbackAngle = null, Rot4? fallbackFacing = null)
         {
             if (drawingPair || secondary == null) return;
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             combat |= context.pawn == pawn && context.fallAimTarget.IsValid;
-            float aimAngle = pawn.Rotation.AsAngle;
+            float aimAngle = fallbackAngle ?? pawn.Rotation.AsAngle;
             Vector3 drawLoc;
-            if (combat)
+            if (fallbackLocation.HasValue)
+            {
+                drawLoc = fallbackLocation.Value;
+            }
+            else if (combat || fallbackAngle.HasValue)
             {
                 drawLoc = EquipmentCenter(pawn, secondary, root, aimAngle);
             }
             else if (!RimKataWeaponRenderProbe.TryGetVanillaIdlePose(
-                pawn, secondary, root, out drawLoc, out aimAngle))
+                pawn, secondary, root, out drawLoc, out aimAngle, fallbackFacing))
             {
                 return;
             }
@@ -1043,7 +1048,8 @@ namespace KRWF.RimKata
             try
             {
                 DrawWeapon(pawn, primary, secondary, drawLoc, root, aimAngle, true,
-                    context.snapshotActive, context.snapshot, bodyAltitude, nativeCombat: combat);
+                    context.snapshotActive, context.snapshot, bodyAltitude, nativeCombat: combat,
+                    facingOverride: fallbackFacing);
             }
             finally
             {
@@ -1278,8 +1284,10 @@ namespace KRWF.RimKata
             float fallbackAngle,
             bool secondary,
             bool snapshotActive,
-            RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false)
+            RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false,
+            Rot4? facingOverride = null)
         {
+            Rot4 renderFacing = facingOverride ?? pawn.Rotation;
             LocalTargetInfo responseFocus = LocalTargetInfo.Invalid;
             bool responseTarget = snapshotActive
                 && snapshot.responsePoseWeapon == weapon
@@ -1329,7 +1337,7 @@ namespace KRWF.RimKata
                 && RimKataGunReadyDrawUtility.TryGetNextAim(pawn, out ThingWithComps activeWeapon, out LocalTargetInfo _)
                 && activeWeapon != weapon)
             {
-                aimAngle = pawn.Rotation.AsAngle;
+                aimAngle = renderFacing.AsAngle;
                 drawLoc = EquipmentCenter(
                     pawn,
                     weapon,
@@ -1347,12 +1355,12 @@ namespace KRWF.RimKata
                 if (!hasOwnTarget && !externalAim)
                 {
                     drawLoc = placementPivot + SecondaryOffsetForFacing(
-                        primaryDrawLoc - placementPivot, pawn.Rotation);
+                        primaryDrawLoc - placementPivot, renderFacing);
                 }
             }
 
             bool secondaryIdle = secondary && !hasOwnTarget && !nativeCombat && !externalAim;
-            DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, pawn.Rotation,
+            DrawNativeWeapon(weapon, drawLoc, aimAngle, secondary, secondaryIdle, renderFacing,
                 placementPivot, bodyAltitude, prepared);
         }
 
@@ -2290,6 +2298,11 @@ namespace KRWF.RimKata
         [HarmonyPriority(Priority.First)]
         public static bool Prefix(Thing eq, ref Vector3 drawLoc, ref float aimAngle)
         {
+            if (RimKataImmersiveWarfareCompat.OwnsPrimary(eq))
+            {
+                RimKataWeaponRenderProbe.NotifyEquipmentDraw(eq);
+                return true;
+            }
             if (RimKataCrawlFireRender.TryHandleEquipment(eq, out bool drawOriginal))
                 return drawOriginal;
             RimKataDualWeaponRenderUtility.AdjustCooldownAim(eq, ref drawLoc, ref aimAngle, out var prepared);
@@ -2336,6 +2349,13 @@ namespace KRWF.RimKata
                 }
                 else if (instruction.Calls(drawMesh))
                 {
+                    if (RimKataImmersiveWarfareCompat.Enabled)
+                    {
+                        foreach (CodeInstruction draw in RimKataImmersiveWarfareCompat.EquipmentMeshCall(
+                            instruction, generator, drawingSecondary, drawSecondaryMesh, drawMesh))
+                            yield return draw;
+                        continue;
+                    }
                     Label secondaryDraw = generator.DefineLabel();
                     Label drawComplete = generator.DefineLabel();
                     yield return new CodeInstruction(OpCodes.Ldsfld, drawingSecondary)
@@ -2372,6 +2392,7 @@ namespace KRWF.RimKata
             __state = visualAngleOffset;
             visualAngleOffset = 0f;
 
+            if (RimKataImmersiveWarfareCompat.OwnsPrimary(eq)) return;
             if (RimKataCrawlFireRender.Drawing)
                 return;
 
@@ -2648,6 +2669,7 @@ namespace KRWF.RimKata
                 current.snapshotActive = snapshotActive;
                 current.visualState = statePresent ? state : null;
                 current.active = true;
+                if (RimKataImmersiveWarfareCompat.OwnsPawn(pawn)) return scopeToken;
                 if (fallAim)
                 {
                     current.fallAimTarget = fallAimTarget;
@@ -2822,6 +2844,7 @@ namespace KRWF.RimKata
             Vector3 drawPos,
             float equipmentDrawDistanceFactor)
         {
+            if (RimKataImmersiveWarfareCompat.OwnsPrimary(weapon)) return true;
             ref readonly RimKataGunReadyDrawContext context =
                 ref RimKataGunReadyDrawUtility.Current;
             if (!context.gunReady || context.primary != weapon)

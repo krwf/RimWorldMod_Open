@@ -61,6 +61,7 @@ namespace KRWF.RimKata
         internal LocalTargetInfo target;
         internal bool playerForced;
         internal bool killIncappedTarget;
+        internal bool targetSelectionLocked;
         internal bool closeCombatContext;
         internal bool allowAutomaticRangedFire;
         internal bool randomAttackEnabled;
@@ -660,6 +661,9 @@ namespace KRWF.RimKata
             assignedTarget = null;
             firedTarget = null;
             target = LocalTargetInfo.Invalid;
+            playerForced = false;
+            killIncappedTarget = false;
+            targetSelectionLocked = false;
             interceptionTarget = null;
             previousContext = default;
             previousAim = null;

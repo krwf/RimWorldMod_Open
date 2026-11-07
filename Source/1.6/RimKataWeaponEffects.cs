@@ -17,6 +17,11 @@ namespace KRWF.RimKata
         internal List<Hediff> effects = new List<Hediff>();
         internal bool managersInitialized;
         internal bool secondarySnapshot = true;
+        internal bool connected, connecting, ticking, releasing, retired;
+        internal bool releaseRequested, restoreRequested, releaseStatsRequested;
+        internal bool cleanupPending;
+        internal Exception failure;
+        internal string failurePhase;
         internal List<HediffDef> suspendedManagers = new List<HediffDef>();
         internal ThingWithComps primaryWeapon;
         internal int lastTick = -1;
@@ -40,17 +45,27 @@ namespace KRWF.RimKata
             Scribe_Collections.Look(ref suspendedManagers, "suspendedManagers", LookMode.Def);
             Scribe_Collections.Look(ref effects, "effects", LookMode.Deep);
             Scribe_Values.Look(ref managersInitialized, "managersInitialized");
+            Scribe_Values.Look(ref cleanupPending, "cleanupPending");
             if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
                 Scribe_Collections.Look(ref legacyDefinitions, "definitions", LookMode.Def);
                 Scribe_Collections.Look(ref legacySeverities, "severities", LookMode.Value);
             }
-            if (Scribe.mode == LoadSaveMode.PostLoadInit)
+            if (Scribe.mode == LoadSaveMode.ResolvingCrossRefs || Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 managers ??= new List<Hediff>();
                 effects ??= new List<Hediff>();
                 suspendedManagers ??= new List<HediffDef>();
+                // Deep Hediffs need their owner before their own Comp PostLoadInit runs.
+                BindOwners();
             }
+        }
+
+        private void BindOwners()
+        {
+            foreach (Hediff effect in effects) if (effect != null) effect.pawn = pawn;
+            if (secondarySnapshot)
+                foreach (Hediff manager in managers) if (manager != null) manager.pawn = pawn;
         }
 
         internal void Restore()
@@ -58,8 +73,7 @@ namespace KRWF.RimKata
             equipmentView.Clear();
             equipmentView.Add(weapon);
             effects.RemoveAll(h => h?.def == null || Array.IndexOf(plan.Effects, h.def) < 0);
-            foreach (Hediff effect in effects) effect.pawn = pawn;
-            foreach (Hediff manager in managers) if (manager != null) manager.pawn = pawn;
+            BindOwners();
             if (legacyDefinitions != null && legacySeverities != null)
                 for (int i = 0; i < Math.Min(legacyDefinitions.Count, legacySeverities.Count); i++)
                 {
@@ -85,6 +99,7 @@ namespace KRWF.RimKata
         internal readonly Dictionary<Verb, RimKataWeaponEffectState> verbs = new Dictionary<Verb, RimKataWeaponEffectState>();
         internal readonly Dictionary<Hediff, RimKataWeaponEffectState> managers = new Dictionary<Hediff, RimKataWeaponEffectState>();
         internal readonly Dictionary<Pawn, List<RimKataWeaponEffectState>> owners = new Dictionary<Pawn, List<RimKataWeaponEffectState>>();
+        internal readonly HashSet<ThingWithComps> failedWeapons = new HashSet<ThingWithComps>();
 
         public RimKataWeaponEffectRegistry(Game game) { this.game = game; }
         public override void LoadedGame() => RimKataWeaponEffects.RestoreLoadedRecords(this);
@@ -99,8 +114,9 @@ namespace KRWF.RimKata
                 var record = records[i];
                 if (record?.pawn == null || record.weapon == null || record.weapon.Destroyed
                     || weapons.ContainsKey(record.weapon)
-                    || record.pawn.equipment?.AllEquipmentListForReading.Contains(record.weapon) != true)
+                    || (!record.cleanupPending && record.pawn.equipment?.AllEquipmentListForReading.Contains(record.weapon) != true))
                 { records.RemoveAt(i); continue; }
+                if (record.cleanupPending) { failedWeapons.Add(record.weapon); continue; }
                 Index(record);
                 foreach (Hediff manager in record.managers)
                     if (manager != null && !managers.ContainsKey(manager)) managers.Add(manager, record);
@@ -115,11 +131,12 @@ namespace KRWF.RimKata
             list.Add(record);
         }
 
-        internal void Forget(RimKataWeaponEffectState record)
+        internal void Unindex(RimKataWeaponEffectState record)
         {
-            if (record.verb != null) verbs.Remove(record.verb);
-            weapons.Remove(record.weapon);
-            records.Remove(record);
+            if (record.verb != null && verbs.TryGetValue(record.verb, out var verbOwner) && verbOwner == record)
+                verbs.Remove(record.verb);
+            if (record.weapon != null && weapons.TryGetValue(record.weapon, out var weaponOwner) && weaponOwner == record)
+                weapons.Remove(record.weapon);
             foreach (Hediff manager in record.managers)
                 if (manager != null && managers.TryGetValue(manager, out var owner) && owner == record) managers.Remove(manager);
             if (owners.TryGetValue(record.pawn, out var list))
@@ -127,7 +144,14 @@ namespace KRWF.RimKata
                 list.Remove(record);
                 if (list.Count == 0) owners.Remove(record.pawn);
             }
-            record.managers.Clear(); record.effects.Clear(); record.cycle = null;
+            record.cycle = null; record.combat = null;
+        }
+
+        internal void Forget(RimKataWeaponEffectState record)
+        {
+            Unindex(record);
+            records.Remove(record);
+            record.managers.Clear(); record.effects.Clear(); record.suspendedManagers.Clear();
         }
     }
 
@@ -170,8 +194,9 @@ namespace KRWF.RimKata
             private readonly bool entered;
             internal Scope(RimKataWeaponEffectState record, object owner = null)
             {
-                previous = current; previousCleanup = targetCleanup; entered = true; current = record;
+                previous = current; previousCleanup = targetCleanup;
                 stats = new RimKataWeaponEffectStats.Scope(owner, record?.verb);
+                entered = true; current = record;
                 // A nested callback belonging to another manager must not inherit this removal reason.
                 if (owner != null && owner != targetCleanup.manager) targetCleanup = default;
             }
@@ -260,7 +285,7 @@ namespace KRWF.RimKata
             if (store != null)
             {
                 if (__instance is Verb verb) store.verbs.TryGetValue(verb, out record);
-                else if (__instance is ThingComp comp) store.weapons.TryGetValue(comp.parent, out record);
+                else if (__instance is ThingComp comp && comp.parent != null) store.weapons.TryGetValue(comp.parent, out record);
                 else
                 {
                     Hediff hediff = (__instance as HediffComp)?.parent ?? __instance as Hediff;
@@ -269,6 +294,9 @@ namespace KRWF.RimKata
                         record = current;
                 }
             }
+            // Explicit cleanup scopes deliberately use an unconnected/retiring record.
+            if (record != null && record != current
+                && (record.retired || record.releasing || (!record.connected && !record.connecting))) record = null;
             __state = new Scope(record, __instance);
         }
 
@@ -298,15 +326,15 @@ namespace KRWF.RimKata
         {
             if (registry == null || registry.game != Current.Game) return;
             store = registry;
-            for (int i = registry.records.Count - 1; i >= 0; i--)
+            foreach (var record in registry.records.ToArray())
             {
-                var record = registry.records[i];
+                if (record.cleanupPending) { Release(record, true); continue; }
                 // The previous format stored both weapons' managers in real health.
                 // Retire that ownership once; never interpret those references as detached copies.
                 if (!record.secondarySnapshot) { Release(record, true); continue; }
                 Pawn pawn = record.pawn;
                 ThingWithComps weapon = record.weapon;
-                if (pawn?.Spawned != true || pawn.Dead || pawn.health?.hediffSet == null
+                if (pawn?.Spawned != true || pawn.health?.hediffSet == null || pawn.Dead
                     || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
                     || weapon == null || weapon.Destroyed
                     || pawn.equipment?.AllEquipmentListForReading.Contains(weapon) != true
@@ -338,16 +366,18 @@ namespace KRWF.RimKata
                     if (!active || old.weapon != second.weapon || old.primaryWeapon != state.primaryWeaponCycle?.weapon)
                         Release(old, true);
                 }
-            if (active) Bind(registry, pawn, second, state);
-            else SyncStats(pawn, state, null);
+            if (active && !RimKataWeaponEffectStats.IsPreparationDeferred(pawn) && Bind(registry, pawn, second, state)) return;
+            SyncStats(pawn, state, null);
         }
 
-        private static void Bind(RimKataWeaponEffectRegistry registry, Pawn pawn,
+        private static bool Bind(RimKataWeaponEffectRegistry registry, Pawn pawn,
             RimKataWeaponCycleState cycle, RimKataPawnCombatState combat)
         {
-            if (!CanBind(cycle, out var plan)) return;
+            if (!CanBind(cycle, out var plan)) return false;
             if (registry.weapons.TryGetValue(cycle.weapon, out var record) && record.pawn != pawn)
             { Release(record, false); record = null; }
+            if (IsFailed(cycle.weapon) || record?.retired == true) return false;
+            if (record?.releasing == true || record?.connecting == true || record?.ticking == true) return true;
             if (record == null)
             {
                 record = new RimKataWeaponEffectState { pawn = pawn, weapon = cycle.weapon };
@@ -356,50 +386,83 @@ namespace KRWF.RimKata
             }
             record.cycle = cycle;
             Connect(record, plan, cycle.boundVerb, combat);
+            return record.connected;
         }
 
         private static void Connect(RimKataWeaponEffectState record, RimKataWeaponEffectPlan plan, Verb verb, RimKataPawnCombatState combat)
         {
-            if (record.verb != null && record.verb != verb) store.verbs.Remove(record.verb);
-            bool first = record.plan == null;
-            record.plan = plan; record.verb = verb; record.combat = combat;
-            store.verbs[verb] = record;
-            if (first)
+            if (record.connecting || record.releasing || record.retired || IsFailed(record.weapon)) return;
+            record.connecting = true;
+            try
             {
-                record.Restore();
-                record.primaryWeapon = combat?.primaryWeaponCycle?.weapon;
-                var shared = new HashSet<HediffDef>();
-                if (record.primaryWeapon != null && plans.TryGetValue(record.primaryWeapon.def, out var primaryPlan))
+                if (record.verb != null && record.verb != verb
+                    && store.verbs.TryGetValue(record.verb, out var previous) && previous == record) store.verbs.Remove(record.verb);
+                bool first = !record.connected;
+                record.plan = plan; record.verb = verb; record.combat = combat;
+                store.verbs[verb] = record;
+                if (first)
                 {
-                    shared.UnionWith(primaryPlan.ManagerDefs);
-                    shared.UnionWith(primaryPlan.Effects);
-                }
-                else if (record.primaryWeapon != null)
-                {
-                    var primaryExecution = RimKataWeaponExecutionPlans.Get(record.primaryWeapon.def,
-                        combat?.primaryWeaponCycle?.boundVerb?.GetType());
-                    // An unprepared primary is not proof of absent shared effects. Do not
-                    // analyze a failed firing route here or remove its native health state.
-                    if (!RimKataWeaponExecutionRuntime.CanPrepareEffects(primaryExecution)
-                        || primaryExecution.EffectStatus != RimKataWeaponEffectStatus.NotDetected)
+                    record.Restore();
+                    if (record.releaseRequested) return;
+                    record.primaryWeapon = combat?.primaryWeaponCycle?.weapon;
+                    var shared = new HashSet<HediffDef>();
+                    if (record.primaryWeapon != null && plans.TryGetValue(record.primaryWeapon.def, out var primaryPlan))
                     {
-                        shared.UnionWith(plan.ManagerDefs);
-                        shared.UnionWith(plan.Effects);
+                        shared.UnionWith(primaryPlan.ManagerDefs);
+                        shared.UnionWith(primaryPlan.Effects);
                     }
+                    else if (record.primaryWeapon != null)
+                    {
+                        var primaryExecution = RimKataWeaponExecutionPlans.Get(record.primaryWeapon.def,
+                            combat?.primaryWeaponCycle?.boundVerb?.GetType());
+                        // An unprepared primary is not proof of absent shared effects. Do not
+                        // analyze a failed firing route here or remove its native health state.
+                        if (!RimKataWeaponExecutionRuntime.CanPrepareEffects(primaryExecution)
+                            || primaryExecution.EffectStatus != RimKataWeaponEffectStatus.NotDetected)
+                        {
+                            shared.UnionWith(plan.ManagerDefs);
+                            shared.UnionWith(plan.Effects);
+                        }
+                    }
+                    SuspendNativeSecondary(record, shared);
                 }
-                SuspendNativeSecondary(record, shared);
+                if (record.releaseRequested) return;
+                if (!SyncStats(record.pawn, combat, record))
+                { Release(record, true, false); return; }
+                if (record.releaseRequested) return;
+                if (first) EnsureManagers(record);
+                if (!record.releaseRequested) record.connected = true;
             }
-            SyncStats(record.pawn, combat, record);
-            if (first) EnsureManagers(record);
+            catch (Exception exception) { Fail(record, exception, "connection"); }
+            finally { record.connecting = false; FinishPendingRelease(record); }
         }
 
-        private static void SyncStats(Pawn pawn, RimKataPawnCombatState combat, RimKataWeaponEffectState secondary)
+        private static bool SyncStats(Pawn pawn, RimKataPawnCombatState combat, RimKataWeaponEffectState secondary)
         {
             if (combat?.dualEngagementActive != true)
-            { RimKataWeaponEffectStats.ReleasePawn(pawn); return; }
-            CanBind(combat.primaryWeaponCycle, out var primaryPlan);
-            RimKataWeaponEffectStats.Sync(pawn, combat.primaryWeaponCycle, combat.secondaryWeaponCycle,
-                primaryPlan, secondary?.plan, secondary);
+            { RimKataWeaponEffectStats.ReleasePawn(pawn); return true; }
+            // At most the two participating instances can fail. Rebuild the surviving reader
+            // in this call, rather than attributing either slot's stat exception to the other.
+            for (int attempt = 0; attempt < 3; attempt++)
+            {
+                var primary = IsFailed(combat.primaryWeaponCycle?.weapon) ? null : combat.primaryWeaponCycle;
+                var second = IsFailed(combat.secondaryWeaponCycle?.weapon) ? null : combat.secondaryWeaponCycle;
+                if (second == null) secondary = null;
+                CanBind(primary, out var primaryPlan);
+                try
+                {
+                    return RimKataWeaponEffectStats.Sync(pawn, primary, second, primaryPlan, secondary?.plan, secondary);
+                }
+                catch (RimKataWeaponEffectStats.PreparationFailure exception)
+                {
+                    if (secondary?.weapon == exception.weapon)
+                    { Fail(secondary, exception.InnerException ?? exception, "stat preparation"); secondary = null; }
+                    else Quarantine(exception.weapon, exception.InnerException ?? exception, "stat preparation");
+                }
+                catch (Exception exception)
+                { RimKataWeaponEffectStats.DeferPreparation(pawn, exception); return false; }
+            }
+            return false;
         }
 
         private static void SuspendNativeSecondary(RimKataWeaponEffectState record, HashSet<HediffDef> shared)
@@ -473,6 +536,7 @@ namespace KRWF.RimKata
         {
             plan = null;
             return cycle?.weapon != null && cycle.boundVerb != null && cycle.ordinaryWeaponEnabled
+                && !IsFailed(cycle.weapon)
                 && plans.TryGetValue(cycle.weapon.def, out plan) && cycle.boundVerb.GetType() == plan.VerbType;
         }
 
@@ -480,21 +544,28 @@ namespace KRWF.RimKata
         {
             var cycle = combat?.secondaryWeaponCycle;
             if (store == null || cycle?.weapon == null || !store.weapons.TryGetValue(cycle.weapon, out var record)
-                || record.pawn != pawn || record.combat != combat) return;
+                || record.pawn != pawn || record.combat != combat || !record.connected || record.releasing || record.retired) return;
             int tick = Find.TickManager.TicksGame;
             if (record.lastTick == tick) return;
             record.lastTick = tick;
-            using (new Scope(record))
+            record.ticking = true;
+            try
             {
-                TickLocalHealth(record, 0);
-                int rate = Math.Min(Math.Max(pawn.UpdateRateTicks, MinInterval(pawn)), MaxInterval(pawn));
-                int delta = ++record.intervalDelta;
-                if (delta >= rate || GenTicks.IsTickInterval(IntervalOffset(pawn), rate))
+                using (new Scope(record))
                 {
-                    record.intervalDelta = 0;
-                    TickLocalHealth(record, delta);
+                    TickLocalHealth(record, 0);
+                    if (record.releaseRequested) return;
+                    int rate = Math.Min(Math.Max(pawn.UpdateRateTicks, MinInterval(pawn)), MaxInterval(pawn));
+                    int delta = ++record.intervalDelta;
+                    if (delta >= rate || GenTicks.IsTickInterval(IntervalOffset(pawn), rate))
+                    {
+                        record.intervalDelta = 0;
+                        TickLocalHealth(record, delta);
+                    }
                 }
             }
+            catch (Exception exception) { Fail(record, exception, "tick"); }
+            finally { record.tickBuffer.Clear(); record.ticking = false; FinishPendingRelease(record); }
         }
 
         private static void TickLocalHealth(RimKataWeaponEffectState record, int interval)
@@ -505,12 +576,14 @@ namespace KRWF.RimKata
             buffer.AddRange(record.effects);
             foreach (Hediff hediff in buffer)
             {
+                if (record.releaseRequested) return;
                 if (!record.managers.Contains(hediff) && !record.effects.Contains(hediff)) continue;
                 if (interval > 0) { hediff.TickInterval(interval); hediff.PostTickInterval(interval); }
                 else { hediff.Tick(); hediff.PostTick(); }
             }
             for (int i = buffer.Count - 1; i >= 0; i--)
             {
+                if (record.releaseRequested) return;
                 Hediff hediff = buffer[i];
                 if ((record.managers.Contains(hediff) || record.effects.Contains(hediff)) && hediff.ShouldRemove)
                     RemoveHediff(record.pawn.health, hediff);
@@ -518,7 +591,8 @@ namespace KRWF.RimKata
             buffer.Clear();
         }
 
-        internal static bool HasEffects(Verb verb) => verb != null && store != null && store.verbs.ContainsKey(verb);
+        internal static bool HasEffects(Verb verb) => verb != null && store != null
+            && store.verbs.TryGetValue(verb, out var record) && record.connected && !record.releasing && !record.retired;
         internal static bool TryReadScopedState(Pawn pawn, ThingWithComps weapon, out RimKataRangedAttackState state)
         {
             state = default;
@@ -540,7 +614,7 @@ namespace KRWF.RimKata
             LocalTargetInfo? target, out RimKataWeaponEffectPlan plan)
         {
             plan = null;
-            if (pawn == null || weapon == null || !plans.TryGetValue(weapon.def, out plan)
+            if (pawn == null || weapon == null || IsFailed(weapon) || !plans.TryGetValue(weapon.def, out plan)
                 || !target.HasValue || !target.Value.IsValid) return false;
             RimKataPawnCombatState combat;
             RimKataWeaponCycleState cycle;
@@ -656,52 +730,121 @@ namespace KRWF.RimKata
             }
         }
 
-        private static void Release(RimKataWeaponEffectState record, bool restoreOriginal)
+        private static bool IsFailed(ThingWithComps weapon) => weapon != null && store?.failedWeapons.Contains(weapon) == true;
+
+        private static void Quarantine(ThingWithComps weapon, Exception exception, string phase)
         {
-            try { ReleaseCore(record, restoreOriginal); }
-            catch (Exception exception)
-            {
-                plans.Remove(record.weapon.def);
-                foreach (var execution in RimKataWeaponExecutionPlans.ForDefinition(record.weapon.def))
-                    RimKataWeaponExecutionPlans.FailRegistration(execution,
-                        "Weapon effect cleanup failed: " + exception.Message);
-                RimKataWeaponRegistrationFailures.ShowPending();
-            }
-            finally { store?.Forget(record); RimKataWeaponEffectStats.ReleasePawn(record.pawn); }
+            if (weapon == null || store == null || !store.failedWeapons.Add(weapon)) return;
+            WriteFailure(weapon, exception, phase, false);
         }
 
-        private static void ReleaseCore(RimKataWeaponEffectState record, bool restoreOriginal)
+        private static void WriteFailure(ThingWithComps weapon, Exception exception, string phase, bool pending)
         {
-            var plan = record.plan;
-            var managerDefs = new HashSet<HediffDef>(record.suspendedManagers);
-            if (!record.secondarySnapshot)
+            Log.Warning("[RimKata] Weapon-local effects stopped for " + weapon.ThingID + " during " + phase
+                + ". Further weapon-local processing is disabled; firing registration is unchanged. "
+                + (pending ? "Unfinished cleanup/restoration is retained for the next load. " : "")
+                + exception.GetType().Name + ": " + exception.Message);
+        }
+
+        private static void MarkFailure(RimKataWeaponEffectState record, Exception exception, string phase)
+        {
+            if (store?.failedWeapons.Add(record.weapon) != true) return;
+            record.failure = exception; record.failurePhase = phase;
+        }
+
+        private static void Fail(RimKataWeaponEffectState record, Exception exception, string phase)
+        {
+            MarkFailure(record, exception, phase);
+            Release(record, true);
+        }
+
+        private static void Release(RimKataWeaponEffectState record, bool restoreOriginal, bool releaseStats = true)
+        {
+            if (record == null || record.releasing || record.retired) return;
+            if (record.connecting || record.ticking)
             {
-                // Old saves used real-health manager references for both slots. Remove only
-                // those references, then let the original equipment manager start afresh.
-                if (plan == null) plans.TryGetValue(record.weapon.def, out plan);
-                record.plan = plan;
+                record.releaseRequested = true; record.restoreRequested |= restoreOriginal;
+                record.releaseStatsRequested |= releaseStats; return;
+            }
+            record.releasing = true; record.connected = false;
+            if (releaseStats) RimKataWeaponEffectStats.ReleaseWeaponContext(record.weapon);
+            Exception failure = null;
+            try { ReleaseCore(record, restoreOriginal, ref failure); }
+            catch (Exception exception) { failure ??= exception; }
+            finally
+            {
+                record.releasing = false; record.retired = true;
+                record.cleanupPending = record.managers.Count != 0 || record.effects.Count != 0 || record.suspendedManagers.Count != 0;
+                if (failure != null || record.cleanupPending)
+                    MarkFailure(record, failure ?? new InvalidOperationException("Effect cleanup remains pending."), "cleanup");
+                if (record.failure != null)
+                {
+                    WriteFailure(record.weapon, record.failure, record.failurePhase, record.cleanupPending);
+                    record.failure = null; record.failurePhase = null;
+                }
+                if (IsFailed(record.weapon)) RimKataWeaponEffectStats.ReleaseWeaponContext(record.weapon);
+                else if (releaseStats) RimKataWeaponEffectStats.ReleasePawn(record.pawn);
+                // Keep incomplete restoration data for the next load, without active ticks/binding.
+                if (record.cleanupPending) store?.Unindex(record);
+                else store?.Forget(record);
+            }
+        }
+
+        private static void FinishPendingRelease(RimKataWeaponEffectState record)
+        {
+            if (!record.releaseRequested || record.connecting || record.ticking) return;
+            bool restore = record.restoreRequested;
+            bool releaseStats = record.releaseStatsRequested;
+            record.releaseRequested = record.restoreRequested = false;
+            record.releaseStatsRequested = false;
+            Release(record, restore, releaseStats);
+        }
+
+        private static void ReleaseCore(RimKataWeaponEffectState record, bool restoreOriginal, ref Exception failure)
+        {
+            if (record.plan == null && record.weapon != null) plans.TryGetValue(record.weapon.def, out record.plan);
+            var health = record.pawn?.health;
+            if (health?.hediffSet != null)
+            {
                 foreach (Hediff manager in record.managers.ToArray())
                 {
-                    if (manager?.def == null) continue;
-                    managerDefs.Add(manager.def);
-                    if (record.pawn.health.hediffSet.hediffs.Contains(manager))
-                        using (new Scope(record)) record.pawn.health.RemoveHediff(manager);
+                    if (manager?.def == null) { record.managers.Remove(manager); continue; }
+                    if (!record.secondarySnapshot && !record.suspendedManagers.Contains(manager.def))
+                        record.suspendedManagers.Add(manager.def);
+                    try
+                    {
+                        using (new Scope(record))
+                            if (!record.secondarySnapshot)
+                            {
+                                // Legacy records contain real-health references, not detached copies.
+                                if (health.hediffSet.hediffs.Contains(manager)) health.RemoveHediff(manager);
+                                record.managers.Remove(manager);
+                                if (store.managers.TryGetValue(manager, out var owner) && owner == record) store.managers.Remove(manager);
+                            }
+                            else if (record.plan != null) RemoveHediff(health, manager);
+                    }
+                    catch (Exception exception) { failure ??= exception; }
+                }
+                foreach (Hediff effect in record.effects.ToArray())
+                {
+                    if (effect == null) { record.effects.Remove(effect); continue; }
+                    try { if (record.plan != null) using (new Scope(record)) RemoveHediff(health, effect); }
+                    catch (Exception exception) { failure ??= exception; }
                 }
             }
-            else if (plan != null)
-                using (new Scope(record))
+            if (!restoreOriginal || record.pawn?.equipment?.AllEquipmentListForReading.Contains(record.weapon) != true
+                || (health != null && record.pawn.Dead))
+            { record.suspendedManagers.Clear(); return; }
+            if (health?.hediffSet == null) return;
+            // One failing removal or native PostAdd must not skip the remaining managers.
+            foreach (HediffDef def in record.suspendedManagers.ToArray())
+                try
                 {
-                    foreach (Hediff manager in record.managers.ToArray())
-                        if (manager != null) RemoveHediff(record.pawn.health, manager);
-                    foreach (Hediff effect in record.effects.ToArray()) RemoveHediff(record.pawn.health, effect);
+                    using (new Scope(null))
+                        if (def != null && health.hediffSet.GetFirstHediffOfDef(def) == null) health.AddHediff(def);
+                    record.suspendedManagers.Remove(def);
                 }
-            store.Forget(record);
-            if (!restoreOriginal || record.pawn.Dead
-                || record.pawn.equipment?.AllEquipmentListForReading.Contains(record.weapon) != true) return;
-            foreach (HediffDef def in managerDefs)
-                using (new Scope(null))
-                    if (def != null && record.pawn.health.hediffSet.GetFirstHediffOfDef(def) == null)
-                        record.pawn.health.AddHediff(def);
+                catch (Exception exception) { failure ??= exception; }
         }
 
         internal static void ReleaseWeapon(ThingWithComps weapon)
@@ -714,7 +857,7 @@ namespace KRWF.RimKata
         {
             RimKataWeaponEffectStats.ReleasePawn(pawn);
             if (pawn == null || store == null || !store.owners.TryGetValue(pawn, out var records)) return;
-            while (records.Count != 0) Release(records[records.Count - 1], true);
+            foreach (var record in records.ToArray()) Release(record, true);
         }
 
         internal static void ResetGame()

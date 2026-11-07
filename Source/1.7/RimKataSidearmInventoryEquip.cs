@@ -27,17 +27,43 @@ namespace KRWF.RimKata
 
         private static bool CanEquipFromInventory(Pawn pawn, ThingWithComps weapon)
         {
-            return pawn?.Spawned == true && pawn.IsPlayerControlled
-                && !pawn.Dead && !pawn.Downed && pawn.equipment != null
-                && pawn.inventory != null && weapon != null && !weapon.Destroyed
+            return pawn?.inventory != null && weapon != null
                 && weapon.holdingOwner == pawn.inventory.innerContainer
-                && RimKataWeaponSlotUtility.CanEquipAsSecondary(pawn, weapon)
-                && !RimKataSecondaryHandRequirement.HasMissingHand(pawn)
-                && (!weapon.def.IsWeapon || !pawn.WorkTagIsDisabled(WorkTags.Violent))
-                && (!weapon.def.IsRangedWeapon || !pawn.WorkTagIsDisabled(WorkTags.Shooting))
-                && pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation)
-                && (!pawn.IsQuestLodger() || EquipmentUtility.QuestLodgerCanEquip(weapon, pawn))
-                && EquipmentUtility.CanEquip(weapon, pawn);
+                && EquipFailureReason(pawn, weapon) == null;
+        }
+
+        // Storage ownership is checked by each caller; equipment policy is shared.
+        internal static string EquipFailureReason(Pawn pawn, ThingWithComps weapon)
+        {
+            if (pawn?.health?.capacities == null || !pawn.Spawned || !pawn.IsPlayerControlled
+                || pawn.Dead || pawn.Downed || pawn.equipment == null
+                || weapon?.def == null || weapon.Destroyed)
+                return "Incapable".Translate().CapitalizeFirst();
+
+            RimKataSecondaryEquipFailure failure =
+                RimKataWeaponSlotUtility.SecondaryEquipFailure(pawn, weapon);
+            if (failure != RimKataSecondaryEquipFailure.None)
+            {
+                string key = RimKataWeaponSlotUtility.SecondaryEquipFailureKey(failure);
+                return key == null ? "Incapable".Translate().CapitalizeFirst() : key.Translate();
+            }
+            if (RimKataSecondaryHandRequirement.HasInsufficientManipulationLimbs(pawn))
+                return "KRWF_RimKata_SecondaryMissingHand".Translate();
+            if (weapon.def.IsWeapon && pawn.WorkTagIsDisabled(WorkTags.Violent))
+                return "IsIncapableOfViolenceLower".Translate(pawn.LabelShort, pawn);
+            if (weapon.def.IsRangedWeapon && pawn.WorkTagIsDisabled(WorkTags.Shooting))
+                return "IsIncapableOfShootingLower".Translate(pawn);
+            if (!pawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+                return "Incapable".Translate().CapitalizeFirst();
+            if (pawn.IsQuestLodger() && !EquipmentUtility.QuestLodgerCanEquip(weapon, pawn))
+                return "QuestRelated".Translate().CapitalizeFirst();
+            if (!EquipmentUtility.CanEquip(weapon, pawn))
+            {
+                // Preserve the existing overload's external hooks; ask for text only on failure.
+                EquipmentUtility.CanEquip(weapon, pawn, out string reason);
+                return reason.NullOrEmpty() ? "Incapable".Translate().CapitalizeFirst() : reason;
+            }
+            return null;
         }
 
         private static void EquipFromInventory(Pawn pawn, ThingWithComps source)
@@ -79,7 +105,7 @@ namespace KRWF.RimKata
         {
             if (previous == null || previous.Destroyed || pawn.equipment.Primary != primary
                 || RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn) != null
-                || RimKataSecondaryHandRequirement.HasMissingHand(pawn)
+                || !RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs(pawn)
                 || !EquipmentUtility.CanEquip(previous, pawn)
                 || !RimKataWeaponSlotUtility.CanEquipAsSecondary(pawn, previous)) return;
 

@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: prossimo bersaglio {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: in recupero</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Attacca</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>L'opzione per l'arma secondaria è disattivata.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Equipaggia prima un'arma nello slot principale.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>L'arma principale non è abilitata per RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Quest'arma non è abilitata per RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>L'arma principale a due mani impedisce questa combinazione di armi.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Quest'arma a due mani non può essere equipaggiata nello slot secondario.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Impossibile equipaggiare un'arma secondaria senza una mano.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Scambia</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Scambia (in combattimento)</KRWF_RimKata_SecondaryMenuSwapCombat>

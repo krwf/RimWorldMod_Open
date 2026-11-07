@@ -207,6 +207,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: 다음 목표 {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: 재사용 대기 중</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>공격</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>보조 무기 옵션이 비활성화되어 있습니다.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>주 슬롯에 무기를 먼저 장착해야 합니다.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>주 슬롯의 무기가 허용되어 있지 않습니다.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>선택한 무기가 허용되어 있지 않습니다.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>주 슬롯의 양손 무기와 함께 장착할 수 없습니다.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>선택한 양손 무기를 부 슬롯에 장착할 수 없습니다.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>손 상실로 보조 무기를 장착할 수 없습니다.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>교체</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>교체(전투 중)</KRWF_RimKata_SecondaryMenuSwapCombat>

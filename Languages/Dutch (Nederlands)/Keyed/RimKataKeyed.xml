@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: volgend doel {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: koelt af</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Aanvallen</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>De optie voor secundaire wapens is uitgeschakeld.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Rust eerst een wapen uit in het primaire wapenslot.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Het primaire wapen is niet ingeschakeld voor RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Dit wapen is niet ingeschakeld voor RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Het tweehandige primaire wapen verhindert deze wapencombinatie.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Dit tweehandige wapen kan niet in het secundaire wapenslot worden uitgerust.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Kan geen secundair wapen uitrusten zonder hand.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Wisselen</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Wisselen (in gevecht)</KRWF_RimKata_SecondaryMenuSwapCombat>

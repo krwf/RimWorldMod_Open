@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0} : cible suivante {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0} : récupère</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Attaquer</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>L'option d'arme secondaire est désactivée.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Équipez d'abord une arme dans l'emplacement principal.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>L'arme principale n'est pas autorisée pour RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Cette arme n'est pas autorisée pour RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>L'arme principale à deux mains empêche cette combinaison d'armes.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Cette arme à deux mains ne peut pas être équipée dans l'emplacement secondaire.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Impossible d'équiper une arme secondaire avec une main manquante.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Permuter</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Permuter (au combat)</KRWF_RimKata_SecondaryMenuSwapCombat>

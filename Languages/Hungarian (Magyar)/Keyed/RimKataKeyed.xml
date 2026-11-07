@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: következő cél: {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: visszatöltődik</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Támadás</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>A másodlagos fegyver beállítása ki van kapcsolva.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Először szereljen fel egy fegyvert az elsődleges helyre.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Az elsődleges fegyver nincs engedélyezve a RimKata számára.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Ez a fegyver nincs engedélyezve a RimKata számára.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>A kétkezes elsődleges fegyver nem teszi lehetővé ezt a fegyverkombinációt.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Ez a kétkezes fegyver nem szerelhető fel a másodlagos helyre.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Hiányzó kézzel nem lehet másodlagos fegyvert felszerelni.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Csere</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Csere (harc közben)</KRWF_RimKata_SecondaryMenuSwapCombat>

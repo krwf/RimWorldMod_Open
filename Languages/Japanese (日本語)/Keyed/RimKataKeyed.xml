@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}：次のターゲット {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}：クールダウン中</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>攻撃</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>副武器のオプションが無効になっています。</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>先に主武器スロットに武器を装備してください。</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>主武器はRimKataでの使用が許可されていません。</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>この武器はRimKataでの使用が許可されていません。</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>両手持ちの主武器とは、この組み合わせで装備できません。</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>この両手持ち武器は副武器スロットに装備できません。</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>手が欠損しているため副武器を装備できません。</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>切り替え</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>切り替え（戦闘中）</KRWF_RimKata_SecondaryMenuSwapCombat>

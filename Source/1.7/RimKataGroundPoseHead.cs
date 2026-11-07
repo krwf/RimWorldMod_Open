@@ -249,14 +249,17 @@ namespace KRWF.RimKata
             MethodBase original, ILGenerator generator)
         {
             LocalBuilder scope = generator.DeclareLocal(typeof(RimKataWorldRenderContext.Scope));
-            return RimKataRenderHookIL.LivingOnly(WithHeadDraw(instructions, original, generator), generator, 1,
+            LocalBuilder originalParms = generator.DeclareLocal(typeof(PawnDrawParms));
+            return RimKataRenderHookIL.LivingOnly(WithHeadDraw(instructions, original, generator, originalParms), generator, 1,
                 new[] {
+                    new CodeInstruction(OpCodes.Ldarg_1), new CodeInstruction(OpCodes.Stloc, originalParms),
                     new CodeInstruction(OpCodes.Ldarg_1), new CodeInstruction(OpCodes.Ldloca, scope),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(Patch_PawnRenderTree_RimKataHeadDraw), nameof(Begin)))
                 }, new[] {
-                    new CodeInstruction(OpCodes.Ldarg_1),
+                    new CodeInstruction(OpCodes.Ldloc, originalParms),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataBreachRender), nameof(RimKataBreachRender.DrawDoor)))
                 }, new[] {
+                    new CodeInstruction(OpCodes.Ldloc, originalParms), new CodeInstruction(OpCodes.Starg_S, (byte)1),
                     new CodeInstruction(OpCodes.Ldloc, scope),
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RimKataWorldRenderContext), nameof(RimKataWorldRenderContext.End)))
                 });
@@ -266,42 +269,21 @@ namespace KRWF.RimKata
             => scope = RimKataWorldRenderContext.Begin(parms.pawn, parms.Portrait);
 
         private static IEnumerable<CodeInstruction> WithHeadDraw(IEnumerable<CodeInstruction> instructions,
-            MethodBase original, ILGenerator generator)
+            MethodBase original, ILGenerator generator, LocalBuilder originalParms)
         {
             int requestLocal = -1;
             foreach (LocalVariableInfo local in original.GetMethodBody().LocalVariables)
                 if (local.LocalType == typeof(PawnGraphicDrawRequest)) requestLocal = local.LocalIndex;
             if (requestLocal < 0) throw new InvalidOperationException("Pawn draw request local was not found.");
             LocalBuilder drawContext = generator.DeclareLocal(typeof(RimKataGroundPoseHead.DrawContext));
-            LocalBuilder aimedParms = generator.DeclareLocal(typeof(PawnDrawParms));
             FieldInfo requests = AccessTools.Field(typeof(PawnRenderTree), "drawRequests");
             FieldInfo node = AccessTools.Field(typeof(PawnGraphicDrawRequest), nameof(PawnGraphicDrawRequest.node));
             FieldInfo headNodes = AccessTools.Field(typeof(RimKataGroundPoseHead.DrawContext), "headNodes");
             MethodInfo capture = AccessTools.Method(typeof(RimKataGroundPoseHead), nameof(RimKataGroundPoseHead.ResolveDrawContext));
             MethodInfo resolve = AccessTools.Method(typeof(RimKataGroundPoseHead), nameof(RimKataGroundPoseHead.DrawParms));
-            var originalCodes = new List<CodeInstruction>(instructions);
-            var headCodes = new List<CodeInstruction>(originalCodes.Count);
-            var labels = new Dictionary<Label, Label>();
-            foreach (CodeInstruction code in originalCodes)
-                foreach (Label label in code.labels)
-                    labels[label] = generator.DefineLabel();
-            foreach (CodeInstruction code in originalCodes)
-            {
-                var copy = new CodeInstruction(code);
-                for (int i = 0; i < copy.labels.Count; i++) copy.labels[i] = labels[copy.labels[i]];
-                if (copy.operand is Label branch) copy.operand = labels[branch];
-                else if (copy.operand is Label[] branches)
-                {
-                    var targets = new Label[branches.Length];
-                    for (int i = 0; i < targets.Length; i++) targets[i] = labels[branches[i]];
-                    copy.operand = targets;
-                }
-                headCodes.Add(copy);
-            }
-            Label headDraw = generator.DefineLabel();
-            headCodes[0].labels.Add(headDraw);
             Label originalDraw = generator.DefineLabel();
-            originalCodes[0].labels.Add(originalDraw);
+            yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
+            yield return new CodeInstruction(OpCodes.Initobj, typeof(RimKataGroundPoseHead.DrawContext));
             yield return new CodeInstruction(OpCodes.Ldarga_S, (byte)1);
             yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PawnDrawParms), nameof(PawnDrawParms.dead)));
             yield return new CodeInstruction(OpCodes.Brtrue, originalDraw);
@@ -310,18 +292,11 @@ namespace KRWF.RimKata
             yield return new CodeInstruction(OpCodes.Ldfld, requests);
             yield return new CodeInstruction(OpCodes.Call, capture);
             yield return new CodeInstruction(OpCodes.Stloc, drawContext);
-            yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
-            yield return new CodeInstruction(OpCodes.Ldfld, headNodes);
-            yield return new CodeInstruction(OpCodes.Brtrue, headDraw);
-            foreach (CodeInstruction code in originalCodes) yield return code;
-            bool insideDraw = false;
-            foreach (CodeInstruction code in headCodes)
+            yield return new CodeInstruction(OpCodes.Nop).WithLabels(originalDraw);
+            // Preserve one original draw loop and its call shape for other transpilers.
+            // Only an active head-pose context substitutes the current node's arguments.
+            foreach (CodeInstruction code in instructions)
             {
-                if (insideDraw && code.opcode == OpCodes.Ldarg_1)
-                {
-                    code.opcode = OpCodes.Ldloc;
-                    code.operand = aimedParms;
-                }
                 yield return code;
                 int storedLocal = code.opcode == OpCodes.Stloc_0 ? 0
                     : code.opcode == OpCodes.Stloc_1 ? 1
@@ -332,13 +307,17 @@ namespace KRWF.RimKata
                         : -1;
                 if (storedLocal == requestLocal)
                 {
-                    insideDraw = true;
+                    Label unchanged = generator.DefineLabel();
+                    yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
+                    yield return new CodeInstruction(OpCodes.Ldfld, headNodes);
+                    yield return new CodeInstruction(OpCodes.Brfalse, unchanged);
                     yield return new CodeInstruction(OpCodes.Ldloca, (short)requestLocal);
                     yield return new CodeInstruction(OpCodes.Ldfld, node);
-                    yield return new CodeInstruction(OpCodes.Ldarg_1);
+                    yield return new CodeInstruction(OpCodes.Ldloc, originalParms);
                     yield return new CodeInstruction(OpCodes.Ldloca, drawContext);
                     yield return new CodeInstruction(OpCodes.Call, resolve);
-                    yield return new CodeInstruction(OpCodes.Stloc, aimedParms);
+                    yield return new CodeInstruction(OpCodes.Starg_S, (byte)1);
+                    yield return new CodeInstruction(OpCodes.Nop).WithLabels(unchanged);
                 }
             }
         }

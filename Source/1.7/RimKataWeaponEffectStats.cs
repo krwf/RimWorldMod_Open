@@ -38,6 +38,9 @@ namespace KRWF.RimKata
         [ThreadStatic] private static Frame current;
         [ThreadStatic] private static Stack<Frame> available;
         [ThreadStatic] private static StatContext activeWeapon;
+        // Only failed preparation is remembered. False permits a new combat/equipment
+        // boundary to retry, while retaining the once-per-game diagnostic marker.
+        private static readonly Dictionary<Pawn, bool> baselineFailures = new Dictionary<Pawn, bool>();
 
         internal readonly struct Scope : IDisposable
         {
@@ -155,22 +158,49 @@ namespace KRWF.RimKata
         }
 
         internal static bool HasStatContext(Verb verb) => verb != null && verbs.ContainsKey(verb);
+        internal static bool IsPreparationDeferred(Pawn pawn)
+            => pawn != null && baselineFailures.TryGetValue(pawn, out bool blocked) && blocked;
 
-        internal static void Sync(Pawn pawn, RimKataWeaponCycleState primary, RimKataWeaponCycleState secondary,
+        internal sealed class PreparationFailure : Exception
+        {
+            internal readonly ThingWithComps weapon;
+            internal PreparationFailure(ThingWithComps weapon, Exception inner)
+                : base("Could not prepare weapon-local stats.", inner) { this.weapon = weapon; }
+        }
+
+        // A failed instance must not discard the other weapon's healthy stat reader.
+        internal static void ReleaseWeaponContext(ThingWithComps weapon)
+        {
+            if (weapon == null || !weapons.TryGetValue(weapon, out var context)) return;
+            Remove(context);
+            if (!owners.TryGetValue(context.pawn, out var pair)) return;
+            if (pair.primary == context) pair.primary = null;
+            if (pair.secondary == context) pair.secondary = null;
+            if (pair.primary == null && pair.secondary == null) owners.Remove(context.pawn);
+        }
+
+        internal static bool Sync(Pawn pawn, RimKataWeaponCycleState primary, RimKataWeaponCycleState secondary,
             RimKataWeaponEffectPlan primaryPlan, RimKataWeaponEffectPlan secondaryPlan,
             RimKataWeaponEffectState secondaryRecord)
         {
-            if (pawn == null) return;
+            if (pawn == null) return true;
+            if (baselineFailures.TryGetValue(pawn, out bool blocked) && blocked) return false;
             if (primaryPlan == null && secondaryPlan == null)
-            { ReleasePawn(pawn); return; }
+            { ReleasePawn(pawn); return true; }
             if (owners.TryGetValue(pawn, out var previous)
                 && Matches(previous.primary, primary, primaryPlan, null)
-                && Matches(previous.secondary, secondary, secondaryPlan, secondaryRecord)) return;
-            ReleasePawn(pawn);
+                && Matches(previous.secondary, secondary, secondaryPlan, secondaryRecord)) return true;
             var excluded = new HashSet<HediffDef>();
             AddDefinitions(primaryPlan, excluded);
             AddDefinitions(secondaryPlan, excluded);
-            List<Hediff> baseline = Capture(pawn, excluded);
+            List<Hediff> baseline;
+            try { baseline = Capture(pawn, excluded); }
+            catch (Exception exception)
+            {
+                DeferPreparation(pawn, exception);
+                return false;
+            }
+            ReleasePawn(pawn);
             var pair = new PairContext
             {
                 primary = Create(pawn, primary, primaryPlan, null, baseline),
@@ -181,6 +211,17 @@ namespace KRWF.RimKata
             Index(pair.secondary);
             try { CaptureValues(pair.primary); CaptureValues(pair.secondary); }
             catch { ReleasePawn(pawn); throw; }
+            return true;
+        }
+
+        internal static void DeferPreparation(Pawn pawn, Exception exception)
+        {
+            if (pawn == null) return;
+            bool first = !baselineFailures.ContainsKey(pawn);
+            baselineFailures[pawn] = true;
+            if (first) Log.Warning("[RimKata] Weapon effect baseline preparation was deferred for " + pawn.ThingID
+                + "; existing stat readers and weapon registrations are unchanged. "
+                + exception.GetType().Name + ": " + exception.Message);
         }
 
         private static bool Participates(RimKataWeaponCycleState cycle)
@@ -212,15 +253,19 @@ namespace KRWF.RimKata
         private static void CaptureValues(StatContext context)
         {
             if (context == null) return;
-            context.Refresh();
-            Frame frame = Begin(context);
             try
             {
-                for (int i = 0; i < 3; i++)
-                    if (supported.TryGetValue(StatAt(i), out bool supportedStat) && supportedStat)
-                        ReadCached(frame, StatAt(i), true);
+                context.Refresh();
+                Frame frame = Begin(context);
+                try
+                {
+                    for (int i = 0; i < 3; i++)
+                        if (supported.TryGetValue(StatAt(i), out bool supportedStat) && supportedStat)
+                            ReadCached(frame, StatAt(i), true);
+                }
+                finally { End(frame); }
             }
-            finally { End(frame); }
+            catch (Exception exception) { throw new PreparationFailure(context.weapon, exception); }
         }
 
         private static void Index(StatContext context)
@@ -258,7 +303,9 @@ namespace KRWF.RimKata
 
         internal static void ReleasePawn(Pawn pawn)
         {
-            if (pawn == null || !owners.TryGetValue(pawn, out var pair)) return;
+            if (pawn == null) return;
+            if (baselineFailures.ContainsKey(pawn)) baselineFailures[pawn] = false;
+            if (!owners.TryGetValue(pawn, out var pair)) return;
             owners.Remove(pawn);
             Remove(pair.primary);
             Remove(pair.secondary);
@@ -291,6 +338,7 @@ namespace KRWF.RimKata
         internal static void ResetGame()
         {
             owners.Clear(); weapons.Clear(); verbs.Clear();
+            baselineFailures.Clear();
             current = null; activeWeapon = null; available?.Clear();
         }
 

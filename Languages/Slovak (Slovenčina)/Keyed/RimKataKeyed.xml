@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: ďalší cieľ {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: obnovuje sa</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Zaútočiť</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Možnosť sekundárnej zbrane je vypnutá.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Najprv vybavte zbraň do primárneho slotu.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Primárna zbraň nie je povolená pre RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Táto zbraň nie je povolená pre RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Obojručná primárna zbraň neumožňuje túto kombináciu zbraní.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Túto obojručnú zbraň nemožno vybaviť do sekundárneho slotu.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Sekundárnu zbraň nemožno vybaviť bez ruky.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Vymeniť</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Vymeniť (v boji)</KRWF_RimKata_SecondaryMenuSwapCombat>

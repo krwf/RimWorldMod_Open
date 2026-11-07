@@ -12,6 +12,9 @@ namespace KRWF.RimKata
                 return false;
             }
 
+            if (RimKataEligibilityCache.HasPendingPublication)
+                RimKataEligibilityCache.FinishPendingPublication(pawn);
+
             bool accessRestrictionsDisabled =
                 RimKataTargetAccess.IsEnabled(pawn);
             if (!accessRestrictionsDisabled

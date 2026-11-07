@@ -1,0 +1,84 @@
+{
+  "rimWorldVersion": "1.7",
+  "snapshotDate": "2026-11-06",
+  "capturedAtUtc": "2026-11-06T22:16:01.6782229+00:00",
+  "capturedAtKst": "2026-11-07 07:16:01 +09:00",
+  "purpose": "Installed November 6 Steam build, captured November 7 for RimKata compatibility comparison. Default build references remain unchanged.",
+  "gameVersionFromVersionFile": "1.7.5000 rev1275",
+  "versionFileSha256": "BAD5BED449D17B2AF39925A3A25007164B2B1F89B29A4E24AFA3B505EDCC535A",
+  "steamBuildId": "26468007",
+  "steamBranch": "unstable",
+  "steamBaseDepot": "294104",
+  "steamBaseDepotManifest": "8666564258169721229",
+  "provenance": {
+    "source": "C:/Program Files (x86)/Steam/logs/content_log.txt",
+    "evidence": [
+      "[2026-11-06 06:07:50] AppID 294100 finished update, 6 mounted depots (BuildID 26468007) : 294104 (8666564258169721229),1149644 (7853926054369372925),294106 (8479612308049037793),367684 (5781129582423958095),294110 (8061062141414814833),294114 (4967592055263878155),"
+    ],
+    "note": "Steam confirms local installation on November 6. This is not an assertion of public release time. Harmony is the copy installed at capture time."
+  },
+  "previousComparison": "2026-10-27/manifest.json",
+  "verification": "Five DLL source/copy hashes and Version.txt verified. Earlier snapshots and default references preserved.",
+  "files": [
+    {
+      "file": "Assembly-CSharp.dll",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Assembly-CSharp.dll",
+      "sourceLastWriteUtc": "2026-11-05T21:07:46.2045786Z",
+      "sourceLastWriteKst": "2026-11-06 06:07:46",
+      "fileVersion": "1.7.9805.38275",
+      "productVersion": "1.7.9805.38275+ee75cd68780315faac1d251115d230f83c939b77",
+      "assemblyVersion": "1.7.9805.38275",
+      "length": 15636480,
+      "sha256": "D55AA8E47FA3C5463CA85B0ECCD51F195B4BBCD04F56DA3AF21C2F6688A81254",
+      "changedFromOctober27": true
+    },
+    {
+      "file": "UnityStubs.dll",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\UnityStubs.dll",
+      "sourceLastWriteUtc": "2026-11-05T21:07:46.2356063Z",
+      "sourceLastWriteKst": "2026-11-06 06:07:46",
+      "fileVersion": "1.0.0.0",
+      "productVersion": "1.0.0+ee75cd68780315faac1d251115d230f83c939b77",
+      "assemblyVersion": "1.0.0.0",
+      "length": 1024512,
+      "sha256": "EA1DFBAEA8D21CF838EFE30B1417949843372908D14BA070AA4C192DB8DA2714",
+      "changedFromOctober27": true
+    },
+    {
+      "file": "Waylith.dll",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Waylith.dll",
+      "sourceLastWriteUtc": "2026-11-05T21:07:46.2356063Z",
+      "sourceLastWriteKst": "2026-11-06 06:07:46",
+      "fileVersion": "1.0.0.0",
+      "productVersion": "1.0.0+61189255baf5ad7ea93b297c2db9cfb6e8cec735",
+      "assemblyVersion": "1.0.0.0",
+      "length": 1741824,
+      "sha256": "C2EFDB034F66DCE363FBF4D677D120FC191427B382C44F054C195223F968EDB4",
+      "changedFromOctober27": true
+    },
+    {
+      "file": "Waylith.UnityCompat.dll",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\RimWorld\\Waylith.UnityCompat.dll",
+      "sourceLastWriteUtc": "2026-11-05T21:07:47.9091280Z",
+      "sourceLastWriteKst": "2026-11-06 06:07:47",
+      "fileVersion": "1.0.0.0",
+      "productVersion": "1.0.0+61189255baf5ad7ea93b297c2db9cfb6e8cec735",
+      "assemblyVersion": "1.0.0.0",
+      "length": 51712,
+      "sha256": "AABB2BAADDD11889027742F21EB9B83E565B3D161BCCFC27731C51B2B654A662",
+      "changedFromOctober27": true
+    },
+    {
+      "file": "0Harmony.dll",
+      "source": "C:\\Program Files (x86)\\Steam\\steamapps\\workshop\\content\\294100\\2009463077\\1.7\\Assemblies\\0Harmony.dll",
+      "sourceLastWriteUtc": "2026-10-15T13:27:09.0697033Z",
+      "sourceLastWriteKst": "2026-10-15 22:27:09",
+      "fileVersion": "3.0.0.0",
+      "productVersion": "3.0.0.0-rc.3+3c0e32cd3fd20e4ae27c47cb8c888844766f9f1a",
+      "assemblyVersion": "3.0.0.0",
+      "length": 2532864,
+      "sha256": "C8EF7856B2BE3CF24B345C9B5C2F197F68FCF92649635064FCE7B3CCC8F77CB0",
+      "changedFromOctober27": false
+    }
+  ]
+}

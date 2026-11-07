@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}：下一個目標 {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}：正在冷卻</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>攻擊</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>副武器選項已停用。</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>請先在主武器欄位裝備一把武器。</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>主武器未獲准用於 RimKata。</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>此武器未獲准用於 RimKata。</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>主武器是雙手武器，無法使用此武器組合。</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>此雙手武器無法裝備到副武器欄位。</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>缺少手部時無法裝備副武器。</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>切換</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>切換（戰鬥中）</KRWF_RimKata_SecondaryMenuSwapCombat>

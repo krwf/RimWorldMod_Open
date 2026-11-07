@@ -1,5 +1,45 @@
 # RimKata 소스 메서드 색인
 
+## 2026-11-07 잔존 조작 사지 기준의 부 슬롯 허용
+
+- `RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs/HasInsufficientManipulationLimbs/CountUsableLimbs/HasMissingSegment/IsMissing`: 사용 가능한 독립 Core 두 개 이상을 확인합니다. BodyDef의 태그 캐시, Pawn별 결과 캐시, 기존 인공 부위 보정을 재사용하며 손가락은 별도 개수나 불허 사유로 세지 않습니다. Core만 있는 신체도 지원합니다. 기존 `HasAvailableHands/HasMissingHand`는 이 API로 대체했습니다.
+- `NotifyMissingPartAdded`: 부위 하나 상실이 아니라 최종 잔존 사지 부족일 때만 부 슬롯/회수 정보를 해제합니다. 기존 캐시/등록 자격이 없는 일반 폰은 신체 계산 앞에서 제외합니다. 장착·사용·로드·회수·근력 강화 호출자와 판정을 함께 유지해야 합니다. 표시 문구/기존 번역키는 사용자 요청대로 유지합니다.
+
+## 2026-11-07 자격 재평가·부 슬롯 건강·효과 실패·렌더 연결 보완
+
+- `RimKataEligibilityCache.NotifyPawnSpawned/InvalidateActivationSources/SetQualified/FinishPendingPublication`: 확정 자격과 등록을 먼저 버리지 않고 재평가합니다. 게시 실패만 기존 질의 경계에서 제한적으로 재시도합니다. `RimKataStatActivation.ReadQualified/Evaluate`는 같은 Watch와 예약을 보존하고 `ActivationStatItem.ReadCurrent`의 읽기 실패를 정상 false와 구분합니다.
+- `RimKataSecondaryHandRequirement.HasAvailableHands/NotifyHealthChanged/NotifyPartRestored/Forget/Reset`: 실제 건강의 기존 손 판정을 Pawn별로 캐시합니다. 공통 `CanUseSecondarySlot/SecondaryEquipFailure/ValidateSecondaryWithVerifiedAccess`는 이를 사용하며 초기화가 덜 된 건강으로 결손을 확정하지 않습니다. Add/RemoveHediff, RestorePart, Spawn/Despawn/Reset 연결을 함께 확인합니다.
+- `RimKataDualWeaponController.BindCurrentWeapons`: 완료 시 무조건 dirty=false로 덮지 않습니다. 콜백 전에 현재 요청을 소비하고 이후 새 무효화를 보존합니다.
+- `RimKataWeaponEffects.Connect/Tick/Release`와 `RimKataWeaponEffectRegistry.Unindex/Forget`: 성공한 Def 등록과 개별 무기의 런타임 실패를 분리하며 소유 Record가 일치하는 색인만 해제합니다. 정리 콜백이 실패해도 원본 복원을 시도하고 미완료 자료는 활성 참가자에서 분리해 보존합니다. `RimKataWeaponEffectState.ExposeData`는 Deep Hediff의 Pawn 소유자를 CrossRefs 단계에 연결합니다.
+- `Patch_PawnRenderTree_RimKataHeadDraw.WithHeadDraw/Transpiler`: 원본 Draw 본문/호출 하나와 외부 transpiler가 보는 호출 형태를 보존합니다. 활성 노드에만 인자를 적용하고 원본 parms는 종료/문 출력에 복원합니다.
+
+## 2026-11-07 모노린 코덱스·등불의 부 슬롯 장착 메뉴
+
+- `RimKataMonolynCompat.Apply / MenuTranspiler / CreateMenu / AppendOptions`: 활성 모노린의 공용 `CompAbilityEffect_WeaponCodex.Apply`가 FloatMenu를 만드는 한 곳에만 연결합니다. 원래 저장·능력·무기 항목을 보존하고 저장 무기와 같은 순서로 기존 `Equip(무기) [RimKata]` 항목을 아래에 추가합니다. `CodexMenu`는 비활성 항목도 그 순서를 유지하도록 RK 그룹만 뒤에 재배치하며 별도 하위 메뉴는 만들지 않습니다.
+- `RequestEquip / CanTake / Equip`: Persona 확인 후에도 현재 착용 코덱스·저장 목록·실제 무기 소유권과 기존 장착 조건을 다시 확인합니다. 모노린 저장소는 ThingOwner가 아닌 `List<Thing>`이므로 목록에서 꺼낸 뒤 공용 `TryEquipSecondary`로 장착하고 실패하면 반환합니다. 교체된 부 무기는 원 저장소로 수납하며 Dogma/용량 제한이면 인벤토리·바닥 반환을 사용합니다. 성공 시 원래 코덱스 표시 Hediff와 효과를 정리합니다.
+- `SidearmInventoryEquip.EquipFailureReason / WeaponSlotUtility.SecondaryEquipFailureKey`: 기존 즉시 장착 정책과 바닥 메뉴 불가 사유를 공용화합니다. 인벤토리 소유권 조건은 기존 인벤토리 호출자에 유지하며 번역키를 새로 만들지 않습니다. 일반 틱·폰 탐색·무기 인식기 재분석은 없습니다.
+
+## 2026-11-07 Immersive Warfare 대형 무기 렌더 분리
+
+- `RimKataImmersiveWarfareCompat.Initialize / Bind`: 활성 IW의 `StackVisuals.TryState`, `StackPresentationPolicy.IdleGun`, `DepthInBand`를 한 번 연결합니다. 코어 렌더 transpiler보다 먼저 준비하며 매 프레임 타입 탐색·반사 호출·boxing을 하지 않습니다.
+- `EquipmentMeshCall / PrimaryMatrix`: IW가 나중에 찾는 원본 `Graphics.DrawMesh` 호출을 주 무기 분기에 남깁니다. 활성 대형의 주 무기는 IW에 맡기고 부 무기 helper와 IW 밖의 기존 GroundPose 처리를 보존합니다. 원본 호출을 지우면 IW의 `MeshCalls` 설치가 실패하므로 직접 helper로 전부 치환하지 않습니다.
+- `Begin / End → WeaponRenderProbe.EndFrame → DrawSecondary`: 기존 등록 자격자 렌더 범위에서 IW 대형 자세를 한 번 읽고, 주 무기 출력 후 부 무기를 한 번 그립니다. 부 무기의 실제 표적·무기 분류를 사용하고 대기 배치·시선만 IW 자세에 맞춥니다. 일반/중첩/초상화 출력은 이전 문맥을 가리고 끝나면 복원합니다.
+- `AdjustSecondaryDepth`: 기존 `WeaponDrawCapture.DrawCommand.Submit`의 반전·낙상 변환 뒤에 IW 무기 깊이를 한 번 적용합니다. 공격 cycle·Job·저장 자료·일반 폰 탐색은 변경하지 않습니다.
+- 1.6/1.7 Release 경고·오류 0. 실제 게임/IW/RK DLL의 연결, RK→IW transpiler 호출 수, 활성·비활성 wrapper 생성/JIT를 양 버전에서 확인했습니다. 인게임 깜박임 해소는 별도 확인이며 전체 메서드 집계는 재산출하지 않았습니다.
+
+## 2026-11-07 슬롯별 공격 준비와 부 슬롯 장착 불가 안내
+
+- `TickPreparedWeaponCycles → TickWeaponCycle`: 근접 대응 대상에 덮어쓰기 전 원래 명령 대상을 전달하여 수동 공격 권한과 슬롯 선택 고정을 구분합니다. 집중 공격·구조물의 지정 무기 근접 공격은 기존 선택을 유지하며, 일반 Job의 `playerForced`만으로 두 슬롯의 자동 후보 선택을 막지 않습니다.
+- `TickWeaponCycle`: 기존 후보의 승격·검증 후 계획이 비었으면 쿨다운 1틱 이하 경계에서 Job/근접 문맥의 알려진 대상을 `TrySetKnownTarget`으로 검증합니다. 공유 탐색 종료·이전 발사 대상 일치·승격 시도 여부를 대기 조건으로 삼지 않습니다. 준비한 실제 계획은 기존 조준·발사 경로로 연결하며 렌더 우회나 다른 슬롯 타이머 조정은 없습니다.
+- `RimKataNativeAttack.targetSelectionLocked → FinishCycleAction`: 해당 요청의 대상 선택 고정만 전달하고 재사용 요청의 `Clear`에서 초기화합니다. `playerForced/killIncappedTarget`은 실제 발사 대상의 명령·집중 권한으로 한정합니다. `JobDriver_RimKataAttack.TryAdoptContinuationTarget`은 원래 목표 무효 후 자동 적으로 인계할 때만 이전 명령 권한을 정리합니다. 저장 필드나 탐색 관리자는 추가하지 않습니다.
+- `RimKataWeaponSlotUtility.SecondaryEquipFailure`: 기존 장착 조건을 공용 실패 결과로 반환하고 `CanEquipAsSecondary`도 이 결과를 사용합니다. 자격자의 우클릭 메뉴는 보조 무기 옵션 OFF·주 무기 없음·주/선택 무기 미허용·주/선택 무기 양손 조합 제한을 비활성 사유로 표시합니다. 바닐라 거절 사유와 기존 손 판정·실행 시 재검사는 보존하며 번역은 메뉴에서만 수행합니다.
+- 두 버전 동일 변경, 29개 언어에 안내 6개 추가. 1.6/1.7 Release 경고·오류 0. 실제 게임 전투·메뉴 표시는 별도 확인 범위입니다.
+
+## 2026-11-07 날아 차기 중 폰 충돌
+
+- `RimKataFlyingKick.Tick`: 미완료 공중 단계의 이동 중 `WillCollideNextCell`이 참이고 Touch 밖이면 공격 취소·도약 stance 해제 후 기존 Fall로 전환합니다. 공격 결과 관찰과 분리하여 취소 결과가 Fall을 Abort로 덮어쓰지 않습니다. 일반 이동/폰 탐색·새 훅은 없습니다.
+- `AcceptFlyingKickFall(..., allowMovementRise)`: 타격 전 충돌 Fall(`attackResolved=false`)은 일반 Fallen으로 인계하고 기존 `NotifyMovement`를 한 번 호출합니다. 이미 진행 중인 접근도 기존 기상 판정으로 연결하며 새 이동·자세 제약을 추가하지 않습니다. 실제 타격 실패는 기존 유지 동작을 보존합니다. 두 버전 동일 변경이며 관련 항목만 부분 갱신했습니다.
+
 ## 2026-10-29 허용 의류의 원거리·근접 무기 구분
 
 - `RimKataSettings.ExposeArmorPermissions`: 기존 `enabledArmorDefNames`는 읽기 전용 이관 자료입니다. 새 `enabledRangedArmorDefNames`·`enabledMeleeArmorDefNames` 노드가 없을 때 각각 독립 복사하며, 이미 저장된 빈 목록과 개별 선택은 보존합니다. 설정 snapshot·장비 출처 정리에도 두 전역 목록을 포함하고 프로필에는 넣지 않습니다.
@@ -141,7 +181,7 @@
 - `RimKataWeaponExecutionPlans.Refresh/Load/Unload`: 전체 허용 목록에는 가벼운 계획만 유지합니다. 상세 자료 Load는 준비 경계에서만, Unload는 마지막 장착 해제에서 수행합니다. `LoadOriginalEntries`는 실패 폴백에 필요한 두 진입점만 확보하며 심층 분석을 재시도하지 않습니다.
 - `RimKataEquippedWeaponPlans.Sync/Forget/Suspend/Resume`: 기존 자격 및 장비 변경 이벤트만 사용합니다. Def별 참조 수가 0→1일 때 Runtime.AcquireDefinition, 1→0일 때 ReleaseDefinition이 실제 자료를 준비/해제합니다. 쌍수 같은 Def·여러 폰 공유 및 건강 콜백 재진입을 고려합니다. 일반 폰 순회나 발사/렌더 중 디스크 조회를 넣지 않습니다.
 - `RimKataWeaponExecutionRuntime.AcquireDefinition/Register/Fail/ConnectTick`: 무기별 설치 실패를 격리하고 원본 발사 경로를 유지합니다. 승인한 미장착 무기를 검사하기 위해 임시로 만든 실행 묶음도 등록 완료 후 해제합니다. `RimKataWeaponRegistrationFailures`에는 알림용 문자열만 보관합니다.
-- `RimKataWeaponEffects.ForgetDefinition/Release`: 마지막 장착 해제 때 효과 계획과 인스턴스 상태를 정리합니다. 외부 건강 콜백이 실패해도 record를 남겨 반복 해제하지 않습니다.
+- `RimKataWeaponEffects.ForgetDefinition/Release`: 마지막 장착 해제 때 효과 계획과 인스턴스 상태를 정리합니다. 2026-11-07 보완: 외부 건강 콜백 실패를 Def 등록 취소로 확대하지 않으며, 미완료 복원 자료는 활성 색인과 분리해 보존합니다. 매 틱 반복 해제는 하지 않습니다.
 - `RimKataAllowedWeaponStore.CaptureDefinition/NormalizeStoredLabel`: 원본 라벨을 sourceLabel로 보관하고 생성 Def의 기술 라벨을 분리합니다. 원본 문자를 지우거나 바닐라 라벨 검사를 무시하지 않습니다.
 - 한도: 발사·효과 500메서드/72,000 IL, 발사 깊이 10. 발사 필수 진입점 보충을 포함한 복원·묶음은 최대 502. 구체적 검사 범위는 개발 작업 기억의 같은 날짜 항목을 참조합니다.
 
@@ -16135,7 +16175,7 @@
 
 ### 160. RimKataDualWeaponController.TryGetVisualData
 
-`private static bool TryGetVisualData( Pawn pawn, RimKataWeaponCycleState cycle, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L4991](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:4991)
+`private static bool TryGetVisualData( Pawn pawn, RimKataWeaponCycleState cycle, ThingWithComps weapon, out RimKataWeaponVisualData data)` · [L5117](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:5117)
 
 - **역할:** 유효한 계획·시각 대상과 예열·쿨다운을 읽어 렌더 구조체를 만들고, 쿨다운 회전이 유효하면 전환 표적·시작각과 전환 시작 시 남은 쿨다운과 24틱 중 짧은 시간에 완료되는 공통 진행률을 공개합니다. 난사 계획·시각·쿨다운 전환 셀을 조준점으로 사용합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -19617,7 +19657,9 @@
 
 ### 009. RimKataFlyingKick.Tick
 
-`internal static void Tick(RimKataPawnCombatState combat)` · [L332](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKick.cs:332)
+`internal static void Tick(RimKataPawnCombatState combat)` · [L350](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKick.cs:350)
+
+- **2026-11-07 추가:** 진행 중 바닐라가 실제 폰 충돌을 보고한 경우 기존 `ReleaseTakeoff`·`BeginDescent(Fall)`로 연결합니다. 새 Fall은 타격 미완료 상태를 보존해 기존 `AcceptFlyingKickFall`의 `allowMovementRise` 인수로 전달합니다.
 
 - **밀기 연계:** 먼저 Backstep의 phaseTicks 4틱 동안 contactStart에서 뒤쪽 오프셋으로 footPosition만 보간합니다. Wait stance가 다른 자세로 바뀌면 중단하고, 후퇴 완료 시 Approach·phaseTicks=0으로 전환하여 Takeoff stance를 설정합니다. 이후 age 6틱 상승 동안 뒤쪽 오프셋을 0으로 되돌리고, 최고점에서 본인의 Takeoff stance만 해제해 이미 인계한 추적 경로를 이어갑니다. 실제 위치·도착 셀은 변경하지 않으며 이후 전진·눕기·하강과 일반 접근 도약의 시작 시점·실패 자세 인계는 기존 동작을 사용합니다.
 
@@ -19633,7 +19675,7 @@
 
 ### 009a. RimKataFlyingKick.RefreshApproach
 
-`private static bool RefreshApproach(RimKataPawnCombatState combat)` · [L431](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKick.cs:431)
+`private static bool RefreshApproach(RimKataPawnCombatState combat)` · [L458](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataFlyingKick.cs:458)
 
 - **밀기 연계:** 대상 셀이 바뀐 경우 목적지 기준 접촉 끝점만 재확보합니다. Backstep과 상승 중(age < TakeoffTicks)에는 원래 contactStart·시작 나이·이동 시간을 유지해 임시 후퇴량이 보간 시작점에 다시 더해지지 않도록 합니다. 상승 이후부터는 기존 현재 발끝 기준 재보간을 사용합니다.
 
@@ -20641,7 +20683,9 @@
 
 ### 026. RimKataGroundPoseUtility.AcceptFlyingKickFall
 
-`internal static void AcceptFlyingKickFall(RimKataPawnCombatState state, Thing target, float angle, Vector3 offset)` · [L477](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataGroundPose.cs:477)
+`internal static void AcceptFlyingKickFall(RimKataPawnCombatState state, Thing target, float angle, Vector3 offset, bool allowMovementRise = false)` · [L485](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataGroundPose.cs:485)
+
+- **2026-11-07 추가:** `allowMovementRise`이면 날아 차기 실패의 유지 예외를 적용하지 않고, 등록 뒤 `NotifyMovement`로 이미 존재하는 경로까지 기존 기상 판정에 전달합니다. 기본값 false는 실제 공격 실패의 기존 인계를 유지합니다.
 
 - **역할:** 날아 차기 렌더 종료 후 원래 목표·최종 회전·변위를 기존 Fallen에 인계합니다. 날아 차기 시선 인수를 받지 않고 기존 넘어짐의 조준 방향·몸 회전 계산을 사용합니다. 넘어짐 유지시간과 대상 등록은 유지합니다.
 - **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
@@ -34576,7 +34620,7 @@
 
 ### 099. RimKataGunReadyDrawUtility.TryGetVisualData
 
-`internal static bool TryGetVisualData(Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData visual)` · [L2507](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataVisualPatches.cs:2507)
+`internal static bool TryGetVisualData(Pawn pawn, ThingWithComps weapon, out RimKataWeaponVisualData visual)` · [L2513](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataVisualPatches.cs:2513)
 
 - **역할:** 같은 폰의 장비 문맥에서는 게시된 전투 상태를 직접 전달합니다. 비활성 문맥 또는 주·부 슬롯 밖의 무기는 즉시 false를 반환하여 확정된 없음 결과를 전투 상태 재탐색으로 바꾸지 않습니다. 해당 폰의 장비 문맥 밖에서만 일반 조회 경로를 사용합니다.
 - **호출 — 프로젝트 내부:** [RimKataDualWeaponController.TryGetVisualData](#m-1028)

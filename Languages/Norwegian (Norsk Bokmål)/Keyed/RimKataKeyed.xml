@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: neste mål {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: kjøler ned</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Angrip</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Alternativet for sekundærvåpen er deaktivert.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Utstyr først et våpen i den primære våpenplassen.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Primærvåpenet er ikke aktivert for RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Dette våpenet er ikke aktivert for RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Primærvåpenet er et tohåndsvåpen og hindrer denne våpenkombinasjonen.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Dette tohåndsvåpenet kan ikke utstyres i den sekundære våpenplassen.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Kan ikke utstyre et sekundærvåpen uten en hånd.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Bytt</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Bytt (i kamp)</KRWF_RimKata_SecondaryMenuSwapCombat>

@@ -37,6 +37,7 @@ namespace KRWF.RimKata
 
     internal sealed class RimKataActivationStatItem
     {
+        internal enum ReadResult { Value, NotApplicable, Unavailable }
         internal string Key { get; }
         internal string Label { get; }
         internal int Category { get; }
@@ -60,15 +61,25 @@ namespace KRWF.RimKata
         }
 
         internal bool TryRead(Pawn pawn, out float raw)
+            => ReadCurrent(pawn, out raw) == ReadResult.Value;
+
+        internal ReadResult ReadCurrent(Pawn pawn, out float raw)
         {
             raw = 0f;
-            if (pawn?.health == null || pawn.Dead) return false;
-            try { return Read(pawn, out raw); }
+            if (pawn?.health?.hediffSet == null) return ReadResult.Unavailable;
+            if (pawn.Dead) return ReadResult.NotApplicable;
+            if ((Capacity != null && (pawn.health.capacities == null || pawn.RaceProps?.body == null))
+                || (Record != null && pawn.records == null)) return ReadResult.Unavailable;
+            try
+            {
+                if (!Read(pawn, out raw)) return ReadResult.NotApplicable;
+                return float.IsNaN(raw) || float.IsInfinity(raw) ? ReadResult.Unavailable : ReadResult.Value;
+            }
             catch (Exception)
             {
-                // A modded worker can reject this pawn. Keep the rule for other pawns and later changes.
+                // A failed read is not evidence that a previously satisfied rule was lost.
                 raw = 0f;
-                return false;
+                return ReadResult.Unavailable;
             }
         }
 
@@ -97,7 +108,7 @@ namespace KRWF.RimKata
                 if (specialReader == null || pawn.health == null) return false;
                 raw = specialReader(pawn);
             }
-            return !float.IsNaN(raw) && !float.IsInfinity(raw);
+            return true;
         }
 
         internal float ToDisplay(float raw)

@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: sonraki hedef {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: bekleme süresinde</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Saldır</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>İkincil silah seçeneği devre dışı.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Önce birincil yuvaya bir silah kuşanın.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Birincil silah, RimKata için etkinleştirilmemiş.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Bu silah, RimKata için etkinleştirilmemiş.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>İki elli birincil silah, bu silah kombinasyonuna izin vermiyor.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Bu iki elli silah, ikincil yuvaya kuşanılamaz.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Eksik bir elle ikincil silah kuşanılamaz.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Değiştir</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Değiştir (çatışmada)</KRWF_RimKata_SecondaryMenuSwapCombat>

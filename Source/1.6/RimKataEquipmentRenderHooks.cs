@@ -18,12 +18,21 @@ namespace KRWF.RimKata
         {
             // Keep lower weapon hooks from rediscovering an already-known empty render path.
             int token = RimKataGunReadyDrawUtility.PushInactive(pawn, flags);
+            bool warfareEnabled = RimKataImmersiveWarfareCompat.Enabled;
+            RimKataImmersiveWarfareCompat.Scope warfareScope = default;
+            bool warfareEntered = false;
             try
             {
+                if (warfareEnabled)
+                {
+                    warfareScope = RimKataImmersiveWarfareCompat.Begin(pawn, null, flags);
+                    warfareEntered = true;
+                }
                 PawnRenderUtility.DrawEquipmentAndApparelExtras(pawn, drawPos, facing, flags);
             }
             finally
             {
+                if (warfareEntered) RimKataImmersiveWarfareCompat.End(warfareScope);
                 RimKataGunReadyDrawUtility.Pop(token);
             }
         }
@@ -34,9 +43,13 @@ namespace KRWF.RimKata
         {
             var scope = RimKataWorldRenderContext.BeginRegistered(pawn, entry,
                 (flags & PawnRenderFlags.Portrait) != 0, bodyAltitude);
+            RimKataImmersiveWarfareCompat.Scope warfareScope = default;
+            bool warfareEntered = false;
             equipmentDepth++;
             try
             {
+                warfareScope = RimKataImmersiveWarfareCompat.Begin(pawn, entry, flags);
+                warfareEntered = true;
                 if (equipmentDepth > 1 || entry == null
                     || entry.breach.HasValue || entry.subdue.HasValue || entry.reactive.HasValue
                     || entry.flyingKick.HasValue || entry.kick.HasValue)
@@ -46,6 +59,7 @@ namespace KRWF.RimKata
             finally
             {
                 equipmentDepth--;
+                if (warfareEntered) RimKataImmersiveWarfareCompat.End(warfareScope);
                 RimKataWorldRenderContext.End(scope);
             }
         }

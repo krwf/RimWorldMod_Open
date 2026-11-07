@@ -88,6 +88,7 @@ namespace KRWF.RimKata
                 if (!finalPose)
                     matrix = accessory ? RimKataGroundPoseRender.TransformAccessory(matrix)
                         : RimKataGroundPoseRender.TransformEquipment(matrix);
+                RimKataImmersiveWarfareCompat.AdjustSecondaryDepth(ref matrix);
                 DrawInternal(mesh, SubmeshIndex, matrix, Material, Layer, Camera, Properties,
                     CastShadows, ReceiveShadows, ProbeAnchor, LightProbeUsage, LightProbeProxyVolume);
             }

@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: nächstes Ziel {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: kühlt ab</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Angreifen</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Die Option für Sekundärwaffen ist deaktiviert.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Rüste zuerst eine Waffe im primären Waffenplatz aus.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Die Primärwaffe ist für RimKata nicht freigegeben.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Diese Waffe ist für RimKata nicht freigegeben.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Die zweihändige Primärwaffe verhindert diese Waffenkombination.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Diese zweihändige Waffe kann nicht im sekundären Waffenplatz ausgerüstet werden.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Ohne Hand kann keine Sekundärwaffe ausgerüstet werden.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Wechseln</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Wechseln (im Kampf)</KRWF_RimKata_SecondaryMenuSwapCombat>

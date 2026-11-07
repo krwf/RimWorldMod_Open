@@ -194,6 +194,12 @@
   <KRWF_RimKata_InspectCachedTarget>{0}: mục tiêu tiếp theo {1}</KRWF_RimKata_InspectCachedTarget>
   <KRWF_RimKata_InspectCooldown>{0}: đang hồi chiêu</KRWF_RimKata_InspectCooldown>
   <KRWF_RimKata_SecondaryMenuAttack>Tấn công</KRWF_RimKata_SecondaryMenuAttack>
+  <KRWF_RimKata_SecondaryDisabled>Tùy chọn vũ khí phụ đang bị tắt.</KRWF_RimKata_SecondaryDisabled>
+  <KRWF_RimKata_SecondaryNoPrimary>Hãy trang bị vũ khí vào ô chính trước.</KRWF_RimKata_SecondaryNoPrimary>
+  <KRWF_RimKata_SecondaryPrimaryNotAllowed>Vũ khí chính chưa được cho phép sử dụng với RimKata.</KRWF_RimKata_SecondaryPrimaryNotAllowed>
+  <KRWF_RimKata_SecondaryWeaponNotAllowed>Vũ khí này chưa được cho phép sử dụng với RimKata.</KRWF_RimKata_SecondaryWeaponNotAllowed>
+  <KRWF_RimKata_SecondaryPrimaryTwoHanded>Vũ khí chính hai tay không cho phép kết hợp với vũ khí này.</KRWF_RimKata_SecondaryPrimaryTwoHanded>
+  <KRWF_RimKata_SecondaryWeaponTwoHanded>Vũ khí hai tay này không thể được trang bị vào ô phụ.</KRWF_RimKata_SecondaryWeaponTwoHanded>
   <KRWF_RimKata_SecondaryMissingHand>Không thể trang bị vũ khí phụ khi bị mất một bàn tay.</KRWF_RimKata_SecondaryMissingHand>
   <KRWF_RimKata_SecondaryMenuSwap>Đổi</KRWF_RimKata_SecondaryMenuSwap>
   <KRWF_RimKata_SecondaryMenuSwapCombat>Đổi (trong chiến đấu)</KRWF_RimKata_SecondaryMenuSwapCombat>

@@ -105,7 +105,8 @@ namespace KRWF.RimKata
                 return 0;
             }
 
-            if (Probing || !RimKataWeaponRenderDiscovery.HasRenderers)
+            if (Probing || (!RimKataWeaponRenderDiscovery.HasRenderers
+                    && !RimKataImmersiveWarfareCompat.Active && frameDepth == 0))
             {
                 return 0;
             }
@@ -151,7 +152,13 @@ namespace KRWF.RimKata
                     && !frame.secondaryDrawn
                     && !failedFallbacks.Contains(frame.secondary.def))
                 {
-                    if (frame.independentIdle)
+                    if (RimKataImmersiveWarfareCompat.OwnsPawn(frame.pawn))
+                    {
+                        if (frame.primaryDrawn)
+                            RimKataImmersiveWarfareCompat.DrawSecondary(
+                                frame.pawn, frame.primary, frame.secondary, frame.root, frame.bodyAltitude);
+                    }
+                    else if (frame.independentIdle)
                     {
                         if (DrawSpecialSecondary(frame.pawn, frame.secondary, 0f, true,
                             out Vector3 drawLoc, out float aimAngle) == SecondaryDrawResult.Native)
@@ -209,6 +216,7 @@ namespace KRWF.RimKata
 
         internal static float PlaceExternalPrimaryHeight(float originalZ)
         {
+            if (RimKataImmersiveWarfareCompat.OwnsPrimary(frame.primary)) return originalZ;
             if (!Probing && extraDrawDepth == 0
                 && frame.pawn != null && frame.primary != null && frame.secondary != null
                 && frame.facing == Rot4.East

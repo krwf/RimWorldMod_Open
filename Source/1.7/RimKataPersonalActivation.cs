@@ -88,6 +88,7 @@ namespace KRWF.RimKata
             {
                 appliedRules.Add(new RimKataTraitActivationRule
                 { defName = rule.defName, degree = rule.degree, friendly = rule.friendly, hostile = rule.hostile });
+                if (!rule.friendly && !rule.hostile) continue;
                 TraitDef def = DefDatabase<TraitDef>.GetNamedSilentFail(rule.defName);
                 if (def == null) continue;
                 if (!traits.TryGetValue(def, out Dictionary<int, byte> degrees))
@@ -101,29 +102,50 @@ namespace KRWF.RimKata
         internal static bool EnabledFor(SkillDef skill) => skill != null && skills.ContainsKey(skill);
 
         internal static bool ReadSkills(Pawn pawn)
+            => TryReadSkills(pawn, out bool qualified) && qualified;
+
+        internal static bool TryReadSkills(Pawn pawn, out bool qualified)
         {
-            if (!SkillsEnabled || pawn?.skills == null) return false;
-            foreach (KeyValuePair<SkillDef, int> requirement in skills)
-                if (pawn.skills.GetSkill(requirement.Key) is SkillRecord record
-                    && record.Level >= requirement.Value) return true;
-            return false;
+            qualified = false;
+            if (!SkillsEnabled) return true;
+            if (pawn?.skills == null) return pawn?.RaceProps?.Humanlike == false;
+            try
+            {
+                foreach (KeyValuePair<SkillDef, int> requirement in skills)
+                {
+                    SkillRecord record = pawn.skills.GetSkill(requirement.Key);
+                    if (record == null) return false;
+                    if (record.Level >= requirement.Value) { qualified = true; break; }
+                }
+                return true;
+            }
+            catch (Exception) { return false; }
         }
 
         internal static Trait[] ReadTraits(Pawn pawn)
+            => TryReadTraits(pawn, out Trait[] matches) ? matches : Array.Empty<Trait>();
+
+        internal static bool TryReadTraits(Pawn pawn, out Trait[] result)
         {
-            if (!TraitsEnabled) return Array.Empty<Trait>();
-            List<Trait> all = pawn.story?.traits?.allTraits;
-            if (all == null) return Array.Empty<Trait>();
-            int side = RimKataEligibility.IsHostileToPlayerFaction(pawn) ? 2 : 1;
-            List<Trait> matches = null;
-            for (int i = 0; i < all.Count; i++)
+            result = Array.Empty<Trait>();
+            if (!TraitsEnabled) return true;
+            List<Trait> all = pawn?.story?.traits?.allTraits;
+            if (all == null) return pawn?.RaceProps?.Humanlike == false;
+            try
             {
-                Trait trait = all[i];
-                if (!trait.Suppressed && traits.TryGetValue(trait.def, out Dictionary<int, byte> degrees)
-                    && degrees.TryGetValue(trait.Degree, out byte flags) && (flags & side) != 0)
-                    (matches ??= new List<Trait>()).Add(trait);
+                int side = RimKataEligibility.IsHostileToPlayerFaction(pawn) ? 2 : 1;
+                List<Trait> matches = null;
+                for (int i = 0; i < all.Count; i++)
+                {
+                    Trait trait = all[i];
+                    if (!trait.Suppressed && traits.TryGetValue(trait.def, out Dictionary<int, byte> degrees)
+                        && degrees.TryGetValue(trait.Degree, out byte flags) && (flags & side) != 0)
+                        (matches ??= new List<Trait>()).Add(trait);
+                }
+                result = matches?.ToArray() ?? Array.Empty<Trait>();
+                return true;
             }
-            return matches?.ToArray() ?? Array.Empty<Trait>();
+            catch (Exception) { return false; }
         }
     }
 }
