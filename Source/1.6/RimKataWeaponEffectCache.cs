@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using HarmonyLib;
+using RimWorld;
 using Verse;
 using static KRWF.RimKata.RimKataWeaponExecutionPlans;
 
@@ -17,7 +18,7 @@ namespace KRWF.RimKata
     {
         private const string Category = "weapon_effects";
         private const string StatusCategory = "weapon_effect_status";
-        private const string Schema = "3";
+        private const string Schema = "5";
         private const int MaximumMethods = RimKataWeaponExecutionDiscovery.MaximumMethods;
         private const int MaximumEffects = 128;
         // A rejection survives unequipping and ordinary settings refreshes, but never a new process.
@@ -172,6 +173,7 @@ namespace KRWF.RimKata
                 && MatchesSnapshot(execution, null, status.GetAttribute("snapshot"), validateSource))
             {
                 RememberPrepared(execution, fingerprint, status.GetAttribute("snapshot"), validateSource);
+                execution.HasWeaponStatEffects = false;
                 return true;
             }
             if (memory == null || !memory.TryRead(Category, execution.Key, fingerprint, out XmlElement data)
@@ -180,6 +182,7 @@ namespace KRWF.RimKata
             var methods = new List<MethodInfo>();
             var managers = new List<HediffDef>();
             var effects = new List<HediffDef>();
+            var stats = new List<StatDef>();
             foreach (XmlNode child in data.ChildNodes)
             {
                 if (!(child is XmlElement item)) return false;
@@ -196,16 +199,24 @@ namespace KRWF.RimKata
                     if (def == null || list.Contains(def) || list.Count >= MaximumEffects) return false;
                     list.Add(def);
                 }
+                else if (item.Name == "stat")
+                {
+                    StatDef stat = DefDatabase<StatDef>.GetNamedSilentFail(item.GetAttribute("def"));
+                    if (stat == null || stats.Contains(stat) || stats.Count >= MaximumMethods) return false;
+                    stats.Add(stat);
+                }
                 else return false;
             }
             var restored = new RimKataWeaponEffectPlan
             {
                 WeaponDef = execution.Def, VerbType = execution.VerbType,
-                ManagerDefs = managers.ToArray(), Effects = effects.ToArray(), AnalyzedMethods = methods.ToArray()
+                ManagerDefs = managers.ToArray(), Effects = effects.ToArray(), AnalyzedMethods = methods.ToArray(),
+                ChangedStats = stats.ToArray()
             };
             if (!Valid(execution, restored, validateSource)
                 || !MatchesSnapshot(execution, restored, data.GetAttribute("snapshot"), validateSource)) return false;
             RememberPrepared(execution, fingerprint, data.GetAttribute("snapshot"), validateSource);
+            execution.HasWeaponStatEffects = restored.ChangedStats.Length != 0;
             plan = restored;
             return true;
         }
@@ -230,6 +241,8 @@ namespace KRWF.RimKata
                 || plan.AnalyzedMethods == null || plan.AnalyzedMethods.Length == 0
                 || plan.AnalyzedMethods.Length > MaximumMethods || plan.ManagerDefs == null
                 || plan.Effects == null || plan.Effects.Length == 0
+                || plan.ChangedStats == null || plan.ChangedStats.Length == 0
+                || plan.ChangedStats.Length > MaximumMethods
                 || plan.ManagerDefs.Length > MaximumEffects || plan.Effects.Length > MaximumEffects) return false;
             var methods = new HashSet<MethodInfo>(plan.AnalyzedMethods);
             if (methods.Contains(null) || methods.Count != plan.AnalyzedMethods.Length) return false;
@@ -243,6 +256,9 @@ namespace KRWF.RimKata
             foreach (HediffDef effect in plan.Effects)
                 if (managers.Contains(effect)
                     || (validateDefinitions && !RimKataWeaponEffectDiscovery.StatOnly(effect))) return false;
+            var stats = new HashSet<StatDef>(plan.ChangedStats);
+            if (stats.Contains(null) || stats.Count != plan.ChangedStats.Length
+                || (validateDefinitions && !stats.SetEquals(RimKataWeaponEffectDiscovery.ChangedStats(plan.Effects)))) return false;
             return true;
         }
 
@@ -256,6 +272,8 @@ namespace KRWF.RimKata
 
         private static bool Store(RimKataWeaponExecutionPlan execution, RimKataWeaponEffectPlan plan)
         {
+            if (plan != null)
+                foreach (MethodInfo method in plan.AnalyzedMethods) if (!CanStoreMethod(method)) return false;
             XmlElement data = RimKataEquipmentMemory.NewData();
             data.SetAttribute("schema", Schema);
             data.SetAttribute("weapon", execution.Def.defName);
@@ -273,6 +291,12 @@ namespace KRWF.RimKata
                 }
                 AppendDefinitions(data, "manager", plan.ManagerDefs);
                 AppendDefinitions(data, "effect", plan.Effects);
+                foreach (StatDef stat in plan.ChangedStats)
+                {
+                    XmlElement item = data.OwnerDocument.CreateElement("stat");
+                    item.SetAttribute("def", stat.defName);
+                    data.AppendChild(item);
+                }
             }
             // No-effect weapons need one small common-cache record, not an analysis XML file.
             bool stored = RimKataEquipmentMemory.Current?.Store(plan == null ? StatusCategory : Category,

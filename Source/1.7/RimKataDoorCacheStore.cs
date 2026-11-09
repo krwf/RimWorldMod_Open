@@ -12,6 +12,8 @@ namespace KRWF.RimKata
         internal readonly string Key;
         internal readonly string MetadataXml;
         internal readonly string RenderXml;
+        internal bool Persisted;
+        internal RimKataBreachDoorSnapshot[] Snapshots;
 
         internal RimKataDoorCacheRecord(string key, string metadata, string render)
         {
@@ -27,6 +29,9 @@ namespace KRWF.RimKata
         private readonly string directory;
         private readonly Dictionary<string, RimKataDoorCacheRecord> prepared =
             new Dictionary<string, RimKataDoorCacheRecord>(StringComparer.Ordinal);
+
+        // A disk cache is optional; savegame snapshots still contain their complete recipe.
+        internal RimKataDoorCacheStore() { }
 
         internal RimKataDoorCacheStore(string modRoot, string gameId, XmlDocument environment)
         {
@@ -44,22 +49,30 @@ namespace KRWF.RimKata
             return Fingerprint(environment.DocumentElement.OuterXml, string.Empty);
         }
 
-        internal RimKataDoorCacheRecord Prepare(XmlDocument metadata, XmlDocument render)
+        internal RimKataDoorCacheRecord Prepare(XmlDocument metadata, XmlDocument render,
+            out Exception persistenceFailure)
         {
+            persistenceFailure = null;
             Validate(metadata, "RimKataDoorMetadata");
             Validate(render, "RimKataDoorRender");
             string first = metadata.DocumentElement.OuterXml;
             string second = render.DocumentElement.OuterXml;
             string key = Fingerprint(first, second);
             if (prepared.TryGetValue(key, out RimKataDoorCacheRecord ready)) return ready;
-            if (!TryRead(key, out ready))
-            {
-                // Both hashes are checked because an interrupted write can leave mismatched documents.
-                WriteAtomic(Path.Combine(directory, key + ".render.xml"), render);
-                WriteAtomic(Path.Combine(directory, key + ".xml"), metadata);
-                ready = new RimKataDoorCacheRecord(key, first, second);
-            }
+            ready = new RimKataDoorCacheRecord(key, first, second);
             prepared.Add(key, ready);
+            if (directory == null) return ready;
+            try
+            {
+                // Publishing usable RAM data and persisting the pair are separate results.
+                if (!TryRead(key, out _))
+                {
+                    WriteAtomic(Path.Combine(directory, key + ".render.xml"), render);
+                    WriteAtomic(Path.Combine(directory, key + ".xml"), metadata);
+                }
+                ready.Persisted = true;
+            }
+            catch (Exception exception) { persistenceFailure = exception; }
             return ready;
         }
 
@@ -78,7 +91,7 @@ namespace KRWF.RimKata
                 string first = metadata.DocumentElement.OuterXml;
                 string second = render.DocumentElement.OuterXml;
                 if (Fingerprint(first, second) != key) return false;
-                record = new RimKataDoorCacheRecord(key, first, second);
+                record = new RimKataDoorCacheRecord(key, first, second) { Persisted = true };
                 return true;
             }
             catch (IOException) { return false; }

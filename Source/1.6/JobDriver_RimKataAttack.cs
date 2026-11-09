@@ -257,6 +257,7 @@ namespace KRWF.RimKata
         private bool plannedCloseAttack;
         private bool plannedCloseContext;
         private bool dualCycleStateImported;
+        private bool directionalFireJob;
         private bool structureMelee;
         private int structureMeleeAttacksMade;
         private bool endingJob;
@@ -264,7 +265,8 @@ namespace KRWF.RimKata
 
         private Thing AssignedTarget => TargetThingA;
         private bool IsPlayerForced => job?.playerForced == true;
-        internal bool IsDirectionalFire => job != null && job.targetA.IsValid && !job.targetA.HasThing;
+        internal bool IsDirectionalFire => directionalFireJob
+            || (job != null && job.targetA.IsValid && !job.targetA.HasThing);
         private bool IsWeaponScopedMelee => RimKataDualWeaponController.IsWeaponScopedMeleeJob(job);
         private bool IsStructureAttack => structureMelee || (job?.targetA.Thing is Building
             && job.verbToUse?.IsMeleeAttack == true);
@@ -276,12 +278,28 @@ namespace KRWF.RimKata
         internal bool IsStructureMeleeAttackFor(ThingWithComps weapon)
             => IsStructureAttack && (!IsWeaponScopedMelee || job.targetB.Thing == weapon);
 
+        internal void ContinueAfterWeaponLoss(Verb verb, Thing target, bool focused)
+        {
+            directionalFireJob = false;
+            structureMelee = false;
+            structureMeleeAttacksMade = 0;
+            job.verbToUse = verb;
+            job.targetA = target;
+            job.playerForced = focused;
+            job.killIncappedTarget = false;
+            job.targetB = focused && verb?.IsMeleeAttack == true
+                ? new LocalTargetInfo(verb.EquipmentSource) : LocalTargetInfo.Invalid;
+            pawn.pather?.StopDead();
+        }
+
         private bool EnsureDirectionalFireInitialized()
         {
-            if (dualCycleStateImported) return true;
-            if (!RimKataDualWeaponController.BeginDirectionalFire(
+            if (!dualCycleStateImported && !RimKataDualWeaponController.BeginDirectionalFire(
                     pawn, job.verbToUse, job.targetA.Cell)) return false;
+            directionalFireJob = true;
             dualCycleStateImported = true;
+            // The cell is only an order input; each weapon cycle owns its live aim point.
+            job.targetA = LocalTargetInfo.Invalid;
             return true;
         }
 
@@ -289,7 +307,7 @@ namespace KRWF.RimKata
         {
             if (endingJob || !IsDirectionalFire || !EnsureDirectionalFireInitialized()
                 || !RimKataDualWeaponController.UpdateDirectionalFire(pawn, verb, cell)) return false;
-            job.targetA = cell;
+            job.targetA = LocalTargetInfo.Invalid;
             job.verbToUse = verb;
             return true;
         }
@@ -327,8 +345,17 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref plannedCloseAttack, "rimKataPlannedCloseAttack");
             Scribe_Values.Look(ref plannedCloseContext, "rimKataPlannedCloseContext");
             Scribe_Values.Look(ref dualCycleStateImported, "rimKataDualCycleStateImported");
+            Scribe_Values.Look(ref directionalFireJob, "rimKataDirectionalFireJob");
             Scribe_Values.Look(ref structureMelee, "rimKataStructureMelee");
             Scribe_Values.Look(ref structureMeleeAttacksMade, "rimKataStructureMeleeAttacksMade");
+            if (Scribe.mode == LoadSaveMode.PostLoadInit
+                && job != null && job.targetA.IsValid && !job.targetA.HasThing)
+            {
+                directionalFireJob = true;
+                // Old running jobs kept their initial cell after slot targeting changed.
+                // Uninitialized jobs still need that cell when their first toil begins.
+                if (dualCycleStateImported) job.targetA = LocalTargetInfo.Invalid;
+            }
         }
 
         protected override IEnumerable<Toil> MakeNewToils()
@@ -557,7 +584,7 @@ namespace KRWF.RimKata
                     {
                         assignedTargetValid = true;
                     }
-                    else if (RimKataDualWeaponController.HasContinuationSearchWork(pawn))
+                    else if (RimKataDualWeaponController.HasContinuationWork(pawn))
                     {
                         pawn.pather?.StopDead();
                         return;
@@ -812,6 +839,7 @@ namespace KRWF.RimKata
                 return;
             }
 
+            directionalFireJob = false;
             job.targetA = target;
             EnsurePathToAssignedTarget(targetReachabilityConfirmed);
             if (!IsPlayerForced

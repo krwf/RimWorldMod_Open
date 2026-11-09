@@ -177,6 +177,11 @@ namespace KRWF.RimKata
             => state?.reactiveMotion is RimKataReactiveMotionState motion
                 && (motion.BlocksCombat || motion.HasPendingAttack);
         internal static bool Protected(Pawn pawn) => Participant(pawn)?.BlocksCombat == true;
+        internal static bool HasSlidingMotion(Pawn pawn)
+        {
+            var motion = Participant(pawn);
+            return motion?.kind == RimKataReactiveKind.Sliding || motion?.kind == RimKataReactiveKind.StandingUp;
+        }
         internal static bool Valid(RimKataReactiveMotionState state)
             => state.pawn?.Spawned == true && !state.pawn.Dead && !state.pawn.Downed
                 && state.combat?.reactiveMotion == state
@@ -186,32 +191,56 @@ namespace KRWF.RimKata
 
         internal static void StaggerApplied(Pawn pawn)
         {
-            var combat = ExistingCombat(pawn);
-            if (combat?.flyingKick != null || !IsFighting(combat) || pawn.Dead || pawn.Downed
-                || RimKataTemporaryInactivity.IsInactive(pawn) || BlocksCombat(combat)
-                || RimKataReactiveMovement.entering == pawn
-                || RimKataBreachUtility.Get(pawn) != null || RimKataSubdueUtility.IsHolding(pawn)
-                || combat.DodgeVisualLocked) return;
+            if (!RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)) return;
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
             if (settings == null || !settings.slidingEnabled && !settings.shakeOffEnabled) return;
-            Thing target = CurrentTarget(combat);
-            bool sliding = settings.slidingEnabled && Rand.Chance(settings.GetSlidingChance(pawn));
-            if (sliding)
-            {
-                IntVec3 forward;
-                if (!RimKataDodgeMovementUtility.TryGetCurrentMovementDirection(pawn, out forward))
-                    forward = Directions[Sector(target?.Spawned == true ? (target.Position - pawn.Position).AngleFlat : pawn.Rotation.AsAngle)];
-                if (RimKataDodgeMovementUtility.TryChooseDestination(pawn, forward, out var destination)
-                    && BeginSlide(pawn, combat, target, destination))
-                {
-                    combat.shakeOffPending = false;
-                    StaggerTicks(pawn.stances.stagger) = 0;
-                    StaggerSpeed(pawn.stances.stagger) = StaggerHandler.DefaultStaggerMoveSpeedFactor;
-                    if (combat.kick != null) RimKataKick.StaggerEnded(combat);
-                    return;
-                }
-            }
-            combat.shakeOffPending = settings.shakeOffEnabled;
+            var combat = ExistingCombat(pawn);
+            if (!CanBeginReactiveMotion(pawn, combat)) return;
+            if (settings.slidingEnabled && RimKataEligibility.CanUseDefense(pawn)
+                && TryBeginSliding(pawn, combat, settings)) return;
+            if (IsFighting(combat)) combat.shakeOffPending = settings.shakeOffEnabled;
+        }
+
+        internal static bool TrySlideDuringRangedDodge(Pawn pawn, RimKataSettings settings, IntVec3 destination)
+        {
+            if (settings?.slidingEnabled != true
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)) return false;
+            var combat = ExistingCombat(pawn);
+            if (!CanBeginReactiveMotion(pawn, combat)
+                || !Rand.Chance(settings.GetSlidingChance(pawn))) return false;
+            // The successful ranged dodge has already selected and checked this cell.
+            return TryBeginSlideAt(pawn, combat, combat != null ? CurrentTarget(combat) : null, destination);
+        }
+
+        private static bool CanBeginReactiveMotion(Pawn pawn, RimKataPawnCombatState combat)
+            => pawn?.Spawned == true && !pawn.Dead && !pawn.Downed && !pawn.InMentalState
+                && combat?.flyingKick == null
+                && !RimKataTemporaryInactivity.IsInactive(pawn) && !BlocksCombat(combat)
+                && RimKataReactiveMovement.entering != pawn
+                && RimKataBreachUtility.Get(pawn) == null && !RimKataSubdueUtility.IsHolding(pawn)
+                && combat?.DodgeVisualLocked != true;
+
+        private static bool TryBeginSliding(Pawn pawn, RimKataPawnCombatState combat, RimKataSettings settings)
+        {
+            if (!Rand.Chance(settings.GetSlidingChance(pawn))) return false;
+            Thing target = combat != null ? CurrentTarget(combat) : null;
+            if (!RimKataDodgeMovementUtility.TryGetCurrentMovementDirection(pawn, out var forward))
+                forward = Directions[Sector(target?.Spawned == true ? (target.Position - pawn.Position).AngleFlat : pawn.Rotation.AsAngle)];
+            if (!RimKataDodgeMovementUtility.TryChooseDestination(pawn, forward, out var destination)) return false;
+            return TryBeginSlideAt(pawn, combat, target, destination);
+        }
+
+        private static bool TryBeginSlideAt(Pawn pawn, RimKataPawnCombatState combat, Thing target, IntVec3 destination)
+        {
+            // A defensive slide needs animation state, not an active weapon cycle.
+            // Allocate only for this eligible pawn after the roll and destination succeed.
+            combat ??= pawn.Map.GetComponent<RimKataMapComponent>()?.GetState(pawn, true);
+            if (combat == null || !BeginSlide(pawn, combat, target, destination)) return false;
+            combat.shakeOffPending = false;
+            StaggerTicks(pawn.stances.stagger) = 0;
+            StaggerSpeed(pawn.stances.stagger) = StaggerHandler.DefaultStaggerMoveSpeedFactor;
+            if (combat.kick != null) RimKataKick.StaggerEnded(combat);
+            return true;
         }
 
         internal static void AttackStarting(RimKataNativeAttack request)
@@ -300,7 +329,12 @@ namespace KRWF.RimKata
             state.startAngle = state.direction.AngleFlat;
             state.facing = Rot4.FromAngleFlat(state.startAngle);
             RimKataDodgeMovementUtility.AdjacentDirections(state.direction, out var left, out var right);
-            Thing first = EnemyAt(state, state.origin + left), second = EnemyAt(state, state.origin + right);
+            Thing first = null, second = null;
+            if (state.primaryWeapon != null || state.secondaryWeapon != null)
+            {
+                first = EnemyAt(state, state.origin + left);
+                second = EnemyAt(state, state.origin + right);
+            }
             if (second == target) { Thing swap = first; first = second; second = swap; }
             state.primaryTarget = first ?? second ?? target;
             state.secondaryTarget = second ?? first ?? target;
@@ -313,6 +347,16 @@ namespace KRWF.RimKata
                 || RimKataTemporaryInactivity.IsInactive(pawn)
                 || ExistingCombat(pawn) != combat || combat.reactiveMotion != previousMotion)
             { Resume(state, false); return false; }
+            Job job = pawn.CurJob;
+            if (!state.resumeMoving && pawn.Drafted && job?.def == JobDefOf.Wait_Combat
+                && !job.targetA.HasThing && job.targetA.Cell == state.origin)
+            {
+                // Keep the standing order, but move its old standing position with the pawn.
+                job.targetA = pawn.Position;
+                var reservation = pawn.Map.pawnDestinationReservationManager.MostRecentReservationFor(pawn);
+                if (reservation != null && reservation.job == job && reservation.target == state.origin)
+                    reservation.target = pawn.Position;
+            }
             Install(state);
             UpdateAngles(state, 0);
             RimKataReactiveRender.Publish(state);
@@ -440,6 +484,7 @@ namespace KRWF.RimKata
                 && RimKataTargeting.IsPawnTargetStateValid(victim);
         private static void QueueHit(RimKataReactiveMotionState state, bool secondary, int dueTick)
         {
+            if ((secondary ? state.secondaryWeapon : state.primaryWeapon) == null) return;
             Thing target = secondary ? state.secondaryTarget : state.primaryTarget;
             if (!LiveTarget(state, target)
                 || (secondary ? state.secondaryPendingTarget : state.primaryPendingTarget) != null) return;
@@ -503,7 +548,8 @@ namespace KRWF.RimKata
 
         private static void RequestContinuationSearch(RimKataReactiveMotionState state)
         {
-            if (state.continuationSearchRequested) return;
+            if (state.continuationSearchRequested
+                || state.primaryWeapon == null && state.secondaryWeapon == null) return;
             state.continuationSearchRequested = true;
             RimKataSharedTargetSearch.Begin(state.pawn, state.combat, state.pawn.Position);
         }

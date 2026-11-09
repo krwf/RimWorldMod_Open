@@ -43,6 +43,9 @@ namespace KRWF.RimKata
         [ThreadStatic] private static Context current;
         [ThreadStatic] private static Frame spare;
 
+        // Already selected by the living render entry; never rediscover a pawn from a mesh callback.
+        internal static bool HasEquipmentParticipant => current.scoped && !current.portrait && current.body != null;
+
         internal static Scope Begin(Pawn pawn, bool portrait = false)
         {
             if (current.scoped && current.pawn == pawn && current.portrait == portrait) return default;
@@ -1005,7 +1008,8 @@ namespace KRWF.RimKata
                     originalAimAngle,
                     true,
                     snapshotActive,
-                    snapshot, bodyAltitude);
+                    snapshot, bodyAltitude, fallbackIsIdle: carryContext.active
+                        && !RimKataGunReadyDrawUtility.Current.gunReady);
             }
             finally
             {
@@ -1049,7 +1053,7 @@ namespace KRWF.RimKata
             {
                 DrawWeapon(pawn, primary, secondary, drawLoc, root, aimAngle, true,
                     context.snapshotActive, context.snapshot, bodyAltitude, nativeCombat: combat,
-                    facingOverride: fallbackFacing);
+                    facingOverride: fallbackFacing, fallbackIsIdle: !combat);
             }
             finally
             {
@@ -1146,6 +1150,13 @@ namespace KRWF.RimKata
                     frame.secondary.focusedTargetFromAttackGizmo);
             }
 
+            if (showFocusedLine)
+            {
+                DrawDirectionalFireCell(frame.primary.directionalFireCell);
+                if (frame.secondary.directionalFireCell != frame.primary.directionalFireCell)
+                    DrawDirectionalFireCell(frame.secondary.directionalFireCell);
+            }
+
             if (!frame.primary.visible
                 && !frame.secondary.visible)
             {
@@ -1208,6 +1219,20 @@ namespace KRWF.RimKata
                 frame.secondary.verb,
                 CombatIndicatorBaseAltitude,
                 frame.pauseFireForDodge);
+        }
+
+        private static void DrawDirectionalFireCell(IntVec3 cell)
+        {
+            if (!cell.IsValid) return;
+            Vector3 center = cell.ToVector3Shifted();
+            Vector3 diagonal = new Vector3(0.5f, 0f, 0.5f);
+            Vector3 opposite = new Vector3(0.5f, 0f, -0.5f);
+            float altitude = Altitudes.AltitudeFor(AltitudeLayer.MetaOverlays);
+            float width = FocusedTargetLineWidthForCamera();
+            GenDraw.DrawLineBetween(center - diagonal, center + diagonal,
+                altitude, BlackTargetLineMaterial, width);
+            GenDraw.DrawLineBetween(center - opposite, center + opposite,
+                altitude, BlackTargetLineMaterial, width);
         }
 
         private static void DrawFocusedCloseTargetLine(
@@ -1285,7 +1310,7 @@ namespace KRWF.RimKata
             bool secondary,
             bool snapshotActive,
             RimKataVisualSnapshot snapshot, float bodyAltitude, bool nativeCombat = false,
-            Rot4? facingOverride = null)
+            Rot4? facingOverride = null, bool fallbackIsIdle = false)
         {
             Rot4 renderFacing = facingOverride ?? pawn.Rotation;
             LocalTargetInfo responseFocus = LocalTargetInfo.Invalid;
@@ -1297,22 +1322,22 @@ namespace KRWF.RimKata
             ref readonly RimKataGunReadyDrawContext context = ref RimKataGunReadyDrawUtility.Current;
             bool fallCombat = context.pawn == pawn && context.fallAimTarget.IsValid;
             bool externalAim = RimKataPerspectiveShiftCompat.HasExternalAim(pawn);
-            if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
-                pawn, weapon, snapshotActive
-                    ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
-                    : 0f, allowWeaponPose: !responseTarget && !nativeCombat && !fallCombat && !externalAim, out _, out _)
-                    == RimKataWeaponRenderProbe.SecondaryDrawResult.Custom)
-            {
-                return;
-            }
-            float aimAngle = fallbackAngle;
-            Vector3 drawLoc = primaryDrawLoc;
             AimPreparation prepared = new AimPreparation { pawn = pawn, weapon = weapon };
             prepared.hasVisual = RimKataGunReadyDrawUtility.TryGetVisualData(pawn, weapon, out prepared.visual);
             RimKataWeaponVisualData visual = prepared.visual;
             bool cycleTarget = prepared.hasVisual && visual.target.IsValid;
             bool fallTarget = fallCombat && !cycleTarget && !responseTarget;
             bool hasOwnTarget = cycleTarget || responseTarget || fallTarget;
+            if (secondary && RimKataWeaponRenderProbe.DrawSpecialSecondary(
+                pawn, weapon, snapshotActive
+                    ? Patch_PawnRenderUtility_RimKataDeflection.GetVisualAngleOffset(weapon, snapshot)
+                    : 0f, allowWeaponPose: !hasOwnTarget && !nativeCombat && !externalAim, out _, out _)
+                    == RimKataWeaponRenderProbe.SecondaryDrawResult.Custom)
+            {
+                return;
+            }
+            float aimAngle = fallbackAngle;
+            Vector3 drawLoc = primaryDrawLoc;
             if (hasOwnTarget)
             {
                 LocalTargetInfo target = responseTarget
@@ -1354,6 +1379,14 @@ namespace KRWF.RimKata
                 }
                 if (!hasOwnTarget && !externalAim)
                 {
+                    if (!nativeCombat && !fallbackIsIdle)
+                    {
+                        // The primary draw may be aiming. Ask the existing carried-weapon
+                        // path for this weapon's idle pose instead of borrowing that aim.
+                        if (!RimKataWeaponRenderProbe.TryGetVanillaIdlePose(
+                            pawn, weapon, placementPivot, out primaryDrawLoc, out aimAngle, renderFacing))
+                            return;
+                    }
                     drawLoc = placementPivot + SecondaryOffsetForFacing(
                         primaryDrawLoc - placementPivot, renderFacing);
                 }
@@ -2383,6 +2416,7 @@ namespace KRWF.RimKata
         [ThreadStatic] private static float visualAngleOffset;
 
         [HarmonyPriority(Priority.Last)]
+        [HarmonyBefore(RimKataRatkinRenderCompat.HarmonyId)]
         public static void Prefix(
             Thing eq,
             ref Vector3 drawLoc,

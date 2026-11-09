@@ -17,14 +17,12 @@ namespace KRWF.RimKata
             new[] { typeof(Thing), typeof(StatDef), typeof(bool), typeof(int) });
         private static readonly MethodInfo ScopedRead = AccessTools.Method(typeof(RimKataWeaponEffectStats), nameof(ReadScopedStat));
         private static readonly MethodInfo HediffRead = AccessTools.Method(typeof(RimKataWeaponEffectStats), nameof(ReadHediffs));
-        private static readonly MethodInfo OffsetRead = AccessTools.Method(typeof(HediffStatsUtility), nameof(HediffStatsUtility.GetStatOffsetForSeverity));
-        private static readonly MethodInfo FactorRead = AccessTools.Method(typeof(HediffStatsUtility), nameof(HediffStatsUtility.GetStatFactorForSeverity));
-        private static readonly MethodInfo ScopedOffset = AccessTools.Method(typeof(RimKataWeaponEffectStats), nameof(ReadOffset));
-        private static readonly MethodInfo ScopedFactor = AccessTools.Method(typeof(RimKataWeaponEffectStats), nameof(ReadFactor));
         private static readonly AccessTools.StructFieldRef<ShotReport, float> Accuracy =
             AccessTools.StructFieldRefAccess<ShotReport, float>("factorFromShooterAndDist");
         private static readonly AccessTools.StructFieldRef<ShotReport, float> Distance =
             AccessTools.StructFieldRefAccess<ShotReport, float>("distance");
+        private static readonly AccessTools.FieldRef<StatWorker, StatDef> WorkerStat =
+            AccessTools.FieldRefAccess<StatWorker, StatDef>("stat");
         private static Func<StatWorker, StatRequest, bool, float> readValue;
         private static Func<VerbProperties, Verb, Pawn, int> readCooldown;
         private static bool initialized;
@@ -38,9 +36,6 @@ namespace KRWF.RimKata
         [ThreadStatic] private static Frame current;
         [ThreadStatic] private static Stack<Frame> available;
         [ThreadStatic] private static StatContext activeWeapon;
-        // Only failed preparation is remembered. False permits a new combat/equipment
-        // boundary to retry, while retaining the once-per-game diagnostic marker.
-        private static readonly Dictionary<Pawn, bool> baselineFailures = new Dictionary<Pawn, bool>();
 
         internal readonly struct Scope : IDisposable
         {
@@ -86,7 +81,7 @@ namespace KRWF.RimKata
             internal Verb verb;
             internal RimKataWeaponEffectPlan plan;
             internal RimKataWeaponEffectState local;
-            internal List<Hediff> baselineHediffs;
+            internal PairContext pair;
             internal readonly List<Hediff> nativeEffects = new List<Hediff>();
             internal readonly Snapshot statSnapshot = new Snapshot();
             internal List<Hediff> Effects => local?.effects ?? nativeEffects;
@@ -107,12 +102,13 @@ namespace KRWF.RimKata
         private sealed class PairContext
         {
             internal StatContext primary, secondary;
+            internal readonly HashSet<HediffDef> excluded = new HashSet<HediffDef>();
         }
 
         internal sealed class Snapshot
         {
-            internal readonly float[] values = new float[6];
-            internal readonly bool[] valid = new bool[6];
+            internal readonly Dictionary<StatDef, ValuePair> values = new Dictionary<StatDef, ValuePair>();
+            private int tick = -1;
             private Hediff[] effects = Array.Empty<Hediff>();
             private HediffStage[] stages = Array.Empty<HediffStage>();
             private float[] severities = Array.Empty<float>();
@@ -120,7 +116,9 @@ namespace KRWF.RimKata
 
             internal void Refresh(List<Hediff> source)
             {
-                bool changed = count != source.Count;
+                int now = Find.TickManager?.TicksGame ?? -1;
+                bool changed = tick != now || count != source.Count;
+                tick = now;
                 if (effects.Length < source.Count)
                 {
                     effects = new Hediff[source.Count];
@@ -139,27 +137,31 @@ namespace KRWF.RimKata
                 }
                 for (int i = source.Count; i < count; i++) { effects[i] = null; stages[i] = null; }
                 count = source.Count;
-                if (changed) Array.Clear(valid, 0, valid.Length);
+                if (changed) values.Clear();
             }
         }
 
-        private sealed class FrozenStage : HediffStage
+        internal struct ValuePair
         {
-            internal readonly float[] offsets = new float[3];
-            internal readonly float[] factors = new float[3];
-        }
-
-        private sealed class FrozenHediff : Hediff
-        {
-            internal HediffStage stage;
-            internal float severity;
-            public override HediffStage CurStage => stage;
-            public override float Severity { get => severity; set => severity = value; }
+            internal float raw, final;
+            internal bool rawValid, finalValid;
         }
 
         internal static bool HasStatContext(Verb verb) => verb != null && verbs.ContainsKey(verb);
-        internal static bool IsPreparationDeferred(Pawn pawn)
-            => pawn != null && baselineFailures.TryGetValue(pawn, out bool blocked) && blocked;
+        internal static void NotifyHealthChanged(Pawn pawn, Hediff changed = null)
+        {
+            if (pawn == null || !owners.TryGetValue(pawn, out var pair)) return;
+            if (changed?.def != null && activeWeapon?.pawn == pawn && activeWeapon.plan != null
+                && Array.IndexOf(activeWeapon.plan.Effects, changed.def) >= 0)
+            { activeWeapon.statSnapshot.values.Clear(); return; }
+            if (changed != null && pair.secondary?.local?.effects.Contains(changed) == true)
+            { pair.secondary.statSnapshot.values.Clear(); return; }
+            if (changed?.def != null && pair.primary?.plan != null
+                && Array.IndexOf(pair.primary.plan.Effects, changed.def) >= 0)
+            { pair.primary.statSnapshot.values.Clear(); return; }
+            pair.primary?.statSnapshot.values.Clear();
+            pair.secondary?.statSnapshot.values.Clear();
+        }
 
         internal sealed class PreparationFailure : Exception
         {
@@ -184,44 +186,24 @@ namespace KRWF.RimKata
             RimKataWeaponEffectState secondaryRecord)
         {
             if (pawn == null) return true;
-            if (baselineFailures.TryGetValue(pawn, out bool blocked) && blocked) return false;
-            if (primaryPlan == null && secondaryPlan == null)
+            if (!Participates(primary) || !Participates(secondary)
+                || (primaryPlan == null && secondaryPlan == null))
             { ReleasePawn(pawn); return true; }
             if (owners.TryGetValue(pawn, out var previous)
                 && Matches(previous.primary, primary, primaryPlan, null)
                 && Matches(previous.secondary, secondary, secondaryPlan, secondaryRecord)) return true;
-            var excluded = new HashSet<HediffDef>();
-            AddDefinitions(primaryPlan, excluded);
-            AddDefinitions(secondaryPlan, excluded);
-            List<Hediff> baseline;
-            try { baseline = Capture(pawn, excluded); }
-            catch (Exception exception)
-            {
-                DeferPreparation(pawn, exception);
-                return false;
-            }
             ReleasePawn(pawn);
-            var pair = new PairContext
-            {
-                primary = Create(pawn, primary, primaryPlan, null, baseline),
-                secondary = Create(pawn, secondary, secondaryPlan, secondaryRecord, baseline)
-            };
+            var pair = new PairContext();
+            AddDefinitions(primaryPlan, pair.excluded);
+            AddDefinitions(secondaryPlan, pair.excluded);
+            pair.primary = Create(pawn, primary, primaryPlan, null, pair);
+            pair.secondary = Create(pawn, secondary, secondaryPlan, secondaryRecord, pair);
             owners[pawn] = pair;
             Index(pair.primary);
             Index(pair.secondary);
             try { CaptureValues(pair.primary); CaptureValues(pair.secondary); }
             catch { ReleasePawn(pawn); throw; }
             return true;
-        }
-
-        internal static void DeferPreparation(Pawn pawn, Exception exception)
-        {
-            if (pawn == null) return;
-            bool first = !baselineFailures.ContainsKey(pawn);
-            baselineFailures[pawn] = true;
-            if (first) Log.Warning("[RimKata] Weapon effect baseline preparation was deferred for " + pawn.ThingID
-                + "; existing stat readers and weapon registrations are unchanged. "
-                + exception.GetType().Name + ": " + exception.Message);
         }
 
         private static bool Participates(RimKataWeaponCycleState cycle)
@@ -240,13 +222,13 @@ namespace KRWF.RimKata
         }
 
         private static StatContext Create(Pawn pawn, RimKataWeaponCycleState cycle,
-            RimKataWeaponEffectPlan plan, RimKataWeaponEffectState local, List<Hediff> baseline)
+            RimKataWeaponEffectPlan plan, RimKataWeaponEffectState local, PairContext pair)
         {
             if (!Participates(cycle)) return null;
             return new StatContext
             {
                 pawn = pawn, weapon = cycle.weapon, verb = cycle.boundVerb,
-                plan = plan, local = local, baselineHediffs = baseline
+                plan = plan, local = local, pair = pair
             };
         }
 
@@ -259,9 +241,9 @@ namespace KRWF.RimKata
                 Frame frame = Begin(context);
                 try
                 {
-                    for (int i = 0; i < 3; i++)
-                        if (supported.TryGetValue(StatAt(i), out bool supportedStat) && supportedStat)
-                            ReadCached(frame, StatAt(i), true);
+                    foreach (StatDef stat in PreparedStats(context))
+                        if (supported.TryGetValue(stat, out bool supportedStat) && supportedStat)
+                            ReadCached(frame, stat, true);
                 }
                 finally { End(frame); }
             }
@@ -275,36 +257,18 @@ namespace KRWF.RimKata
             verbs[context.verb] = context;
         }
 
-        // Both readers share the same frozen pawn baseline, but cache their own result/effects.
-        private static List<Hediff> Capture(Pawn pawn, HashSet<HediffDef> excluded)
+        private static IEnumerable<StatDef> PreparedStats(StatContext context)
         {
-            var baseline = new List<Hediff>();
-            foreach (Hediff source in pawn.health.hediffSet.hediffs)
-            {
-                if (source?.def == null || excluded.Contains(source.def)) continue;
-                HediffStage sourceStage = source.CurStage;
-                FrozenStage stage = null;
-                float severity = source.Severity;
-                if (sourceStage != null)
-                {
-                    stage = new FrozenStage();
-                    for (int i = 0; i < 3; i++)
-                    {
-                        StatDef stat = StatAt(i);
-                        stage.offsets[i] = HediffStatsUtility.GetStatOffsetForSeverity(stat, sourceStage, pawn, severity);
-                        stage.factors[i] = HediffStatsUtility.GetStatFactorForSeverity(stat, sourceStage, pawn, severity);
-                    }
-                }
-                baseline.Add(new FrozenHediff
-                    { def = source.def, pawn = pawn, Part = source.Part, severity = severity, stage = stage });
-            }
-            return baseline;
+            yield return StatDefOf.AimingDelayFactor;
+            yield return StatDefOf.RangedCooldownFactor;
+            yield return StatDefOf.ShootingAccuracyPawn;
+            if (context.plan?.ChangedStats != null)
+                foreach (StatDef stat in context.plan.ChangedStats) if (stat != null) yield return stat;
         }
 
         internal static void ReleasePawn(Pawn pawn)
         {
             if (pawn == null) return;
-            if (baselineFailures.ContainsKey(pawn)) baselineFailures[pawn] = false;
             if (!owners.TryGetValue(pawn, out var pair)) return;
             owners.Remove(pawn);
             Remove(pair.primary);
@@ -320,33 +284,30 @@ namespace KRWF.RimKata
 
         internal static void ReleaseWeapon(ThingWithComps weapon)
         {
-            if (weapon != null && weapons.TryGetValue(weapon, out var context)) ReleasePawn(context.pawn);
+            ReleaseWeaponContext(weapon);
         }
 
-        internal static void ReleaseDefinition(ThingDef definition)
+        internal static List<Pawn> ReleaseDefinition(ThingDef definition)
         {
-            List<Pawn> affected = null;
-            foreach (var item in owners)
+            List<ThingWithComps> affected = null;
+            List<Pawn> pawns = null;
+            foreach (var item in weapons)
             {
-                if (item.Value.primary?.weapon.def != definition && item.Value.secondary?.weapon.def != definition) continue;
-                if (affected == null) affected = new List<Pawn>();
+                if (item.Key.def != definition) continue;
+                if (affected == null) affected = new List<ThingWithComps>();
                 affected.Add(item.Key);
+                if (pawns == null) pawns = new List<Pawn>();
+                if (!pawns.Contains(item.Value.pawn)) pawns.Add(item.Value.pawn);
             }
-            if (affected != null) foreach (Pawn pawn in affected) ReleasePawn(pawn);
+            if (affected != null) foreach (ThingWithComps weapon in affected) ReleaseWeaponContext(weapon);
+            return pawns;
         }
 
         internal static void ResetGame()
         {
             owners.Clear(); weapons.Clear(); verbs.Clear();
-            baselineFailures.Clear();
             current = null; activeWeapon = null; available?.Clear();
         }
-
-        private static StatDef StatAt(int index) => index == 0 ? StatDefOf.AimingDelayFactor
-            : index == 1 ? StatDefOf.RangedCooldownFactor : StatDefOf.ShootingAccuracyPawn;
-
-        private static int StatIndex(StatDef stat) => stat == StatDefOf.AimingDelayFactor ? 0
-            : stat == StatDefOf.RangedCooldownFactor ? 1 : stat == StatDefOf.ShootingAccuracyPawn ? 2 : -1;
 
         internal static void Initialize()
         {
@@ -395,10 +356,17 @@ namespace KRWF.RimKata
             // Preparation only: derived workers may change labels without changing calculation.
             if (!initialized) Initialize();
             result = readValue != null && readCooldown != null
-                && (stat == StatDefOf.AimingDelayFactor || stat == StatDefOf.RangedCooldownFactor
-                    || stat == StatDefOf.ShootingAccuracyPawn)
                 && UsesBaseCalculation(stat.Worker.GetType());
             supported[stat] = result;
+            if (result)
+            {
+                // The copied vanilla calculation reads these definitions recursively.
+                // Prepare them with the root stat; firing only consumes this lookup.
+                if (stat.statFactors != null)
+                    foreach (StatDef dependency in stat.statFactors) IsSupported(dependency);
+                if (stat.postProcessStatFactors != null)
+                    foreach (StatDef dependency in stat.postProcessStatFactors) IsSupported(dependency);
+            }
             return result;
         }
 
@@ -409,10 +377,16 @@ namespace KRWF.RimKata
 
         internal static float GetStatValue(Verb verb, Pawn pawn, StatDef stat, bool applyPostProcess = true, int cacheStaleAfterTicks = -1)
         {
-            if (!TryBegin(verb, pawn, stat, out Frame frame))
-                return pawn?.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks) ?? 1f;
-            try { return ReadCached(frame, stat, applyPostProcess); }
-            finally { End(frame); }
+            Frame frame = null;
+            Exception failure = null;
+            try
+            {
+                if (TryBegin(verb, pawn, stat, out frame)) return ReadCached(frame, stat, applyPostProcess);
+            }
+            catch (Exception exception) { failure = exception; }
+            finally { if (frame != null) End(frame); }
+            if (failure != null) Fail(verb, pawn, failure);
+            return pawn?.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks) ?? 1f;
         }
 
         internal static float GetScopedStatValue(Thing thing, StatDef stat, bool applyPostProcess, int cacheStaleAfterTicks)
@@ -420,28 +394,66 @@ namespace KRWF.RimKata
                 ? GetStatValue(activeWeapon.verb, activeWeapon.pawn, stat, applyPostProcess, cacheStaleAfterTicks)
                 : thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
 
+        internal static float GetScopedWorkerValue(StatWorker worker, StatRequest request, bool applyPostProcess)
+        {
+            StatContext owner = activeWeapon;
+            if (owner == null || request.Thing != owner.pawn) return worker.GetValue(request, applyPostProcess);
+            Frame frame = null;
+            Exception failure = null;
+            try
+            {
+                StatDef stat = WorkerStat(worker);
+                if (worker != stat.Worker)
+                    throw new NotSupportedException("The pawn stat call uses a different worker instance: " + stat.defName);
+                if (TryBegin(owner.verb, owner.pawn, stat, out frame))
+                    return readValue(worker, request, applyPostProcess);
+            }
+            catch (Exception exception) { failure = exception; }
+            finally { if (frame != null) End(frame); }
+            if (failure != null) Fail(owner.verb, owner.pawn, failure);
+            return worker.GetValue(request, applyPostProcess);
+        }
+
+        private static void Fail(Verb verb, Pawn pawn, Exception exception)
+        {
+            if (verb != null && verbs.TryGetValue(verb, out var record) && record.pawn == pawn)
+                RimKataWeaponEffects.NotifyStatFailure(pawn, record.weapon, exception, verb);
+        }
+
         internal static int AdjustedCooldownTicks(Verb verb, Pawn pawn)
         {
-            if (verb.IsMeleeAttack || !TryBegin(verb, pawn, StatDefOf.RangedCooldownFactor, out Frame frame))
-                return verb.verbProps.AdjustedCooldownTicks(verb, pawn);
-            try { return readCooldown(verb.verbProps, verb, pawn); }
-            finally { End(frame); }
+            Frame frame = null;
+            Exception failure = null;
+            try
+            {
+                if (!verb.IsMeleeAttack && TryBegin(verb, pawn, StatDefOf.RangedCooldownFactor, out frame))
+                    return readCooldown(verb.verbProps, verb, pawn);
+            }
+            catch (Exception exception) { failure = exception; }
+            finally { if (frame != null) End(frame); }
+            if (failure != null) Fail(verb, pawn, failure);
+            return verb.verbProps.AdjustedCooldownTicks(verb, pawn);
         }
 
         internal static bool TryApplyAccuracy(Verb verb, ref ShotReport report, out float previous)
         {
             previous = 0f;
-            if (verb?.verbProps?.canGoWild != true
-                || !TryBegin(verb, verb.CasterPawn, StatDefOf.ShootingAccuracyPawn, out Frame frame)) return false;
+            if (verb?.verbProps?.canGoWild != true) return false;
+            Frame frame = null;
+            Exception failure = null;
             try
             {
+                if (!TryBegin(verb, verb.CasterPawn, StatDefOf.ShootingAccuracyPawn, out frame)) return false;
                 float accuracy = ReadCached(frame, StatDefOf.ShootingAccuracyPawn, true);
                 float factor = ShotReport.HitFactorFromShooter(frame.pawn, Distance(ref report), accuracy);
                 previous = Accuracy(ref report);
                 Accuracy(ref report) = factor;
                 return true;
             }
-            finally { End(frame); }
+            catch (Exception exception) { failure = exception; }
+            finally { if (frame != null) End(frame); }
+            Fail(verb, verb.CasterPawn, failure);
+            return false;
         }
 
         internal static void RestoreAccuracy(ref ShotReport report, float previous) => Accuracy(ref report) = previous;
@@ -450,8 +462,9 @@ namespace KRWF.RimKata
         {
             frame = null;
             if (pawn == null || verb == null || !verbs.TryGetValue(verb, out var record)
-                || record.pawn != pawn
-                || !supported.TryGetValue(stat, out bool supportedStat) || !supportedStat) return false;
+                || record.pawn != pawn) return false;
+            if (stat == null || !supported.TryGetValue(stat, out bool supportedStat) || !supportedStat)
+                throw new NotSupportedException("The current pawn stat read has no prepared weapon-local calculation: " + stat?.defName);
             record.Refresh();
             frame = Begin(record);
             return true;
@@ -487,37 +500,37 @@ namespace KRWF.RimKata
             if (frame == null || frame.pawn.health.hediffSet != set) return set.hediffs;
             if (!frame.hediffsReady)
             {
-                frame.hediffs.AddRange(frame.record.baselineHediffs);
+                // Keep current native health inputs. Only known weapon effects are replaced;
+                // common injuries, implants and severity changes are never frozen at combat entry.
+                foreach (Hediff hediff in set.hediffs)
+                    if (hediff?.def != null && !frame.record.pair.excluded.Contains(hediff.def))
+                        frame.hediffs.Add(hediff);
                 frame.hediffs.AddRange(frame.record.Effects);
                 frame.hediffsReady = true;
             }
             return frame.hediffs;
         }
 
-        private static float ReadOffset(StatDef stat, HediffStage stage, Pawn pawn, float severity)
-            => stage is FrozenStage frozen && StatIndex(stat) is int index && index >= 0 ? frozen.offsets[index]
-                : HediffStatsUtility.GetStatOffsetForSeverity(stat, stage, pawn, severity);
-
-        private static float ReadFactor(StatDef stat, HediffStage stage, Pawn pawn, float severity)
-            => stage is FrozenStage frozen && StatIndex(stat) is int index && index >= 0 ? frozen.factors[index]
-                : HediffStatsUtility.GetStatFactorForSeverity(stat, stage, pawn, severity);
-
         private static float ReadCached(Frame frame, StatDef stat, bool applyPostProcess)
         {
-            int index = StatIndex(stat) * 2 + (applyPostProcess ? 1 : 0);
             Snapshot snapshot = frame.record.statSnapshot;
-            if (snapshot.valid[index]) return snapshot.values[index];
+            snapshot.values.TryGetValue(stat, out ValuePair cached);
+            if (applyPostProcess ? cached.finalValid : cached.rawValid)
+                return applyPostProcess ? cached.final : cached.raw;
             float value = readValue(stat.Worker, StatRequest.For(frame.pawn), applyPostProcess);
-            snapshot.values[index] = value;
-            snapshot.valid[index] = true;
+            if (applyPostProcess) { cached.final = value; cached.finalValid = true; }
+            else { cached.raw = value; cached.rawValid = true; }
+            snapshot.values[stat] = cached;
             return value;
         }
 
         private static float ReadScopedStat(Thing thing, StatDef stat, bool applyPostProcess, int cacheStaleAfterTicks)
         {
-            return current != null && thing == current.pawn && supported.TryGetValue(stat, out bool supportedStat) && supportedStat
-                ? ReadCached(current, stat, applyPostProcess)
-                : thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
+            if (current == null || thing != current.pawn)
+                return thing.GetStatValue(stat, applyPostProcess, cacheStaleAfterTicks);
+            if (stat == null || !supported.TryGetValue(stat, out bool supportedStat) || !supportedStat)
+                throw new NotSupportedException("A dependent pawn stat has no prepared weapon-local calculation: " + stat?.defName);
+            return ReadCached(current, stat, applyPostProcess);
         }
 
         private static MethodInfo Copy(MethodInfo original, string rewriter, MethodInfo expectedCall = null)
@@ -557,7 +570,6 @@ namespace KRWF.RimKata
                     && instruction.operand is MethodInfo method)
                 {
                     MethodInfo replacement = Equals(method, StatRead) ? ScopedRead
-                        : Equals(method, OffsetRead) ? ScopedOffset : Equals(method, FactorRead) ? ScopedFactor
                         : building.TryGetValue(method, out MethodInfo copy) ? copy : null;
                     if (replacement != null)
                     {

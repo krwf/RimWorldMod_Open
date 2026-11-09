@@ -38,13 +38,18 @@ namespace KRWF.RimKata
             public bool publishingQualification;
             public bool? pendingQualification;
             public MapUsers pendingQualificationUsers;
-            public int nextPublicationRetry;
+            public int weaponPreparationRevision;
             public bool unrestricted;
             public bool traitsKnown;
             public Trait[] qualifyingTraits = Array.Empty<Trait>();
             public bool skillsKnown;
             public bool skillsQualified;
             public bool statsQualified;
+            public bool statsKnown = true;
+            public bool publicationTarget;
+            public bool sourcesPending;
+            public MapUsers publicationUsers;
+            public int publicationSteps;
             public int statsTooltipTick = -1;
             public string qualificationTooltip;
         }
@@ -72,20 +77,21 @@ namespace KRWF.RimKata
         private static readonly ConditionalWeakTable<Map, MapUsers>.CreateValueCallback
             CreateMapUsers = delegate { return new MapUsers(); };
         private static readonly Pawn[] NoQualifiedPawns = Array.Empty<Pawn>();
-        private static readonly Dictionary<Pawn, Entry> incompletePublications = new Dictionary<Pawn, Entry>();
-        internal static bool HasPendingPublication => incompletePublications.Count != 0;
-
-        internal static void FinishPendingPublication(Pawn pawn)
+        // Only the existing per-map due schedule calls this recovery boundary.
+        internal static void RefreshPendingAccess(Pawn pawn)
         {
-            if (pawn == null || !incompletePublications.TryGetValue(pawn, out Entry entry)
+            if (pawn == null || !TryGetEntry(pawn, out Entry entry)
                 || entry.publishingQualification || pawn.health?.hediffSet == null) return;
-            if (!pawn.Spawned) { incompletePublications.Remove(pawn); return; }
-            int now = Find.TickManager?.TicksGame ?? 0;
-            if (now < entry.nextPublicationRetry) return;
-            entry.nextPublicationRetry = now + 250;
-            try { PublishAccess(pawn, entry.accessState == AccessGranted); }
+            if (!pawn.Spawned) return;
+            try
+            {
+                if (entry.sourcesPending || !entry.traitsKnown || !entry.skillsKnown || !entry.statsKnown)
+                    NotifyPawnSpawned(pawn);
+                else PublishAccess(pawn, entry.accessState == AccessGranted);
+            }
             catch (Exception exception)
             {
+                RimKataStatActivation.ScheduleQualificationRefresh(pawn);
                 Log.ErrorOnce("[RimKata] Qualification publication is still incomplete for pawn "
                     + pawn.thingIDNumber + ": " + exception, pawn.thingIDNumber ^ 0x39D04B2);
             }
@@ -106,7 +112,6 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (!entry.qualificationPublished) FinishPendingPublication(pawn);
             int accessState = entry.accessState;
             if (accessState == AccessUnknown)
             {
@@ -144,29 +149,26 @@ namespace KRWF.RimKata
             if (pawn?.Spawned != true || pawn.health == null || pawn.Dead) return;
             RimKataSecondaryHandRequirement.Forget(pawn);
             bool wasQualified = IsCachedQualifiedPawn(pawn);
+            Entry entry = entries.GetValue(pawn, CreateEntry);
             bool hasSource;
-            if (refreshPersonal)
+            lock (entry)
             {
-                Entry entry = entries.GetValue(pawn, CreateEntry);
-                lock (entry)
+                if (refreshPersonal)
                 {
                     entry.traitsKnown = false;
                     entry.skillsKnown = false;
                     entry.qualificationTooltip = null;
                     entry.statsTooltipTick = -1;
-                    hasSource = ResolveAccess(pawn, entry, refreshStats: true);
-                    StoreAccess(entry, hasSource);
                 }
-                UpdateRegisteredUser(pawn, hasSource);
+                hasSource = RefreshAccessSources(pawn, entry, refreshStats: refreshPersonal);
             }
-            else PublishAccess(pawn, HasAnyAccessSource(pawn));
+            UpdateRegisteredUser(pawn, hasSource);
             if (wasQualified && IsCachedQualifiedPawn(pawn))
                 RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, true);
         }
 
         internal static void NotifyPawnDespawned(Pawn pawn)
         {
-            if (pawn != null) incompletePublications.Remove(pawn);
             RimKataSecondaryHandRequirement.Forget(pawn);
             RimKataStatActivation.Forget(pawn);
             int id = pawn?.thingIDNumber ?? 0;
@@ -189,7 +191,7 @@ namespace KRWF.RimKata
                 lock (entry)
                 {
                     entry.traitsKnown = false;
-                    hasSource = StoreAccess(entry, ResolveAccess(pawn, entry, refreshStats: true));
+                    hasSource = RefreshAccessSources(pawn, entry, refreshStats: true);
                 }
                 UpdateRegisteredUser(pawn, hasSource);
                 return;
@@ -204,7 +206,6 @@ namespace KRWF.RimKata
             if (map == null || !mapUsers.TryGetValue(map, out MapUsers users)) return;
             foreach (Pawn pawn in users.permittedSources)
             {
-                incompletePublications.Remove(pawn);
                 if (TryGetEntry(pawn, out Entry entry) && entry.publishedMap == map)
                 {
                     if (entry.qualified)
@@ -213,6 +214,7 @@ namespace KRWF.RimKata
                         RimKataEquippedWeaponPlans.Forget(pawn);
                     }
                     entry.publishedMap = null;
+                    entry.publicationUsers = null;
                     entry.qualified = false;
                     RimKataStrengthUtility.NotifyQualificationChanged(pawn, false);
                     RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);
@@ -223,7 +225,6 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
-            incompletePublications.Clear();
             RimKataSecondaryHandRequirement.Reset();
             RimKataEquippedWeaponPlans.Clear();
             RimKataStatActivation.ResetGame();
@@ -314,14 +315,21 @@ namespace KRWF.RimKata
             if (entry.unrestricted != unrestricted) entry.qualificationTooltip = null;
             entry.unrestricted = unrestricted;
             bool permittedSource = hasSource || unrestricted;
-            if (entry.publishedMap != null && (entry.publishedMap != map || !permittedSource))
+            if (entry.publishedMap != null && entry.publishedMap != map)
                 RemovePublishedAccess(pawn, entry);
-            if (!permittedSource || map == null) return;
+            if (map == null) return;
             MapUsers users = mapUsers.GetValue(map, CreateMapUsers);
-            users.permittedSources.Add(pawn);
-            entry.publishedMap = map;
-            SetQualified(pawn, entry, users, RimKataEligibility.FactionEffectsEnabled(pawn));
+            if (permittedSource) users.permittedSources.Add(pawn);
+            else users.permittedSources.Remove(pawn);
+            entry.publishedMap = permittedSource || !entry.qualificationPublished ? map : null;
+            SetQualified(pawn, entry, users, permittedSource && RimKataEligibility.FactionEffectsEnabled(pawn));
+            if (!permittedSource && entry.qualificationPublished) entry.publishedMap = null;
         }
+
+        private const int PublishStrength = 1, PublishParticipant = 2, PublishWeapons = 4,
+            PublishApproach = 8, ReleaseEffects = 16, ReleaseBreach = 32, ReleaseFlyingKick = 64,
+            ReleaseKick = 128, ReleaseSubdue = 256, ReleaseMotion = 512, ReleaseMotionGate = 1024,
+            PublishBindings = 2048, PublishMovement = 4096;
 
         private static void SetQualified(Pawn pawn, Entry entry, MapUsers users, bool qualified)
         {
@@ -334,22 +342,53 @@ namespace KRWF.RimKata
             if (entry.qualified == qualified && entry.qualificationPublished) return;
             entry.pendingQualification = null;
             entry.pendingQualificationUsers = null;
-            entry.qualified = qualified;
+            if (entry.qualificationPublished || entry.publicationTarget != qualified
+                || entry.publicationUsers != users)
+            {
+                entry.publicationTarget = qualified;
+                entry.publicationUsers = users;
+                entry.publicationSteps = PublishStrength | PublishParticipant | PublishWeapons
+                    | PublishBindings | PublishMovement | (qualified ? PublishApproach
+                        : ReleaseEffects | ReleaseBreach | ReleaseFlyingKick | ReleaseKick
+                            | ReleaseSubdue | ReleaseMotion | ReleaseMotionGate);
+            }
             entry.qualificationPublished = false;
+            // A successful denial takes effect immediately, even if a later cleanup fails.
+            if (!qualified) entry.qualified = false;
             entry.publishingQualification = true;
             try
             {
-                RimKataStrengthUtility.NotifyQualificationChanged(pawn, qualified);
-                RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, qualified);
+                if (!qualified)
+                    TryPublicationStep(pawn, entry, PublishParticipant,
+                        () => RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false));
+                TryPublicationStep(pawn, entry, PublishStrength,
+                    () => RimKataStrengthUtility.NotifyQualificationChanged(pawn, qualified));
                 if (qualified)
                 {
-                    if (!users.qualifiedIndices.ContainsKey(pawn))
+                    // Participant consumers must not see a grant before its core data is ready.
+                    if ((entry.publicationSteps & PublishStrength) == 0
+                        && entry.pendingQualification != false)
+                        TryPublicationStep(pawn, entry, PublishParticipant,
+                            () => RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, true));
+                    if ((entry.publicationSteps & (PublishStrength | PublishParticipant)) == 0
+                        && entry.pendingQualification != false)
                     {
-                        users.qualifiedIndices.Add(pawn, users.qualified.Count);
-                        users.qualified.Add(pawn);
+                        entry.qualified = true;
+                        if (!users.qualifiedIndices.ContainsKey(pawn))
+                        {
+                            users.qualifiedIndices.Add(pawn, users.qualified.Count);
+                            users.qualified.Add(pawn);
+                        }
+                        if ((entry.publicationSteps & PublishWeapons) != 0)
+                        {
+                            int revision = entry.weaponPreparationRevision;
+                            if (RimKataEquippedWeaponPlans.Sync(pawn)
+                                && revision == entry.weaponPreparationRevision)
+                                entry.publicationSteps &= ~PublishWeapons;
+                        }
+                        TryPublicationStep(pawn, entry, PublishApproach,
+                            () => RimKataFlyingKickApproach.NotifyQualifiedPath(pawn));
                     }
-                    RimKataEquippedWeaponPlans.Sync(pawn);
-                    RimKataFlyingKickApproach.NotifyQualifiedPath(pawn);
                 }
                 else if (users.qualifiedIndices.TryGetValue(pawn, out int index))
                 {
@@ -362,36 +401,79 @@ namespace KRWF.RimKata
                 }
                 if (!qualified)
                 {
-                    RimKataWeaponEffects.ReleasePawn(pawn);
-                    RimKataBreachUtility.NotifyEligibilityLost(pawn);
-                    RimKataFlyingKick.QualificationLost(pawn);
-                    RimKataKick.QualificationLost(pawn);
-                    RimKataSubdueUtility.NotifyEligibilityLost(pawn);
-                    RimKataReactiveMotion.Remove(pawn);
-                    RimKataMotionJobGate.Clear(pawn);
+                    TryPublicationStep(pawn, entry, ReleaseEffects, () => RimKataWeaponEffects.ReleasePawn(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseBreach, () => RimKataBreachUtility.NotifyEligibilityLost(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseFlyingKick, () => RimKataFlyingKick.QualificationLost(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseKick, () => RimKataKick.QualificationLost(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseSubdue, () => RimKataSubdueUtility.NotifyEligibilityLost(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseMotion, () => RimKataReactiveMotion.Remove(pawn));
+                    TryPublicationStep(pawn, entry, ReleaseMotionGate, () => RimKataMotionJobGate.Clear(pawn));
+                    TryPublicationStep(pawn, entry, PublishWeapons, () => RimKataEquippedWeaponPlans.Forget(pawn));
                 }
-                RimKataDualWeaponController.InvalidateWeaponBindings(pawn);
-                if (!qualified) RimKataEquippedWeaponPlans.Forget(pawn);
-                RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, qualified);
-                entry.qualificationPublished = true;
-                incompletePublications.Remove(pawn);
+                if (!qualified || entry.qualified)
+                {
+                    TryPublicationStep(pawn, entry, PublishBindings,
+                        () => RimKataDualWeaponController.InvalidateWeaponBindings(pawn));
+                    TryPublicationStep(pawn, entry, PublishMovement,
+                        () => RimKataDormantHostileMovementRegistry.NotifyAccessChanged(pawn, qualified));
+                }
+                entry.qualificationPublished = entry.publicationSteps == 0;
             }
-            catch
+            catch (Exception exception)
             {
-                entry.nextPublicationRetry = (Find.TickManager?.TicksGame ?? 0) + 250;
-                incompletePublications[pawn] = entry;
-                throw;
+                // Keep the unfinished steps even if a preparation/notification escapes
+                // its local guard. Initial spawn/settings calls need the same recovery.
+                entry.qualificationPublished = false;
+                Log.ErrorOnce("[RimKata] Qualification publication could not finish for pawn "
+                    + pawn.thingIDNumber + ": " + exception, pawn.thingIDNumber ^ 0x39D04B4);
             }
-            finally { entry.publishingQualification = false; }
+            finally
+            {
+                entry.publishingQualification = false;
+                if (!entry.qualificationPublished) SchedulePublication(pawn);
+            }
             if (entry.pendingQualification.HasValue)
             {
                 bool pending = entry.pendingQualification.Value;
                 MapUsers pendingUsers = entry.pendingQualificationUsers;
                 entry.pendingQualification = null;
                 entry.pendingQualificationUsers = null;
-                if (pending != qualified || pendingUsers != users) entry.qualificationPublished = false;
-                SetQualified(pawn, entry, pendingUsers, pending);
+                if (pending != qualified || pendingUsers != users)
+                {
+                    entry.qualificationPublished = false;
+                    SetQualified(pawn, entry, pendingUsers, pending);
+                }
             }
+        }
+
+        private static void TryPublicationStep(Pawn pawn, Entry entry, int step, Action publish)
+        {
+            if ((entry.publicationSteps & step) == 0) return;
+            try
+            {
+                publish();
+                entry.publicationSteps &= ~step;
+            }
+            catch (Exception exception)
+            {
+                Log.ErrorOnce("[RimKata] Qualification publication step " + step
+                    + " could not finish for pawn " + pawn.thingIDNumber + ": " + exception,
+                    pawn.thingIDNumber ^ step ^ 0x39D04B2);
+            }
+        }
+
+        private static void SchedulePublication(Pawn pawn)
+        {
+            RimKataStatActivation.ScheduleQualificationRefresh(pawn);
+        }
+
+        internal static void ScheduleWeaponPreparation(Pawn pawn)
+        {
+            if (!TryGetEntry(pawn, out Entry entry) || !entry.qualified) return;
+            entry.weaponPreparationRevision++;
+            entry.publicationSteps |= PublishWeapons;
+            entry.qualificationPublished = false;
+            SchedulePublication(pawn);
         }
 
         private static void RemovePublishedAccess(Pawn pawn, Entry entry)
@@ -404,6 +486,7 @@ namespace KRWF.RimKata
             if (entry.qualified) RimKataEquippedWeaponPlans.Forget(pawn);
             entry.qualified = false;
             entry.publishedMap = null;
+            entry.publicationUsers = null;
             RimKataResponseVisualParticipantCache.NotifyQualificationChanged(pawn, false);
         }
 
@@ -416,41 +499,14 @@ namespace KRWF.RimKata
                 return false;
             }
 
-            if (registeredUsers.TryGetValue(pawn, out RegisteredUser _))
-            {
-                if (HasPendingPublication) FinishPendingPublication(pawn);
-                return true;
-            }
+            if (TryGetCachedAccess(pawn, out bool cachedAccess)) return cachedAccess;
+            if (pawn.Spawned) return false;
 
-            Entry entry = entries.GetValue(pawn, CreateEntry);
-            if (!entry.qualificationPublished) FinishPendingPublication(pawn);
-            int accessState = entry.accessState;
-            if (accessState == AccessDenied)
-            {
-                return false;
-            }
-
-            if (accessState == AccessGranted)
-            {
-                UpdateRegisteredUser(pawn, true);
-                return true;
-            }
-
-            lock (entry)
-            {
-                accessState = entry.accessState;
-                if (accessState != AccessUnknown)
-                {
-                    bool cachedAccess = accessState == AccessGranted;
-                    UpdateRegisteredUser(pawn, cachedAccess);
-                    return cachedAccess;
-                }
-
-                bool hasAccess = ResolveAccess(pawn, entry);
-                StoreAccess(entry, hasAccess);
-                UpdateRegisteredUser(pawn, hasAccess);
-                return hasAccess;
-            }
+            // World pawns and early external callers can precede lifecycle registration.
+            // Read a source snapshot only: no publication, watch registration or weapon preparation.
+            var snapshot = new Entry();
+            return ResolveOtherSources(pawn, snapshot)
+                || RimKataStatActivation.ReadQualified(pawn, monitor: false);
         }
 
         public static bool IsRegisteredUser(Pawn pawn)
@@ -590,7 +646,6 @@ namespace KRWF.RimKata
             {
                 lock (entry)
                 {
-                    entry.accessState = AccessUnknown;
                     entry.rimKataGeneKnown = false;
                     entry.dependencyGeneKnown = false;
                     entry.dependencyGene = null;
@@ -609,7 +664,6 @@ namespace KRWF.RimKata
             {
                 lock (entry)
                 {
-                    entry.accessState = AccessUnknown;
                     entry.psycastKnown = false;
                 }
             }
@@ -651,7 +705,7 @@ namespace KRWF.RimKata
                 if (entry != null)
                 {
                     bool hasSource;
-                    lock (entry) hasSource = StoreAccess(entry, ResolveAccess(pawn, entry, refreshStats: true));
+                    lock (entry) hasSource = RefreshAccessSources(pawn, entry, refreshStats: true);
                     UpdateRegisteredUser(pawn, hasSource);
                 }
                 RimKataStrengthUtility.Refresh(pawn);
@@ -667,7 +721,6 @@ namespace KRWF.RimKata
             {
                 lock (entry)
                 {
-                    entry.accessState = AccessUnknown;
                     entry.roleKnown = false;
                 }
             }
@@ -704,7 +757,6 @@ namespace KRWF.RimKata
                 {
                     if (changedDef == RimKataDefOf.RimKata_A_Effect)
                     {
-                        entry.accessState = AccessUnknown;
                         entry.ampouleKnown = false;
                     }
 
@@ -737,7 +789,6 @@ namespace KRWF.RimKata
             {
                 registeredSecondary = RimKataSecondaryWeaponRegistry.CurrentRegistry?.GetRegistered(pawn);
             }
-            RemoveRegisteredUser(pawn);
             return registeredSecondary;
         }
 
@@ -747,6 +798,13 @@ namespace KRWF.RimKata
         {
             if (pawn?.Spawned != true)
             {
+                if (pawn?.health != null && !pawn.Dead)
+                {
+                    Entry entry = entries.GetValue(pawn, CreateEntry);
+                    bool hasSource;
+                    lock (entry) hasSource = RefreshAccessSources(pawn, entry);
+                    UpdateRegisteredUser(pawn, hasSource);
+                }
                 RimKataStrengthUtility.Refresh(pawn);
                 RimKataColonistBarWeaponCache.Refresh(pawn);
                 return;
@@ -777,10 +835,33 @@ namespace KRWF.RimKata
 
         private static bool StoreAccess(Entry entry, bool value)
         {
-            entry.accessState = value
-                ? AccessGranted
-                : (!entry.traitsKnown || !entry.skillsKnown ? AccessUnknown : AccessDenied);
-            return value;
+            // An unavailable read is not a successful denial of the previous source result.
+            if (value) entry.accessState = AccessGranted;
+            else if (entry.traitsKnown && entry.skillsKnown && entry.statsKnown)
+                entry.accessState = AccessDenied;
+            return entry.accessState == AccessGranted;
+        }
+
+        private static bool RefreshAccessSources(Pawn pawn, Entry entry, bool refreshStats = false)
+        {
+            entry.sourcesPending = true;
+            try
+            {
+                bool hasSource = StoreAccess(entry, ResolveAccess(pawn, entry, refreshStats));
+                entry.sourcesPending = false;
+                return hasSource;
+            }
+            catch (Exception exception)
+            {
+                Log.ErrorOnce("[RimKata] Access sources could not be refreshed for pawn "
+                    + pawn.thingIDNumber + ": " + exception, pawn.thingIDNumber ^ 0x39D04B3);
+                return entry.accessState == AccessGranted;
+            }
+            finally
+            {
+                if (entry.sourcesPending || !entry.traitsKnown || !entry.skillsKnown || !entry.statsKnown)
+                    RimKataStatActivation.ScheduleQualificationRefresh(pawn);
+            }
         }
 
         private static bool ResolveAccess(Pawn pawn, Entry entry, bool refreshStats = false)
@@ -788,10 +869,13 @@ namespace KRWF.RimKata
             if (ResolveOtherSources(pawn, entry))
             {
                 // Another source keeps access valid; stat-only monitoring is unnecessary.
-                RimKataStatActivation.Forget(pawn);
+                entry.statsKnown = true;
+                RimKataStatActivation.StopMonitoring(pawn);
                 return true;
             }
-            return entry.statsQualified = RimKataStatActivation.ReadQualified(pawn, refresh: refreshStats);
+            entry.statsKnown = RimKataStatActivation.TryReadQualified(pawn,
+                out bool qualified, refresh: refreshStats);
+            return entry.statsQualified = qualified;
         }
 
         private static bool ResolveOtherSources(Pawn pawn, Entry entry)
@@ -859,11 +943,11 @@ namespace KRWF.RimKata
             {
                 if (traits) entry.traitsKnown = false;
                 if (skills) entry.skillsKnown = false;
-                bool hasAccess = ResolveAccess(pawn, entry);
-                changed = (entry.accessState == AccessGranted) != hasAccess || !entry.qualificationPublished;
+                bool previous = entry.accessState == AccessGranted;
+                bool hasAccess = RefreshAccessSources(pawn, entry);
+                changed = previous != hasAccess || !entry.qualificationPublished;
                 entry.qualificationTooltip = null;
                 // Reuse source results in FinishAccessInvalidation without re-reading skills/traits.
-                StoreAccess(entry, hasAccess);
             }
             if (!changed) return;
             ThingWithComps secondary = BeginAccessInvalidation(pawn);
@@ -876,9 +960,9 @@ namespace KRWF.RimKata
             bool changed;
             lock (entry)
             {
-                bool hasAccess = ResolveAccess(pawn, entry);
-                changed = (entry.accessState == AccessGranted) != hasAccess || !entry.qualificationPublished;
-                StoreAccess(entry, hasAccess);
+                bool previous = entry.accessState == AccessGranted;
+                bool hasAccess = RefreshAccessSources(pawn, entry);
+                changed = previous != hasAccess || !entry.qualificationPublished;
                 entry.statsTooltipTick = -1;
                 entry.qualificationTooltip = null;
             }
@@ -974,14 +1058,6 @@ namespace KRWF.RimKata
                 registeredUsers.Remove(pawn);
             }
             PublishAccess(pawn, hasAccess);
-        }
-
-        private static void RemoveRegisteredUser(Pawn pawn)
-        {
-            if (pawn != null)
-            {
-                registeredUsers.Remove(pawn);
-            }
         }
 
         private static void ResolveRimKataGene(Pawn pawn, Entry entry)
@@ -1238,6 +1314,9 @@ namespace KRWF.RimKata
     {
         public static void Postfix(Pawn ___pawn, Hediff __0)
         {
+            RimKataWeaponEffectStats.NotifyHealthChanged(___pawn, __0);
+            if (RimKataDualWeaponController.HasExecutionFailures && !RimKataWeaponEffects.IsInternalHealthChange(___pawn))
+                RimKataDualWeaponController.NotifyCombatInputsChanged(___pawn);
             if (__0?.Part != null)
             {
                 RimKataWeaponSlotUtility.InvalidateCombatVerbCache(___pawn);
@@ -1257,6 +1336,9 @@ namespace KRWF.RimKata
     {
         public static void Postfix(Pawn ___pawn, Hediff __0)
         {
+            RimKataWeaponEffectStats.NotifyHealthChanged(___pawn, __0);
+            if (RimKataDualWeaponController.HasExecutionFailures && !RimKataWeaponEffects.IsInternalHealthChange(___pawn))
+                RimKataDualWeaponController.NotifyCombatInputsChanged(___pawn);
             RimKataSecondaryHandRequirement.NotifyHealthChanged(___pawn, __0);
             RimKataEligibilityCache.InvalidateHediff(___pawn, __0?.def);
             RimKataSecondaryHandRequirement.NotifyMissingPartAdded(___pawn, __0);
@@ -1278,6 +1360,9 @@ namespace KRWF.RimKata
     {
         public static void Postfix(Pawn ___pawn, Hediff __0)
         {
+            RimKataWeaponEffectStats.NotifyHealthChanged(___pawn, __0);
+            if (RimKataDualWeaponController.HasExecutionFailures && !RimKataWeaponEffects.IsInternalHealthChange(___pawn))
+                RimKataDualWeaponController.NotifyCombatInputsChanged(___pawn);
             RimKataSecondaryHandRequirement.NotifyHealthChanged(___pawn, __0);
             RimKataEligibilityCache.InvalidateHediff(___pawn, __0?.def);
             RimKataStrengthUtility.NotifyHediffChanged(___pawn, __0);

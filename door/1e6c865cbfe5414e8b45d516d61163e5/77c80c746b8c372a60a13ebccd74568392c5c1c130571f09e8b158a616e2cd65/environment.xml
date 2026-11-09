@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RimKataDoorEnvironment schemaVersion="1" gameVersion="1.7.5000 rev1275">
+  <assembly name="Assembly-CSharp, Version=1.7.9805.38275, Culture=neutral, PublicKeyToken=null" moduleId="6c268a95-d1a8-4d6f-ad81-e5dcf6949c0e" />
+  <mod packageId="brrainz.harmony" loadOrder="0" version="3.0.1.0">
+    <assembly name="0Harmony, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="f89a6d42-3950-4658-a805-68a32790beea" />
+    <assembly name="HarmonyMod, Version=3.0.1.0, Culture=neutral, PublicKeyToken=null" moduleId="fcca4ab5-ae30-47a6-bc28-e3df77e49e87" />
+  </mod>
+  <mod packageId="ludeon.rimworld" loadOrder="1" version="" />
+  <mod packageId="ludeon.rimworld.royalty" loadOrder="2" version="" />
+  <mod packageId="ludeon.rimworld.ideology" loadOrder="3" version="" />
+  <mod packageId="ludeon.rimworld.biotech" loadOrder="4" version="" />
+  <mod packageId="ludeon.rimworld.anomaly" loadOrder="5" version="" />
+  <mod packageId="ludeon.rimworld.odyssey" loadOrder="6" version="" />
+  <mod packageId="ray1203.simplecamerasetting" loadOrder="7" version="">
+    <assembly name="BetterKeybinding, Version=5.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="caa3ad95-c238-4fa2-8ef1-4a0afcf2c28e" />
+    <assembly name="SimpleCameraSetting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="b2f045b5-984a-48db-8f63-7e1506649555" />
+  </mod>
+  <mod packageId="krwf.extramousekeybinds_steam" loadOrder="8" version="">
+    <assembly name="ExtraMouseKeybinds, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="6224a848-2874-4d72-8154-288d758c522a" />
+  </mod>
+  <mod packageId="gguake.optionalnamedisplay" loadOrder="9" version="">
+    <assembly name="OptionalNameDisplay, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="b5eb45f3-235e-46ed-8b61-a2ac5fa19948" />
+  </mod>
+  <mod packageId="krwf.rimkata" loadOrder="10" version="1.1.1">
+    <assembly name="RimKata, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="785791dd-84f5-4a94-ab6b-9f3467048be6" />
+  </mod>
+  <mod packageId="void.charactereditor" loadOrder="11" version="1.7.1">
+    <assembly name="CharacterEditor, Version=1.7.1.0, Culture=neutral, PublicKeyToken=null" moduleId="194182f4-b3b4-4014-a08d-a0b10b09e87f" />
+  </mod>
+  <mod packageId="dubwise.dubsperformanceanalyzer.steam" loadOrder="12" version="1.7.21">
+    <assembly name="PerformanceAnalyzer, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" moduleId="4fb964a6-1f64-4515-86a6-bf01603c5ea5" />
+  </mod>
+</RimKataDoorEnvironment>

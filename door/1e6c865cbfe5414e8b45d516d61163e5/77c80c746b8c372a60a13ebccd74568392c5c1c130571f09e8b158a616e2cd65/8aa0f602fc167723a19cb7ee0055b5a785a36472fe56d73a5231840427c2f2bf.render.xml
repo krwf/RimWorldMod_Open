@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RimKataDoorRender schemaVersion="1">
+  <supported>true</supported>
+  <scope>closed-main-panels-only</scope>
+  <reason></reason>
+  <renderer>door-panels-v2</renderer>
+  <rotationSource>selected-door-at-use</rotationSource>
+  <includesCompOverlays>false</includesCompOverlays>
+  <includesShadows>false</includesShadows>
+  <layer scale="1,1,1" offset="0" altitude="0">
+    <material rotation="0" shaderPath="Map/Cutout" shader="Cutout" texturePath="Things/Building/Door/DoorSimple_Mover" maskPath="" color="0.61960787,0.6,0.5294118,1" colorTwo="1,1,1,1" textureScale="1,1" textureOffset="0,0" renderQueue="2900" keywords="" />
+    <material rotation="1" shaderPath="Map/Cutout" shader="Cutout" texturePath="Things/Building/Door/DoorSimple_Mover" maskPath="" color="0.61960787,0.6,0.5294118,1" colorTwo="1,1,1,1" textureScale="1,1" textureOffset="0,0" renderQueue="2900" keywords="" />
+    <material rotation="2" shaderPath="Map/Cutout" shader="Cutout" texturePath="Things/Building/Door/DoorSimple_Mover" maskPath="" color="0.61960787,0.6,0.5294118,1" colorTwo="1,1,1,1" textureScale="1,1" textureOffset="0,0" renderQueue="2900" keywords="" />
+    <material rotation="3" shaderPath="Map/Cutout" shader="Cutout" texturePath="Things/Building/Door/DoorSimple_Mover" maskPath="" color="0.61960787,0.6,0.5294118,1" colorTwo="1,1,1,1" textureScale="1,1" textureOffset="0,0" renderQueue="2900" keywords="" />
+  </layer>
+</RimKataDoorRender>

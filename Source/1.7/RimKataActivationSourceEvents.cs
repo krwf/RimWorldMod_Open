@@ -21,7 +21,7 @@ namespace KRWF.RimKata
         [ThreadStatic] private static bool traitsChanged, skillsChanged;
 
         internal static bool SkillSourcesEnabled
-            => RimKataPersonalActivation.SkillsEnabled;
+            => RimKataPersonalActivation.SkillsEnabled || RimKataDualWeaponController.HasExecutionFailures;
 
         internal static ChangeScope Begin(Pawn pawn, bool traits, bool skills)
         {
@@ -68,6 +68,8 @@ namespace KRWF.RimKata
 
         internal static void NotifySkillChanged(SkillRecord record)
         {
+            if (RimKataDualWeaponController.HasExecutionFailures)
+                RimKataDualWeaponController.NotifyCombatInputsChanged(record.Pawn);
             if (!RimKataPersonalActivation.EnabledFor(record.def)) return;
             Pawn pawn = record.Pawn;
             if (pawn == null) return;

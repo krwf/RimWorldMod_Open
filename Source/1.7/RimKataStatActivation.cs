@@ -20,8 +20,9 @@ namespace KRWF.RimKata
         {
             internal Pawn pawn;
             internal Map map;
-            internal bool[] matches;
-            internal bool qualified, reading;
+            internal bool[] matches, known;
+            internal bool qualified, reading, monitoring, resolved;
+            internal int qualificationRetry = -1;
             internal int scheduled = -1, nextPeriodic, nextEvent;
             internal Changes pending;
         }
@@ -44,6 +45,7 @@ namespace KRWF.RimKata
         private static bool health, periodic;
         [ThreadStatic] private static Pawn evaluating;
         internal static bool Enabled => rules.Count != 0;
+        internal static bool HasScheduledWork => maps.Count != 0;
         internal static bool HealthEnabled => health || periodic;
         internal static bool RecordsEnabled => records.Count != 0;
         private static int Now => Find.TickManager?.TicksGame ?? 0;
@@ -73,7 +75,8 @@ namespace KRWF.RimKata
                     || next[i].rule.comparison != rules[i].rule.comparison
                     || next[i].rule.value != rules[i].rule.value;
             if (!changed) return false;
-            ResetGame();
+            // Settings can replace stat rules while a publication retry still owns this watch.
+            foreach (Watch watch in new List<Watch>(watches.Values)) StopMonitoring(watch.pawn);
             rules.Clear();
             rules.AddRange(next);
             records.Clear();
@@ -89,39 +92,79 @@ namespace KRWF.RimKata
 
         internal static bool ReadQualified(Pawn pawn, bool monitor = true, bool refresh = false)
         {
-            if (!Enabled || pawn?.health == null || pawn.Dead) return false;
+            TryReadQualified(pawn, out bool qualified, monitor, refresh);
+            return qualified;
+        }
+
+        internal static bool TryReadQualified(Pawn pawn, out bool qualified,
+            bool monitor = true, bool refresh = false)
+        {
+            qualified = false;
+            if (pawn?.health == null) return false;
+            if (!Enabled || pawn.Dead) return true;
             if (monitor && (!RimKataEligibility.FactionEffectsEnabled(pawn)
                 || RimKataTargetAccess.IsEnabled(pawn)))
-            { Forget(pawn); return false; }
+            { StopMonitoring(pawn); return true; }
             if (watches.TryGetValue(pawn, out Watch existing))
             {
                 if (existing.map != pawn.Map || !pawn.Spawned) Forget(pawn);
-                else
+                else if (existing.monitoring)
                 {
                     // Re-evaluate in place; do not discard pending events or the map schedule.
                     if (refresh && !existing.reading) Evaluate(existing, Changes.All);
-                    return existing.qualified;
+                    qualified = existing.qualified;
+                    return existing.resolved;
                 }
             }
             // Some information stats ask for RimKata access from ShouldShowFor/GetValue.
             // A world-pawn/card snapshot has no registered watch to break that recursion.
             if (evaluating == pawn) return false;
             bool track = monitor && pawn.Spawned;
-            var watch = new Watch { pawn = pawn, map = pawn.Map, matches = new bool[rules.Count] };
-            if (track)
-            {
-                watches.Add(pawn, watch);
-                if (!maps.TryGetValue(watch.map, out MapSchedule schedule))
-                    maps.Add(watch.map, schedule = new MapSchedule());
-                schedule.members.Add(watch);
-            }
+            Watch watch = track ? GetWatch(pawn) : new Watch { pawn = pawn, map = pawn.Map };
+            watch.matches = new bool[rules.Count];
+            watch.known = new bool[rules.Count];
+            watch.monitoring = track;
             Evaluate(watch, Changes.All);
             if (track && periodic)
             {
                 watch.nextPeriodic = Now + 1 + (pawn.thingIDNumber & int.MaxValue) % Period;
                 Schedule(watch, watch.nextPeriodic);
             }
-            return watch.qualified;
+            qualified = watch.qualified;
+            return watch.resolved;
+        }
+
+        private static Watch GetWatch(Pawn pawn)
+        {
+            if (watches.TryGetValue(pawn, out Watch watch))
+            {
+                if (watch.map == pawn.Map) return watch;
+                Forget(pawn);
+            }
+            watch = new Watch { pawn = pawn, map = pawn.Map };
+            watches.Add(pawn, watch);
+            if (!maps.TryGetValue(watch.map, out MapSchedule schedule))
+                maps.Add(watch.map, schedule = new MapSchedule());
+            schedule.members.Add(watch);
+            return watch;
+        }
+
+        internal static void ScheduleQualificationRefresh(Pawn pawn)
+        {
+            if (pawn?.Spawned != true || pawn.health == null || pawn.Dead) return;
+            Watch watch = GetWatch(pawn);
+            int due = Now + Period;
+            if (watch.qualificationRetry < 0 || due < watch.qualificationRetry)
+                watch.qualificationRetry = due;
+            Schedule(watch, watch.qualificationRetry);
+        }
+
+        internal static void StopMonitoring(Pawn pawn)
+        {
+            if (pawn == null || !watches.TryGetValue(pawn, out Watch watch)) return;
+            watch.monitoring = false;
+            watch.pending = Changes.None;
+            if (watch.qualificationRetry < 0) Forget(pawn);
         }
 
         private static void Evaluate(Watch watch, Changes changes)
@@ -131,7 +174,7 @@ namespace KRWF.RimKata
             evaluating = watch.pawn;
             try
             {
-                bool any = false;
+                bool any = false, allKnown = true;
                 for (int i = 0; i < rules.Count; i++)
                 {
                     Prepared prepared = rules[i];
@@ -146,12 +189,17 @@ namespace KRWF.RimKata
                                 Schedule(watch, Math.Max(Now + Period, watch.nextEvent));
                         }
                         else
+                        {
                             watch.matches[i] = result == RimKataActivationStatItem.ReadResult.Value
                                 && prepared.item.Compare(value, prepared.rule);
+                            watch.known[i] = true;
+                        }
                     }
                     any |= watch.matches[i];
+                    allKnown &= watch.known[i];
                 }
                 watch.qualified = any;
+                watch.resolved = any || allKnown;
             }
             finally { evaluating = previous; watch.reading = false; }
         }
@@ -168,7 +216,8 @@ namespace KRWF.RimKata
 
         private static void Mark(Pawn pawn, Changes changes)
         {
-            if (pawn == null || !watches.TryGetValue(pawn, out Watch watch) || watch.reading) return;
+            if (pawn == null || !watches.TryGetValue(pawn, out Watch watch)
+                || !watch.monitoring || watch.reading) return;
             watch.pending |= changes;
             Schedule(watch, Math.Max(Now + 1, watch.nextEvent));
         }
@@ -200,18 +249,28 @@ namespace KRWF.RimKata
                 if (remaining-- <= 0) { Schedule(watch, now + 1); continue; }
                 Changes changes = watch.pending;
                 watch.pending = Changes.None;
-                if (periodic && now >= watch.nextPeriodic)
+                if (watch.monitoring && periodic && now >= watch.nextPeriodic)
                 {
                     changes |= Changes.Periodic;
                     watch.nextPeriodic = now + Period;
                 }
                 bool previous = watch.qualified;
-                Evaluate(watch, changes);
+                bool previouslyResolved = watch.resolved;
+                if (watch.monitoring) Evaluate(watch, changes);
                 watch.nextEvent = now + EventInterval;
-                if (previous != watch.qualified)
+                if (watch.monitoring && (previous != watch.qualified || previouslyResolved != watch.resolved))
                     RimKataEligibilityCache.RefreshStatSource(watch.pawn);
-                if (watches.TryGetValue(watch.pawn, out Watch current) && current == watch && periodic)
-                    Schedule(watch, watch.nextPeriodic);
+                if (watch.qualificationRetry >= 0 && now >= watch.qualificationRetry)
+                {
+                    watch.qualificationRetry = -1;
+                    RimKataEligibilityCache.RefreshPendingAccess(watch.pawn);
+                }
+                if (watches.TryGetValue(watch.pawn, out Watch current) && current == watch)
+                {
+                    if (watch.monitoring && periodic) Schedule(watch, watch.nextPeriodic);
+                    if (watch.qualificationRetry >= 0) Schedule(watch, watch.qualificationRetry);
+                    else if (!watch.monitoring) Forget(watch.pawn);
+                }
             }
             due.Clear();
         }
@@ -247,6 +306,8 @@ namespace KRWF.RimKata
     {
         private static void Postfix(Pawn ___pawn)
         {
+            if (RimKataDualWeaponController.HasExecutionFailures && !RimKataWeaponEffects.IsInternalHealthChange(___pawn))
+                RimKataDualWeaponController.NotifyCombatInputsChanged(___pawn);
             if (RimKataStatActivation.HealthEnabled) RimKataStatActivation.NotifyHealth(___pawn);
         }
     }

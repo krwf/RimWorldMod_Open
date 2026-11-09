@@ -58,6 +58,7 @@ namespace KRWF.RimKata
 
         internal static void Initialize(Harmony harmony)
         {
+            RimKataRatkinRenderCompat.Apply(harmony);
             try
             {
                 RimKataWeaponRenderDiscovery.Initialize(harmony);
@@ -94,6 +95,19 @@ namespace KRWF.RimKata
             var result = matches.Count == 0 ? noRenderers : matches.ToArray();
             renderersByDef[def] = result;
             return result;
+        }
+
+        // Called by equipped-weapon preparation, never by a draw/cache miss.
+        internal static bool PrepareDefinition(ThingDef def)
+        {
+            if (def == null || renderersByDef.ContainsKey(def)) return true;
+            try { Register(def); return true; }
+            catch (Exception exception)
+            {
+                Log.ErrorOnce("[RimKata] Weapon renderer mapping could not finish for "
+                    + def.defName + ": " + exception, def.shortHash ^ 0x4A7D924);
+                return false;
+            }
         }
 
         internal static int BeginFrame(Pawn pawn, Vector3 root, Rot4 facing, PawnRenderFlags flags)
@@ -288,7 +302,7 @@ namespace KRWF.RimKata
 
             if (!renderersByDef.TryGetValue(weapon.def, out var renderers))
             {
-                renderers = Register(weapon.def);
+                return SecondaryDrawResult.None;
             }
             if (renderers.Length == 0)
             {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RimKataDoorMetadata schemaVersion="1">
+  <defName>Door</defName>
+  <sourceModId>Ludeon.RimWorld</sourceModId>
+  <thingClass>RimWorld.Building_Door</thingClass>
+  <assemblyId>6c268a95-d1a8-4d6f-ad81-e5dcf6949c0e</assemblyId>
+  <stuff>Steel</stuff>
+  <style></style>
+  <sizeX>1</sizeX>
+  <sizeZ>1</sizeZ>
+  <color>0.4117647,0.4117647,0.4117647,1</color>
+  <colorTwo>1,1,1,1</colorTwo>
+  <graphicClass>Verse.Graphic_Single</graphicClass>
+  <graphicPath>Things/Building/Door/DoorSimple_Mover</graphicPath>
+  <maskPath></maskPath>
+  <shaderPath>Map/Cutout</shaderPath>
+  <graphicColor>0.4117647,0.4117647,0.4117647,1</graphicColor>
+  <graphicColorTwo>1,1,1,1</graphicColorTwo>
+  <graphicSizeX>1</graphicSizeX>
+  <graphicSizeY>1</graphicSizeY>
+</RimKataDoorMetadata>

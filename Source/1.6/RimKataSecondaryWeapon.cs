@@ -1393,7 +1393,11 @@ namespace KRWF.RimKata
             bool removed)
         {
             if (removed && changedEquipment != null)
+            {
                 RimKataWeaponEffects.ReleaseWeapon(changedEquipment);
+                RimKataWeaponExecutionRuntime.ForgetExecutionFailure(changedEquipment);
+            }
+            RimKataWeaponEffects.NotifyEquipmentChanged(pawn, changedEquipment, removed);
             RimKataDownedWeaponUtility.NotifyEquipmentChanged(pawn, changedEquipment, removed);
             RimKataSubdueUtility.NotifyEquipmentChanged(pawn);
             if (pawn?.Spawned != true

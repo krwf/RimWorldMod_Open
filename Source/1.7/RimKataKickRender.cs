@@ -259,19 +259,23 @@ namespace KRWF.RimKata
         {
             ShotScope previous = shot;
             shot = default;
-            RimKataKickState kick = request.state?.kick;
-            if (request.verb?.IsMeleeAttack != false || kick?.motionActive != true) return previous;
-            RimKataKickVisual visual = kick.visual;
-            Geometry geometry = ReadGeometry(visual, out bool ready);
-            Vector3 displacement = Displacement(visual, geometry);
-            Vector3 root = request.pawn.DrawPos;
-            Vector3 anchor = root + geometry.anchorOffset;
-            Vector3 origin = anchor + displacement;
-            shot = new ShotScope { verb = request.verb,
-                center = (ready ? RimKataGroundPoseGeometry.StandingCenter(request.verb, origin,
-                    root + geometry.anchorOffset.Yto0())
-                    : RimKataGroundPoseGeometry.StandingCenter(request.verb, origin)) + displacement };
-            return previous;
+            try
+            {
+                RimKataKickState kick = request.state?.kick;
+                if (request.verb?.IsMeleeAttack != false || kick?.motionActive != true) return previous;
+                RimKataKickVisual visual = kick.visual;
+                Geometry geometry = ReadGeometry(visual, out bool ready);
+                Vector3 displacement = Displacement(visual, geometry);
+                Vector3 root = request.pawn.DrawPos;
+                Vector3 anchor = root + geometry.anchorOffset;
+                Vector3 origin = anchor + displacement;
+                shot = new ShotScope { verb = request.verb,
+                    center = (ready ? RimKataGroundPoseGeometry.StandingCenter(request.verb, origin,
+                        root + geometry.anchorOffset.Yto0())
+                        : RimKataGroundPoseGeometry.StandingCenter(request.verb, origin)) + displacement };
+                return previous;
+            }
+            catch { shot = previous; throw; }
         }
 
         internal static void EndShot(ShotScope previous) => shot = previous;

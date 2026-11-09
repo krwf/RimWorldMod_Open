@@ -25,11 +25,15 @@ namespace KRWF.RimKata
         {
             Scope previous = current;
             current = default;
-            RimKataReactiveMotionState motion = request.reactiveMotion;
-            if (motion?.kind == RimKataReactiveKind.Sliding && motion.pawn == request.pawn)
-                current = new Scope { verb = request.verb, pawn = request.pawn, target = request.target,
-                    center = Center(motion, Find.TickManager.TicksGame) };
-            return previous;
+            try
+            {
+                RimKataReactiveMotionState motion = request.reactiveMotion;
+                if (motion?.kind == RimKataReactiveKind.Sliding && motion.pawn == request.pawn)
+                    current = new Scope { verb = request.verb, pawn = request.pawn, target = request.target,
+                        center = Center(motion, Find.TickManager.TicksGame) };
+                return previous;
+            }
+            catch { current = previous; throw; }
         }
 
         internal static void End(Scope previous) => current = previous;

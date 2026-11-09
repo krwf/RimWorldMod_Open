@@ -535,8 +535,9 @@ namespace KRWF.RimKata
             RimKataMapComponent component = defender.Map?.GetComponent<RimKataMapComponent>();
             RimKataSettings settings = RimKataTargetAccess.SettingsFor(defender);
 
+            bool sliding = RimKataReactiveMotion.HasSlidingMotion(defender);
             float immediateTumbleChance = settings?.ImmediateTumbleChance ?? 0f;
-            if (component != null
+            if (!sliding && component != null
                 && settings?.tumbleEnabled != false
                 && !component.IsCloseCombatActive(defender)
                 && immediateTumbleChance > 0f
@@ -563,13 +564,13 @@ namespace KRWF.RimKata
                 }
 
                 bool closeCombatDodge = component.IsCloseCombatActive(defender);
-                bool playTumble = !closeCombatDodge;
+                bool playTumble = !closeCombatDodge && !sliding;
                 if (!component.TryBeginAdditionalDodge(defender, playTumble))
                 {
                     return false;
                 }
 
-                if (closeCombatDodge)
+                if (closeCombatDodge && !sliding)
                 {
                     component.BeginCloseCombatDodge(defender, dodgeDurationTicks);
                 }

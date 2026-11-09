@@ -158,6 +158,15 @@ namespace KRWF.RimKata
                 CancelShot();
                 return;
             }
+            if (RimKataWeaponExecutionRuntime.RequiresOriginalCast(companionVerb))
+            {
+                // The lead weapon remains owned by the original Hunt toil. A companion
+                // response cannot borrow its stance without a prepared completion contract.
+                cycle.ClearPlan();
+                cycle.visualTarget = null;
+                cycle.visualAimTicksRemaining = 0;
+                return;
+            }
             if (cycle.NativeAttackPending || cycle.cooldownTicksRemaining > 0) return;
             if (!cycle.HasPlan)
             {

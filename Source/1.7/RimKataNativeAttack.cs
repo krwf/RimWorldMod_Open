@@ -14,14 +14,39 @@ namespace KRWF.RimKata
         private sealed class VerbBinding
         {
             internal RimKataNativeAttack request;
+            internal OriginalExecution original;
             internal bool cancelAfterLoad;
             internal bool interruptedBurstAfterLoad;
             internal bool resettingAfterLoad;
         }
 
+        // Keep the original stance object and its own StanceTick, rather than
+        // inventing a completion timer or borrowing the other weapon's cooldown.
+        internal sealed class OriginalExecution
+        {
+            internal Game game;
+            internal Verb verb;
+            internal Pawn pawn;
+            internal Job job;
+            internal RimKataWeaponCycleState cycle;
+            internal Stance stance;
+            internal Stance_Mobile mobile;
+            internal int lastTick = -1;
+            internal int warmupTotalTicks;
+            internal bool cancelled;
+        }
+
+        internal struct OriginalScope
+        {
+            internal OriginalExecution execution;
+            internal Stance previous;
+        }
+
         private static readonly ConditionalWeakTable<Verb, VerbBinding> bindings =
             new ConditionalWeakTable<Verb, VerbBinding>();
         private static int reactiveRequestCount;
+        private static Game originalGame;
+        private static int originalCount;
         private static readonly AccessTools.FieldRef<Verb, LocalTargetInfo> currentTarget =
             AccessTools.FieldRefAccess<Verb, LocalTargetInfo>("currentTarget");
         private static readonly AccessTools.FieldRef<Verb, LocalTargetInfo> currentDestination =
@@ -77,12 +102,17 @@ namespace KRWF.RimKata
         internal bool Executing { get; private set; }
         internal bool Started { get; set; }
         internal bool HasFired { get; private set; }
+        internal bool OriginalHandoff { get; private set; }
         internal bool BurstActive => Pending && Started && verb?.state == VerbState.Bursting;
         private bool cancelled;
         internal bool Cancelled => cancelled;
         private Verb bindingVerb;
         private VerbBinding nativeBinding;
         private RimKataFireContext.ScopeState previousContext;
+        private RimKataWeaponEffectStats.Scope previousStats;
+        private byte executionScopes;
+        private const byte StatsScope = 1, FireScope = 2, SlidingScope = 4,
+            FlyingScope = 8, KickScope = 16, SubdueScope = 32, DirectionScope = 64;
         private RimKataSlidingAttackOrigin.Scope previousSlidingOrigin;
         private RimKataFlyingKickRender.ShotScope previousFlyingKickOrigin;
         private RimKataKickRender.ShotScope previousKickOrigin;
@@ -106,6 +136,145 @@ namespace KRWF.RimKata
                 && binding.request?.Pending == true ? binding.request : null;
         internal static bool HasPendingRequest(Verb verb) => PendingRequest(verb) != null;
 
+        internal static bool IsOriginalCastBusy(Verb verb)
+            => originalCount != 0 && originalGame == Current.Game
+                && verb != null && bindings.TryGetValue(verb, out var binding)
+                && binding.original is OriginalExecution execution && !execution.cancelled
+                && (execution.stance is Stance_Busy || verb.state == VerbState.Bursting);
+
+        internal static bool TryGetOriginalVisualData(Pawn pawn, RimKataWeaponCycleState cycle,
+            out RimKataWeaponVisualData data)
+        {
+            data = default;
+            Verb verb = cycle?.boundVerb;
+            if (originalCount == 0 || originalGame != Current.Game || verb == null
+                || !bindings.TryGetValue(verb, out var binding)
+                || !(binding.original is OriginalExecution execution) || execution.cancelled
+                || execution.pawn != pawn || execution.cycle != cycle
+                || execution.job != pawn.CurJob
+                || cycle.weapon != verb.EquipmentSource) return false;
+            Stance_Busy busy = execution.stance as Stance_Busy;
+            if (busy == null && verb.state != VerbState.Bursting) return false;
+            bool warming = busy is Stance_Warmup;
+            int warmupTicks = warming ? Math.Max(0, busy.ticksLeft) : 0;
+            data = new RimKataWeaponVisualData
+            {
+                weapon = cycle.weapon,
+                target = busy != null
+                    ? busy.neverAimWeapon ? LocalTargetInfo.Invalid : busy.focusTarg
+                    : verb.CurrentTarget,
+                warming = warming,
+                warmupTicksRemaining = warmupTicks,
+                warmupTotalTicks = warming ? Math.Max(warmupTicks, execution.warmupTotalTicks) : 0,
+                cooldownTicksRemaining = busy is Stance_Cooldown ? Math.Max(0, busy.ticksLeft) : 0,
+                originalTiming = true
+            };
+            return true;
+        }
+
+        private static OriginalScope EnterOriginal(OriginalExecution execution)
+        {
+            var scope = new OriginalScope { execution = execution, previous = execution.pawn.stances.curStance };
+            execution.pawn.stances.curStance = execution.stance ?? execution.mobile;
+            return scope;
+        }
+
+        internal static void BeginOriginalTick(Verb verb, out OriginalScope scope)
+        {
+            scope = default;
+            if (originalCount == 0 || originalGame != Current.Game) return;
+            if (!bindings.TryGetValue(verb, out var binding) || binding.original == null) return;
+            OriginalExecution execution = binding.original;
+            if (execution.cancelled || execution.pawn?.Spawned != true
+                || execution.pawn.Dead || execution.pawn.Downed || execution.pawn.InMentalState
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(execution.pawn)
+                || execution.pawn.CurJob != execution.job
+                || execution.cycle.weapon != verb.EquipmentSource)
+            {
+                try { ClearOriginal(verb, binding); verb.Reset(); }
+                catch (Exception exception) { FailOriginalExecution(verb, execution, exception); }
+                return;
+            }
+            // Preserve the native pause/reset rules; a detached warmup cannot bypass stun.
+            if (execution.pawn.stances.stunner.Stunned) return;
+            scope = EnterOriginal(execution);
+            try
+            {
+                int tick = Find.TickManager.TicksGame;
+                if (execution.lastTick != tick && execution.stance != null)
+                {
+                    execution.lastTick = tick;
+                    execution.stance.StanceTick();
+                }
+            }
+            catch (Exception exception)
+            {
+                FinishOriginalTick(verb, scope, exception);
+                scope = default;
+            }
+        }
+
+        internal static Exception FinishOriginalTick(Verb verb, OriginalScope scope, Exception exception)
+        {
+            OriginalExecution execution = scope.execution;
+            if (execution == null) return exception;
+            Pawn pawn = execution.pawn;
+            Stance result = pawn.stances.curStance;
+            bool ownStance = result is Stance_Busy busy && busy.verb == verb;
+            if (result != execution.stance)
+                execution.warmupTotalTicks = ownStance && result is Stance_Warmup warmup
+                    ? Math.Max(0, warmup.ticksLeft) : 0;
+            execution.stance = ownStance ? result : null;
+            // A new dodge/stun/foreign stance owns itself; never overwrite it.
+            if (ownStance || result is Stance_Mobile) pawn.stances.curStance = scope.previous;
+            if (exception != null)
+            {
+                FailOriginalExecution(verb, execution, exception);
+                return null;
+            }
+            if (execution.cancelled || (!ownStance && verb.state != VerbState.Bursting))
+                if (bindings.TryGetValue(verb, out var completed) && completed.original == execution)
+                    RemoveOriginal(completed);
+            return null;
+        }
+
+        private static void FailOriginalExecution(Verb verb, OriginalExecution execution, Exception exception)
+        {
+            Thing target = verb.CurrentTarget.Thing;
+            bool fallback = false;
+            try { fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb, exception); }
+            catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            try { if (bindings.TryGetValue(verb, out var failed)) ClearOriginal(verb, failed); }
+            catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            try { verb.Reset(); }
+            catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            RimKataDualWeaponController.NotifyWeaponExecutionFailed(execution.pawn, execution.cycle,
+                verb, target, exception, fallback);
+        }
+
+        private static void ClearOriginal(Verb verb, VerbBinding binding)
+        {
+            OriginalExecution execution = binding.original;
+            if (execution == null) return;
+            RemoveOriginal(binding);
+            execution.cancelled = true;
+            if (execution.stance is Stance_Warmup warmup)
+            {
+                // Interrupt cleans the original aim effecter without firing the shot.
+                OriginalScope scope = EnterOriginal(execution);
+                try { warmup.Interrupt(); }
+                finally { FinishOriginalTick(verb, scope, null); }
+            }
+        }
+
+        private static void RemoveOriginal(VerbBinding binding)
+        {
+            if (binding.original?.game == originalGame && originalCount > 0) originalCount--;
+            binding.original = null;
+        }
+
+        internal static void ResetOriginalExecutions() { originalGame = null; originalCount = 0; }
+
         internal static void Bind(Verb verb)
         {
             if (verb != null)
@@ -122,7 +291,7 @@ namespace KRWF.RimKata
             }
         }
 
-        internal bool Queue()
+        internal bool Queue(bool allowOriginalHandoff = false)
         {
             if (Pending || verb == null || verb.state != VerbState.Idle
                 || pawn?.Spawned != true || !target.IsValid)
@@ -145,6 +314,18 @@ namespace KRWF.RimKata
             }
 
             executionPlan = RimKataWeaponExecutionRuntime.GetPlan(verb);
+            OriginalHandoff = RimKataWeaponExecutionRuntime.RequiresOriginalCast(verb);
+            if (OriginalHandoff)
+            {
+                // Special one-shot responses require an owned completion contract. The
+                // ordinary cycle can instead submit one untouched original cast.
+                if (!allowOriginalHandoff || !RimKataWeaponExecutionRuntime.CanSubmitOriginalCast(verb)) return false;
+                RimKataPreparedWeaponData.Restore(verb);
+                cancelled = Started = HasFired = false;
+                Pending = true;
+                nativeBinding.request = this;
+                return true;
+            }
             bool observeCompletion = executionPlan != null && !executionPlan.HandledByCompatibility
                 && executionPlan.Mode != RimKataWeaponExecutionMode.Vanilla;
             Action nativeCallback = observeCompletion ? castCompleteCallback(verb) : null;
@@ -227,7 +408,57 @@ namespace KRWF.RimKata
                 request.Cancel();
                 return false;
             }
-            return request.PrepareShot();
+            return request.OriginalHandoff || request.PrepareShot();
+        }
+
+        internal void HandOffOriginalCast()
+        {
+            // This runs only at this Verb's existing tick opportunity. Detach before
+            // calling original code: its reset/callback/stance now belong to the weapon.
+            Started = true;
+            Detach();
+            bool accepted = false;
+            try
+            {
+                if (verb.state != VerbState.Idle || !verb.Available()) return;
+                bool separate = state?.dualEngagementActive == true;
+                if (!separate)
+                {
+                    if (!(pawn.stances?.curStance is Stance_Busy busy && !(busy is Stance_RimKataAim)))
+                        accepted = RimKataWeaponExecutionRuntime.TryStartOriginalCast(verb, target);
+                    return;
+                }
+                // Pawn-wide incapacitation is still handled by CanContinue. Only
+                // weapon warmup/cooldown is moved into this Verb's existing binding.
+                var original = new OriginalExecution
+                {
+                    game = Current.Game, verb = verb, pawn = pawn, job = job, cycle = cycle,
+                    lastTick = Find.TickManager.TicksGame,
+                    mobile = new Stance_Mobile { stanceTracker = pawn.stances }
+                };
+                if (originalGame != Current.Game) { originalGame = Current.Game; originalCount = 0; }
+                bindings.GetOrCreateValue(verb).original = original;
+                originalCount++;
+                OriginalScope scope = EnterOriginal(original);
+                try { accepted = RimKataWeaponExecutionRuntime.TryStartOriginalCast(verb, target); }
+                catch (Exception exception)
+                {
+                    FinishOriginalTick(verb, scope, exception);
+                    scope = default;
+                }
+                finally { if (scope.execution != null) FinishOriginalTick(verb, scope, null); }
+            }
+            catch (Exception exception)
+            {
+                bool fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb, exception);
+                RimKataDualWeaponController.NotifyWeaponExecutionFailed(pawn, cycle, verb,
+                    target.Thing, exception, fallback);
+            }
+            finally
+            {
+                try { RimKataDualWeaponController.CompleteOriginalCastHandoff(this, accepted); }
+                finally { ReleaseReferences(); }
+            }
         }
 
         private bool CanContinue()
@@ -333,17 +564,25 @@ namespace KRWF.RimKata
             return Pending && !cancelled;
         }
 
-        internal static RimKataNativeAttack BeginNativeCast(Verb verb)
+        internal static bool TryBeginNativeCast(Verb verb, out RimKataNativeAttack scope)
         {
+            scope = null;
             if (!bindings.TryGetValue(verb, out VerbBinding binding)
                 || binding.request is not RimKataNativeAttack request
                 || !request.Pending || request.Executing)
             {
-                return null;
+                return true;
+            }
+            if (request.OriginalHandoff)
+            {
+                // Original code started first; withdraw only our unsubmitted opportunity.
+                request.Cancel();
+                return true;
             }
             request.Started = true;
-            request.BeginExecution();
-            return request;
+            if (!request.BeginExecution()) return false;
+            scope = request;
+            return true;
         }
 
         internal static bool TryBeginBurstShot(Verb verb, out RimKataNativeAttack scope)
@@ -354,6 +593,11 @@ namespace KRWF.RimKata
                 || !request.Pending || request.Executing)
             {
                 // The first shot is already inside its WarmupComplete scope.
+                return true;
+            }
+            if (request.OriginalHandoff)
+            {
+                request.Cancel();
                 return true;
             }
 
@@ -369,32 +613,110 @@ namespace KRWF.RimKata
             }
 
             request.Started = true;
-            request.BeginExecution();
+            if (!request.BeginExecution()) return false;
             scope = request;
             return true;
         }
 
-        private void BeginExecution()
+        private bool BeginExecution()
         {
             Executing = true;
-            previousAim = pawn.stances?.curStance as Stance_RimKataAim;
-            previousSpecialStance = huntingSession != null || reactiveMotion != null || subdueState != null || kickAttack != null
-                ? pawn.stances?.curStance : null;
-            if (subdueState != null)
-                previousSubdueRotation = pawn.Rotation;
-            pawn.rotationTracker.FaceCell(verb.CurrentTarget.Cell);
-            movingShot = !verb.IsMeleeAttack && !closeShot && pawn.pather?.MovingNow == true;
-            previousContext = RimKataFireContext.Begin(
-                verb, pawn, closeShot ? target.Thing : null,
-                movingShot, closeShot, interceptionShot,
-                interceptionTarget, closeMeleeResolution,
-                closeMeleeHit, closeDefensePrecheck);
-            previousSlidingOrigin = RimKataSlidingAttackOrigin.Begin(this);
-            previousFlyingKickOrigin = RimKataFlyingKickRender.BeginShot(this);
-            previousKickOrigin = RimKataKickRender.BeginShot(this);
-            if (subdueState != null)
-                previousSubdueExecution = RimKataSubdueCombat.BeginNativeExecution(subdueState);
-            previousDirectionalExecution = RimKataDirectionalFire.BeginNativeExecution(this);
+            executionScopes = 0;
+            try
+            {
+                previousStats = new RimKataWeaponEffectStats.Scope(verb, verb);
+                executionScopes |= StatsScope;
+                previousAim = pawn.stances?.curStance as Stance_RimKataAim;
+                previousSpecialStance = huntingSession != null || reactiveMotion != null || subdueState != null || kickAttack != null
+                    ? pawn.stances?.curStance : null;
+                if (subdueState != null) previousSubdueRotation = pawn.Rotation;
+                pawn.rotationTracker.FaceCell(verb.CurrentTarget.Cell);
+                movingShot = !verb.IsMeleeAttack && !closeShot && pawn.pather?.MovingNow == true;
+                previousContext = RimKataFireContext.Begin(
+                    verb, pawn, closeShot ? target.Thing : null,
+                    movingShot, closeShot, interceptionShot,
+                    interceptionTarget, closeMeleeResolution,
+                    closeMeleeHit, closeDefensePrecheck);
+                executionScopes |= FireScope;
+                previousSlidingOrigin = RimKataSlidingAttackOrigin.Begin(this);
+                executionScopes |= SlidingScope;
+                previousFlyingKickOrigin = RimKataFlyingKickRender.BeginShot(this);
+                executionScopes |= FlyingScope;
+                previousKickOrigin = RimKataKickRender.BeginShot(this);
+                executionScopes |= KickScope;
+                if (subdueState != null)
+                {
+                    previousSubdueExecution = RimKataSubdueCombat.BeginNativeExecution(subdueState);
+                    executionScopes |= SubdueScope;
+                }
+                previousDirectionalExecution = RimKataDirectionalFire.BeginNativeExecution(this);
+                executionScopes |= DirectionScope;
+                return true;
+            }
+            catch (Exception exception)
+            {
+                Exception cleanup = EndExecutionScopes();
+                if (cleanup != null) exception = new AggregateException(exception, cleanup);
+                FailExecution(exception, pawn, cycle, verb, target.Thing);
+                return false;
+            }
+        }
+
+        private Exception EndExecutionScopes()
+        {
+            byte acquired = executionScopes;
+            executionScopes = 0;
+            Exception failure = null;
+            // No per-shot delegates or collections. Restore only completed acquisitions,
+            // in reverse order, and keep unwinding if one cleanup callback fails.
+            for (int scope = DirectionScope; scope != 0; scope >>= 1)
+            {
+                if ((acquired & scope) == 0) continue;
+                try
+                {
+                    switch (scope)
+                    {
+                        case DirectionScope: RimKataDirectionalFire.EndNativeExecution(previousDirectionalExecution); break;
+                        case SubdueScope: RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution); break;
+                        case KickScope: RimKataKickRender.EndShot(previousKickOrigin); break;
+                        case FlyingScope: RimKataFlyingKickRender.EndShot(previousFlyingKickOrigin); break;
+                        case SlidingScope: RimKataSlidingAttackOrigin.End(previousSlidingOrigin); break;
+                        case FireScope:
+                            if (RimKataFireContext.ActiveVerb == verb) HasFired |= RimKataFireContext.ShotFired;
+                            RimKataFireContext.End(verb, previousContext);
+                            break;
+                        case StatsScope: previousStats.Dispose(); break;
+                    }
+                }
+                catch (Exception exception) { failure ??= exception; }
+            }
+            previousDirectionalExecution = default;
+            previousSubdueExecution = default;
+            previousKickOrigin = default;
+            previousFlyingKickOrigin = default;
+            previousSlidingOrigin = default;
+            previousContext = default;
+            previousStats = default;
+            Executing = false;
+            return failure;
+        }
+
+        private void FailExecution(Exception exception, Pawn owner, RimKataWeaponCycleState failedCycle,
+            Verb failedVerb, Thing failedTarget)
+        {
+            cancelled = true;
+            bool fallback = false;
+            try { fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(failedVerb, exception); }
+            catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            if (Pending)
+            {
+                try { RestoreAimAfterShot(); }
+                catch (Exception failure) { exception = new AggregateException(exception, failure); }
+                try { CompleteRequest(true); }
+                catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            }
+            RimKataDualWeaponController.NotifyWeaponExecutionFailed(owner, failedCycle,
+                failedVerb, failedTarget, exception, fallback);
         }
 
         internal static bool OwnsActiveMelee(Verb verb)
@@ -427,28 +749,28 @@ namespace KRWF.RimKata
 
         private void FinishNativeCastCore(Exception exception, bool deferCompletion)
         {
-            bool rangedShot = exception == null && !verb.IsMeleeAttack && RimKataFireContext.ShotFired;
-            RimKataDirectionalFire.EndNativeExecution(previousDirectionalExecution);
-            previousDirectionalExecution = default;
-            HasFired |= RimKataFireContext.ShotFired;
-            RimKataFireContext.End(verb, previousContext);
-            RimKataSlidingAttackOrigin.End(previousSlidingOrigin);
-            RimKataFlyingKickRender.EndShot(previousFlyingKickOrigin);
-            RimKataKickRender.EndShot(previousKickOrigin);
-            previousKickOrigin = default;
-            previousFlyingKickOrigin = default;
-            previousSlidingOrigin = default;
-            Executing = false;
-            previousContext = default;
-            if (subdueState != null)
-                RimKataSubdueCombat.EndNativeExecution(previousSubdueExecution);
-            previousSubdueExecution = default;
-            if (deferCompletion && exception == null && !cancelled)
+            Pawn owner = pawn;
+            RimKataWeaponCycleState failedCycle = cycle;
+            Verb failedVerb = verb;
+            Thing failedTarget = target.Thing;
+            bool rangedShot = exception == null && verb?.IsMeleeAttack == false && RimKataFireContext.ShotFired;
+            Exception cleanup = EndExecutionScopes();
+            if (cleanup != null) exception = exception == null ? cleanup : new AggregateException(exception, cleanup);
+            if (exception != null)
             {
-                RestoreAimAfterShot();
-                if (rangedShot) NotifyKickAttackStarting();
+                FailExecution(exception, owner, failedCycle, failedVerb, failedTarget);
+                return;
             }
-            else CompleteNativeCast(exception, rangedShot);
+            try
+            {
+                if (deferCompletion && !cancelled)
+                {
+                    RestoreAimAfterShot();
+                    if (rangedShot) NotifyKickAttackStarting();
+                }
+                else CompleteNativeCast(null, rangedShot);
+            }
+            catch (Exception failure) { FailExecution(failure, owner, failedCycle, failedVerb, failedTarget); }
         }
 
         internal void CompleteNativeCast(Exception exception, bool rangedShot)
@@ -459,14 +781,22 @@ namespace KRWF.RimKata
             {
                 cancelled = true;
             }
-            // An unknown custom warmup may schedule the actual shot on a Comp callback.
-            // Keep its real instance and wait for an observed attempt or native completion.
-            bool deferred = executionPlan != null && !executionPlan.HandledByCompatibility
-                && !executionPlan.AnalysisComplete && !HasFired
-                && !observedShotAttempted && !nativeCompleted;
-            if (cancelled || nativeCompleted || (verb.state != VerbState.Bursting && !deferred))
+            // Only a prepared native/compatibility contract enters this owned request.
+            // Analysis coverage is neither runtime progress nor a future callback.
+            if (cancelled || nativeCompleted || verb.state != VerbState.Bursting)
             {
-                CompleteRequest(cancelled);
+                Pawn owner = pawn;
+                RimKataWeaponCycleState failedCycle = cycle;
+                Verb failedVerb = verb;
+                Thing failedTarget = target.Thing;
+                bool fallback = exception != null && RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb, exception);
+                try { CompleteRequest(cancelled); }
+                finally
+                {
+                    if (exception != null)
+                        RimKataDualWeaponController.NotifyWeaponExecutionFailed(owner, failedCycle,
+                            failedVerb, failedTarget, exception, fallback);
+                }
             }
         }
 
@@ -479,8 +809,17 @@ namespace KRWF.RimKata
         internal void ReconcileNativeTick(Exception exception)
         {
             if (!Pending || Executing || (!Started && exception == null)) return;
+            if (OriginalHandoff)
+            {
+                // An owner-tick exception before submission is a rejected handoff,
+                // not a failed RK shot and not permission to reset the original Verb.
+                Detach();
+                try { RimKataDualWeaponController.CompleteOriginalCastHandoff(this, false); }
+                finally { ReleaseReferences(); }
+                return;
+            }
             if (exception != null || nativeCompleted
-                || (verb.state != VerbState.Bursting && (HasFired || observedShotAttempted)))
+                || verb.state != VerbState.Bursting)
                 CompleteNativeCast(exception, false);
         }
 
@@ -515,11 +854,18 @@ namespace KRWF.RimKata
         private void CompleteRequest(bool resetNative)
         {
             Detach();
-            // Native effecters/subclasses may read CurrentTarget and verbProps until the call returns.
-            if (resetNative) verb.Reset();
-            nonInterruptingSelfCast(verb) = false;
             try
             {
+                // A reset failure must not bypass request cleanup or the other slot.
+                if (resetNative)
+                    try { verb.Reset(); }
+                    catch (Exception exception)
+                    {
+                        bool fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb, exception);
+                        RimKataDualWeaponController.NotifyWeaponExecutionFailed(pawn, cycle,
+                            verb, target.Thing, exception, fallback);
+                    }
+                nonInterruptingSelfCast(verb) = false;
                 if (kickAttack != null) kickAttack.Complete(cancelled);
                 else if (reactiveMotion != null) RimKataReactiveMotion.AttackCompleted(this);
                 else if (subdueState != null) RimKataSubdueCombat.AttackCompleted(this);
@@ -527,14 +873,16 @@ namespace KRWF.RimKata
             }
             finally
             {
-                if (cancelled || (kickAttack == null
-                    && (subdueState != null ? subdueState.weaponVerb != verb : cycle.boundVerb != verb)))
+                try
                 {
-                    RimKataPreparedWeaponData.Restore(verb);
-                    bindingVerb = null;
-                    nativeBinding = null;
+                    if (cancelled || (kickAttack == null
+                        && (subdueState != null ? subdueState.weaponVerb != verb : cycle?.boundVerb != verb)))
+                    {
+                        try { RimKataPreparedWeaponData.Restore(verb); }
+                        finally { bindingVerb = null; nativeBinding = null; }
+                    }
                 }
-                ReleaseReferences();
+                finally { ReleaseReferences(); }
             }
         }
 
@@ -544,11 +892,34 @@ namespace KRWF.RimKata
             cancelled = true;
             // Damage callbacks can cancel the cycle while its native cast is still unwinding.
             if (Executing) return;
+            if (OriginalHandoff)
+            {
+                Detach();
+                ReleaseReferences();
+                return;
+            }
             Verb pendingVerb = verb;
             Detach();
-            pendingVerb.Reset();
-            nonInterruptingSelfCast(pendingVerb) = false;
-            ReleaseReferences();
+            try { pendingVerb.Reset(); }
+            catch (Exception exception)
+            {
+                bool fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(pendingVerb, exception);
+                RimKataDualWeaponController.NotifyWeaponExecutionFailed(pawn, cycle,
+                    pendingVerb, target.Thing, exception, fallback);
+            }
+            finally
+            {
+                nonInterruptingSelfCast(pendingVerb) = false;
+                ReleaseReferences();
+            }
+        }
+
+        internal bool AbortAfterFailure(Exception exception)
+        {
+            bool fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb ?? bindingVerb, exception);
+            try { Cancel(); }
+            finally { if (!Executing) ReleaseReferences(); }
+            return fallback;
         }
 
         internal void ForgetBinding()
@@ -562,6 +933,7 @@ namespace KRWF.RimKata
         internal static void NotifyReset(Verb verb)
         {
             if (!bindings.TryGetValue(verb, out VerbBinding binding)) return;
+            ClearOriginal(verb, binding);
             if (!binding.resettingAfterLoad)
                 binding.interruptedBurstAfterLoad = false;
             if (binding.request is RimKataNativeAttack request)
@@ -576,6 +948,7 @@ namespace KRWF.RimKata
 
         internal static void NotifyEquipmentLost(Verb verb)
         {
+            if (bindings.TryGetValue(verb, out VerbBinding originalBinding)) ClearOriginal(verb, originalBinding);
             if (bindings.TryGetValue(verb, out VerbBinding binding)
                 && binding.request is RimKataNativeAttack request)
             {
@@ -585,12 +958,42 @@ namespace KRWF.RimKata
             RimKataPreparedWeaponData.Restore(verb);
         }
 
+        internal static Exception FinishOwnerTick(Verb verb, OriginalScope scope, Exception exception)
+        {
+            exception = FinishOriginalTick(verb, scope, exception);
+            if (exception == null) return null;
+            RimKataNativeAttack request = PendingRequest(verb);
+            if (request == null) return exception;
+            Pawn owner = request.pawn;
+            RimKataWeaponCycleState failedCycle = request.cycle;
+            Thing failedTarget = request.target.Thing;
+            bool fallback = RimKataWeaponExecutionRuntime.MarkExecutionFailed(verb, exception);
+            try
+            {
+                if (request.Executing) request.FinishNativeCast(exception);
+                else request.ReconcileNativeTick(exception);
+            }
+            catch (Exception cleanup)
+            {
+                exception = new AggregateException(exception, cleanup);
+                try { request.Cancel(); }
+                catch (Exception failure) { exception = new AggregateException(exception, failure); }
+            }
+            finally
+            {
+                RimKataDualWeaponController.NotifyWeaponExecutionFailed(owner, failedCycle,
+                    verb, failedTarget, exception, fallback);
+            }
+            return null;
+        }
+
         internal static void ExposeData(Verb verb)
         {
-            bool queued = WaitingForNativeTick(verb);
+            bool queued = WaitingForNativeTick(verb) || IsOriginalCastBusy(verb);
             bool interruptedBurst = queued
                 && bindings.TryGetValue(verb, out VerbBinding current)
-                && current.request.Started && current.request.HasFired;
+                && ((current.request?.Started == true && current.request.HasFired)
+                    || (current.original != null && verb.state == VerbState.Bursting));
             Scribe_Values.Look(ref queued, "rimKataQueuedCast");
             Scribe_Values.Look(ref interruptedBurst, "rimKataInterruptedNativeBurst");
             if (Scribe.mode == LoadSaveMode.LoadingVars && queued)
@@ -641,9 +1044,19 @@ namespace KRWF.RimKata
 
         private void ReleaseReferences()
         {
-            if (kickAttack != null && !kickAttack.Completed)
-                kickAttack.Complete(true);
-            if (reactiveMotion != null) RimKataReactiveMotion.ReleaseAttack(this);
+            try
+            {
+                if (kickAttack != null && !kickAttack.Completed) kickAttack.Complete(true);
+            }
+            finally
+            {
+                try { if (reactiveMotion != null) RimKataReactiveMotion.ReleaseAttack(this); }
+                finally { ClearReferences(); }
+            }
+        }
+
+        private void ClearReferences()
+        {
             pawn = null;
             state = null;
             cycle = null;
@@ -670,8 +1083,14 @@ namespace KRWF.RimKata
             previousSlidingOrigin = default;
             previousSpecialStance = null;
             previousSubdueExecution = default;
+            previousDirectionalExecution = default;
+            previousFlyingKickOrigin = default;
+            previousKickOrigin = default;
+            previousStats = default;
+            executionScopes = 0;
             Started = false;
             HasFired = false;
+            OriginalHandoff = false;
             kickOpportunityNotified = false;
         }
 
@@ -681,6 +1100,12 @@ namespace KRWF.RimKata
     [HarmonyPatch(typeof(Verb), nameof(Verb.VerbTick))]
     internal static class Patch_VerbTick_RimKataNativeAttack
     {
+        private static void Prefix(Verb __instance, out RimKataNativeAttack.OriginalScope __state)
+            => RimKataNativeAttack.BeginOriginalTick(__instance, out __state);
+
+        private static Exception Finalizer(Verb __instance, Exception __exception, RimKataNativeAttack.OriginalScope __state)
+            => RimKataNativeAttack.FinishOwnerTick(__instance, __state, __exception);
+
         internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
@@ -731,7 +1156,7 @@ namespace KRWF.RimKata
         private static Exception Finalizer(Exception __exception, RimKataNativeAttack __state)
         {
             __state?.FinishNativeCast(__exception);
-            return __exception;
+            return __state != null && !__state.Pending && !__state.Executing ? null : __exception;
         }
     }
 

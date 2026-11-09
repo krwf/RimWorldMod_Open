@@ -672,18 +672,18 @@ namespace KRWF.RimKata
             }
         }
 
-        internal static void Prefix(
+        internal static bool Prefix(
             Verb __instance,
             out RimKataNativeCastScope __state)
         {
             __state = default;
-            if (activeWarmup == __instance) return;
+            if (activeWarmup == __instance) return true;
             __state.ownsWarmup = true;
             __state.previousWarmup = activeWarmup;
             activeWarmup = __instance;
-            __state.request = RimKataNativeAttack.BeginNativeCast(__instance);
+            if (!RimKataNativeAttack.TryBeginNativeCast(__instance, out __state.request)) return false;
             if (__state.request != null || RimKataFireContext.ActiveVerb == __instance)
-                return;
+                return true;
             if (RimKataDualWeaponController.ShouldConvertVanillaOpeningToSingleShot(__instance))
             {
                 if (!RimKataPreparedWeaponData.IsCurrent(__instance))
@@ -692,6 +692,7 @@ namespace KRWF.RimKata
                 }
                 __state.convertedOpening = true;
             }
+            return true;
         }
 
         internal static void Postfix(Verb __instance, RimKataNativeCastScope __state)
@@ -717,7 +718,8 @@ namespace KRWF.RimKata
             {
                 if (__state.ownsWarmup) activeWarmup = __state.previousWarmup;
             }
-            return __exception;
+            return __state.request != null && !__state.request.Pending && !__state.request.Executing
+                ? null : __exception;
         }
     }
 

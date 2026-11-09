@@ -29,22 +29,38 @@ namespace KRWF.RimKata
         internal static bool TryCapture(Building_Door door, out RimKataBreachDoorSnapshot snapshot)
         {
             snapshot = null;
-            if (door?.Spawned != true || door.Open
-                || RimKataDoorCache.Current == null
-                || !RimKataDoorCache.Current.TryPrepare(door, out RimKataDoorCacheRecord recipe)) return false;
-            var value = new RimKataBreachDoorSnapshot
-            {
-                metadataXml = recipe.MetadataXml,
-                renderXml = recipe.RenderXml,
-                // DoorPreDraw normally refreshes this value from adjoining walls.
-                rotation = door.def.size == IntVec2.One
-                    ? DoorUtility.DoorRotationAt(door.Position, door.Map, door.def.building.preferConnectingToFences)
-                    : door.Rotation
-            };
-            if (!value.Resolve()) return false;
-            snapshot = value;
-            return true;
+            if (door?.Spawned != true || door.Open) return false;
+            // DoorPreDraw normally refreshes this value from adjoining walls.
+            Rot4 direction = door.def.size == IntVec2.One
+                ? DoorUtility.DoorRotationAt(door.Position, door.Map, door.def.building.preferConnectingToFences)
+                : door.Rotation;
+            return RimKataDoorCache.Current?.TryCapturePrepared(door, direction, out snapshot) == true;
         }
+
+        internal static RimKataBreachDoorSnapshot[] Prepare(RimKataDoorCacheRecord recipe, Action<Exception> failed)
+        {
+            var result = recipe.Snapshots ?? new RimKataBreachDoorSnapshot[4];
+            for (int i = 0; i < result.Length; i++)
+            {
+                if (result[i] != null) continue;
+                var value = new RimKataBreachDoorSnapshot
+                {
+                    metadataXml = recipe.MetadataXml,
+                    renderXml = recipe.RenderXml,
+                    rotation = new Rot4(i)
+                };
+                try
+                {
+                    if (value.Resolve()) result[i] = value;
+                }
+                catch (Exception exception) { failed(exception); }
+            }
+            recipe.Snapshots = result;
+            return result;
+        }
+
+        // Prepared layers are immutable and shared; every accepted breach owns its saved snapshot.
+        internal RimKataBreachDoorSnapshot Copy() => (RimKataBreachDoorSnapshot)MemberwiseClone();
 
         public void ExposeData()
         {

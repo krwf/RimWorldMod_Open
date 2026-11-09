@@ -254,6 +254,13 @@ namespace KRWF.RimKata
                 return RimKataGripType.TwoHand;
             }
 
+            // Prepared metadata changes the automatic default only. GripTypeFor applies
+            // explicit one/two-handed overrides first; no user setting is written here.
+            if (RimKataWeaponExecutionPlans.HasAdditionalStatRequirements(weaponDef))
+            {
+                return RimKataGripType.TwoHand;
+            }
+
             ModContentPack sourceMod = weaponDef.modContentPack;
             if (sourceMod != null && (sourceMod.IsCoreMod || sourceMod.IsOfficialMod))
             {

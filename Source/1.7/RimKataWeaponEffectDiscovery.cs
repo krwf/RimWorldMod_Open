@@ -15,6 +15,7 @@ namespace KRWF.RimKata
         internal ThingDef WeaponDef;
         internal Type VerbType;
         internal HediffDef[] ManagerDefs, Effects;
+        internal StatDef[] ChangedStats = Array.Empty<StatDef>();
         internal MethodInfo[] AnalyzedMethods;
     }
 
@@ -25,8 +26,7 @@ namespace KRWF.RimKata
         private static readonly Assembly GameAssembly = typeof(Pawn).Assembly;
         private static readonly Assembly OwnAssembly = typeof(RimKataWeaponEffectDiscovery).Assembly;
         private static readonly HashSet<MethodBase> ScopedAccesses = BuildScopedAccesses();
-        private static readonly MethodInfo EquipmentDisplayStats = AccessTools.Method(typeof(ThingComp),
-            nameof(ThingComp.SpecialDisplayStats), Type.EmptyTypes);
+        private static readonly HashSet<MethodInfo> PresentationEntries = BuildPresentationEntries();
 
         internal static bool TryAnalyze(RimKataWeaponExecutionPlan execution, out RimKataWeaponEffectPlan plan)
             => TryAnalyze(execution, out plan, out _);
@@ -36,6 +36,7 @@ namespace KRWF.RimKata
             plan = null;
             reason = null;
             if (execution?.Def == null || execution.VerbType == null || execution.HandledByCompatibility) return false;
+            execution.HasWeaponStatEffects = false;
             try
             {
                 var definitions = new HashSet<HediffDef>();
@@ -57,6 +58,7 @@ namespace KRWF.RimKata
                 while (pending.Count != 0)
                 {
                     HediffDef definition = pending.Dequeue();
+                    if (ChangedStats(new[] { definition }).Length != 0) execution.HasWeaponStatEffects = true;
                     if (definition.comps?.Count > 0)
                     {
                         if (!ManagerOnly(definition))
@@ -89,6 +91,7 @@ namespace KRWF.RimKata
                 {
                     WeaponDef = execution.Def, VerbType = execution.VerbType,
                     ManagerDefs = managers.ToArray(), Effects = effects.ToArray(),
+                    ChangedStats = ChangedStats(effects),
                     AnalyzedMethods = graph.Methods.ToArray()
                 };
                 return true;
@@ -101,6 +104,23 @@ namespace KRWF.RimKata
         }
 
         private static bool Fail(string message, out string reason) { reason = message; return false; }
+
+        internal static StatDef[] ChangedStats(IEnumerable<HediffDef> effects)
+        {
+            var result = new HashSet<StatDef>();
+            foreach (HediffDef effect in effects)
+                if (effect?.stages != null)
+                    foreach (HediffStage stage in effect.stages)
+                    {
+                        if (stage?.statOffsets != null)
+                            foreach (StatModifier modifier in stage.statOffsets)
+                                if (modifier?.stat != null) result.Add(modifier.stat);
+                        if (stage?.statFactors != null)
+                            foreach (StatModifier modifier in stage.statFactors)
+                                if (modifier?.stat != null) result.Add(modifier.stat);
+                    }
+            return result.OrderBy(stat => stat.defName, StringComparer.Ordinal).ToArray();
+        }
 
         private static void Collect(object properties, HashSet<HediffDef> seen, Queue<HediffDef> pending)
         {
@@ -144,6 +164,29 @@ namespace KRWF.RimKata
             return result;
         }
 
+        private static HashSet<MethodInfo> BuildPresentationEntries()
+        {
+            var result = new HashSet<MethodInfo>();
+            // These exact native callbacks are invoked by presentation/UI, not by the
+            // weapon-effect lifecycle. Calls from actual execution still enter Graph.Add.
+            Add(typeof(ThingComp), "DrawAt", "PostDraw", "PostDrawExtraSelectionOverlays", "PostPrintOnto",
+                "CompPrintForPowerGrid", "TransformLabel", "CompGetGizmosExtra", "CompGetWornGizmosExtra",
+                "CompInspectStringExtra", "CompTipStringExtra", "GetDescriptionPart", "CompFloatMenuOptions",
+                "CompMultiSelectFloatMenuOptions", "DrawGUIOverlay", "SpecialDisplayStats", "CompDrawWornExtras",
+                "DontDrawParent");
+            Add(typeof(HediffComp), "get_CompLabelPrefix", "get_CompLabelInBracketsExtra", "get_CompDescriptionExtra",
+                "get_CompTipStringExtra", "CompGetGizmos");
+            Add(typeof(Verb), "get_UIIcon", "get_ReportLabel", "get_HidePawnTooltips", "DrawHighlight", "OnGUI",
+                "HighlightFieldRadiusAroundTarget");
+            return result;
+
+            void Add(Type type, params string[] names)
+            {
+                foreach (MethodInfo method in type.GetMethods(Fields | BindingFlags.Static))
+                    if (method.IsVirtual && Array.IndexOf(names, method.Name) >= 0) result.Add(method.GetBaseDefinition());
+            }
+        }
+
         private static bool Custom(Type type)
         {
             if (type == null || type.Assembly == GameAssembly || type.Assembly == OwnAssembly
@@ -160,7 +203,7 @@ namespace KRWF.RimKata
             private readonly Type verbType;
             private readonly HashSet<Type> owners;
             private readonly HashSet<HediffDef> definitions;
-            private readonly Queue<MethodBase> pending = new Queue<MethodBase>();
+            private readonly Queue<(MethodBase method, int depth)> pending = new Queue<(MethodBase, int)>();
             private readonly HashSet<MethodBase> seen = new HashSet<MethodBase>();
             private readonly HashSet<MethodBase> inspectedPatches = new HashSet<MethodBase>();
             internal readonly HashSet<MethodInfo> Methods = new HashSet<MethodInfo>();
@@ -171,24 +214,26 @@ namespace KRWF.RimKata
             { this.verbType = verbType; this.owners = owners; this.definitions = definitions; }
             internal void AddOwner(Type owner)
             {
-                // Information-card enumeration is not an independent effect lifecycle entry.
-                // A call to it from an actual effect method still follows the normal Add path.
+                // Presentation callbacks are not independent effect lifecycle entries.
+                // A call from an actual effect method still follows the normal Add path.
                 for (Type type = owner; Custom(type); type = type.BaseType)
                 {
                     foreach (MethodInfo method in type.GetMethods(Fields | BindingFlags.Static))
-                        if (method.IsVirtual && method.GetBaseDefinition() != EquipmentDisplayStats) Add(method);
+                        if (method.IsVirtual && !PresentationEntries.Contains(method.GetBaseDefinition())) Add(method);
                     foreach (ConstructorInfo constructor in type.GetConstructors(Fields)) Add(constructor);
                 }
             }
 
-            private void Add(MethodBase method)
+            private void Add(MethodBase method, int depth = 0)
             {
-                if (method == null) return;
+                if (method == null || failure != null || seen.Contains(method) || UsesOtherComponent(method)) return;
                 // These API entries and all of their external hooks execute in the
                 // original health snapshots. Health.Initialize validates their mutation sites.
                 // The weapon graph must not expand unrelated health/graphics callbacks again.
                 if (method.DeclaringType == typeof(Pawn_HealthTracker) && IsScopedAccess(method)) return;
                 bool custom = Custom(method.DeclaringType);
+                if (custom && depth > RimKataWeaponExecutionDiscovery.MaximumDepth)
+                { failure = "The connected effect graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumDepth + " call levels at " + method; return; }
                 bool rewrittenHelper = false;
                 if ((custom || method.DeclaringType?.Assembly == GameAssembly) && inspectedPatches.Add(method))
                 {
@@ -196,23 +241,28 @@ namespace KRWF.RimKata
                     if (patches != null)
                     {
                         foreach (Patch patch in patches.Prefixes)
-                            if (!ExcludesWeapon(patch.PatchMethod, method)) Add(patch.PatchMethod);
+                            if (!ExcludesWeapon(patch.PatchMethod, method)) Add(patch.PatchMethod, depth + 1);
                         foreach (Patch patch in patches.Postfixes.Concat(patches.Finalizers))
-                            if (patch.PatchMethod?.DeclaringType?.Assembly != OwnAssembly) Add(patch.PatchMethod);
+                            if (patch.PatchMethod?.DeclaringType?.Assembly != OwnAssembly) Add(patch.PatchMethod, depth + 1);
                         foreach (string kind in new[] { "InnerPrefixes", "InnerPostfixes", "InnerFinalizers" })
                             foreach (Patch patch in RimKataWeaponExecutionPlans.ExtraPatches(patches, kind))
                                 if (patch.PatchMethod?.DeclaringType?.Assembly != OwnAssembly
-                                    && (kind != "InnerPrefixes" || !ExcludesWeapon(patch.PatchMethod, method))) Add(patch.PatchMethod);
+                                    && (kind != "InnerPrefixes" || !ExcludesWeapon(patch.PatchMethod, method))) Add(patch.PatchMethod, depth + 1);
                         if (!custom && patches.Transpilers.Any(p => p.PatchMethod?.DeclaringType?.Assembly != OwnAssembly))
                             rewrittenHelper = true;
                     }
                 }
-                if ((!custom && !rewrittenHelper) || !seen.Add(method)) return;
+                if ((!custom && !rewrittenHelper) || failure != null || seen.Contains(method)) return;
+                if (depth > RimKataWeaponExecutionDiscovery.MaximumDepth)
+                { failure = "The connected effect graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumDepth + " call levels at " + method; return; }
+                if (seen.Count >= RimKataWeaponExecutionDiscovery.MaximumMethods)
+                { failure = "The connected effect graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumMethods + " methods at " + method; return; }
+                seen.Add(method);
                 if (method.ContainsGenericParameters || method.IsAbstract || method.GetMethodBody() == null)
                 { failure = "An original method cannot be inspected: " + method; return; }
                 if (rewrittenHelper && !(method is MethodInfo))
                 { failure = "A rewritten game constructor cannot be retained as an effect dependency: " + method; return; }
-                pending.Enqueue(method);
+                pending.Enqueue((method, depth));
                 if (method is MethodInfo callable) Methods.Add(callable);
                 // Transpilers are executed by GetCurrentInstructions; their emitted runtime calls are inspected below.
             }
@@ -227,9 +277,9 @@ namespace KRWF.RimKata
             {
                 while (failure == null && pending.Count != 0)
                 {
-                    if (seen.Count > RimKataWeaponExecutionDiscovery.MaximumMethods)
-                    { failure = "The connected effect method graph exceeded " + RimKataWeaponExecutionDiscovery.MaximumMethods + " methods."; break; }
-                    MethodBase current = pending.Dequeue();
+                    var entry = pending.Dequeue();
+                    MethodBase current = entry.method;
+                    int nextDepth = entry.depth + 1;
                     List<CodeInstruction> codes = PatchProcessor.GetCurrentInstructions(current);
                     bool originalHelper = current.DeclaringType?.Assembly == GameAssembly;
                     var originalAccesses = originalHelper ? OriginalAccesses(current) : null;
@@ -249,15 +299,20 @@ namespace KRWF.RimKata
                             || (originalHelper && code.opcode == OpCodes.Ldftn))
                         { failure = "An indirect effect call has no fixed target: " + current; break; }
                         if (code.operand is FieldInfo field && UnsafeField(field, code.opcode))
-                        { failure = "An effect accesses direct health or unresolved callback storage: " + field; break; }
+                        { failure = "An effect accesses direct health or unresolved callback storage: "
+                            + field.DeclaringType?.FullName + "." + field.Name + " in "
+                            + current.DeclaringType?.FullName + "." + current.Name; break; }
                         if (!(code.operand is MethodBase called)) continue;
+                        // A callback on another component keeps that component's original
+                        // state. Its caches and lifecycle are not owned by this weapon.
+                        if (UsesOtherComponent(called)) continue;
                         if (IsScopedAccess(called))
                         {
                             // Rewriting a common native helper would introduce a global hook.
                             // Keep the weapon on its original effect path if that is required.
                             if (originalHelper)
                             { failure = "A rewritten game helper adds an unscoped health/equipment access: " + called; break; }
-                            Add(called);
+                            Add(called, nextDepth);
                             if (!(current is MethodInfo))
                                 failure = "A constructor requires a scoped health/equipment rewrite: " + current;
                             continue;
@@ -274,14 +329,22 @@ namespace KRWF.RimKata
                             {
                                 MethodInfo slot = owner.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                                     .FirstOrDefault(m => m.GetBaseDefinition() == virtualCall.GetBaseDefinition());
-                                Add(slot);
+                                Add(slot, nextDepth);
                             }
                         }
-                        Add(called);
+                        Add(called, nextDepth);
                     }
                 }
                 reason = failure;
                 return failure == null;
+            }
+
+            private bool UsesOtherComponent(MethodBase method)
+            {
+                Type type = method.DeclaringType;
+                return !method.IsStatic && method is MethodInfo && type != null
+                    && (typeof(ThingComp).IsAssignableFrom(type) || typeof(HediffComp).IsAssignableFrom(type))
+                    && !owners.Any(owner => type.IsAssignableFrom(owner));
             }
 
             private static Dictionary<(OpCode, MemberInfo), int> OriginalAccesses(MethodBase method)

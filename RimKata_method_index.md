@@ -1,5 +1,100 @@
 # RimKata 소스 메서드 색인
 
+## 2026-11-10 후속 — 정지 소집 슬라이딩의 대기 목표·예약
+
+- `RimKataReactiveMotion.BeginSlide`: 실제 셀 진입 성공과 기존 참가자 유효성 검사 후, 정지 시작·소집·동일 Wait_Combat·셀 목표==출발 위치인 경우만 대기 목표를 현재 셀로 옮깁니다. `MostRecentReservationFor`가 반환한 해당 폰의 활성 예약도 동일 Job/출발 셀일 때만 target을 갱신합니다. 다른 Job 예약까지 obsolete 처리하는 `Reserve`는 호출하지 않습니다.
+- `Create/Resume`: 원래 작업과 이동 목적지 보존·복귀는 유지합니다. 새 이동/저장 상태나 일반 폰 호출은 추가하지 않았습니다. 기존 정지 대기 잔여 자료의 일괄 복구는 이번 변경에 포함하지 않습니다.
+
+## 2026-11-10 후속 — 성공한 대각 회피의 슬라이딩 선택
+
+- `RimKataDodgeMovementUtility.ApplyRangedDodgeMotion`: 원거리 회피 성공 후 기존 TryChooseDestination이 결정한 셀에서 슬라이딩/일반 걷기 회피를 선택합니다. 기존 이동/업무 예외/후속 공격 조건을 통과한 경우만 굴립니다. 성공 시 일반 회피 이동을 시작하지 않고, 실패 후 Map/Job/Position/이동 목적지가 달라졌으면 이전 경로로 이어가지 않습니다.
+- `RimKataReactiveMotion.TrySlideDuringRangedDodge/TryBeginSlideAt`: 삭제된 TrySlideBeforeImmediateTumble을 대체합니다. 기존 슬라이딩 확률과 확정 destination을 사용하며 목적지 재추첨이 없습니다. stagger의 TryBeginSliding은 기존대로 확률·목적지를 고른 뒤 동일 TryBeginSlideAt으로 연결합니다.
+- `HasSlidingMotion/TryRangedDodge/ApplySuccessfulRangedDodge`: 공중제비 전 슬라이딩 굴림은 제거했습니다. 슬라이딩·기립 참가자는 후속 회피의 성공/횟수/창 처리를 유지하고 추가 공중제비·근접 회피·일반 회피 몸동작만 겹치지 않게 합니다. 새 이동 분기는 주변 투사체 전체를 추가 회피 처리하지 않습니다.
+
+## 2026-11-09 후속 — 슬라이딩의 무기 조건 제거
+
+- `CanBeginReactiveMotion/StaggerApplied/TrySlideBeforeImmediateTumble`: 슬라이딩에 무기 사이클/IsFighting을 요구하지 않습니다. 자격자만 처리하고 기존 방어 자격·연출 충돌·다운 등의 조건은 유지합니다. 떨치기의 IsFighting은 유지합니다. 전투 자료가 없는 맨손 자격자도 이동·연출만 수행할 수 있습니다.
+- `TryBeginSliding`: 기존 상태가 없으면 확률과 목적지가 확정된 뒤 해당 폰의 GetState(true)를 호출합니다. 일반 폰 순회/상시 상태 생성/새 저장 자료가 아닙니다.
+- `BeginSlide/QueueHit/RequestContinuationSearch`: 양쪽 무기 없음이면 인접 공격 표적 조회와 후속 전투 탐색을 건너뜁니다. 슬롯 무기 없음이면 Pending/NativeAttack을 만들기 전에 반환합니다. 이동·몸체 연출과 기존 Resume/Remove는 그대로 실행합니다.
+
+## 2026-11-09 후속 — 즉시 공중제비 전 슬라이딩
+
+- `RimKataDefenseUtility.TryRangedDodge`: 기존 비근접 즉시 방어 게이트에서 슬라이딩을 먼저 시도하고 실패 시 즉시 공중제비·기존 회피로 계속합니다. 성공한 슬라이딩만 기존 투사체 회피 완료로 기록합니다. 슬라이딩 자체 플래그·확률을 쓰므로 즉시 공중제비 확률의 성공 여부에 종속되지 않습니다. 셀 진입 콜백으로 사망·다운·Despawn·맵 변경이 발생한 경우에는 후속 회피를 만들지 않습니다.
+- `RimKataReactiveMotion.TrySlideBeforeImmediateTumble/CanBeginReactiveMotion/TryBeginSliding`: OFF일 때는 참가자 조회 전에 종료하며, 기존 stagger 슬라이딩과 진입 제약·확률·방향/목적지 선택·BeginSlide·stagger 해제를 공유합니다. 기존 진행 중인 회피/공중제비 등의 연출 잠금은 유지합니다. 새 일반 폰 Tick/모든 폰 검색/저장 상태는 없습니다.
+- `StaggerApplied`: 공용 슬라이딩 시도에 성공하면 종료하고, 실패 시에만 기존 떨치기 예약을 처리합니다. `BeginSlide/Install/Complete/Resume`의 셀 선점·연출·공격·기존 이동 복귀는 변경하지 않습니다.
+
+## 2026-11-09 후속 — 제압 대상 공격 선택과 국소 실패 처리
+
+- `RimKataSubdueAttackSelection.cs`(양 버전, partial RimKataSubdueCombat): `TryGetHeldWeaponAttack`은 허용 주 무기의 실제 CombatVerb를 그립/등록 성공 조건 없이 선택합니다. 쌍수도 주 슬롯 한 자루만 사용합니다. `SelectBodyMelee/IsBodyMeleeSource`는 비지형 목록에서 종족·현재 변이·특정 신체 부위 Hediff의 Tool만 남기고 의복·무관한 효과 공격은 제외합니다. 기존 NaturalMelee를 대체합니다.
+- `RimKataSubdueCombat.RefreshWeapon/CanExecuteHeldAttack/UseBodyAttack`: 붙잡힌 Map 없는 대상에 연결 가능한 근접 피해/투사체는 원래 무기 Verb를 사용하고 미지원 유형은 실행 전에 신체 공격을 선택합니다. 빔/소각기는 현재 신체 전환이며 임의 해제·가짜 Spawn·원본 Map 검사 제거가 아닙니다. 별도 외부 대상 공격 조건은 기존대로입니다.
+- `Tick/SetAttackEnabled`: 무기 근접 선택 실패도 신체 공격으로 연결합니다. 실행 예외는 해당 제압의 다음 공격만 신체 공격으로 바꾸고 같은 틱에 추가 피해를 주지 않으며 정상 무기 등록을 실패 처리하지 않습니다. 신체 실행 예외는 반복을 멈추고 명시적 재활성/기존 무기 갱신에서 재선택합니다.
+- `ShootHeld`: 기존 값 읽기 후 사격 문맥에 들어갑니다. 중첩 finally로 Reset 실패에서도 임시 점사/NonInterrupting, 사격 문맥 및 executing/hit/heldShot을 복원합니다. 일반 슬롯·다른 폰으로 제압 사격 문맥을 넘기지 않습니다.
+
+## 2026-11-09 후속 — 현재 SYS 검집 호출 계약
+
+- `RimKataWeaponRenderDiscovery.CreateSysSheathPostfix`: 현재 1.6/1.7 SYS의 `Postfix(Pawn, Vector3, PawnRenderFlags)`를 검증하고 직접 연결합니다. 사라진 Prefix/RenderState는 요구하지 않습니다. Postfix와 원 SYS DrawSheath의 기존 계측을 유지하여 부 슬롯 문맥에서만 해당 무기의 CompSheath를 읽고, accessories-only 출력 뒤 원래 문맥을 복원합니다.
+
+## 2026-11-09 후속 — 난사 셀의 슬롯 소유와 × 표시
+
+- `JobDriver_RimKataAttack.IsDirectionalFire/EnsureDirectionalFireInitialized/TryUpdateDirectionalFire/ExposeData`: 난사 작업 구분은 저장 bool로 유지하고 접수된 `Job.targetA` 셀은 비웁니다. 구버전 저장의 접수 완료 셀만 이행 시 제거합니다. `ContinueAfterWeaponLoss/SetAssignedTarget`은 Thing 대상으로 바뀔 때 구분도 해제합니다.
+- `RimKataDualWeaponController.GetCombatIndicatorWeaponFrame`: 이미 얻은 전투 상태에서 현재 장착 슬롯의 `directionalFireCell`을 표시 frame으로 전달합니다. 집중 전환 시 기존 `NotifyPlayerWeaponTarget → DirectionalFire.Clear(cycle)`가 해당 슬롯 표시도 제거합니다.
+- `RimKataDualWeaponRenderUtility.DrawCombatIndicators/DrawDirectionalFireCell`: 선택된 자격자의 현재 난사 셀에 집중 공격 선 재질로 한 셀 크기의 ×를 표시합니다. 두 슬롯이 같은 셀이면 중복 출력하지 않습니다. 별도 참가자 탐색이나 잡 목표를 되살리는 처리는 없습니다.
+
+## 2026-11-09 후속 — 특수 자세의 최종 무기 출력과 최초 지원 지연
+
+- `RimKataRatkinRenderCompat.Apply/DrawTranspiler/DrawMesh/HeldDrawScale`: 랫킨이 `DrawEquipmentAiming` 본문을 생략해도 원본 메시·유전자 크기·반동을 보존한 최종 출력에서 기존 RimKata 자세 변환과 무기 중심 관찰을 연결합니다. 현재 무기와 조준각을 그대로 전달하며 이미 선택된 참가자 문맥만 사용합니다. IW 소유 주 무기는 원본 출력에 남깁니다.
+- `RimKataVisualPatches.Patch_PawnRenderUtility_RimKataDeflection.Prefix`: 기존 Last 우선순위를 유지하되 랫킨의 본문 생략 Prefix보다 먼저 위치/쳐내기 문맥을 준비합니다. `ApplyVisualAngleOffset`은 원본 반동 전 각도에 적용하고 최종 행렬에는 차이만 반영합니다. 다른 슬롯의 쳐내기/반동으로 확장하지 않습니다.
+- `RimKataReactiveRender.Draw/DrawWeapon`: 슬라이딩·떨치기 전용 출력도 랫킨 원본 캐시의 배율을 사용합니다. 이 문맥에서 한 번 읽어 두 무기로 전달하며 일반 폰 탐색·매 프레임 분석을 추가하지 않습니다.
+- `RimKataPawnCombatState.openingSupportOwnerWeapon`, `RimKataDualWeaponController.RecordFirstFiredWeapon/RearmOpeningOwnerIfBothWaiting/IsOpeningCycleIdle`: 명령 우선권 `engagementOwnerWeapon`과 첫 지원 사격의 기준 무기를 분리합니다. 다른 슬롯 명령이 이미 사격 중인 무기에 지원 조준 시간을 새로 부여하지 않습니다. 표시용 W 대신 실제 요청·원본 공격·계획·타이머가 끝났는지 확인한 뒤만 재설정합니다.
+- 양 버전 공통 수정이며 게임 시험 범위/결과는 개발 기억의 같은 날짜 후속 기록을 따릅니다.
+
+## 2026-11-09 후속 — 기본 구현·외부 패치·준비 결과 분리
+
+- `WeaponExecutionDiscovery.AnalyzeBaseline/Analyze`는 원본 IL과 현재 변환 IL·외부 훅 결과를 따로 만듭니다. 기본 분류 실패와 현재 경로 분석 실패를 합치지 않습니다. `UnityEngine.Vector3.Assembly`를 실제 엔진 경계로 사용하여 1.7 UnityStubs를 모드 구현으로 확장하지 않습니다.
+- `WeaponImplementation.Classify/Fingerprint/Clear`는 준비 단계에서만 무기 출처와 활성 선행 모드의 실제 어셈블리를 확인합니다. 소유권은 분류 근거이며 분석 면제 목록이 아닙니다. 출처 불명·자체 Harmony 훅으로 원본만으론 구분 불가한 경우 `Unknown`을 유지합니다.
+- `WeaponExecutionPlans.Apply/TryRestore/ReadBaseline/WriteBaseline/Store/Unload`는 실행 schema 5의 단일 기록에 기본 구현, 현재 분석 결과, 선택한 경로 및 기본+현재 의존 지문을 함께 저장합니다. 효과 schema는 그대로입니다. 외부 지문만 달라지면 검증된 기본 자료는 재사용하며 장착 Load에서 새 분석을 시작하지 않습니다.
+- `WeaponExecutionPlans.TryUseBaseline → ExecutionRuntime.TryRestoreBaselineExecution`은 발사 전 준비에만 적용합니다. 현재와 기본의 완료 소유권·Warmup·Tick·Count·Spacing·Burst 집합이 일치해야 하며 실제 외부 훅/호출은 유지합니다. 실패하면 원본 실행으로 종결하고, 발사 중 실패에 이 준비 재시도를 사용하지 않습니다.
+- `ExecutionRuntime.AcquireDefinition → Plans.Register/SaveRegistrationDecisions`는 준비 실패 뒤 성공한 기본 경로 선택을 저장하여 재장착 때 이전 실패 경로로 되돌아가지 않게 합니다. 저장 실패는 이미 성공한 현재 실행을 취소하지 않습니다.
+- `ExecutionRuntime.WarmupComplete/TryRunCopiedTick`의 복제 묶음은 실제 부 슬롯 요청만 사용합니다. 주 슬롯은 게임에 설치된 원본 실행을 사용하며 기존 무기별 효과 문맥과 요청 종결은 유지합니다. 원본 실행은 외부 패치를 제거한 바닐라 실행이라는 뜻이 아닙니다.
+
+## 2026-11-09 후속 — 무기 효과 소유권·하위 스탯·랫킨 부 슬롯 배율
+
+- `WeaponEffectDiscovery.Graph.UsesOtherComponent → Add/Inspect`는 무기/관리자 정의의 owners 밖에 있는 별도 ThingComp/HediffComp 인스턴스 호출을 원본에 남깁니다. 폰의 소리·인구 캐시를 무기 효과로 복사하지 않습니다. 무기 소유 Comp·static·생성자 검사는 유지합니다.
+- `WeaponEffectStats.IsSupported`는 준비 시 StatDef의 `statFactors/postProcessStatFactors`도 등록합니다. `ReadScopedStat`에서 실제 원본 재귀 계산에 필요한 자료를 잃지 않게 합니다. 실시간 조회에서 새 준비를 하지 않습니다.
+- `WeaponEffects.ReportFailure`는 기존 폰/실제 무기 장착 구간 중복 제한을 유지하며 일반 로그를 씁니다. 효과 분리 실패와 발사 등록 실패를 혼동하지 않습니다.
+- `WeaponRenderProbe.Initialize → RatkinRenderCompat.Apply → OwnerPostfix/DrawTranspiler/DrawMesh`는 활성 랫킨 원본 소유 판정과 최종 메시 출력만 연결합니다. 현재 부 무기 렌더 문맥을 사용하고 주 무기는 원본 호출로 출력합니다. 배율 계산은 NewRatkin 원본을 유지합니다.
+- 마지막 푸시 비교 기준과 실제 재현/수정본 결과는 개발 기억의 같은 날짜 후속 제보 기록을 따릅니다.
+
+## 2026-11-09 — 분석·등록·원본 실행 시각 자료 연결
+
+- `WeaponExecutionDiscovery.Visit/VisitPatches/RuntimePrefixes`: 깊이 30·메서드 500, 실제 변환 IL·Harmony 3 내부 훅 추적. transpiler 준비 메서드는 실행 묶음에서 제외하고 `RouteFingerprint`의 변경 감지는 유지합니다.
+- `WeaponEffectDiscovery.BuildPresentationEntries/Graph.AddOwner/Add/Run`: 정확한 바닐라 표시용 가상 슬롯을 독립 시작점에서만 제외하며 실제 효과 호출은 추적합니다. 효과도 같은 깊이 한도입니다.
+- `WeaponExecutionPlans.MemberIdentity/EncodeType/DecodeType/ResolveMember/CanStoreMethod → Store/TryRestore`: 제네릭 소유 타입·메서드 타입 인수까지 왕복합니다. 실행 schema 4·효과 schema 5. 저장 불가를 실행 실패로 확장하지 않습니다.
+- `Dialog_RimKataWeaponRegistration.WindowUpdate → RegisterNext → ExecutionRuntime.Register → FinishRegistration → SaveRegistrationDecisions`: 개별 준비·실패 격리 뒤 완료/닫기에서 한 번 저장하고 결과 로그를 합칩니다. `PostClose → Decline`은 미처리 항목만 적용합니다. `SetRow/MeasureRows/DoWindowContents`는 표시 자료를 재사용합니다.
+- `ExecutionRuntime.RestoreExecution → WeaponEffects.HookRevision`: 효과 훅 변경 때만 묶음을 다시 만들고 선택적 연결 실패는 먼저 성공한 발사 묶음을 보존합니다.
+- `NativeAttack.TryGetOriginalVisualData → DualWeaponController.TryGetVisualData/ChooseBodyAimCycle`: 실제 Verb와 같은 폰·슬롯·Job·무기의 원본 실행 대상·Stance 시간을 읽습니다. `RimKataWeaponVisualData.originalTiming`에는 추정 조준 시간을 덧붙이지 않습니다.
+- `VisualPatches.DrawSpecialSecondary`: 자기 목표를 대기 조기 반환보다 먼저 확인합니다. 자기 목표가 없으면 기존 idle 위치/각도를 사용하고 주 무기 조준을 물려받지 않습니다. IW/PS/낙상/MA 문맥을 함께 확인해야 합니다.
+- 실제 1.7 비교·실패 격리·저장 로드·등록 시험과 한계는 개발 기억의 2026-11-09 기록을 따릅니다. 아래 과거 자동 집계 전체를 재생성한 자료는 아닙니다.
+
+## 2026-11-08 후속 — 무기별 실행·현재 스탯·원본 대체와 목표 선택
+
+- `WeaponExecutionDiscovery.InspectStatReads/InspectNativeStatHelper → WeaponExecutionPlans.Apply/Store/TryRestore/Unload`는 발사 경로 스탯 조회 위치와 준비 자료를 관리합니다. 효과 변경 스탯은 `WeaponEffectDiscovery.ChangedStats → WeaponEffectCache`의 별도 자료입니다. `EquipmentUtility.AutoGripTypeFor`의 추가 스탯 기본 분류는 수동 설정을 덮지 않습니다.
+- `WeaponEffects.Sync/CanSeparate/UseOriginalPair/RetainOriginalEffects/NotifyExecutionFailure`는 해당 폰의 원본/분리 계산 모드를 정합니다. `NotifyEquipmentChanged/ReportFailure`는 실제 무기와 장착 구간별 경고 수명을 관리합니다. `ReleaseCore`의 정리/원본 복원과 pending 정리 자료는 성공 표시와 구분합니다.
+- `WeaponEffectStats.Sync/GetStatValue/GetScopedWorkerValue/NotifyHealthChanged`는 현재 공통 건강과 무기별 효과·숫자 캐시를 연결합니다. 실제 폰 판정은 실건강이며 무기 스탯 문맥과 혼동하지 않습니다.
+- `WeaponExecutionRuntime.Bind/CanSubmitOriginalCast/MarkExecutionFailed`와 `NativeAttack.HandOffOriginalCast/BeginOriginalTick/FinishOwnerTick`은 기존 공통 VerbTick 원본 진입과 무기별 원본 Stance 수명을 연결합니다. 등록·분석 결과는 실제 요청의 완료 결과가 아닙니다.
+- `NativeAttack.TryBeginNativeCast/BeginExecution/FinishNativeCast/CompleteRequest/ReleaseReferences`는 실제 획득한 실행 문맥만 복원하고 해당 요청을 종결합니다. FireUtility의 Prefix는 준비 진입 실패를 실제 실행 생략으로 전달합니다. `IsOriginalCastBusy`는 cycle의 `Active/CombatActive/DedicatedActive`, 목표 작업·연속성 판정에 연결되어 원본 조준/점사/쿨다운 중 Job이 종료되지 않도록 합니다. 실제 진행이 끝난 뒤의 무조건 유지 조건은 아닙니다.
+- `DualWeaponController.NotifyWeaponExecutionFailed/NotifyCombatInputsChanged`는 실제 예외로 종결한 입력만 다루며 정상 CanHit/Available=false를 장기 실패로 저장하지 않습니다. `PrepareFocusedTarget/TickWeaponCycle/TryCacheSharedCandidate/CanAssignInterceptionTarget`과 후속 목표 검증은 집중 우선 및 무기별 명령 권한을 함께 보존합니다.
+- 아래 과거 자동 색인의 행 번호·호출 통계는 재생성하지 않았습니다. 현재 소스와 개발 기억의 같은 날짜 적용 기록을 우선합니다.
+
+## 2026-11-08 준비와 실행 종결 분리·Job 후속 목표 보완
+
+- 아래 11월 7일의 `FinishPendingPublication` 조회 복구 안내는 이 변경으로 대체합니다. `HasRimKataAccess/TryGetCachedAccess`는 확정 자격만 읽습니다. `SetQualified/TryPublicationStep`은 단계별 게시를 담당하고 `StatActivation.ScheduleQualificationRefresh → Tick → EligibilityCache.RefreshPendingAccess`는 실패한 당사자의 기존 예약을 사용합니다. 스탯 조건 OFF와 자격 게시 복구 예약의 수명을 구분하며 새 전체 폰 순회는 없습니다.
+- `WeaponExecutionDiscovery.EntersLifecycle/CanSkipLifecycle → WeaponExecutionPlans.CompletionContract`는 준비 단계에서 원본 완료 소유권을 구분합니다. `AnalysisComplete`는 runtime Pending 유지 근거가 아닙니다. `NativeAttack.Queue/HandOffOriginalCast/ReconcileNativeTick → CompleteOriginalCastHandoff`는 원본 인계의 접수/거절을 한 번 소비하며 원본 Reset·림카타 쿨다운·발사 성공 판정과 분리합니다. `Runtime.CanSubmitOriginalCast`는 실제 Tick 연결을 요구합니다. 표준 Native/CE 완료와 미지원 특수 요청의 미접수 정리를 함께 추적합니다.
+- `EquippedWeaponPlans.Sync → WeaponRenderProbe.PrepareDefinition → Register`가 장착 준비를 담당하며 `DrawSpecialSecondary` miss는 등록을 실행하지 않습니다. `Runtime.ShowPendingFailures`는 실패 안내 예외가 이미 성공한 획득 결과를 뒤집지 않도록 분리합니다.
+- `BreachDoorSnapshot.TryCapture → DoorCache.TryCapturePrepared`는 현재 방향의 준비된 snapshot만 가져옵니다. `DoorCache.NotifySpawned/NotifyAppearanceChanged → Flush/GameComponentUpdate → TryPrepare`와 색·스타일·Def 변경 훅이 알려진 문만 준비하며 같은 실패 외형을 반복 준비하지 않습니다. `DoorCacheStore.Prepare`는 RAM 자료 생성과 파일 저장 결과를 분리합니다. snapshot 저장 복원 및 실제 Draw 단계는 별개입니다.
+- `HasContinuationWork`는 구 `HasContinuationSearchWork`를 대체하며 일반 전투와 같은 `HasAnyCycleTargetWork`를 사용합니다. `TryGetContinuationTarget`은 준비된 계획과 신규 캐시 후보를 구분하고 사격 가능한 원거리 후속에 일괄 Touch 도달을 요구하지 않습니다. `TryEnterDedicatedFollowupJob`도 자동 후속 목표로 바뀌면 이전 강제 공격 권한을 해제합니다. 집중 목표·Job의 수명, 슬롯별 타이머, 이동 사격 범위를 합치지 않습니다.
+- `CycleHasContinuationSearchWork`는 제거했습니다. 아래 전체 자동 색인의 기존 호출 통계·행 번호는 재산출하지 않았으므로 변경 경로에서는 이 안내와 현재 소스를 우선합니다. 양 버전 Release 빌드는 통과했으며 인게임 검증은 별개입니다.
+
 ## 2026-11-07 잔존 조작 사지 기준의 부 슬롯 허용
 
 - `RimKataSecondaryHandRequirement.HasEnoughManipulationLimbs/HasInsufficientManipulationLimbs/CountUsableLimbs/HasMissingSegment/IsMissing`: 사용 가능한 독립 Core 두 개 이상을 확인합니다. BodyDef의 태그 캐시, Pawn별 결과 캐시, 기존 인공 부위 보정을 재사용하며 손가락은 별도 개수나 불허 사유로 세지 않습니다. Core만 있는 신체도 지원합니다. 기존 `HasAvailableHands/HasMissingHand`는 이 API로 대체했습니다.
@@ -239,7 +334,7 @@
 - `RimKataWeaponEffects.Sync/Bind/Connect`: 실제 전투에 참여하는 부 무기만 등록. 주 무기는 원본 건강·스탯 경로를 사용합니다. `SuspendNativeSecondary`는 확인된 부 무기용 native 상태만 옮기며 미분석 주 무기의 공유 상태를 삭제하지 않습니다.
 - `EnsureManagers/ManagerRemoved/EnterScope/ExitScope`: detached 관리자 최초 생성과 실제 인스턴스 소속을 관리합니다. 과거 `TrackManager`는 삭제됐으며 같은 Def만으로 native 주 무기를 부 무기 문맥에 귀속하지 않습니다.
 - `Tick/TickLocalHealth`: 기존 참가자 처리에서 지역 manager/effect만 원본 Tick·interval·제거 순서로 갱신합니다. 원본 virtual interval getter는 일회 delegate 준비, 순회 목록은 재사용, lastTick 중복 방지. 일반 폰·기초 건강 사본은 tick하지 않습니다.
-- `RimKataWeaponEffectStats.Capture/Snapshot.Refresh/ReadCached`: 전투 진입 시 기초 건강 기여를 동결하고 효과 변경 시에만 숫자 캐시 무효화. 원본 StatWorker 복사본을 사용합니다. `TryGetStatContext`는 등록된 부 무기만 성공합니다.
+- **과거 구조, 2026-11-08 대체:** 당시 `RimKataWeaponEffectStats.Capture/Snapshot.Refresh/ReadCached`는 전투 진입의 기초 건강 기여를 동결했습니다. 현재 `Sync/TryBegin/ReadHediffs/ReadCached`는 현재 공통 건강과 자기 무기 효과를 원본 수식에 전달하며 실제 조회 틱·자기 효과 변화·기존 건강 알림에서 숫자 캐시를 갱신합니다. 주 무기 단독은 원본을 사용하고, 분리 가능한 두 무기는 각각의 숫자 계산 문맥을 사용합니다. 상세 연결은 이 문서 맨 위의 11월 8일 후속 기록을 따릅니다.
 - `RimKataDualWeaponController.RefreshDualEngagementState/NotifyDraftStatusChanged/NotifyBodyAimEnded/Reset`: 기존 전투 진입/종료·소집 사건에서 생성/폐기. `RimKataWeaponEffectState.ExposeData/RestoreLoadedRecords/Release`는 detached Deep 저장과 구형 참조 형식 전환을 구분합니다. 아래 10-18의 두 슬롯 등록 및 native manager 설명은 과거 구조입니다.
 
 ## 2026-10-18 실제 무기 타입과 무관한 Prefix 분석 제외
@@ -16118,9 +16213,11 @@
 
 <a id="m-1024"></a>
 
-### 155. RimKataDualWeaponController.HasContinuationSearchWork
+### 155. RimKataDualWeaponController.HasContinuationWork
 
-`public static bool HasContinuationSearchWork(Pawn pawn)` · [L4833](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:4833)
+`public static bool HasContinuationWork(Pawn pawn)` · [현재 소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:4970)
+
+- **2026-11-08 변경:** 구 이름 `HasContinuationSearchWork`. 아래 과거 호출 집계 대신 `HasAnyCycleTargetWork`를 사용하여 다른 슬롯의 실제 작업을 Job 종료 판단에도 전달합니다.
 
 - **역할:** 근접 대상·이동 탐색·공유 탐색·사이클 후보 등 후속 작업이 남았는지 확인합니다.
 - **호출받음:** 직접 **3곳** · 메서드 그룹 참조 **0곳**.
@@ -16417,7 +16514,7 @@
 
 ### 182. RimKataDualWeaponController.CycleHasContinuationSearchWork
 
-`private static bool CycleHasContinuationSearchWork( Pawn pawn, RimKataWeaponCycleState cycle)` · [L5622](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataDualWeaponController.cs:5622)
+**2026-11-08 제거됨.** `HasContinuationWork → HasAnyCycleTargetWork`로 통합했습니다. 아래는 이전 호출 집계이며 링크 식별자만 보존합니다.
 
 - **역할:** 사이클에 허용된 일반 후보 또는 캐시·요격 작업이 남아 있는지 확인합니다.
 - **호출받음:** 직접 **2곳** · 메서드 그룹 참조 **0곳**.
@@ -32008,20 +32105,20 @@
 
 `internal static void RefreshWeapon(RimKataSubdueState state)` · [L124](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataSubdueCombat.cs:124)
 
-- **역할:** 예약 공격을 정리하고 허용 한손 무기 또는 맨손 동사를 다시 준비합니다.
-- **호출받음:** 직접 **6곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataPreparedWeaponData.Bind(Verse.Verb verb)](#m-1544) · [RimKataSubdueCombat.NaturalMelee(Verse.Pawn pawn)](#m-2611) · [RimKataSubdueCombat.TryGetExternalWeaponVerb(RimKataSubdueState state, Verse.ThingWithComps weapon, out Verse.Verb verb)](#m-2614) · [RimKataWeaponSlotUtility.CanUseOneHandWeapon(Verse.Pawn pawn, Verse.ThingWithComps weapon, \[bool accessVerified = false\])](#m-1697) · [RimKataWeaponSlotUtility.CombatVerb(Verse.Pawn pawn, Verse.ThingWithComps weapon)](#m-1691)
+- **역할:** 예약 공격을 정리합니다. 제압 대상은 그립과 무관하게 허용 주 무기 한 자루를 우선하며, 해당 held-target 실행을 지원하지 못하면 신체 공격을 준비합니다. 별도 외부 대상은 기존 한손 무기 조건을 유지합니다.
+- **호출받음:** 기존 무기/제압 갱신과 공격 재활성 경계.
+- **호출 — 프로젝트 내부:** [RimKataNativeAttack.Cancel()](#m-1511) · [RimKataPreparedWeaponData.Bind(Verse.Verb verb)](#m-1544) · [RimKataSubdueCombat.SelectBodyMelee(Verse.Pawn pawn)](#m-2611) · `TryGetHeldWeaponAttack` · `CanExecuteHeldAttack` · [RimKataSubdueCombat.TryGetExternalWeaponVerb(RimKataSubdueState state, Verse.ThingWithComps weapon, out Verse.Verb verb)](#m-2614)
 - **호출 — 외부:** `Verse.Verb.Reset()`
 
 <a id="m-2611"></a>
 
-### 009. RimKataSubdueCombat.NaturalMelee
+### 009. RimKataSubdueCombat.SelectBodyMelee
 
-`private static Verb NaturalMelee(Pawn pawn)` · [L153](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataSubdueCombat.cs:153)
+`private static Verb SelectBodyMelee(Pawn pawn)` · [선택 소스](C:/Users/user/Documents/RimworldModsFolder/RimKata/Source/1.6/RimKataSubdueAttackSelection.cs:24)
 
-- **역할:** 사용 가능한 비장비 근접 피해 동사 중 피해량이 가장 큰 맨손 동사를 선택합니다.
-- **호출받음:** 직접 **1곳** · 메서드 그룹 참조 **0곳**.
-- **호출 — 프로젝트 내부:** 없음
+- **역할:** 지형·의복·별도 능력의 공격을 제외하고 종족/변이/신체 부위에 연결된 도구 중 사용 가능하며 피해량이 가장 큰 신체 공격을 선택합니다.
+- **호출받음:** `RefreshWeapon` · `UseBodyAttack`.
+- **호출 — 프로젝트 내부:** `IsBodyMeleeSource`.
 - **호출 — 외부:** `RimWorld.Pawn_MeleeVerbs.GetUpdatedAvailableVerbsList(bool terrainTools)` · `Verse.Verb.IsStillUsableBy(Verse.Pawn pawn)` · `Verse.VerbProperties.AdjustedMeleeDamageAmount(Verse.Verb ownerVerb, Verse.Pawn attacker)`
 
 <a id="m-2612"></a>

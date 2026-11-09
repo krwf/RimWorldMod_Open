@@ -134,6 +134,7 @@ namespace KRWF.RimKata
                 pawn,
                 dodgeWindowDurationTicks);
 
+            if (RimKataReactiveMotion.HasSlidingMotion(pawn)) return;
             ApplyRangedDodgeMotion(
                 pawn,
                 attacker,
@@ -194,16 +195,23 @@ namespace KRWF.RimKata
                 && TryChooseDestination(
                     pawn,
                     movementDirection,
-                    out IntVec3 destination)
-                && TryStartInternal(
-                    pawn,
-                    projectile,
-                    component,
-                    destination,
-                    movementDirection,
-                    dodgeWindowDurationTicks))
+                    out IntVec3 destination))
             {
-                return;
+                RimKataSettings settings = RimKataTargetAccess.SettingsFor(pawn);
+                if (settings?.slidingEnabled == true)
+                {
+                    Map map = pawn.Map;
+                    Job job = pawn.CurJob;
+                    IntVec3 origin = pawn.Position;
+                    LocalTargetInfo resumeDestination = pawn.pather.Destination;
+                    if (RimKataReactiveMotion.TrySlideDuringRangedDodge(pawn, settings, destination)) return;
+                    // Native cell callbacks may change the pawn even when slide entry fails.
+                    if (!pawn.Spawned || pawn.Dead || pawn.Downed || pawn.Map != map
+                        || pawn.CurJob != job || pawn.Position != origin
+                        || pawn.pather.Destination != resumeDestination) return;
+                }
+                if (TryStartInternal(pawn, projectile, component, destination,
+                        movementDirection, dodgeWindowDurationTicks)) return;
             }
 
             BeginStandardDodge(

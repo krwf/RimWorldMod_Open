@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -12,25 +13,44 @@ namespace KRWF.RimKata
         private static bool changingSuspension;
         private static Dictionary<ThingDef, int> suspendedReferences;
 
-        internal static void Sync(Pawn pawn)
+        internal static bool Sync(Pawn pawn)
+        {
+            try
+            {
+                bool ready = SyncCore(pawn);
+                if (!ready) RimKataEligibilityCache.ScheduleWeaponPreparation(pawn);
+                return ready;
+            }
+            catch (Exception exception)
+            {
+                RimKataEligibilityCache.ScheduleWeaponPreparation(pawn);
+                Log.ErrorOnce("[RimKata] Equipped weapon preparation could not finish for pawn "
+                    + pawn?.thingIDNumber + ": " + exception, (pawn?.thingIDNumber ?? 0) ^ 0x4A7D923);
+                return false;
+            }
+        }
+
+        private static bool SyncCore(Pawn pawn)
         {
             if (pawn?.Spawned != true || pawn.Dead
                 || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn))
             {
                 Forget(pawn);
-                return;
+                return true;
             }
 
             List<ThingWithComps> equipment = pawn.equipment?.AllEquipmentListForReading;
             Owners.TryGetValue(pawn, out ThingDef[] previous);
             int count = 0;
             bool changed = false;
+            bool renderersPrepared = true;
             if (equipment != null)
             {
                 for (int i = 0; i < equipment.Count; i++)
                 {
                     ThingDef definition = WeaponDefinition(equipment[i]);
                     if (definition == null) continue;
+                    renderersPrepared &= RimKataWeaponRenderProbe.PrepareDefinition(definition);
                     if (previous == null || count >= previous.Length || previous[count] != definition)
                         changed = true;
                     count++;
@@ -39,9 +59,9 @@ namespace KRWF.RimKata
             if (count == 0)
             {
                 Forget(pawn);
-                return;
+                return true;
             }
-            if (!changed && previous != null && previous.Length == count) return;
+            if (!changed && previous != null && previous.Length == count) return renderersPrepared;
 
             ThingDef[] current = new ThingDef[count];
             int index = 0;
@@ -51,11 +71,12 @@ namespace KRWF.RimKata
                 if (definition != null) current[index++] = definition;
             }
             Owners[pawn] = current;
-            if (suspended) return;
+            if (suspended) return renderersPrepared;
 
             // Acquire the replacement set first so an unchanged Def never loses its last owner.
             Acquire(current);
             if (previous != null) Release(previous);
+            return renderersPrepared;
         }
 
         internal static void Forget(Pawn pawn)

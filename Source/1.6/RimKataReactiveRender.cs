@@ -244,18 +244,19 @@ namespace KRWF.RimKata
         {
             if (!Active || current.drawn) return;
             current.drawn = true;
-            DrawWeapon(current.visual.primary, current.visual.primaryAngle, false);
-            DrawWeapon(current.visual.secondary, current.visual.secondaryAngle, true);
+            float drawScale = RimKataRatkinRenderCompat.HeldDrawScale(current.pawn);
+            DrawWeapon(current.visual.primary, current.visual.primaryAngle, false, drawScale);
+            DrawWeapon(current.visual.secondary, current.visual.secondaryAngle, true, drawScale);
             if (current.visual.secondary != null
                 && RimKataWeaponRenderProbe.HasSpecialRenderer(current.visual.secondary.def))
                 RimKataWeaponRenderProbe.DrawSecondaryExtras(current.pawn, current.visual.primary,
                     current.visual.secondary, current.root, current.visual.facing, current.flags);
         }
 
-        private static void DrawWeapon(ThingWithComps weapon, float aim, bool secondary)
+        private static void DrawWeapon(ThingWithComps weapon, float aim, bool secondary, float drawScale)
         {
             if (weapon == null || weapon.Destroyed) return;
-            float factor = current.pawn.ageTracker?.CurLifeStage?.equipmentDrawDistanceFactor ?? 1f;
+            float factor = (current.pawn.ageTracker?.CurLifeStage?.equipmentDrawDistanceFactor ?? 1f) * drawScale;
             Vector3 pivot = current.frameActive ? PlaceWeapon(current.root, in current.frame) : current.root;
             Vector3? aimPoint = secondary ? current.visual.secondaryAimPoint : current.visual.primaryAimPoint;
             if (aimPoint.HasValue) aim = (aimPoint.Value - pivot).AngleFlat();
@@ -276,7 +277,7 @@ namespace KRWF.RimKata
                 ? stack.SubGraphicForStackCount(1, weapon.def).MatSingleFor(weapon) : graphic.MatSingleFor(weapon);
             Graphics.DrawMesh(flipped ? MeshPool.plane10Flip : MeshPool.plane10,
                 Matrix4x4.TRS(position, Quaternion.AngleAxis(rotation, Vector3.up),
-                    new Vector3(graphic.drawSize.x, 0f, graphic.drawSize.y)), material, 0);
+                    new Vector3(graphic.drawSize.x * drawScale, 0f, graphic.drawSize.y * drawScale)), material, 0);
         }
     }
 }

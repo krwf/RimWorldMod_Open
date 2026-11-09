@@ -311,6 +311,9 @@ namespace KRWF.RimKata
         private static void Postfix(Pawn ___pawn)
         {
             RimKataSecondaryHandRequirement.NotifyPartRestored(___pawn);
+            RimKataWeaponEffectStats.NotifyHealthChanged(___pawn);
+            if (RimKataDualWeaponController.HasExecutionFailures && !RimKataWeaponEffects.IsInternalHealthChange(___pawn))
+                RimKataDualWeaponController.NotifyCombatInputsChanged(___pawn);
             RimKataStrengthUtility.NotifyPartRestored(___pawn);
         }
     }

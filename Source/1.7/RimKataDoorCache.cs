@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Xml;
 using HarmonyLib;
 using RimWorld;
@@ -20,10 +21,130 @@ namespace KRWF.RimKata
         private string runtimeEnvironmentKey;
         private RimKataDoorCacheStore store;
         private readonly HashSet<Building_Door> pending = new HashSet<Building_Door>();
+        private readonly ConditionalWeakTable<Building_Door, PreparedDoor> doors =
+            new ConditionalWeakTable<Building_Door, PreparedDoor>();
         private readonly HashSet<string> reported = new HashSet<string>(StringComparer.Ordinal);
         private bool scheduled;
         private bool storeAttempted;
         private bool cleanupScheduled;
+
+        private sealed class MaterialState
+        {
+            internal readonly Shader shader;
+            internal readonly Texture texture, mask;
+            internal readonly Color color, colorTwo;
+            internal readonly Vector2 scale, offset;
+            internal readonly int renderQueue;
+            internal readonly string[] keywords;
+            private readonly bool missing;
+            private readonly bool hasColorTwo;
+
+            internal MaterialState(Material material, Color secondaryColor)
+            {
+                if (material == null) { missing = true; return; }
+                shader = material.shader;
+                texture = material.mainTexture;
+                mask = material.HasProperty(ShaderPropertyIDs.MaskTex) ? material.GetTexture(ShaderPropertyIDs.MaskTex) : null;
+                color = material.color;
+                hasColorTwo = material.HasProperty(ShaderPropertyIDs.ColorTwo);
+                colorTwo = hasColorTwo ? material.GetColor(ShaderPropertyIDs.ColorTwo) : secondaryColor;
+                scale = material.mainTextureScale;
+                offset = material.mainTextureOffset;
+                renderQueue = material.renderQueue;
+                keywords = material.shaderKeywords;
+                Array.Sort(keywords, StringComparer.Ordinal);
+            }
+
+            internal bool Matches(Material material)
+            {
+                if (missing) return material == null;
+                if (material == null || material.shader != shader || material.mainTexture != texture
+                    || !material.color.Equals(color) || !material.mainTextureScale.Equals(scale)
+                    || !material.mainTextureOffset.Equals(offset) || material.renderQueue != renderQueue
+                    || material.HasProperty(ShaderPropertyIDs.ColorTwo) != hasColorTwo
+                    || hasColorTwo && !material.GetColor(ShaderPropertyIDs.ColorTwo).Equals(colorTwo)
+                    || (material.HasProperty(ShaderPropertyIDs.MaskTex) ? material.GetTexture(ShaderPropertyIDs.MaskTex) : null) != mask)
+                    return false;
+                string[] current = material.shaderKeywords;
+                if (current.Length != keywords.Length) return false;
+                foreach (string keyword in current)
+                    if (Array.IndexOf(keywords, keyword) < 0) return false;
+                return true;
+            }
+        }
+
+        private sealed class GraphicState
+        {
+            internal readonly Graphic graphic;
+            private readonly Type type;
+            private readonly string path, maskPath, shaderPath;
+            private readonly Color color, colorTwo;
+            private readonly Vector2 size;
+            private readonly bool customParameters;
+            internal MaterialState[] materials;
+
+            internal GraphicState(Graphic graphic)
+            {
+                this.graphic = graphic;
+                type = graphic?.GetType();
+                path = graphic?.path;
+                maskPath = graphic?.maskPath;
+                shaderPath = graphic?.data?.shaderType?.shaderPath;
+                color = graphic?.color ?? Color.white;
+                colorTwo = graphic?.colorTwo ?? Color.white;
+                size = graphic?.drawSize ?? Vector2.zero;
+                customParameters = graphic?.data?.shaderParameters?.Count > 0;
+            }
+
+            internal bool Matches(Graphic current, Building_Door door, Rot4 rotation)
+            {
+                if (current?.GetType() != type || current?.path != path || current?.maskPath != maskPath
+                    || current?.data?.shaderType?.shaderPath != shaderPath
+                    || !(current?.color ?? Color.white).Equals(color)
+                    || !(current?.colorTwo ?? Color.white).Equals(colorTwo)
+                    || !(current?.drawSize ?? Vector2.zero).Equals(size)
+                    || (current?.data?.shaderParameters?.Count > 0) != customParameters) return false;
+                // An unsupported/unreadable source is a result too, retried on its next change event.
+                return materials == null || materials[rotation.AsInt].Matches(current.MatAt(rotation, door));
+            }
+        }
+
+        private sealed class PreparedDoor
+        {
+            private readonly ThingDef definition;
+            private readonly IntVec2 size;
+            private ThingDef stuff;
+            private ThingStyleDef style;
+            private Color color, colorTwo;
+            private bool captured;
+            internal GraphicState main, upper;
+            internal RimKataBreachDoorSnapshot[] snapshots;
+
+            internal PreparedDoor(Building_Door door) { definition = door.def; size = door.def.size; }
+
+            internal void CaptureAppearance(Building_Door door)
+            {
+                stuff = door.Stuff;
+                style = door.StyleDef;
+                color = door.DrawColor;
+                colorTwo = door.DrawColorTwo;
+                main = new GraphicState(door.Graphic);
+                Graphic upperGraphic = door is Building_MultiTileDoor ? door.def.building.upperMoverGraphic?.Graphic : null;
+                upper = new GraphicState(upperGraphic);
+                captured = true;
+            }
+
+            internal bool Matches(Building_Door door, Rot4 rotation)
+            {
+                if (door.def != definition || door.def.size != size) return false;
+                if (!captured) return true;
+                return door.Stuff == stuff && door.StyleDef == style
+                    && door.DrawColor.Equals(color) && door.DrawColorTwo.Equals(colorTwo)
+                    && main.Matches(door.Graphic, door, rotation)
+                    && upper.Matches(door is Building_MultiTileDoor ? door.def.building.upperMoverGraphic?.Graphic : null,
+                        door, rotation);
+            }
+        }
 
         public RimKataDoorCache(Game game) { this.game = game; }
 
@@ -94,7 +215,11 @@ namespace KRWF.RimKata
                 EnsureEnvironment();
                 store = new RimKataDoorCacheStore(modRoot, gameId, runtimeEnvironment);
             }
-            catch (Exception exception) { Warn("directory", exception); }
+            catch (Exception exception)
+            {
+                store = new RimKataDoorCacheStore();
+                Warn("directory", exception);
+            }
             return store != null;
         }
 
@@ -106,6 +231,44 @@ namespace KRWF.RimKata
             scheduled = true;
             // Map generation/loading can run off the Unity thread; Graphic/Material access waits for the long event.
             LongEventHandler.ExecuteWhenFinished(Flush);
+        }
+
+        // Public appearance changes and unannounced source changes share this bounded door-only queue.
+        internal void NotifyAppearanceChanged(Building_Door door)
+        {
+            if (ReferenceEquals(game, Verse.Current.Game) && door?.Spawned == true && !door.Destroyed)
+                pending.Add(door);
+        }
+
+        public override void GameComponentUpdate()
+        {
+            if (scheduled || pending.Count == 0 || !UnityData.IsInMainThread
+                || !ReferenceEquals(game, Verse.Current.Game)) return;
+            Building_Door next = null;
+            foreach (Building_Door door in pending) { next = door; break; }
+            pending.Remove(next);
+            if (next?.Spawned == true && !next.Destroyed) TryPrepare(next);
+        }
+
+        internal bool TryCapturePrepared(Building_Door door, Rot4 rotation, out RimKataBreachDoorSnapshot snapshot)
+        {
+            snapshot = null;
+            if (!ReferenceEquals(game, Verse.Current.Game) || door?.Spawned != true || door.Destroyed
+                || rotation.AsInt < 0 || rotation.AsInt >= 4) return false;
+            try
+            {
+                if (doors.TryGetValue(door, out PreparedDoor ready) && ready.Matches(door, rotation))
+                {
+                    if (ready.snapshots?[rotation.AsInt] == null) return false;
+                    snapshot = ready.snapshots[rotation.AsInt].Copy();
+                    return true;
+                }
+            }
+            catch (Exception exception) { Warn(door.def?.defName ?? "door", exception); }
+            // This is a changed/unobserved appearance, not a retry of an unchanged failed recipe.
+            // Do not execute XML, asset-path resolution or disk work on the admitting call stack.
+            NotifyAppearanceChanged(door);
+            return false;
         }
 
         private void Flush()
@@ -123,17 +286,30 @@ namespace KRWF.RimKata
             scheduled = false;
             foreach (Building_Door door in doors)
                 if (door?.Spawned == true && !door.Destroyed)
-                    TryPrepare(door, out _);
+                    TryPrepare(door);
         }
 
-        internal bool TryPrepare(Building_Door door, out RimKataDoorCacheRecord record)
+        private void TryPrepare(Building_Door door)
         {
-            record = null;
             if (!ReferenceEquals(game, Verse.Current.Game) || door?.Spawned != true
-                || door.Destroyed || !EnsureStore()) return false;
+                || door.Destroyed) return;
+            // Repeated public notifications do not rebuild an unchanged usable appearance.
+            if (doors.TryGetValue(door, out PreparedDoor previous) && previous.snapshots != null)
+            {
+                bool unchanged = true;
+                try
+                {
+                    for (int i = 0; i < 4 && unchanged; i++)
+                        unchanged = previous.snapshots[i] != null && previous.Matches(door, new Rot4(i));
+                }
+                catch (Exception) { unchanged = false; }
+                if (unchanged) return;
+            }
+            var prepared = new PreparedDoor(door);
             try
             {
-                Graphic graphic = door.Graphic;
+                prepared.CaptureAppearance(door);
+                Graphic graphic = prepared.main.graphic;
                 XmlDocument metadata = RimKataDoorCacheStore.Document("RimKataDoorMetadata");
                 Add(metadata, "defName", door.def.defName);
                 Add(metadata, "sourceModId", door.def.modContentPack?.PackageIdPlayerFacing);
@@ -167,18 +343,23 @@ namespace KRWF.RimKata
                 if (supported)
                 {
                     bool split = door is Building_MultiTileDoor;
-                    AddLayer(render, door, graphic, split, 0f);
-                    if (split && door.def.building.upperMoverGraphic != null)
-                        AddLayer(render, door, door.def.building.upperMoverGraphic.Graphic, true, 0.018292684f);
+                    AddLayer(render, door, prepared.main, split, 0f);
+                    if (prepared.upper.graphic != null)
+                        AddLayer(render, door, prepared.upper, true, 0.018292684f);
                 }
-                record = store.Prepare(metadata, render);
-                return true;
+                EnsureStore();
+                RimKataDoorCacheRecord record = store.Prepare(metadata, render, out Exception persistenceFailure);
+                if (persistenceFailure != null) Warn("save:" + record.Key, persistenceFailure);
+                prepared.snapshots = RimKataBreachDoorSnapshot.Prepare(record,
+                    exception => Warn(door.def?.defName ?? "door", exception));
             }
             catch (Exception exception)
             {
                 Warn(door.def?.defName ?? "door", exception);
-                return false;
             }
+            // Keep the observed failure as well; the same unsupported appearance is not rebuilt per attack.
+            doors.Remove(door);
+            doors.Add(door, prepared);
         }
 
         private static string UnsupportedReason(Graphic graphic)
@@ -190,10 +371,15 @@ namespace KRWF.RimKata
             return null;
         }
 
-        private static void AddLayer(XmlDocument render, Building_Door door, Graphic graphic, bool split, float altitude)
+        private static void AddLayer(XmlDocument render, Building_Door door, GraphicState source, bool split, float altitude)
         {
+            Graphic graphic = source.graphic;
             string reason = UnsupportedReason(graphic);
             if (reason != null) throw new InvalidOperationException(reason);
+            var materials = new MaterialState[4];
+            for (int i = 0; i < materials.Length; i++)
+                materials[i] = new MaterialState(graphic.MatAt(new Rot4(i), door), graphic.colorTwo);
+            source.materials = materials;
             XmlElement layer = render.CreateElement("layer");
             // Closed MultiTileDoor panels are half-width, separated by a quarter of the full width.
             layer.SetAttribute("scale", Number(door.def.size.x * (split ? 0.5f : 1f)) + ",1," + Number(door.def.size.z));
@@ -202,23 +388,19 @@ namespace KRWF.RimKata
             var paths = new Dictionary<Texture, string>();
             for (int i = 0; i < 4; i++)
             {
-                Material material = graphic.MatAt(new Rot4(i), door);
-                if (material == null) throw new InvalidOperationException("Door material is missing.");
+                MaterialState material = materials[i];
                 XmlElement element = render.CreateElement("material");
                 element.SetAttribute("rotation", Number(i));
                 element.SetAttribute("shaderPath", (graphic.data?.shaderType ?? ShaderTypeDefOf.Cutout).shaderPath);
                 element.SetAttribute("shader", material.shader?.name ?? string.Empty);
-                element.SetAttribute("texturePath", TexturePath(graphic, material.mainTexture, false, paths));
-                Texture mask = material.HasProperty(ShaderPropertyIDs.MaskTex) ? material.GetTexture(ShaderPropertyIDs.MaskTex) : null;
-                element.SetAttribute("maskPath", TexturePath(graphic, mask, true, paths));
+                element.SetAttribute("texturePath", TexturePath(graphic, material.texture, false, paths));
+                element.SetAttribute("maskPath", TexturePath(graphic, material.mask, true, paths));
                 element.SetAttribute("color", ColorText(material.color));
-                element.SetAttribute("colorTwo", ColorText(graphic.colorTwo));
-                element.SetAttribute("textureScale", Number(material.mainTextureScale.x) + "," + Number(material.mainTextureScale.y));
-                element.SetAttribute("textureOffset", Number(material.mainTextureOffset.x) + "," + Number(material.mainTextureOffset.y));
+                element.SetAttribute("colorTwo", ColorText(material.colorTwo));
+                element.SetAttribute("textureScale", Number(material.scale.x) + "," + Number(material.scale.y));
+                element.SetAttribute("textureOffset", Number(material.offset.x) + "," + Number(material.offset.y));
                 element.SetAttribute("renderQueue", Number(material.renderQueue));
-                string[] keywords = material.shaderKeywords;
-                Array.Sort(keywords, StringComparer.Ordinal);
-                element.SetAttribute("keywords", string.Join(",", keywords));
+                element.SetAttribute("keywords", string.Join(",", material.keywords));
                 layer.AppendChild(element);
             }
             render.DocumentElement.AppendChild(layer);
@@ -282,6 +464,22 @@ namespace KRWF.RimKata
     internal static class Patch_BuildingDoor_RimKataCache
     {
         private static void Postfix(Building_Door __instance) => RimKataDoorCache.Current?.NotifySpawned(__instance);
+    }
+
+    [HarmonyPatch]
+    internal static class Patch_BuildingDoor_RimKataAppearance
+    {
+        private static IEnumerable<System.Reflection.MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.Notify_ColorChanged));
+            yield return AccessTools.Method(typeof(ThingWithComps), nameof(ThingWithComps.Notify_DefsHotReloaded));
+            yield return AccessTools.PropertySetter(typeof(Thing), nameof(Thing.StyleDef));
+        }
+
+        private static void Postfix(Thing __instance)
+        {
+            if (__instance is Building_Door door) RimKataDoorCache.Current?.NotifyAppearanceChanged(door);
+        }
     }
 
     // SafeSaver rethrows failures; SaveGame catches them, so only SafeSaver's normal return confirms success.

@@ -100,6 +100,10 @@ namespace KRWF.RimKata
         internal readonly Dictionary<Hediff, RimKataWeaponEffectState> managers = new Dictionary<Hediff, RimKataWeaponEffectState>();
         internal readonly Dictionary<Pawn, List<RimKataWeaponEffectState>> owners = new Dictionary<Pawn, List<RimKataWeaponEffectState>>();
         internal readonly HashSet<ThingWithComps> failedWeapons = new HashSet<ThingWithComps>();
+        internal readonly Dictionary<ThingWithComps, Pawn> warnedWeapons = new Dictionary<ThingWithComps, Pawn>();
+        internal readonly HashSet<Pawn> originalPairs = new HashSet<Pawn>();
+        internal readonly Dictionary<ThingWithComps, RimKataWeaponEffectState> pendingCleanup = new Dictionary<ThingWithComps, RimKataWeaponEffectState>();
+        internal readonly Dictionary<Pawn, int> pendingOwners = new Dictionary<Pawn, int>();
 
         public RimKataWeaponEffectRegistry(Game game) { this.game = game; }
         public override void LoadedGame() => RimKataWeaponEffects.RestoreLoadedRecords(this);
@@ -116,7 +120,13 @@ namespace KRWF.RimKata
                     || weapons.ContainsKey(record.weapon)
                     || (!record.cleanupPending && record.pawn.equipment?.AllEquipmentListForReading.Contains(record.weapon) != true))
                 { records.RemoveAt(i); continue; }
-                if (record.cleanupPending) { failedWeapons.Add(record.weapon); continue; }
+                if (record.cleanupPending)
+                {
+                    failedWeapons.Add(record.weapon);
+                    RememberCleanup(record);
+                    originalPairs.Add(record.pawn);
+                    continue;
+                }
                 Index(record);
                 foreach (Hediff manager in record.managers)
                     if (manager != null && !managers.ContainsKey(manager)) managers.Add(manager, record);
@@ -153,12 +163,29 @@ namespace KRWF.RimKata
             records.Remove(record);
             record.managers.Clear(); record.effects.Clear(); record.suspendedManagers.Clear();
         }
+
+        internal void RememberCleanup(RimKataWeaponEffectState record)
+        {
+            if (pendingCleanup.ContainsKey(record.weapon)) return;
+            pendingCleanup[record.weapon] = record;
+            pendingOwners.TryGetValue(record.pawn, out int count);
+            pendingOwners[record.pawn] = count + 1;
+        }
+
+        internal void ForgetCleanup(RimKataWeaponEffectState record)
+        {
+            if (!pendingCleanup.Remove(record.weapon)) return;
+            if (pendingOwners.TryGetValue(record.pawn, out int count) && count > 1)
+                pendingOwners[record.pawn] = count - 1;
+            else pendingOwners.Remove(record.pawn);
+        }
     }
 
     internal static class RimKataWeaponEffects
     {
         private static readonly Dictionary<ThingDef, RimKataWeaponEffectPlan> plans = new Dictionary<ThingDef, RimKataWeaponEffectPlan>();
         private static readonly HashSet<MethodInfo> installed = new HashSet<MethodInfo>();
+        internal static int HookRevision => installed.Count;
         private static readonly Func<Thing, int> MinInterval = AccessTools.MethodDelegate<Func<Thing, int>>(
             AccessTools.PropertyGetter(typeof(Thing), "MinTickIntervalRate"));
         private static readonly Func<Thing, int> MaxInterval = AccessTools.MethodDelegate<Func<Thing, int>>(
@@ -167,6 +194,7 @@ namespace KRWF.RimKata
             AccessTools.PropertyGetter(typeof(Thing), "UpdateRateTickOffset"));
         private static RimKataWeaponEffectRegistry store;
         [ThreadStatic] private static RimKataWeaponEffectState current;
+        [ThreadStatic] private static Pawn internalHealthPawn;
         [ThreadStatic] private static TargetCleanup targetCleanup;
 
         internal readonly struct TargetCleanup
@@ -189,20 +217,32 @@ namespace KRWF.RimKata
         private readonly struct Scope : IDisposable
         {
             private readonly RimKataWeaponEffectState previous;
+            private readonly Pawn previousHealthPawn;
             private readonly TargetCleanup previousCleanup;
             private readonly RimKataWeaponEffectStats.Scope stats;
             private readonly bool entered;
-            internal Scope(RimKataWeaponEffectState record, object owner = null)
+            internal Scope(RimKataWeaponEffectState record, object owner = null, Pawn healthOwner = null)
             {
                 previous = current; previousCleanup = targetCleanup;
+                previousHealthPawn = internalHealthPawn;
+                internalHealthPawn = healthOwner ?? record?.pawn ?? previousHealthPawn;
                 stats = new RimKataWeaponEffectStats.Scope(owner, record?.verb);
                 entered = true; current = record;
                 // A nested callback belonging to another manager must not inherit this removal reason.
                 if (owner != null && owner != targetCleanup.manager) targetCleanup = default;
             }
             public void Dispose()
-            { if (entered) { stats.Dispose(); current = previous; targetCleanup = previousCleanup; } }
+            {
+                if (entered)
+                {
+                    stats.Dispose(); current = previous; targetCleanup = previousCleanup;
+                    internalHealthPawn = previousHealthPawn;
+                }
+            }
         }
+
+        internal static bool IsInternalHealthChange(Pawn pawn)
+            => pawn != null && (current?.pawn == pawn || internalHealthPawn == pawn);
 
         internal static void PrepareWeapon(Harmony harmony, RimKataWeaponExecutionPlan execution)
         {
@@ -221,19 +261,63 @@ namespace KRWF.RimKata
             { execution.EffectStatus = RimKataWeaponEffectStatus.Connected; return; }
             try
             {
+                PrepareStatReads(harmony, execution);
                 if (!RimKataWeaponEffectCache.TryGet(execution, out var plan, out string reason))
-                { if (reason != null) Original(execution, reason); return; }
-                if (!RimKataWeaponEffectHealth.Initialize(out reason)) { Original(execution, reason); return; }
+                { if (reason != null) RetainOriginalEffects(execution, reason); return; }
+                if (!RimKataWeaponEffectHealth.Initialize(out reason)) { RetainOriginalEffects(execution, reason); return; }
                 RimKataWeaponEffectStats.IsSupported(StatDefOf.AimingDelayFactor);
                 RimKataWeaponEffectStats.IsSupported(StatDefOf.RangedCooldownFactor);
                 RimKataWeaponEffectStats.IsSupported(StatDefOf.ShootingAccuracyPawn);
+                foreach (StatDef stat in plan.ChangedStats)
+                    if (!RimKataWeaponEffectStats.IsSupported(stat))
+                    { RetainOriginalEffects(execution, "The weapon effect stat cannot be separated: " + stat?.defName); return; }
                 foreach (MethodInfo method in plan.AnalyzedMethods) Install(harmony, method);
                 plans.Add(execution.Def, plan);
                 execution.EffectStatus = RimKataWeaponEffectStatus.Connected;
                 RimKataStartupDiagnostics.Count("weapon_effects_connected");
             }
             catch (Exception exception)
-            { throw new InvalidOperationException("Could not connect weapon effects for " + execution.Def.defName, exception); }
+            { RetainOriginalEffects(execution, exception.GetType().Name + ": " + exception.Message); }
+        }
+
+        private static void PrepareStatReads(Harmony harmony, RimKataWeaponExecutionPlan execution)
+        {
+            if (!execution.StatReadsComplete)
+                throw new NotSupportedException(execution.StatReadReason ?? "The weapon pawn-stat read path could not be prepared.");
+            RimKataWeaponEffectStats.IsSupported(StatDefOf.AimingDelayFactor);
+            RimKataWeaponEffectStats.IsSupported(StatDefOf.RangedCooldownFactor);
+            RimKataWeaponEffectStats.IsSupported(StatDefOf.ShootingAccuracyPawn);
+            foreach (StatDef stat in execution.PawnReadStats)
+                RimKataWeaponEffectStats.IsSupported(stat);
+            foreach (RimKataWeaponStatRead read in execution.StatReads)
+            {
+                if (!read.PawnReceiver || read.Method?.DeclaringType?.Assembly != typeof(Pawn).Assembly) continue;
+                // Cooldown is already evaluated through the prepared original snapshot.
+                // Native accuracy helpers retain their established three-stat bridge. Do
+                // not install global pawn hooks for an additional native-only stat call.
+                bool cooldown = read.Method.DeclaringType == typeof(VerbProperties)
+                    && (read.Method.Name == nameof(VerbProperties.AdjustedCooldown)
+                        || read.Method.Name == nameof(VerbProperties.AdjustedCooldownTicks));
+                bool standard = read.Stat == StatDefOf.AimingDelayFactor
+                    || read.Stat == StatDefOf.RangedCooldownFactor || read.Stat == StatDefOf.ShootingAccuracyPawn;
+                if (!cooldown && !standard)
+                    throw new NotSupportedException("The native firing helper " + read.Method.DeclaringType.FullName
+                        + "." + read.Method.Name + " reads an additional pawn stat without a prepared local bridge: "
+                        + (read.Stat?.defName ?? "dynamic StatDef"));
+            }
+            foreach (MethodInfo method in execution.StatReadMethods) Install(harmony, method);
+        }
+
+        internal static void RetainOriginalEffects(RimKataWeaponExecutionPlan execution, string reason)
+        {
+            if (execution?.Def == null) return;
+            plans.Remove(execution.Def);
+            List<Pawn> affected = RimKataWeaponEffectStats.ReleaseDefinition(execution.Def);
+            Original(execution, reason);
+            if (store == null) return;
+            if (affected != null) foreach (Pawn pawn in affected) UseOriginalPair(pawn);
+            foreach (var record in store.records.ToArray())
+                if (record.weapon?.def == execution.Def) UseOriginalPair(record.pawn);
         }
 
         internal static void ForgetDefinition(ThingDef definition)
@@ -250,10 +334,7 @@ namespace KRWF.RimKata
             execution.EffectStatus = RimKataWeaponEffectStatus.Original;
             execution.EffectReason = reason;
             RimKataStartupDiagnostics.Count("weapon_effects_original");
-            if (!RimKataWeaponEffectCache.RememberUnsupported(execution, reason)) return;
-            Log.Warning("[RimKata] Weapon effects remain on the original shared path for "
-                + execution.Def.defName + ": " + reason
-                + " Firing registration does not imply weapon-local effect support.");
+            RimKataWeaponEffectCache.RememberUnsupported(execution, reason);
         }
 
         private static void Install(Harmony harmony, MethodInfo method)
@@ -348,16 +429,30 @@ namespace KRWF.RimKata
                 if (combat?.dualEngagementActive != true || combat.secondaryWeaponCycle?.weapon != weapon)
                 { Release(record, true); continue; }
                 record.cycle = combat.secondaryWeaponCycle;
-                Connect(record, plan, verb, combat);
+                Sync(pawn, combat);
             }
         }
 
         internal static void Sync(Pawn pawn, RimKataPawnCombatState state)
         {
-            if (pawn == null || state == null || (plans.Count == 0 && store == null)) return;
+            if (pawn == null || state == null) return;
+            var second = state.secondaryWeaponCycle;
+            var first = state.primaryWeaponCycle;
+            if (!state.dualEngagementActive || first?.weapon == null || second?.weapon == null)
+            { ReleasePawn(pawn); return; }
             var registry = Store();
             if (registry == null) return;
-            var second = state.secondaryWeaponCycle;
+            bool firstReady = CanSeparate(pawn, first, out string firstReason);
+            bool secondReady = CanSeparate(pawn, second, out string secondReason);
+            if (!firstReady || !secondReady)
+            {
+                if (firstReason != null) ReportFailure(pawn, first.weapon, firstReason, first.boundVerb);
+                if (secondReason != null) ReportFailure(pawn, second.weapon, secondReason, second.boundVerb);
+                UseOriginalPair(pawn);
+                return;
+            }
+            if (registry.pendingOwners.ContainsKey(pawn)) { UseOriginalPair(pawn); return; }
+            registry.originalPairs.Remove(pawn);
             bool active = state.dualEngagementActive && CanBind(second, out _);
             if (registry.owners.TryGetValue(pawn, out var previous))
                 for (int i = previous.Count - 1; i >= 0; i--)
@@ -366,8 +461,54 @@ namespace KRWF.RimKata
                     if (!active || old.weapon != second.weapon || old.primaryWeapon != state.primaryWeaponCycle?.weapon)
                         Release(old, true);
                 }
-            if (active && !RimKataWeaponEffectStats.IsPreparationDeferred(pawn) && Bind(registry, pawn, second, state)) return;
+            if (active && Bind(registry, pawn, second, state)) return;
             SyncStats(pawn, state, null);
+        }
+
+        private static bool CanSeparate(Pawn pawn, RimKataWeaponCycleState cycle, out string reason)
+        {
+            reason = null;
+            if (cycle?.weapon == null || cycle.boundVerb == null || !cycle.ordinaryWeaponEnabled) return true;
+            if (IsFailed(cycle.weapon)) { reason = "Weapon-local effect processing previously failed for this equipped weapon."; return false; }
+            if (!RimKataWeaponExecutionRuntime.CanUseWeaponLocalState(cycle.weapon, cycle.boundVerb, out reason)) return false;
+            var execution = RimKataWeaponExecutionPlans.Get(cycle.weapon.def, cycle.boundVerb.GetType());
+            if (execution?.EffectStatus == RimKataWeaponEffectStatus.Original)
+            { reason = execution.EffectReason ?? "Weapon effect ownership could not be separated."; return false; }
+            return true;
+        }
+
+        private static void UseOriginalPair(Pawn pawn)
+        {
+            if (pawn == null || store == null) return;
+            store.originalPairs.Add(pawn);
+            RimKataWeaponEffectStats.ReleasePawn(pawn);
+            if (store.owners.TryGetValue(pawn, out var records))
+                for (int i = records.Count - 1; i >= 0; i--) Release(records[i], true, false);
+        }
+
+        internal static void NotifyStatFailure(Pawn pawn, ThingWithComps weapon, Exception exception, Verb verb = null)
+            => NotifyLocalFailure(pawn, weapon, exception, "stat calculation", verb);
+
+        internal static void NotifyExecutionFailure(Pawn pawn, ThingWithComps weapon, Exception exception, Verb verb = null)
+            => NotifyLocalFailure(pawn, weapon, exception, "weapon execution", verb);
+
+        private static void NotifyLocalFailure(Pawn pawn, ThingWithComps weapon, Exception exception, string phase, Verb verb)
+        {
+            if (Store() == null || pawn == null || weapon == null) return;
+            store.failedWeapons.Add(weapon);
+            ReportFailure(pawn, weapon, phase + ": " + exception.GetType().Name + ": " + exception.Message, verb);
+            UseOriginalPair(pawn);
+        }
+
+        // The native equipment event owns this lifetime. Drafting, target changes and
+        // combat teardown do not make a failed equipped instance eligible to spam again.
+        internal static void NotifyEquipmentChanged(Pawn pawn, ThingWithComps weapon, bool removed)
+        {
+            if (pawn == null || weapon == null || store == null || store.game != Current.Game) return;
+            if (!removed) return;
+            if (store.warnedWeapons.TryGetValue(weapon, out var owner) && owner == pawn)
+                store.warnedWeapons.Remove(weapon);
+            if (!store.pendingCleanup.ContainsKey(weapon)) store.failedWeapons.Remove(weapon);
         }
 
         private static bool Bind(RimKataWeaponEffectRegistry registry, Pawn pawn,
@@ -439,30 +580,27 @@ namespace KRWF.RimKata
 
         private static bool SyncStats(Pawn pawn, RimKataPawnCombatState combat, RimKataWeaponEffectState secondary)
         {
+            if (store?.originalPairs.Contains(pawn) == true)
+            { RimKataWeaponEffectStats.ReleasePawn(pawn); return false; }
             if (combat?.dualEngagementActive != true)
             { RimKataWeaponEffectStats.ReleasePawn(pawn); return true; }
-            // At most the two participating instances can fail. Rebuild the surviving reader
-            // in this call, rather than attributing either slot's stat exception to the other.
-            for (int attempt = 0; attempt < 3; attempt++)
+            var primary = combat.primaryWeaponCycle;
+            var second = combat.secondaryWeaponCycle;
+            CanBind(primary, out var primaryPlan);
+            try
             {
-                var primary = IsFailed(combat.primaryWeaponCycle?.weapon) ? null : combat.primaryWeaponCycle;
-                var second = IsFailed(combat.secondaryWeaponCycle?.weapon) ? null : combat.secondaryWeaponCycle;
-                if (second == null) secondary = null;
-                CanBind(primary, out var primaryPlan);
-                try
-                {
-                    return RimKataWeaponEffectStats.Sync(pawn, primary, second, primaryPlan, secondary?.plan, secondary);
-                }
-                catch (RimKataWeaponEffectStats.PreparationFailure exception)
-                {
-                    if (secondary?.weapon == exception.weapon)
-                    { Fail(secondary, exception.InnerException ?? exception, "stat preparation"); secondary = null; }
-                    else Quarantine(exception.weapon, exception.InnerException ?? exception, "stat preparation");
-                }
-                catch (Exception exception)
-                { RimKataWeaponEffectStats.DeferPreparation(pawn, exception); return false; }
+                return RimKataWeaponEffectStats.Sync(pawn, primary, second, primaryPlan, secondary?.plan, secondary);
             }
-            return false;
+            catch (RimKataWeaponEffectStats.PreparationFailure exception)
+            {
+                if (secondary?.weapon == exception.weapon)
+                    Fail(secondary, exception.InnerException ?? exception, "stat preparation");
+                else Quarantine(pawn, exception.weapon, exception.InnerException ?? exception, "stat preparation",
+                    exception.weapon == second?.weapon ? second.boundVerb : primary?.boundVerb);
+                return false;
+            }
+            catch (Exception exception)
+            { NotifyStatFailure(pawn, secondary?.weapon ?? primary?.weapon, exception); return false; }
         }
 
         private static void SuspendNativeSecondary(RimKataWeaponEffectState record, HashSet<HediffDef> shared)
@@ -500,7 +638,7 @@ namespace KRWF.RimKata
                         copy.ageTicks = effect.ageTicks;
                         record.effects.Add(copy);
                     }
-                    using (new Scope(null)) health.RemoveHediff(effect);
+                    using (new Scope(null, healthOwner: record.pawn)) health.RemoveHediff(effect);
                 }
             }
         }
@@ -544,7 +682,8 @@ namespace KRWF.RimKata
         {
             var cycle = combat?.secondaryWeaponCycle;
             if (store == null || cycle?.weapon == null || !store.weapons.TryGetValue(cycle.weapon, out var record)
-                || record.pawn != pawn || record.combat != combat || !record.connected || record.releasing || record.retired) return;
+                || record.pawn != pawn || record.combat != combat || !record.connected || record.releasing || record.retired
+                || store.originalPairs.Contains(pawn)) return;
             int tick = Find.TickManager.TicksGame;
             if (record.lastTick == tick) return;
             record.lastTick = tick;
@@ -706,12 +845,27 @@ namespace KRWF.RimKata
                 ? RimKataWeaponEffectStats.GetStatValue(current.verb, current.pawn, stat, applyPostProcess, cacheStaleAfterTicks)
                 : RimKataWeaponEffectStats.GetScopedStatValue(thing, stat, applyPostProcess, cacheStaleAfterTicks);
 
+        private static float GetWorkerValue(StatWorker worker, StatRequest request, bool applyPostProcess)
+            => RimKataWeaponEffectStats.GetScopedWorkerValue(worker, request, applyPostProcess);
+
         private static IEnumerable<CodeInstruction> RewriteAccess(IEnumerable<CodeInstruction> instructions,
             MethodBase __originalMethod, ILGenerator generator)
         {
             foreach (CodeInstruction instruction in RimKataWeaponEffectLifecycle.Rewrite(instructions, __originalMethod, generator))
             {
                 if ((instruction.opcode == OpCodes.Call || instruction.opcode == OpCodes.Callvirt)
+                    && instruction.operand is MethodInfo statMethod
+                    && statMethod.DeclaringType == typeof(StatWorker)
+                    && statMethod.Name == nameof(StatWorker.GetValue)
+                    && statMethod.ReturnType == typeof(float)
+                    && statMethod.GetParameters().Length == 2
+                    && statMethod.GetParameters()[0].ParameterType == typeof(StatRequest)
+                    && statMethod.GetParameters()[1].ParameterType == typeof(bool))
+                {
+                    yield return new CodeInstruction(instruction) { opcode = OpCodes.Call,
+                        operand = AccessTools.Method(typeof(RimKataWeaponEffects), nameof(GetWorkerValue)) };
+                }
+                else if ((instruction.opcode == OpCodes.Call || instruction.opcode == OpCodes.Callvirt)
                     && instruction.operand is MethodInfo method && RimKataWeaponEffectDiscovery.IsScopedAccess(method))
                 {
                     string hook = null;
@@ -732,19 +886,31 @@ namespace KRWF.RimKata
 
         private static bool IsFailed(ThingWithComps weapon) => weapon != null && store?.failedWeapons.Contains(weapon) == true;
 
-        private static void Quarantine(ThingWithComps weapon, Exception exception, string phase)
+        private static void Quarantine(Pawn pawn, ThingWithComps weapon, Exception exception, string phase, Verb verb)
         {
-            if (weapon == null || store == null || !store.failedWeapons.Add(weapon)) return;
-            WriteFailure(weapon, exception, phase, false);
+            if (weapon == null || store == null) return;
+            store.failedWeapons.Add(weapon);
+            WriteFailure(pawn, weapon, exception, phase, false, verb);
+            UseOriginalPair(pawn);
         }
 
-        private static void WriteFailure(ThingWithComps weapon, Exception exception, string phase, bool pending)
+        private static void ReportFailure(Pawn pawn, ThingWithComps weapon, string reason, Verb verb = null)
         {
-            Log.Warning("[RimKata] Weapon-local effects stopped for " + weapon.ThingID + " during " + phase
-                + ". Further weapon-local processing is disabled; firing registration is unchanged. "
-                + (pending ? "Unfinished cleanup/restoration is retained for the next load. " : "")
-                + exception.GetType().Name + ": " + exception.Message);
+            if (pawn == null || weapon == null || store == null) return;
+            verb ??= RimKataWeaponSlotUtility.PrimaryVerb(weapon);
+            var execution = RimKataWeaponExecutionPlans.Get(weapon.def, verb?.GetType());
+            if (execution?.FiringReady != true) return;
+            if (store.warnedWeapons.TryGetValue(weapon, out var owner) && owner == pawn) return;
+            store.warnedWeapons[weapon] = pawn;
+            Log.Message("[RimKata] Weapon-local effects use the original shared state for pawn "
+                + pawn.LabelShort + " [" + pawn.ThingID + "], weapon " + weapon.LabelCap
+                + " [" + weapon.ThingID + ", " + weapon.def.defName + "]: " + reason
+                + " Firing registration is unchanged; both equipped weapons retain their own attack cycles.");
         }
+
+        private static void WriteFailure(Pawn pawn, ThingWithComps weapon, Exception exception, string phase, bool pending, Verb verb = null)
+            => ReportFailure(pawn, weapon, phase + ": " + exception.GetType().Name + ": " + exception.Message
+                + (pending ? " Unfinished cleanup/restoration is retained for the next load." : ""), verb);
 
         private static void MarkFailure(RimKataWeaponEffectState record, Exception exception, string phase)
         {
@@ -755,7 +921,7 @@ namespace KRWF.RimKata
         private static void Fail(RimKataWeaponEffectState record, Exception exception, string phase)
         {
             MarkFailure(record, exception, phase);
-            Release(record, true);
+            UseOriginalPair(record.pawn);
         }
 
         private static void Release(RimKataWeaponEffectState record, bool restoreOriginal, bool releaseStats = true)
@@ -779,14 +945,19 @@ namespace KRWF.RimKata
                     MarkFailure(record, failure ?? new InvalidOperationException("Effect cleanup remains pending."), "cleanup");
                 if (record.failure != null)
                 {
-                    WriteFailure(record.weapon, record.failure, record.failurePhase, record.cleanupPending);
+                    WriteFailure(record.pawn, record.weapon, record.failure, record.failurePhase, record.cleanupPending, record.verb);
                     record.failure = null; record.failurePhase = null;
                 }
                 if (IsFailed(record.weapon)) RimKataWeaponEffectStats.ReleaseWeaponContext(record.weapon);
-                else if (releaseStats) RimKataWeaponEffectStats.ReleasePawn(record.pawn);
                 // Keep incomplete restoration data for the next load, without active ticks/binding.
-                if (record.cleanupPending) store?.Unindex(record);
-                else store?.Forget(record);
+                if (record.cleanupPending)
+                {
+                    store.RememberCleanup(record);
+                    store.originalPairs.Add(record.pawn);
+                    RimKataWeaponEffectStats.ReleasePawn(record.pawn);
+                    store.Unindex(record);
+                }
+                else { store?.ForgetCleanup(record); store?.Forget(record); }
             }
         }
 
@@ -840,7 +1011,7 @@ namespace KRWF.RimKata
             foreach (HediffDef def in record.suspendedManagers.ToArray())
                 try
                 {
-                    using (new Scope(null))
+                    using (new Scope(null, healthOwner: record.pawn))
                         if (def != null && health.hediffSet.GetFirstHediffOfDef(def) == null) health.AddHediff(def);
                     record.suspendedManagers.Remove(def);
                 }
@@ -862,7 +1033,7 @@ namespace KRWF.RimKata
 
         internal static void ResetGame()
         {
-            store = null; current = null; targetCleanup = default;
+            store = null; current = null; internalHealthPawn = null; targetCleanup = default;
             RimKataWeaponEffectStats.ResetGame();
         }
     }

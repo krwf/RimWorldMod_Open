@@ -901,6 +901,8 @@ namespace KRWF.RimKata
         public bool candidateSaturationExpansionUsed;
         public Thing dualCloseTarget;
         public ThingWithComps engagementOwnerWeapon;
+        // Command/Job priority may change without restarting the first support shot.
+        public ThingWithComps openingSupportOwnerWeapon;
         public ThingWithComps responsePoseWeapon;
         public ThingWithComps deflectionWeapon;
         public Job loadoutInvalidatedCombatJob;
@@ -1141,6 +1143,7 @@ namespace KRWF.RimKata
                 "candidateSaturationExpansionUsed");
             Scribe_References.Look(ref dualCloseTarget, "dualCloseTarget");
             Scribe_References.Look(ref engagementOwnerWeapon, "engagementOwnerWeapon");
+            Scribe_References.Look(ref openingSupportOwnerWeapon, "openingSupportOwnerWeapon");
             Scribe_References.Look(ref responsePoseWeapon, "responsePoseWeapon");
             Scribe_References.Look(ref deflectionWeapon, "deflectionWeapon");
             Scribe_References.Look(
@@ -1182,6 +1185,17 @@ namespace KRWF.RimKata
                 {
                     primaryWeaponCycle.Reset();
                     secondaryWeaponCycle.Reset();
+                    openingSupportOwnerWeapon = null;
+                }
+                else if (openingSupportOwnerWeapon == null)
+                {
+                    // Older saves identify the support receiver through its consumed marker.
+                    bool primaryConsumed = primaryWeaponCycle.openingSupportDelayConsumed;
+                    bool secondaryConsumed = secondaryWeaponCycle.openingSupportDelayConsumed;
+                    openingSupportOwnerWeapon = primaryConsumed != secondaryConsumed
+                        ? (primaryConsumed ? secondaryWeaponCycle.weapon : primaryWeaponCycle.weapon)
+                            ?? engagementOwnerWeapon
+                        : engagementOwnerWeapon;
                 }
             }
 
@@ -1832,6 +1846,7 @@ namespace KRWF.RimKata
             dualCloseCombatActive = false;
             dualCloseTarget = null;
             engagementOwnerWeapon = null;
+            openingSupportOwnerWeapon = null;
             ClearCloseAttackRequest();
             ClearDedicatedFollowupJobRequest();
             dedicatedContinuityTarget = null;
@@ -2288,7 +2303,7 @@ namespace KRWF.RimKata
 
         public override void MapComponentTick()
         {
-            if (RimKataStatActivation.Enabled) RimKataStatActivation.Tick(map);
+            if (RimKataStatActivation.HasScheduledWork) RimKataStatActivation.Tick(map);
             TickProjectileScheduler();
             bool actualCombatActive = false;
             lock (statesLock)

@@ -72,13 +72,9 @@ namespace KRWF.RimKata
             Type patchType = postfix.DeclaringType;
             var adapters = AccessTools.Field(patchType, "adaptersByCompType")?.GetValue(null) as IDictionary;
             if (adapters == null || adapters.Count == 0) return null;
-            Type state = patchType.GetNestedType("RenderState", BindingFlags.Public | BindingFlags.NonPublic);
-            if (state == null) throw new InvalidOperationException("SYS sheath render state was not found.");
-            MethodInfo prefix = AccessTools.Method(patchType, "Prefix",
-                new[] { typeof(Vector3), state.MakeByRefType() });
-            if (prefix == null || postfix.ReturnType != typeof(void)
+            if (!postfix.IsStatic || postfix.ReturnType != typeof(void)
                 || AccessTools.Method(patchType, "Postfix",
-                    new[] { typeof(Pawn), typeof(PawnRenderFlags), state }) != postfix)
+                    new[] { typeof(Pawn), typeof(Vector3), typeof(PawnRenderFlags) }) != postfix)
                 throw new InvalidOperationException("Unsupported SYS sheath postfix signature.");
 
             Candidate candidate = new Candidate(postfix, null) { accessoriesOnly = true };
@@ -90,7 +86,6 @@ namespace KRWF.RimKata
             if (!restored)
             {
                 candidate.visited.Add(postfix);
-                candidate.visited.Add(prefix);
                 candidate.methodsToInstrument.Add(postfix);
                 foreach (Type compType in adapters.Keys)
                 {
@@ -113,13 +108,9 @@ namespace KRWF.RimKata
                 new[] { typeof(Pawn), typeof(Vector3), typeof(Rot4), typeof(PawnRenderFlags) },
                 typeof(RimKataWeaponRenderDiscovery), true);
             ILGenerator il = invoker.GetILGenerator();
-            LocalBuilder capturedState = il.DeclareLocal(state);
-            il.Emit(OpCodes.Ldarg_1);
-            il.Emit(OpCodes.Ldloca, capturedState);
-            il.Emit(OpCodes.Call, prefix);
             il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldarg_1);
             il.Emit(OpCodes.Ldarg_3);
-            il.Emit(OpCodes.Ldloc, capturedState);
             il.Emit(OpCodes.Call, postfix);
             il.Emit(OpCodes.Ldc_I4_0);
             il.Emit(OpCodes.Ret);

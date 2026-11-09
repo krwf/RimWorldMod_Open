@@ -35,7 +35,7 @@ namespace KRWF.RimKata
         }
     }
 
-    internal static class RimKataSubdueCombat
+    internal static partial class RimKataSubdueCombat
     {
         internal struct ExecutionScope
         {
@@ -128,7 +128,6 @@ namespace KRWF.RimKata
             if (executing == state || state.nativeAttack?.Executing == true) return;
             int cooldown = state.warming ? 0 : state.attackTicks;
             state.attackVerb?.Reset();
-            ThingWithComps primary = state.pawn.equipment?.Primary;
             Verb externalVerb = null;
             if (state.HasExternalTarget && !TryGetExternalWeaponVerb(state, state.externalWeapon, out externalVerb))
             {
@@ -136,12 +135,22 @@ namespace KRWF.RimKata
                 state.externalWeapon = null;
                 state.externalOrderJobId = -1;
             }
-            state.weapon = state.HasExternalTarget ? state.externalWeapon
-                : RimKataWeaponSlotUtility.CanUseOneHandWeapon(state.pawn, primary, true)
-                ? primary : null;
-            state.weaponVerb = state.weapon != null
-                ? externalVerb ?? RimKataWeaponSlotUtility.CombatVerb(state.pawn, state.weapon)
-                : NaturalMelee(state.pawn);
+            if (state.HasExternalTarget)
+            {
+                state.weapon = state.externalWeapon;
+                state.weaponVerb = externalVerb;
+            }
+            else if (TryGetHeldWeaponAttack(state.pawn, out ThingWithComps weapon, out Verb verb)
+                && CanExecuteHeldAttack(verb))
+            {
+                state.weapon = weapon;
+                state.weaponVerb = verb;
+            }
+            else
+            {
+                state.weapon = null;
+                state.weaponVerb = SelectBodyMelee(state.pawn);
+            }
             state.attackVerb = state.weaponVerb;
             state.weaponRevision = RimKataEquipmentUtility.WeaponConfigurationRevision;
             state.weaponDirty = false;
@@ -150,19 +159,19 @@ namespace KRWF.RimKata
             if (state.attackVerb != null) RimKataPreparedWeaponData.Bind(state.attackVerb);
         }
 
-        private static Verb NaturalMelee(Pawn pawn)
+        private static bool CanExecuteHeldAttack(Verb verb)
         {
-            Verb best = null;
-            float score = -1f;
-            foreach (VerbEntry entry in pawn.meleeVerbs.GetUpdatedAvailableVerbsList(false))
-            {
-                Verb verb = entry.verb;
-                if (verb.EquipmentSource != null || !(verb is Verb_MeleeAttackDamage)
-                    || !verb.IsStillUsableBy(pawn)) continue;
-                float damage = verb.verbProps.AdjustedMeleeDamageAmount(verb, pawn);
-                if (damage > score) { best = verb; score = damage; }
-            }
-            return best;
+            // This is a held-target bridge check, not weapon registration. Unknown
+            // spatial/lifecycle semantics must be rejected before starting the cast.
+            return verb is Verb_MeleeAttackDamage || verb is Verb_LaunchProjectile;
+        }
+
+        private static Verb UseBodyAttack(RimKataSubdueState state)
+        {
+            state.weapon = null;
+            state.weaponVerb = state.attackVerb = SelectBodyMelee(state.pawn);
+            state.warming = false;
+            return state.attackVerb;
         }
 
         internal static void End(RimKataSubdueState state)
@@ -309,6 +318,7 @@ namespace KRWF.RimKata
                 RimKataSubdueJobs.StopAttackJob(state.pawn);
             }
             state.attackEnabled = enabled;
+            if (enabled && state.attackVerb == null) RefreshWeapon(state);
             if (!enabled && state.warming) { state.warming = false; state.attackTicks = 0; }
             state.SuspendAutomaticFire();
             RimKataSubdueRender.Publish(state);
@@ -357,6 +367,15 @@ namespace KRWF.RimKata
                 return;
             }
             if (!state.HasExternalTarget && !state.attackEnabled) return;
+            if (state.HasExternalTarget && RimKataWeaponExecutionRuntime.RequiresOriginalCast(verb))
+            {
+                // Reject only this unprepared external response; the held relation and
+                // the weapon's original firing lifecycle remain owned by their callers.
+                StopExternalAttack(state);
+                state.warming = false;
+                state.attackTicks = 0;
+                return;
+            }
             Thing closeTarget = state.externalTarget.Thing;
             if (state.HasExternalTarget
                 && RimKataSubdueDefense.ReleaseKnownForDefense(state, closeTarget, adjacent))
@@ -372,6 +391,8 @@ namespace KRWF.RimKata
                         state.pawn, state.weapon,
                         state.HasExternalTarget ? state.externalTarget.Thing : state.target,
                         damageOnly: true);
+                    if (selected == null && !state.HasExternalTarget)
+                        selected = UseBodyAttack(state);
                     if (selected == null) return;
                     state.attackVerb = verb = selected;
                 }
@@ -395,6 +416,20 @@ namespace KRWF.RimKata
             {
                 if (verb is Verb_MeleeAttackDamage melee) Strike(state, melee);
                 else if (verb is Verb_LaunchProjectile) ShootHeld(state, verb);
+            }
+            catch (Exception exception)
+            {
+                ThingWithComps failedWeapon = state.weapon;
+                // A callback may fail after applying damage. Switch only the next
+                // attempt; never add an immediate second hit or fail the normal weapon plan.
+                if (RimKataSubdueUtility.Get(state.pawn) == state)
+                {
+                    if (failedWeapon != null) UseBodyAttack(state);
+                    else state.weaponVerb = state.attackVerb = null;
+                }
+                Log.Message("[RimKata] Held-target attack could not finish for "
+                    + state.pawn.ThingID + " using " + (failedWeapon?.ThingID ?? "body attack")
+                    + ": " + exception.GetType().Name + ": " + exception.Message);
             }
             finally { executing = previous; }
         }
@@ -550,16 +585,16 @@ namespace KRWF.RimKata
             var oldState = executing;
             bool oldHit = hit;
             bool oldHeldShot = heldShot;
-            executing = state;
-            hit = landed;
-            heldShot = true;
-            var previous = RimKataFireContext.Begin(verb, pawn, destination.Thing,
-                false, true, false, null, true, landed, RimKataCloseDefensePrecheck.None);
-            RimKataFireContext.SuppressCloseLaunch = true;
             Rot4 facing = pawn.Rotation;
             Stance stance = pawn.stances.curStance;
             int? count = BurstCount(verb);
             bool nonInterrupting = NonInterrupting(verb);
+            var previous = RimKataFireContext.Begin(verb, pawn, destination.Thing,
+                false, true, false, null, true, landed, RimKataCloseDefensePrecheck.None);
+            executing = state;
+            hit = landed;
+            heldShot = true;
+            RimKataFireContext.SuppressCloseLaunch = true;
             try
             {
                 verb.Reset();
@@ -572,16 +607,28 @@ namespace KRWF.RimKata
             }
             finally
             {
-                verb.Reset();
-                BurstCount(verb) = count;
-                NonInterrupting(verb) = nonInterrupting;
-                if (pawn.stances.curStance is Stance_Busy busy && busy.verb == verb)
-                    pawn.stances.curStance = stance;
-                pawn.Rotation = facing;
-                RimKataFireContext.End(verb, previous);
-                executing = oldState;
-                hit = oldHit;
-                heldShot = oldHeldShot;
+                try
+                {
+                    try { verb.Reset(); }
+                    finally
+                    {
+                        BurstCount(verb) = count;
+                        NonInterrupting(verb) = nonInterrupting;
+                        if (pawn.stances.curStance is Stance_Busy busy && busy.verb == verb)
+                            pawn.stances.curStance = stance;
+                        pawn.Rotation = facing;
+                    }
+                }
+                finally
+                {
+                    try { RimKataFireContext.End(verb, previous); }
+                    finally
+                    {
+                        executing = oldState;
+                        hit = oldHit;
+                        heldShot = oldHeldShot;
+                    }
+                }
             }
         }
 
