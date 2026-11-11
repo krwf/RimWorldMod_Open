@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Savuşturma şansı</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Yakın dövüşten kaçınma şansı</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Patlayıcı mermi önleme şansı</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Çok oyunculu bir oturum başlatmadan önce RimKata ayarlarını değiştirin.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

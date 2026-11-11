@@ -2330,7 +2330,7 @@ namespace KRWF.RimKata
                                     && RimKataWeaponSlotUtility.SecondaryWeapon(pawn) != null
                                     && !RimKataDualWeaponController.IsWeaponSwapBlocked(pawn))
                                 {
-                                    RimKataDualWeaponController.RequestWeaponSwap(pawn);
+                                    RimKataMultiplayerCommands.SwapWeapons(pawn);
                                 }
                             }
                         },

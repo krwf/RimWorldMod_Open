@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Hárítási esély</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Közelharci kitérési esély</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Robbanó lövedék elfogásának esélye</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>A RimKata beállításait a többjátékos munkamenet indítása előtt módosítsa.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Tõrjumise tõenäosus</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Lähivõitluses põiklemise tõenäosus</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Lõhkekehade tõrjumise tõenäosus</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Muutke RimKata seadeid enne mitmikmängu alustamist.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

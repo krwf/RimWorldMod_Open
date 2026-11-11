@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>쳐내기 확률</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>근접 회피 확률</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>폭발체 격추 확률</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>멀티플레이 세션을 시작하기 전에 림카타 설정을 변경해 주세요.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

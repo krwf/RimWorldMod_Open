@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Xml;
 using Verse;
 
@@ -47,31 +46,47 @@ namespace KRWF.RimKata
         private const string NormalId = "RimKata_Profile_Normal";
         private const string OpId = "RimKata_Profile_Op";
         private readonly string directory;
+        private readonly string legacyDirectory;
         private readonly List<RimKataStoredProfile> profiles = new List<RimKataStoredProfile>();
         private List<RimKataStoredProfile> preparedProfiles;
         private Exception preparationError;
         public IReadOnlyList<RimKataStoredProfile> Profiles { get; }
         public RimKataStoredProfile Current { get; private set; }
         public bool IsInitialized { get; private set; }
+        internal bool NeedsPersistence { get; private set; }
 
         public RimKataProfileStore(string modRoot)
         {
             if (string.IsNullOrWhiteSpace(modRoot))
                 throw new ArgumentException("The mod root is missing.", nameof(modRoot));
-            directory = Path.GetFullPath(Path.Combine(modRoot, "Defs", "Profiles"));
+            directory = Path.GetFullPath(Path.Combine(modRoot, "Profiles"));
+            legacyDirectory = Path.GetFullPath(Path.Combine(modRoot, "Defs", "Profiles"));
             Profiles = profiles.AsReadOnly();
         }
 
-        // Mod constructors run before LoadModXML. Repair only conflicting identities before
-        // vanilla loads these files as Defs, then reuse the parsed profiles during startup.
+        // Profiles are personal settings, not game Defs. Import legacy XML before LoadModXML;
+        // subsequent edits travel with the normal ModSettings payload, including in multiplayer.
         internal void Prepare(RimKataSettings settings)
         {
             if (IsInitialized || preparedProfiles != null || preparationError != null) return;
             try
             {
+                MigrateLegacyFiles();
+                NeedsPersistence = settings.storedProfiles == null || settings.storedProfiles.Count == 0;
                 var loaded = new List<RimKataStoredProfile>();
                 RimKataSettingsProfile defaults = RimKataSettingsProfile.Capture(new RimKataSettings());
-                if (Directory.Exists(directory))
+                if (settings.storedProfiles != null && settings.storedProfiles.Count != 0)
+                {
+                    foreach (RimKataProfileRecord record in settings.storedProfiles)
+                    {
+                        if (record == null || string.IsNullOrEmpty(record.id) || record.values == null)
+                            throw new InvalidDataException("Invalid saved RimKata profile.");
+                        RimKataSettingsProfile values = RimKataSettingsProfile.FromEntries(record.values.CopyEntries());
+                        values.FillMissingFrom(defaults);
+                        loaded.Add(CreateProfile(record.id, CheckName(record.name), values));
+                    }
+                }
+                else if (Directory.Exists(directory))
                     foreach (string path in Directory.GetFiles(directory, "*.xml", SearchOption.TopDirectoryOnly)
                         .OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
                         loaded.Add(ReadProfile(path, defaults));
@@ -89,6 +104,12 @@ namespace KRWF.RimKata
                             && profile.Values.Matches(settings) && !owner.Values.Matches(settings)))
                         owners[profile.Id] = profile;
                 }
+
+                // An update can leave the same seed in both the old Def directory
+                // and the new import directory. Preserve one identical identity.
+                if (loaded.RemoveAll(profile => !ReferenceEquals(owners[profile.Id], profile)
+                    && profile.Values.CopyEntries().SequenceEqual(owners[profile.Id].Values.CopyEntries())) > 0)
+                    NeedsPersistence = true;
 
                 for (int i = 0; i < loaded.Count; i++)
                 {
@@ -108,7 +129,7 @@ namespace KRWF.RimKata
                         usedNames.Add(name);
                     }
                     if (id == profile.Id && name == profile.Name) continue;
-                    RepairIdentity(profile, id, name);
+                    NeedsPersistence = true;
                     loaded[i] = new RimKataStoredProfile(id, name, profile.Values, profile.FilePath);
                 }
                 preparedProfiles = loaded;
@@ -120,44 +141,36 @@ namespace KRWF.RimKata
             }
         }
 
-        private static void RepairIdentity(RimKataStoredProfile profile, string id, string name)
+        private void MigrateLegacyFiles()
         {
-            var document = new XmlDocument { XmlResolver = null };
-            using (XmlReader reader = XmlReader.Create(profile.FilePath,
-                new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit, XmlResolver = null }))
-                document.Load(reader);
-            XmlElement definition = document.DocumentElement?[ProfileTypeName];
-            if (definition?["defName"]?.InnerText != profile.Id
-                || definition?["label"]?.InnerText.Trim() != profile.Name)
-                throw new IOException("The profile changed during duplicate recovery: " + profile.FilePath);
-            definition["defName"].InnerText = id;
-            definition["label"].InnerText = name;
+            if (!Directory.Exists(legacyDirectory)) return;
+            string[] files = Directory.GetFiles(legacyDirectory, "*.xml", SearchOption.TopDirectoryOnly);
+            if (files.Length == 0) return;
+            Directory.CreateDirectory(directory);
+            foreach (string source in files.OrderBy(path => path, StringComparer.OrdinalIgnoreCase))
+            {
+                string fullSource = Path.GetFullPath(source);
+                if (!string.Equals(Path.GetDirectoryName(fullSource), legacyDirectory, StringComparison.OrdinalIgnoreCase))
+                    throw new IOException("A legacy profile is outside its directory.");
+                string stem = Path.GetFileNameWithoutExtension(fullSource);
+                string destination = Path.Combine(directory, Path.GetFileName(fullSource));
+                for (int suffix = 2; File.Exists(destination) || Directory.Exists(destination); suffix++)
+                    destination = Path.Combine(directory, stem + " (import " + suffix + ").xml");
+                if (!string.Equals(Path.GetDirectoryName(Path.GetFullPath(destination)), directory,
+                    StringComparison.OrdinalIgnoreCase))
+                    throw new IOException("A profile import destination is outside its directory.");
+                // Preserve the old XML as an import source outside the game's Def input.
+                File.Move(fullSource, destination);
+            }
+        }
 
-            string backup = profile.FilePath + ".duplicate.bak";
-            for (int suffix = 2; File.Exists(backup) || Directory.Exists(backup); suffix++)
-                backup = profile.FilePath + ".duplicate." + suffix + ".bak";
-            string temporary = Path.Combine(Path.GetDirectoryName(profile.FilePath), "." + Guid.NewGuid().ToString("N") + ".tmp");
-            try
+        private void CaptureProfiles(RimKataSettings settings)
+        {
+            settings.storedProfiles = profiles.Select(profile => new RimKataProfileRecord
             {
-                using (FileStream stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
-                {
-                    using (XmlWriter writer = XmlWriter.Create(stream,
-                        new XmlWriterSettings { Encoding = new UTF8Encoding(false), Indent = true, CloseOutput = false }))
-                        document.Save(writer);
-                    stream.Flush(true);
-                }
-                // Backup and replacement are atomic; preserve all original entries, including unknown ones.
-                File.Replace(temporary, profile.FilePath, backup);
-                Log.Warning("[RimKata] Recovered duplicate profile identity in " + profile.FilePath
-                    + ". ID: " + profile.Id + " -> " + id + "; name: " + profile.Name + " -> " + name
-                    + ". Original saved to " + backup);
-            }
-            finally
-            {
-                try { if (File.Exists(temporary)) File.Delete(temporary); }
-                catch (IOException) { }
-                catch (UnauthorizedAccessException) { }
-            }
+                id = profile.Id, name = profile.Name,
+                values = RimKataSettingsProfile.FromEntries(profile.Values.CopyEntries())
+            }).ToList();
         }
 
         public void Initialize(RimKataSettings settings)
@@ -177,9 +190,6 @@ namespace KRWF.RimKata
             List<RimKataStoredProfile> loaded = new List<RimKataStoredProfile>(preparedProfiles);
             HashSet<string> ids = new HashSet<string>(loaded.Select(profile => profile.Id), StringComparer.OrdinalIgnoreCase);
             RimKataSettingsProfile defaults = RimKataSettingsProfile.Capture(new RimKataSettings());
-
-            foreach (RimKataStoredProfile profile in loaded)
-                MoveProfileFile(profile, ProfileFilePath(profile.Name, profile.FilePath));
 
             List<RimKataStoredProfile> pending = new List<RimKataStoredProfile>();
             RimKataStoredProfile selected;
@@ -216,26 +226,29 @@ namespace KRWF.RimKata
             }
             if (selected == null)
             {
-                selected = CreateProfile(NewId(), UniqueName("Recovered profile", loaded),
-                    RimKataSettingsProfile.Capture(settings));
-                loaded.Add(selected);
-                pending.Add(selected);
+                selected = loaded.Find(profile => profile.Values.Matches(settings));
+                if (selected == null)
+                {
+                    selected = CreateProfile(NewId(), UniqueName("Recovered profile", loaded),
+                        RimKataSettingsProfile.Capture(settings));
+                    loaded.Add(selected);
+                    pending.Add(selected);
+                }
             }
-            foreach (RimKataStoredProfile profile in pending)
-                WriteProfile(profile, profile.Name, profile.Values, false);
             if (settings.ProfileSavePending && !pending.Contains(selected))
             {
                 RimKataSettingsProfile values = RimKataSettingsProfile.Capture(settings);
-                WriteProfile(selected, selected.Name, values, true);
                 selected.AcceptSaved(selected.Name, values);
             }
 
+            NeedsPersistence |= settings.ActiveProfileId != selected.Id || settings.ProfileSavePending;
             selected.Values.ApplyTo(settings);
             settings.CompleteProfileMigration(selected.Id);
             settings.ProfileSavePending = false;
             profiles.AddRange(loaded);
             Current = selected;
             IsInitialized = true;
+            CaptureProfiles(settings);
         }
 
         public void SaveCurrent(RimKataSettings settings)
@@ -244,13 +257,14 @@ namespace KRWF.RimKata
             if (Current.Values.Matches(settings))
             {
                 settings.ProfileSavePending = false;
+                CaptureProfiles(settings);
                 return;
             }
             RimKataSettingsProfile values = RimKataSettingsProfile.Capture(settings);
             settings.ProfileSavePending = true;
-            WriteProfile(Current, Current.Name, values, true);
             Current.AcceptSaved(Current.Name, values);
             settings.ProfileSavePending = false;
+            CaptureProfiles(settings);
         }
 
         public void Select(RimKataSettings settings, RimKataStoredProfile profile)
@@ -274,7 +288,6 @@ namespace KRWF.RimKata
 
             int index = profiles.IndexOf(Current);
             RimKataStoredProfile replacement = profiles[index > 0 ? index - 1 : 1];
-            File.Delete(Current.FilePath);
             foreach (RimKataTargetRule rule in settings.targetAccessRules)
             {
                 if (rule.profileIdFriendly == Current.Id) rule.profileIdFriendly = replacement.Id;
@@ -285,6 +298,7 @@ namespace KRWF.RimKata
             Current = replacement;
             settings.ActiveProfileId = replacement.Id;
             settings.ProfileSavePending = false;
+            CaptureProfiles(settings);
         }
 
         public void Add(RimKataSettings settings, string name)
@@ -293,10 +307,10 @@ namespace KRWF.RimKata
             name = ValidateName(name, null);
             SaveCurrent(settings);
             RimKataStoredProfile profile = CreateProfile(NewId(), name, RimKataSettingsProfile.Capture(settings));
-            WriteProfile(profile, profile.Name, profile.Values, false);
             profiles.Add(profile);
             Current = profile;
             settings.ActiveProfileId = profile.Id;
+            CaptureProfiles(settings);
         }
 
         public void RenameCurrent(RimKataSettings settings, string name)
@@ -310,9 +324,9 @@ namespace KRWF.RimKata
             }
             RimKataSettingsProfile values = RimKataSettingsProfile.Capture(settings);
             settings.ProfileSavePending = true;
-            WriteProfile(Current, name, values, true);
             Current.AcceptSaved(name, values);
             settings.ProfileSavePending = false;
+            CaptureProfiles(settings);
         }
 
         private void RequireInitialized(RimKataSettings settings)
@@ -343,40 +357,7 @@ namespace KRWF.RimKata
 
         private RimKataStoredProfile CreateProfile(string id, string name, RimKataSettingsProfile values)
         {
-            return new RimKataStoredProfile(id, name, values, ProfileFilePath(name, null));
-        }
-
-        private string ProfileFilePath(string name, string currentPath)
-        {
-            char[] invalidCharacters = Path.GetInvalidFileNameChars();
-            string fileName = new string(name.Select(character =>
-                Array.IndexOf(invalidCharacters, character) >= 0 ? '_' : character).ToArray())
-                .TrimEnd(' ', '.');
-            if (fileName.Length == 0)
-                fileName = "_";
-
-            string deviceName = fileName.Split('.')[0].TrimEnd(' ').ToUpperInvariant();
-            if (deviceName == "CON" || deviceName == "PRN" || deviceName == "AUX"
-                || deviceName == "NUL" || deviceName == "CONIN$" || deviceName == "CONOUT$"
-                || (deviceName.Length == 4
-                    && (deviceName.StartsWith("COM", StringComparison.Ordinal)
-                        || deviceName.StartsWith("LPT", StringComparison.Ordinal))
-                    && "123456789¹²³".IndexOf(deviceName[3]) >= 0))
-                fileName = "_" + fileName;
-
-            string path = Path.Combine(directory, fileName + ".xml");
-            for (int suffix = 2; !string.Equals(path, currentPath, StringComparison.OrdinalIgnoreCase)
-                && (File.Exists(path) || Directory.Exists(path)); suffix++)
-                path = Path.Combine(directory, fileName + " (" + suffix + ").xml");
-            return path;
-        }
-
-        private static void MoveProfileFile(RimKataStoredProfile profile, string path)
-        {
-            if (string.Equals(profile.FilePath, path, StringComparison.Ordinal))
-                return;
-            File.Move(profile.FilePath, path);
-            profile.FilePath = path;
+            return new RimKataStoredProfile(id, name, values, null);
         }
 
         private static string NewId()
@@ -448,76 +429,5 @@ namespace KRWF.RimKata
             return node.InnerText;
         }
 
-        private void WriteProfile(RimKataStoredProfile profile, string name, RimKataSettingsProfile values,
-            bool replaceExisting)
-        {
-            XmlDocument document = new XmlDocument { XmlResolver = null };
-            XmlElement root = document.CreateElement("Defs");
-            document.AppendChild(root);
-            XmlElement definition = document.CreateElement(ProfileTypeName);
-            root.AppendChild(definition);
-            AppendText(document, definition, "defName", profile.Id);
-            AppendText(document, definition, "label", name);
-            XmlElement entries = document.CreateElement("entries");
-            definition.AppendChild(entries);
-            foreach (string entry in values.CopyEntries())
-                AppendText(document, entries, "li", entry);
-
-            Directory.CreateDirectory(directory);
-            string previousPath = profile.FilePath;
-            string destinationPath = ProfileFilePath(name, replaceExisting ? previousPath : null);
-            string temporaryPath = Path.Combine(directory, "." + Guid.NewGuid().ToString("N") + ".tmp");
-            try
-            {
-                using (FileStream stream = new FileStream(temporaryPath, FileMode.CreateNew, FileAccess.Write,
-                    FileShare.None))
-                {
-                    using (XmlWriter writer = XmlWriter.Create(stream, new XmlWriterSettings
-                    {
-                        Encoding = new UTF8Encoding(false),
-                        Indent = true,
-                        CloseOutput = false
-                    }))
-                        document.Save(writer);
-                    stream.Flush(true);
-                }
-                if (replaceExisting && File.Exists(previousPath))
-                {
-                // Moving first avoids two XML files with the same defName.
-                    MoveProfileFile(profile, destinationPath);
-                    File.Replace(temporaryPath, profile.FilePath, null);
-                }
-                else
-                {
-                    File.Move(temporaryPath, destinationPath);
-                    profile.FilePath = destinationPath;
-                }
-            }
-            catch
-            {
-                    // The failed replacement still contains the original XML.
-                if (!string.Equals(profile.FilePath, previousPath, StringComparison.Ordinal))
-                {
-                    try { MoveProfileFile(profile, previousPath); }
-                    catch (IOException) { }
-                    catch (UnauthorizedAccessException) { }
-                }
-                throw;
-            }
-            finally
-            {
-                // Cleanup must not replace the original save error or change an existing profile.
-                try { if (File.Exists(temporaryPath)) File.Delete(temporaryPath); }
-                catch (IOException) { }
-                catch (UnauthorizedAccessException) { }
-            }
-        }
-
-        private static void AppendText(XmlDocument document, XmlElement parent, string name, string value)
-        {
-            XmlElement element = document.CreateElement(name);
-            element.InnerText = value;
-            parent.AppendChild(element);
-        }
     }
 }

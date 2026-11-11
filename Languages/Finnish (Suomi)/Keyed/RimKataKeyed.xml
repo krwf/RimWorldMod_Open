@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Torjuntamahdollisuus</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Lähitaisteluväistön todennäköisyys</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Räjähtävien ammusten torjunnan todennäköisyys</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Muuta RimKatan asetuksia ennen moninpelin aloittamista.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

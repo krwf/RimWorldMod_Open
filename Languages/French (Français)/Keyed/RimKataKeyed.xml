@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Chance de parade</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Chance d'esquive en mêlée</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Probabilité d'interception des projectiles explosifs</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Modifiez les paramètres de RimKata avant de commencer une partie multijoueur.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

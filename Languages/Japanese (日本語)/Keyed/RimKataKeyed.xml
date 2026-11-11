@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>パリィ確率</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>近接回避率</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>爆発性投射物迎撃の確率</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>マルチプレイのセッションを開始する前に、RimKataの設定を変更してください。</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

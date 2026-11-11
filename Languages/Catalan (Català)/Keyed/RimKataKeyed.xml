@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Probabilitat de parada</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Probabilitat d’esquiva cos a cos</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Probabilitat d’intercepció de projectils explosius</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Canvia la configuració de RimKata abans d'iniciar una sessió multijugador.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

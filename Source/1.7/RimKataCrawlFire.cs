@@ -426,14 +426,17 @@ namespace KRWF.RimKata
                 defaultDesc = "CommandFireAtWillDesc".Translate(),
                 icon = TexCommand.FireAtWill,
                 isActive = () => record.fireAllowed,
-                toggleAction = () =>
-                {
-                    record.fireAllowed = !record.fireAllowed;
-                    TrackFireOverride(record);
-                    if (!record.fireAllowed) NotifyPathStopped(pawn);
-                    if (record.fireAllowed) NotifyPathStarted(pawn);
-                }
+                toggleAction = () => RimKataMultiplayerCommands.SetCrawlFireAllowed(pawn, !record.fireAllowed)
             };
+        }
+
+        internal static void SetFireAllowed(Pawn pawn, bool allowed)
+        {
+            if (pawn?.Downed != true || !Retained.TryGetValue(pawn, out var record)) return;
+            record.fireAllowed = allowed;
+            TrackFireOverride(record);
+            if (!allowed) NotifyPathStopped(pawn);
+            else NotifyPathStarted(pawn);
         }
 
         internal static void NotifyFactionChanged(Pawn pawn)

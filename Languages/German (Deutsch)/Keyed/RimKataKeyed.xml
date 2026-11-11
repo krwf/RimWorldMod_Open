@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Parierchance</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Nahkampfausweichchance</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Chance zum Abfangen von Sprengkörpern</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Ändere die RimKata-Einstellungen, bevor du eine Mehrspielersitzung startest.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

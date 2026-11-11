@@ -113,6 +113,8 @@ namespace KRWF.RimKata
                 catch (Exception exception)
                 { Log.Warning("[RimKata] Automatic weapon execution preparation failed. " + exception); }
             });
+            LongEventHandler.ExecuteWhenFinished(() =>
+                Run("discovery", "compat_multiplayer", () => RimKataMultiplayerCompat.Initialize(harmony)));
         }
 
         private static void ApplyCombatExtended(Harmony harmony, Action<Harmony> apply, string component)
@@ -342,6 +344,11 @@ namespace KRWF.RimKata
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
+            if (RimKataMultiplayerCompat.IsSessionActive)
+            {
+                Widgets.Label(inRect, "KRWF_RimKata_MultiplayerSettingsLocked".Translate());
+                return;
+            }
             if (!profilesInitializationAttempted)
             {
                 EnsureProfilesInitialized();
@@ -469,6 +476,7 @@ namespace KRWF.RimKata
             try
             {
                 Profiles.Initialize(Settings);
+                if (Profiles.NeedsPersistence) instance.SaveBaseSettings();
                 instance.uiBuffers.SyncFrom(Settings);
                 ApplyCombatFeatureSettingsChange();
                 return true;
@@ -498,6 +506,21 @@ namespace KRWF.RimKata
         }
 
         private void SaveBaseSettings() => base.WriteSettings();
+
+        internal static void ReloadMultiplayerProfiles(RimKataSettings settings)
+        {
+            // Host activation and local restoration deserialize the same ModSettings object.
+            // Rebind its profile catalog once at that boundary, never from a combat getter.
+            if (instance == null || !ReferenceEquals(settings, Settings)
+                || Profiles?.IsInitialized != true || !RimKataMultiplayerCompat.Active) return;
+            var replacement = new RimKataProfileStore(instance.Content.RootDir);
+            replacement.Initialize(settings);
+            Profiles = replacement;
+            instance.uiBuffers.SyncFrom(settings);
+            RimKataActivationSettings.Apply();
+            ApplyEligibilitySettingsChange();
+            ApplyCombatFeatureSettingsChange();
+        }
 
         private static void ShowProfileError(Exception exception)
         {

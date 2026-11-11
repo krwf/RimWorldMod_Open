@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Πιθανότητα απόκρουσης</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Πιθανότητα αποφυγής σε μάχη σώμα με σώμα</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Πιθανότητα αναχαίτισης εκρηκτικών βλημάτων</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Αλλάξτε τις ρυθμίσεις του RimKata πριν ξεκινήσετε μια συνεδρία πολλών παικτών.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

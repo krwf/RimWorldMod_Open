@@ -69,7 +69,8 @@ namespace KRWF.RimKata
                 hotKey = original?.hotKey,
                 isActive = () => RimKataSubdueUtility.Get(state.pawn) == state
                     && state.attackEnabled && !state.HasExternalTarget,
-                toggleAction = () => RimKataSubdueCombat.SetAttackEnabled(state, !state.attackEnabled),
+                toggleAction = () => RimKataMultiplayerCommands.SetSubdueAttack(
+                    state.pawn, state.target, !state.attackEnabled),
                 groupable = false
             };
             if (!state.attackAllowed)
@@ -84,7 +85,8 @@ namespace KRWF.RimKata
                 defaultDesc = "KRWF_RimKata_SubdueAllowAttackDesc".Translate(),
                 icon = TexCommand.FireAtWill,
                 isActive = () => state.attackAllowed,
-                toggleAction = () => RimKataSubdueCombat.SetAttackAllowed(state, !state.attackAllowed),
+                toggleAction = () => RimKataMultiplayerCommands.SetSubdueAttackAllowed(
+                    state.pawn, state.target, !state.attackAllowed),
                 groupable = false
             };
 
@@ -106,16 +108,15 @@ namespace KRWF.RimKata
                             var options = new List<FloatMenuOption>
                             {
                                 new FloatMenuOption("KRWF_RimKata_SubdueThrow".Translate(),
-                                    canThrow ? (Action)(() => RimKataSubdueUtility.Throw(state)) : null),
-                                new FloatMenuOption(command.Label, () => RimKataSubdueUtility.Release(state))
+                                    canThrow ? (Action)(() => RimKataMultiplayerCommands.ThrowSubdued(
+                                        state.pawn, state.target)) : null),
+                                new FloatMenuOption(command.Label, () => RimKataMultiplayerCommands.ReleaseSubdued(
+                                    state.pawn, state.target))
                             };
                             if (state.HasExternalTarget)
                                 options.Add(new FloatMenuOption("CommandStopForceAttack".Translate(),
-                                    () =>
-                                    {
-                                        RimKataAutoSubdue.NotifyManualControl(state);
-                                        RimKataSubdueCombat.StopExternalAttack(state);
-                                    }));
+                                    () => RimKataMultiplayerCommands.StopSubdueExternalAttack(
+                                        state.pawn, state.target)));
                             Find.WindowStack.Add(new FloatMenu(options));
                         }
                     };

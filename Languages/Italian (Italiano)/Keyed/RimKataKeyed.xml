@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Probabilità di parata</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Probabilità di schivata in mischia</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Probabilità d'intercettazione dei proiettili esplosivi</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Modifica le impostazioni di RimKata prima di avviare una sessione multigiocatore.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

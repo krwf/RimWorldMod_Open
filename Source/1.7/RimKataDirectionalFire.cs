@@ -221,26 +221,28 @@ namespace KRWF.RimKata
             var selected = Find.Selector?.SelectedPawns;
             if (selected == null) return;
             for (int i = 0; i < selected.Count; i++)
-            {
-                Pawn pawn = selected[i];
-                if (pawn?.Drafted != true || pawn.Spawned != true || !pawn.IsPlayerControlled
-                    || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
-                    || RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled == false
-                    || !RimKataEligibility.CanBeginGunKataAttack(pawn)
-                    || RimKataSubdueUtility.IsHolding(pawn)) continue;
-                ThingWithComps primary = RimKataWeaponSlotUtility.PrimaryWeapon(pawn);
-                Verb primaryVerb = RimKataWeaponSlotUtility.CombatVerb(pawn, primary);
-                bool canPrimary = primary?.def.IsRangedWeapon == true
-                    && CanOrderCell(pawn, primaryVerb, cell);
-                ThingWithComps secondary = RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, primary, true)
-                    ? RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn) : null;
-                Verb secondaryVerb = secondary?.def.IsRangedWeapon == true
-                    ? RimKataWeaponSlotUtility.CombatVerb(pawn, secondary) : null;
-                if (!canPrimary && !CanOrderCell(pawn, secondaryVerb, cell)) continue;
-                Job order = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, cell);
-                order.playerForced = true;
-                pawn.jobs.TryTakeOrderedJob(order, JobTag.Misc);
-            }
+                OrderSelectedPawn(selected[i], cell);
+        }
+
+        internal static void OrderSelectedPawn(Pawn pawn, IntVec3 cell)
+        {
+            if (pawn?.Drafted != true || pawn.Spawned != true || !pawn.IsPlayerControlled
+                || !RimKataEligibilityCache.IsCachedQualifiedPawn(pawn)
+                || RimKataTargetAccess.SettingsFor(pawn)?.directionalFireEnabled == false
+                || !RimKataEligibility.CanBeginGunKataAttack(pawn)
+                || RimKataSubdueUtility.IsHolding(pawn)) return;
+            ThingWithComps primary = RimKataWeaponSlotUtility.PrimaryWeapon(pawn);
+            Verb primaryVerb = RimKataWeaponSlotUtility.CombatVerb(pawn, primary);
+            bool canPrimary = primary?.def.IsRangedWeapon == true
+                && CanOrderCell(pawn, primaryVerb, cell);
+            ThingWithComps secondary = RimKataWeaponSlotUtility.CanUseSecondarySlot(pawn, primary, true)
+                ? RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn) : null;
+            Verb secondaryVerb = secondary?.def.IsRangedWeapon == true
+                ? RimKataWeaponSlotUtility.CombatVerb(pawn, secondary) : null;
+            if (!canPrimary && !CanOrderCell(pawn, secondaryVerb, cell)) return;
+            Job order = JobMaker.MakeJob(RimKataDefOf.RimKata_Attack, cell);
+            order.playerForced = true;
+            pawn.jobs.TryTakeOrderedJob(order, JobTag.Misc);
         }
     }
 

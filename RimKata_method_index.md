@@ -1,5 +1,17 @@
 # RimKata 소스 메서드 색인
 
+## 2026-11-11 — 활성 멀티플레이어와 전투 명령·표시 복원
+
+- `RimKataMultiplayerCompat.Initialize/ShouldCaptureInput/CanExecuteCommands`: RunningMods에서 활성 공급자 하나를 선택한 뒤만 API·훅을 준비합니다. rwmt의 두 버전은 공통 adapter, Colony는 별도 1.7 API4, Together는 자체 전달 연결입니다. 설치 폴더 전체나 일반 폰을 탐색하여 켜는 기능이 아닙니다. 등록 실패를 로컬 명령 실행 성공으로 취급하지 않습니다.
+- `RimKataMultiplayerCommands.Methods/OrderWeapon/OrderSquadGround/SwapWeapons/SetSubdueAttack/SetSubdueAttackAllowed/ReleaseSubdued/ThrowSubdued/StopSubdueExternalAttack/SetCrawlFireAllowed/EquipInventorySecondary/EquipStoredSecondary`: 정확한 공개 목록은 현재 `Methods`의 11개를 확인합니다. 동기화 입력은 폰·대상·무기/Verb·보유 저장소 identity를 전달하며 UI 선택 목록·클로저·슬롯 번호만 원격에서 재사용하지 않습니다. 부 슬롯과 제압 대상이 바뀐 오래된 명령은 재검증 후 거절합니다.
+- `RimKataMultiplayerRwmtCompat.Prepare/Register`: 활성 API의 native RegisterSyncMethod와 기본 인자 직렬화를 사용합니다. 등록 시그니처와 인자 종류를 먼저 검증하고 일부 성공한 목록을 같은 시작 중 재등록하지 않습니다. 보조 config getter 유무가 명령 설치를 실패시키지 않습니다.
+- `RimKataMultiplayerColonyCompat.Register`, `RimKataMultiplayerReplica.Publish*`: 호스트 전투 실행과 게스트 표시 복원을 분리합니다. 복제된 registry의 임시 생성/FinalizeInit에서 제압 종료·잡 시작·피해 처리를 하지 않습니다. Push/Thrown custom Thing 및 제압/기면서 쏴의 비저장 표시값도 포함합니다.
+- `RimKataMultiplayerTogetherCompat.Register`, `TogetherWire`, `TogetherAuthority`, `RimKataMultiplayerRemoteOrders`, `TogetherQualifications`: 기본 Pawn/실제 Job metadata와 Preview 전용 wire를 구분합니다. 전용 protocol/build/settings 계약을 확인하며 원래 7종 이벤트를 가짜 피해/Job 명령으로 위장하지 않습니다. 동일 세션의 검증된 참가자만 원격 명령을 실행하고, 게스트의 건강 변경·이동·잡 시작이 독자적인 RK 전투를 생성하지 않게 합니다. 자격/프로필은 호스트의 확정 결과를 표시용으로 받으며 전역 Faction/건강 getter를 바꾸지 않습니다.
+- `RimKataMultiplayerTogetherJobs.Register/PublishCurrent/ReceivePrefix/Clear`: RT 원래 PlayerJob 생성·직렬화를 재사용하고 호스트 게시 범위에서만 최종 Wait 설치와 해당 게시의 자기 echo를 생략합니다. 다른 폰의 원래 대기 레코드를 삭제하거나 같은 작업을 영구 블랙리스트로 삼지 않습니다. 명령 게시별 표식과 128개 확인 대기 한도를 사용하며 Snapshot 후 실제 Job을 전달합니다.
+- `RimKataMultiplayerTogetherSnapshot.Capture/Apply/FindThing/RegisterKnownThing/Clear`, `TogetherScribe.Save/Load`: 기존 참가자 목록과 기존 폰·장비 참조를 사용합니다. 동일 틱/변경 없는 빈 자료는 다시 직렬화하지 않으며 수신 검증 후 지도별 상태를 반영합니다. 폰 전체 Deep 복제·일반 폰의 매 틱 재검색·게임 전역 시계 변경은 금지합니다. 메모리 Scribe는 기존 saver/loader/mode를 반드시 복구하고 오류를 성공 자료로 게시하지 않습니다. 실패 후 무한 재전송과 해석 루프를 만들지 않습니다.
+- `RimKataProfileStore.Prepare/Initialize/CaptureProfiles`, `RimKataProfileRecord.ExposeData`, `RimKataMod.ReloadMultiplayerProfiles`: 프로필 전체 목록은 일반 ModSettings로 저장·전달합니다. `Profiles`는 최초/구버전 XML 가져오기 위치이며 새 복구 XML 생성 위치가 아닙니다. 옛 Defs/Profiles 이관은 ID·값을 보존하고 같은 복구 내용을 재사용합니다. 프로필 연결 갱신은 설정 로드 경계에서 수행하며 전투 getter에서 파일을 읽거나 무기 분석을 실행하지 않습니다.
+- 세부 검증 범위와 Together Preview 기반 API의 한계는 개발 기억의 같은 날짜 기록을 확인합니다. 컴파일/API 등록·직렬화 시험을 실제 두 클라이언트 전투 동기화 성공으로 확대하지 않습니다.
+
 ## 2026-11-10 후속 — 정지 소집 슬라이딩의 대기 목표·예약
 
 - `RimKataReactiveMotion.BeginSlide`: 실제 셀 진입 성공과 기존 참가자 유효성 검사 후, 정지 시작·소집·동일 Wait_Combat·셀 목표==출발 위치인 경우만 대기 목표를 현재 셀로 옮깁니다. `MostRecentReservationFor`가 반환한 해당 폰의 활성 예약도 동일 Job/출발 셀일 때만 target을 갱신합니다. 다른 Job 예약까지 obsolete 처리하는 `Reserve`는 호출하지 않습니다.

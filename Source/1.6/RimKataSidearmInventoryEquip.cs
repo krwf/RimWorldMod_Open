@@ -13,14 +13,14 @@ namespace KRWF.RimKata
             string confirmation = EquipmentUtility.GetPersonaWeaponConfirmationText(weapon, pawn);
             if (confirmation.NullOrEmpty())
             {
-                EquipFromInventory(pawn, weapon);
+                RequestEquipFromInventory(pawn, weapon);
             }
             else
             {
                 Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(confirmation, delegate
                 {
                     // Ownership and equipment conditions may change while the dialog is open.
-                    if (CanEquipFromInventory(pawn, weapon)) EquipFromInventory(pawn, weapon);
+                    if (CanEquipFromInventory(pawn, weapon)) RequestEquipFromInventory(pawn, weapon);
                 }, false, null, WindowLayer.Dialog));
             }
         }
@@ -66,8 +66,13 @@ namespace KRWF.RimKata
             return null;
         }
 
-        private static void EquipFromInventory(Pawn pawn, ThingWithComps source)
+        private static void RequestEquipFromInventory(Pawn pawn, ThingWithComps weapon)
+            => RimKataMultiplayerCommands.EquipInventorySecondary(pawn,
+                pawn.inventory.innerContainer.IndexOf(weapon), weapon.GetUniqueLoadID());
+
+        internal static void EquipFromInventory(Pawn pawn, ThingWithComps source)
         {
+            if (!CanEquipFromInventory(pawn, source)) return;
             ThingOwner inventory = pawn.inventory.innerContainer;
             ThingWithComps primary = pawn.equipment.Primary;
             ThingWithComps previous = RimKataWeaponSlotUtility.SecondaryWeaponWithVerifiedAccess(pawn);

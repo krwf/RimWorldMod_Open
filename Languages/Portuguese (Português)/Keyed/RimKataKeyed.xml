@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Probabilidade de aparar</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Probabilidade de esquiva corpo a corpo</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Probabilidade de intercetar projéteis explosivos</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Altere as definições do RimKata antes de iniciar uma sessão multijogador.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

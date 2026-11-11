@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>Шанс парирования</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>Шанс уклонения в ближнем бою</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>Шанс перехвата взрывчатых снарядов</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>Измените настройки RimKata до начала многопользовательской сессии.</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>

@@ -120,9 +120,26 @@ namespace KRWF.RimKata
         {
             if (!CanTake(pawn, storage, weapon)) return;
             string confirmation = EquipmentUtility.GetPersonaWeaponConfirmationText(weapon, pawn);
-            if (confirmation.NullOrEmpty()) Equip(pawn, storage, weapon);
+            if (confirmation.NullOrEmpty()) DispatchEquip(pawn, storage, weapon);
             else Find.WindowStack.Add(Dialog_MessageBox.CreateConfirmation(confirmation,
-                () => Equip(pawn, storage, weapon), false, null, WindowLayer.Dialog));
+                () => DispatchEquip(pawn, storage, weapon), false, null, WindowLayer.Dialog));
+        }
+
+        private static void DispatchEquip(Pawn pawn, ThingComp storage, ThingWithComps weapon)
+        {
+            if (!CanTake(pawn, storage, weapon)) return;
+            RimKataMultiplayerCommands.EquipStoredSecondary(pawn, storage.parent.GetUniqueLoadID(),
+                storedWeapons(storage).IndexOf(weapon), weapon.GetUniqueLoadID());
+        }
+
+        internal static void EquipStored(Pawn pawn, string storageId, int weaponIndex, string weaponId)
+        {
+            ThingComp storage = findCodex?.Invoke(pawn);
+            if (storage?.parent?.GetUniqueLoadID() != storageId) return;
+            List<Thing> weapons = storedWeapons(storage);
+            if (weapons == null || weaponIndex < 0 || weaponIndex >= weapons.Count) return;
+            ThingWithComps weapon = weapons[weaponIndex] as ThingWithComps;
+            if (weapon != null && weapon.GetUniqueLoadID() == weaponId) Equip(pawn, storage, weapon);
         }
 
         private static void Equip(Pawn pawn, ThingComp storage, ThingWithComps source)

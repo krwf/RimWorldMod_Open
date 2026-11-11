@@ -878,6 +878,7 @@ namespace KRWF.RimKata
         }
 
         internal bool LegacyOpProfileActive => opProfileActive;
+        internal List<RimKataProfileRecord> storedProfiles;
 
         internal bool ProfileSavePending
         {
@@ -890,6 +891,7 @@ namespace KRWF.RimKata
             Scribe_Values.Look(ref settingsModelVersion, "settingsModelVersion", 0);
             Scribe_Values.Look(ref combatDefaultsVersion, "combatDefaultsVersion", 0);
             Scribe_Values.Look(ref activeProfileId, "activeProfileId");
+            Scribe_Collections.Look(ref storedProfiles, "storedProfiles", LookMode.Deep);
             Scribe_Values.Look(ref profileSavePending, "profileSavePending", false);
             if (string.IsNullOrEmpty(activeProfileId))
             {
@@ -1179,6 +1181,7 @@ namespace KRWF.RimKata
                         normalProfileBackup.FillMissingFrom(CreateNormalProfileDefaults());
                     }
                 }
+                RimKataMod.ReloadMultiplayerProfiles(this);
             }
         }
 

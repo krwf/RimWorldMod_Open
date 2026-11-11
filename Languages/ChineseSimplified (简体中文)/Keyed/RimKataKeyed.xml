@@ -314,4 +314,5 @@
   <KRWF_RimKata_MeleeResponseChanceStandalone>格挡概率</KRWF_RimKata_MeleeResponseChanceStandalone>
   <KRWF_RimKata_MeleeDodgeChanceStandalone>近战闪避概率</KRWF_RimKata_MeleeDodgeChanceStandalone>
   <KRWF_RimKata_InterceptionChanceStandalone>爆炸投射物拦截概率</KRWF_RimKata_InterceptionChanceStandalone>
+  <KRWF_RimKata_MultiplayerSettingsLocked>请在开始多人游戏会话前更改 RimKata 设置。</KRWF_RimKata_MultiplayerSettingsLocked>
 </LanguageData>
